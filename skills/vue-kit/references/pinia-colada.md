@@ -2,6 +2,8 @@
 
 Read for `@pinia/colada` setup, reactive queries, cache actions, mutations, pagination, plugins, or SSR. Inspect the existing Pinia instance, service layer, query factories and identity boundary before adding another data owner.
 
+In Nuxt, start with [Nuxt data ownership](nuxt.md#data-payload-and-cancellation) and select the official Colada module only when a query cache is needed; [Nuxt integrations](nuxt-integrations.md) owns that setup. Do not paste the standalone app-install or custom-server serialization helpers below into Nuxt, and do not give Colada and `useFetch`/`useAsyncData` independent ownership of the same result.
+
 **Verified baseline:** `@pinia/colada` **1.4.8**, Vue **3.5.44**, Pinia **4.1.0**. Colada peers are Vue `^3.5.41` and Pinia `^2.2.6 || ^3.0.0 || ^4.0.2`; this combination satisfies them. Pinia 4.1.0 additionally requires `@vue/devtools-api ^8.2.1` and has optional TypeScript peer `>=5.6.0`. [Colada metadata](https://registry.npmjs.org/@pinia/colada/1.4.8), [Pinia metadata](https://registry.npmjs.org/pinia/4.1.0), [exact Colada declarations](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts).
 
 ## Choose and assign ownership
@@ -17,7 +19,7 @@ Read for `@pinia/colada` setup, reactive queries, cache actions, mutations, pagi
 
 ## Install Pinia first
 
-Complete installation helper. Call once before mounting; the defaults below are explicit application policy. Keep existing Pinia installation instead of installing a second instance.
+Complete **standalone Vue** installation helper. Call once before mounting; the defaults below are explicit application policy. Keep existing Pinia installation instead of installing a second instance. Nuxt uses the module setup linked above, not this helper.
 
 ```ts
 import type { App } from 'vue'
@@ -335,7 +337,7 @@ export function useTenantFeed(tenant: Readonly<Ref<string>>, service: FeedReader
 
 Queries called in a component register `onServerPrefetch` internally and await enabled queries during SSR. `ssrCatchError` defaults to false; choose the render/HTTP error policy deliberately rather than silently presenting failed data as a successful prefetch. A lazy `enabled: false` query is not fetched on the server.
 
-Complete custom-server query-cache helper. It uses optional serializer **`devalue` 6.0.3**, whose actual API exports **named** `stringify` and `parse`, not a default `devalue` object. [Serializer exports](https://unpkg.com/devalue@6.0.3/types/index.d.ts). The application supplies its real root component; the helper handles Colada's query payload, not an HTTP server or unrelated application-store state.
+Complete **standalone custom-server** query-cache helper, not a Nuxt plugin. It uses optional serializer **`devalue` 6.0.3**, whose actual API exports **named** `stringify` and `parse`, not a default `devalue` object. [Serializer exports](https://unpkg.com/devalue@6.0.3/types/index.d.ts). The application supplies its real root component; the helper handles Colada's query payload, not an HTTP server or unrelated application-store state.
 
 ```ts
 import { createSSRApp, type Component } from 'vue'
@@ -402,7 +404,7 @@ export function restoreColadaApp(
 - `PiniaColadaSSRNoGc()` disables query/mutation GC timers on the server, including per-call overrides. Clear the request's caches after rendering/serialization and dispose the Pinia scope. Do not apply this retention policy to the browser by accident.
 - Preserve the serializer's escaping when embedding payloads. Never insert raw unescaped `JSON.stringify` output into HTML, `eval` a payload, or reuse private HTML/payloads through shared CDN caches. Hydrate before mounting to avoid duplicate loads and inconsistent initial views.
 - Stop protected consumers on logout/principal change, cancel pending work, remove private entries and clear persisted private caches before the next identity can consume them. Tenant-key separation alone is not server authorization or protection against a mismatched SSR payload.
-- **Nuxt boundary:** `@pinia/colada-nuxt` **1.2.0** requires Colada `>=1.4.5` and owns module integration/SSR serialization and cleanup. Use it with the Pinia Nuxt module instead of duplicating the custom-server helpers. Framework payload and request-service access remain Nuxt-specific. Within shared `defineQuery` files, official guidance explicitly imports `useRoute` from `vue-router` rather than relying on Nuxt's auto-imported route wrapper. [Nuxt integration](https://pinia-colada.esm.dev/nuxt.md)
+- **Nuxt boundary:** [Nuxt integrations](nuxt-integrations.md) owns the selected official `@pinia/colada-nuxt` **1.2.0** setup with `@pinia/nuxt`, including module-managed SSR serialization and cleanup. Its Colada peer requires `>=1.4.5`, not proof of arbitrary host/module compatibility. Do not duplicate the custom-server helpers or wrap a Colada-owned query in a second native data cache. Within shared `defineQuery` files, official guidance explicitly imports `useRoute` from `vue-router` rather than relying on Nuxt's auto-imported route wrapper. [Official Nuxt integration](https://pinia-colada.esm.dev/nuxt.md), [exact module metadata](https://registry.npmjs.org/@pinia/colada-nuxt/1.2.0).
 
 [SSR guide](https://pinia-colada.esm.dev/guide/ssr.md), [exact serialization implementation](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs), [devalue metadata](https://registry.npmjs.org/devalue/6.0.3).
 

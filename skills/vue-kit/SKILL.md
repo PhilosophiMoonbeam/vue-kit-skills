@@ -3,9 +3,10 @@ name: vue-kit
 description: >-
   Build, debug, test, and modernize Vue applications with TypeScript, Composition
   API, Vuetify, Router, Pinia, forms, server-state queries, authentication,
-  accessible UI, charts, motion, SSR, and Vite tooling. Use for Vue SFCs,
-  composables, ecosystem integrations, architecture, migrations, and Vue runtime
-  or type errors. Routes to focused, version-aware references and a runnable app.
+  accessible UI, charts, motion, SSR, Nuxt, and Vite tooling. Use for Vue SFCs,
+  Nuxt applications/modules/server routes, composables, ecosystem integrations,
+  architecture, migrations, and Vue runtime or type errors. Routes to focused,
+  version-aware references and runnable examples.
 metadata:
   vue-baseline: "3.5.44"
   vuetify-baseline: "4.3.0"
@@ -31,10 +32,15 @@ Follow [setup tooling](references/setup-tooling.md) for lockfile and runtime pol
    build scripts, TypeScript configuration, and existing tests. Establish installed
    versions, SPA versus SSR/Nuxt, current UI/data/auth libraries, and incumbent
    component, styling, and state conventions before selecting APIs.
-2. For a **new application, broad feature, or structural redesign**, start with
-   [architecture](references/architecture.md), then the relevant data/UI companion.
-   For a **local fix or narrow integration**, go directly to its task reference;
-   preserve useful boundaries and do not introduce a framework migration.
+2. Choose the host for **new and existing applications**. Use Vue/Vite for a
+   standalone SPA; choose Nuxt when framework-managed routing, rendering or server
+   endpoints fit the requirements. Preserve an existing host during a narrow fix.
+   For **any Nuxt task**, load [Nuxt](references/nuxt.md) first; add
+   [Nuxt integrations](references/nuxt-integrations.md) only for the selected SDK
+   or module. Do not paste SPA bootstrap/router/plugin helpers into Nuxt.
+   For a **new application, broad feature, or structural redesign**, use
+   [architecture](references/architecture.md) for the ownership decision.
+   Otherwise go directly to the relevant task reference.
 3. Default new Vue code to Composition API and `<script setup lang="ts">`.
    The documented baseline is [Vue 3.5.44](https://github.com/vuejs/core/releases/tag/v3.5.44)
    with [Vuetify 4.3.0](https://github.com/vuetifyjs/vuetify/releases/tag/v4.3.0)
@@ -57,6 +63,13 @@ Follow [setup tooling](references/setup-tooling.md) for lockfile and runtime pol
 
 Read the first matching owner. The companion column is conditional, not a request
 to load every linked document. Combine owners only when the task crosses domains.
+
+### Host framework
+
+| Task trigger | Read | Add only when needed |
+| --- | --- | --- |
+| Nuxt application, pages/layouts, middleware, useFetch/useAsyncData/useState, Nitro/server API, runtime config, rendering, deployment or Nuxt migration | [Nuxt](references/nuxt.md) | [Nuxt 3 → 4 migration](references/migration.md#nuxt-3-to-4-migration) only for that cutover; debugging SSR for a localized rendering failure |
+| Nuxt with Clerk, Pinia, selected Colada cache, or Vuetify | [Nuxt integrations](references/nuxt-integrations.md) | Nuxt core remains the host owner; the selected library reference owns reusable library semantics, not a second app/bootstrap |
 
 ### Foundations and architecture
 
@@ -136,7 +149,14 @@ to load every linked document. Combine owners only when the task crosses domains
   docs and published types disagree, inspect the installed release and explain
   the conflict. Do not silently mix stable and experimental adapters or majors.
 - Vue 3.6 prerelease/Vapor APIs are not Vue 3.5 APIs. Nuxt modules, server routes,
-  runtime config, and SSR lifecycle are not interchangeable with a Vite SPA.
+  runtime config, and SSR lifecycle belong to [Nuxt](references/nuxt.md), not a
+  standalone Vite bootstrap or manual router installation.
+  Select one canonical owner for each resource: Nuxt data or an explicitly chosen
+  query integration, not two independent hydration caches for the same result.
+- Recommend supported replacement packages and current APIs for active setup.
+  Confine obsolete names to explicit migration/historical explanations; do not
+  proactively install deprecated packages. An absent npm deprecation notice is
+  not proof of current API support, and a repository move is not deprecation.
 - Architectural defaults in this skill are recommendations, not upstream
   guarantees. A package's peer range is not observed end-to-end compatibility.
 

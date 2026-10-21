@@ -2,6 +2,8 @@
 
 Read for `@tanstack/vue-query` queries, mutations, pagination, cancellation, cache identity, or SSR. Inspect the existing client, key factories, transport, authentication boundary, and SSR integration before adding another cache.
 
+For Nuxt, [Nuxt core](nuxt.md#data-payload-and-cancellation) owns native request/data payloads; [Nuxt integrations](nuxt-integrations.md) explains when to select an optional query owner. Retain a working TanStack cache when appropriate, but its Nuxt request-local plugin/payload integration requires its own exact-version design. The standalone installation/custom-renderer helpers below are not a Nuxt module recipe; this guide does not certify a TanStack Nuxt adapter or require switching to Colada.
+
 **Verified baseline:** `@tanstack/vue-query` **5.104.5**, with `@tanstack/query-core` **5.104.5**, on Vue **3.5.44**. The Vue peer range is `^2.6.0 || ^3.3.0`; this reference targets Vue 3 only. Exact [package metadata](https://registry.npmjs.org/@tanstack/vue-query/5.104.5) and [shipped implementation](https://unpkg.com/@tanstack/vue-query@5.104.5/src/queryClient.ts) take precedence over older v5 examples.
 
 ## Choose one query-cache owner
@@ -17,7 +19,7 @@ Architecture recommendations in this reference are application design choices, n
 
 ## Install and scope the client
 
-Complete installation helper; call it once before mounting the application. These freshness values are explicit example policy, not upstream defaults.
+Complete **standalone Vue** installation helper; call it once before mounting the application. These freshness values are explicit example policy, not upstream defaults. Do not call this helper from Nuxt to create a second framework/data root.
 
 ```ts
 import type { App } from 'vue'
@@ -347,7 +349,7 @@ Rollback must not overwrite a later mutation, a background refresh, or newly aut
 
 ## SSR dehydration and serialization
 
-Complete server helper for an application-provided root component. Components opt into server loading with `onServerPrefetch(suspense)` or an explicit request-local `client.query(options)` call; do not await a query's `suspense()` while it remains disabled. The helper returns structured state; it does **not** implement an HTTP server or unsafe HTML embedding.
+Complete **standalone custom-server** helper for an application-provided root component, not a Nuxt plugin. Components opt into server loading with `onServerPrefetch(suspense)` or an explicit request-local `client.query(options)` call; do not await a query's `suspense()` while it remains disabled. The helper returns structured state; it does **not** implement an HTTP server or unsafe HTML embedding.
 
 ```ts
 import { createSSRApp, type Component } from 'vue'

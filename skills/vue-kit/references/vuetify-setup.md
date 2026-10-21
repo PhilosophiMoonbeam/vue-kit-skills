@@ -2,6 +2,8 @@
 
 Read when installing Vuetify, diagnosing missing components/styles/icons, choosing import strategy, or integrating SSR. Use [vuetify-components.md](vuetify-components.md) for interactions and [vuetify-theme.md](vuetify-theme.md) for design tokens and migration. Inspect an existing app's plugin, lockfile, bundler, CSS entry points, and framework module before changing its setup; do not reinstall a second Vuetify instance.
 
+For new or existing Nuxt applications, start with [Nuxt](nuxt.md) and use [Nuxt integrations](nuxt-integrations.md) for the explicit Vuetify plugin/Vite configuration. The `main.ts`, standalone Vite config and custom-renderer factories here are not pasteable Nuxt bootstrap recipes; reusable component/icon/adapter contracts remain applicable under the selected host.
+
 ## Version and compatibility contract
 
 This reference targets **Vuetify 4.3.0 + Vue 3.5.44**, not Vuetify 2 or an assumption that every Vuetify 3 example remains compatible. Registry metadata confirms Vuetify's Vue peer `^3.5.0 || ^3.6.0-0`; TypeScript `>=4.7`, `vite-plugin-vuetify >=2.1.0`, and `webpack-plugin-vuetify >=3.1.0` are optional peers. An optional peer is not installed automatically merely because a feature needs it. Use normal Vue SFC compilation, not Vue 3.6 prerelease-only APIs. [Exact metadata](https://registry.npmjs.org/vuetify/4.3.0).
@@ -285,7 +287,7 @@ export function createRequestVuetify(theme: 'light' | 'dark') {
 
 The renderer must also deliver generated theme CSS and stylesheet assets. Vuetify can register its theme stylesheet with an installed compatible head manager; without that, the renderer owns serialization of `vuetify.theme.styles.value` into an escaped/nonce-aware style element using the matching stylesheet ID. `ssr: true` does **not** inject HTML into the server document by itself. Use the same initial theme and locale on server/client; `system` follows a browser media query unavailable on the server. Deliver request-derived initial preferences before hydration rather than reading local storage during server rendering. Review CSP nonces and teleported overlay containers. See [debugging-ssr.md](debugging-ssr.md) and [i18n-head.md](i18n-head.md).
 
-Nuxt owns app creation, SSR, and hydration. Configure an existing compatible Vuetify Nuxt module or one Nuxt plugin/Vite integration, not this SPA `createApp()` entry and not both integrations. Check the module's installed release against Vuetify 4 before using module-specific options; this reference makes no blanket module compatibility claim. [Official installation boundary](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/getting-started/installation.md).
+Nuxt owns app creation, SSR, and hydration. [Nuxt integrations](nuxt-integrations.md) provides the stable explicit plugin/Vite path and the separate prerelease module boundary, not this SPA `createApp()` entry or two concurrent integrations. Preserve an existing working integration; verify its exact release/options before changing it. A module peer range admitting Vuetify 4 is not stable-release certification or observed compatibility for every option. [Official installation boundary](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/getting-started/installation.md).
 
 ## Failure modes and evidence boundary
 

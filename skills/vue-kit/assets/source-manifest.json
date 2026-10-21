@@ -291,11 +291,13 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "documents": 8,
       "flagged_documents": 6,
-      "notes": "Vue/Vite setup and authored architecture synthesis; Nuxt integration is an explicit boundary, not an assumed SPA equivalent."
+      "notes": "Vue/Vite setup and authored architecture synthesis; Nuxt core host and selected integrations have first-class owning guides, separate from SPA bootstrap and historical migration guidance."
     },
     {
       "id": "vue-i18n-skilld",
@@ -333,11 +335,12 @@
         "references/core-vue.md",
         "references/components.md",
         "references/composables.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md"
       ],
       "documents": 1,
       "flagged_documents": 1,
-      "notes": "Vue ownership/composition patterns contribute to authored application architecture synthesis; architectural recommendations are distinct from upstream API guarantees."
+      "notes": "Vue ownership/composition patterns contribute to authored application architecture synthesis and the Nuxt host's SSR/data ownership guide; architectural recommendations are distinct from upstream API guarantees."
     },
     {
       "id": "vue-pinia-best-practices",

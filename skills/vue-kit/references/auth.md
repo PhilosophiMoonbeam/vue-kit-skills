@@ -1,6 +1,6 @@
 # Clerk authentication in Vue
 
-Read for Clerk setup, loaded/signed-in state, Vue Router gates, identity changes, tokens, or authorization boundaries. This is **plain Vue**, not Nuxt: do not import `defineNuxtRouteMiddleware`, `navigateTo`, Nuxt auto-imports, or Next.js `auth()` into these examples. Keep an incumbent provider unless the task explicitly calls for an auth migration. Router configuration belongs to [routing.md](routing.md); client state to [state.md](state.md); identity-scoped server caches to [tanstack-query.md](tanstack-query.md) / [pinia-colada.md](pinia-colada.md).
+Read for Clerk setup, loaded/signed-in state, Vue Router gates, identity changes, tokens, or authorization boundaries. These complete helpers target **standalone Vue/Vite** with `@clerk/vue`, not Nuxt. For new or existing Nuxt applications, start with [Nuxt](nuxt.md) and use the `@clerk/nuxt` setup in [Nuxt integrations](nuxt-integrations.md); do not paste this `main.ts`, router guard or client SDK installation into that host. Conversely, do not import Nuxt middleware/auto-imports or Next.js `auth()` into these examples. Keep an incumbent provider unless the task explicitly calls for an auth migration. Standalone router configuration belongs to [routing](routing.md); client state to [state](state.md); identity-scoped server caches to the selected [Query](tanstack-query.md) or [Colada](pinia-colada.md) owner.
 
 ## Version and ownership
 

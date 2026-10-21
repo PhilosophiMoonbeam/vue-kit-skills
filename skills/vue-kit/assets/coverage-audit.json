@@ -30,6 +30,11 @@
       "confirmed_fixed": 24
     }
   },
+  "current_reference_counts": {
+    "audited_original": 38,
+    "extensions": 2,
+    "active": 40
+  },
   "processing": {
     "source": {
       "processed": 467,
@@ -93,8 +98,9 @@
   "method": {
     "native_judgments": "Frozen native judge_batch coverage/contradiction and readiness/risk/evidence/density rubrics produce historical candidate judgments, not confirmed defects. Full native result objects and original labels are preserved unchanged.",
     "explicit_resolutions": "Accepted individual primary-evidence dispositions are recorded separately with exact current replacement quotes and canonical enclosing headings/anchors. Explicit dispositions may overturn native hypotheses; a corrected disposition means replacement guidance was repaired or expanded, not that a historical source defect was confirmed.",
+    "current_reference_extensions": "The references array retains the original 38 native-audited identities and immutable native verdicts; counts.references, processing.references and accepted batch metadata remain bounded to that historical population. Two explicitly declared current guides have separate author/primary-source reviews and links to scoped parent verification checks; they receive no invented native readiness vector. current_reference_counts describes the 40-guide active package.",
     "native_only": "17 source units retain native covered judgments and null individual resolutions. No individual manual disposition is claimed for those units.",
-    "source_provenance": "Source IDs, roots and original SHA256 values come from bundled original audit/manifest metadata. Current mappings reflect the explicit removal cutover; native judgments remain historical. Crosswalk assembly does not need the old corpus; targeted flagged-source reviews are recorded separately.",
+    "source_provenance": "Source IDs, roots and original SHA256 values come from bundled original audit/manifest metadata. Current mappings reflect the explicit removal cutover and first-class Nuxt guide ownership; native judgments remain historical. Crosswalk assembly does not need the old corpus; targeted flagged-source reviews are recorded separately.",
     "quote_pointers": "Whitespace-normalized exact current quotes may occur in prose or fenced code; enclosing Markdown headings and their slugs are derived only outside fenced code. Differing author-supplied section labels are preserved as author_section.",
     "second_pass_reconciliation": {
       "scope": "Current explicit quote pointers and primary-source lookup URLs only; historical native judgments/probabilities, original SHA256 values, dispositions and counts remain unchanged. No new runtime claims.",
@@ -12896,7 +12902,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -12917,17 +12925,17 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/migration.md",
-        "section": "Incumbent Nuxt SSR/data workflow",
-        "evidence": "Initial SSR data",
-        "explanation": "Confirmed missing Nuxt/mobile breadth repaired with exact Nuxt4.6.2 SSR/data/server/config/layout/plugin/head/deployment contracts and local config+endpoint+page+layout example; native/PWA workflow preserves Quasar/Capacitor/platform topics. Core/components/composables already own typed state/cleanup/performance. Incumbent Options API remains supported rather than copying source MUST-NOT; setup-tooling and testing companions own authorized gates, not an execution claim here.",
+        "reference": "references/nuxt.md",
+        "section": "Request context and state",
+        "evidence": "Call Nuxt composables in component setup, Nuxt plugins, route middleware or a composable invoked synchronously from those contexts.",
+        "explanation": "The historical corrected disposition is retained. First-class Nuxt core and integration guides now own current host/request/data/module contracts rather than the former migration-only workflow; the core guide supplies a complete local catalogue application. Mobile/Capacitor/PWA and actual Nuxt 3-to-4 migration remain in migration.md, while Vue core/components/composables own typed state and cleanup. This is current author/primary-source rebinding, not a new native verdict or execution claim.",
         "primary_urls": [
           "https://registry.npmjs.org/vue/3.5.44",
           "https://unpkg.com/@vue/runtime-core@3.5.44/dist/runtime-core.d.ts",
           "https://registry.npmjs.org/nuxt/4.6.2",
           "https://capacitorjs.com/docs/getting-started"
         ],
-        "anchor": "incumbent-nuxt-ssrdata-workflow"
+        "anchor": "request-context-and-state"
       }
     },
     {
@@ -12940,7 +12948,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -12987,7 +12997,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -13030,7 +13042,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -13073,7 +13087,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -13121,7 +13137,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -13142,10 +13160,10 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/migration.md",
-        "section": "Incumbent Nuxt SSR/data workflow",
-        "evidence": "Pass a getter/computed URL or reactive key encoding every dependency, not an interpolated snapshot.",
-        "explanation": "Confirmed actual missing Nuxt scope: exact4.6.2 compatible-with-fixed-Vue dependency evidence, directory migration (no forced Nuxt3 cutover), pages/layout/meta/autoimports, SSR payload useFetch/useAsyncData/lazy/signal/keys/shallow/error/refetch, user mutations and real session/server authorization, useState/Pinia request locality, server route validation/event contract, config/private/public overrides, instance plugins/header contract, SEO/ClientOnly versus lazy hydration, Nitro/preset/static limitations. Complete local read endpoint+page+layout+config avoids fabricated Prisma/auth. Custom nonNuxt SSR explicitly corrects source createApp hydration, unsafe JSON, data provision/build manifest errors and routes to debugging-ssr.",
+        "reference": "references/nuxt.md",
+        "section": "Data, payload and cancellation",
+        "evidence": "Make URLs/keys reactive and encode every dependency that changes the result.",
+        "explanation": "The historical corrected disposition is retained. The first-class Nuxt 4.6.2 guide now owns directories/layers/generated types, pages/layouts/middleware, request-local state, payload-aware reactive reads and cancellation, current server helper/event contracts, private/public runtime configuration, hydration/head and deployment/privacy. Its complete local endpoint/page/layout/config application replaces the removed migration-only example; selected official modules live in nuxt-integrations.md. Actual Nuxt 3-to-4 and non-Nuxt SSR migration remain in migration.md. No new native verdict or framework execution is claimed here.",
         "primary_urls": [
           "https://registry.npmjs.org/nuxt/4.6.2",
           "https://unpkg.com/nuxt@4.6.2/dist/server/index.d.ts",
@@ -13154,7 +13172,7 @@
           "https://nuxt.com/docs/4.x/getting-started/data-fetching",
           "https://vuejs.org/guide/scaling-up/ssr.html"
         ],
-        "anchor": "incumbent-nuxt-ssrdata-workflow"
+        "anchor": "data-payload-and-cancellation"
       }
     },
     {
@@ -13167,7 +13185,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -13212,7 +13232,9 @@
         "references/composables.md",
         "references/migration.md",
         "references/setup-tooling.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md",
+        "references/nuxt-integrations.md"
       ],
       "native": {
         "coverage": {
@@ -14088,7 +14110,8 @@
         "references/core-vue.md",
         "references/components.md",
         "references/composables.md",
-        "references/architecture.md"
+        "references/architecture.md",
+        "references/nuxt.md"
       ],
       "native": {
         "coverage": {
@@ -14109,17 +14132,17 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/migration.md",
-        "section": "Incumbent Nuxt SSR/data workflow",
-        "evidence": "Use `$fetch` in a user-triggered action;",
-        "explanation": "Confirmed breadth omissions repaired: concrete Nuxt runtime/server/data/security/SSR workflow, generic list/typed Options, animation/memo/plugin/debug and debounce/customRef lifetime contracts. Existing core/component/composable examples retain source organization/props/models/effects/scoped state/readonly actions/list safety; state/routing/testing owners retain store/router/test recipes. Corrects source dynamic template-ref argument claim and does not ban supported Options stores/mixins at runtime; migration prefers composables for explicit new ownership, not a forced unrelated rewrite.",
+        "reference": "references/nuxt.md",
+        "section": "Data, payload and cancellation",
+        "evidence": "Use Nuxt `useFetch` for URL reads, `useAsyncData` for a custom async read, and `$fetch` for an event-triggered mutation.",
+        "explanation": "The historical corrected disposition is retained. The Nuxt host's request-aware read versus event-triggered mutation ownership now belongs to the first-class Nuxt guide, alongside payload, cancellation, state and server security contracts. Existing core/component/composable/store/router/testing guidance and supported incumbent Options patterns remain with their original owners. This rebinds current coverage to authored primary-source guidance without changing native evidence or claiming execution.",
         "primary_urls": [
           "https://registry.npmjs.org/vue/3.5.44",
           "https://unpkg.com/@vue/runtime-core@3.5.44/dist/runtime-core.d.ts",
           "https://nuxt.com/docs/4.x/getting-started/data-fetching",
           "https://vuejs.org/api/composition-api-helpers.html#usetemplateref"
         ],
-        "anchor": "incumbent-nuxt-ssrdata-workflow"
+        "anchor": "data-payload-and-cancellation"
       }
     },
     {
@@ -19096,9 +19119,9 @@
       },
       "resolution": {
         "disposition": "confirmed_fixed",
-        "section": "Incumbent Nuxt SSR/data workflow",
-        "evidence": "**Nuxt 4.6 server boundary:** `nuxt/server` handlers/helpers use the current event",
-        "explanation": "Confirmed material breadth/evidence gap, not an observed failure of original Vue fences: original Nuxt/mobile paragraphs deferred all implementation and adopted no exact framework release. Added primary-pinned Nuxt4.6.2 and independent Capacitor releases with dense usable incumbent workflows, real local read-only endpoint/page/layout/config and late-native-ID-safe module, plus current Quasar CLI/Workbox/PWA lifecycle contracts. New server API source verified against current declarations: import same-module handler/helpers, status spelling, reactive data keys and shallow default. Existing complete Vue/Options/TSX examples and all3.6 exclusions preserved. New Options typing and pinned Vue package-entry contracts also close source gaps; no framework/native execution or general compatibility gate claimed.",
+        "section": "Nuxt 3 to 4 migration",
+        "evidence": "Nuxt compatibility is not guaranteed by Vue compatibility.",
+        "explanation": "The historical confirmed_fixed disposition and native verdict are retained. Ordinary Nuxt host/data/server guidance has moved to its first-class owning guides; this reference now correctly limits Nuxt material to a concrete incumbent 3-to-4.6.2 checklist, with module/engine/directory/data/server-helper/deployment acceptance boundaries. Existing Vue/Options/TSX migration, custom non-Nuxt SSR and substantive Capacitor/Quasar/PWA workflows remain. Primary links are preserved; current Nuxt examples and actual parent execution receive separate extension review/evidence, not a rewritten historical runtime claim.",
         "primary_urls": [
           "https://registry.npmjs.org/nuxt/4.6.2",
           "https://unpkg.com/nuxt@4.6.2/dist/server/index.d.ts",
@@ -19111,7 +19134,7 @@
           "https://registry.npmjs.org/@quasar/app-vite/3.10.3",
           "https://quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa/"
         ],
-        "anchor": "incumbent-nuxt-ssrdata-workflow"
+        "anchor": "nuxt-3-to-4-migration"
       }
     },
     {
@@ -20491,6 +20514,58 @@
         ],
         "anchor": "headless-ui-registry-composition-and-incumbent-migration"
       }
+    }
+  ],
+  "current_reference_extensions": [
+    {
+      "path": "references/nuxt.md",
+      "source_roots": [
+        "vue-expert",
+        "vue-patterns"
+      ],
+      "resolution": {
+        "disposition": "reviewed",
+        "section": "Server boundaries and private configuration",
+        "anchor": "server-boundaries-and-private-configuration",
+        "evidence": "In **Nuxt 4.6.2**, import `defineEventHandler` and all current server helpers explicitly from `nuxt/server` in the same handler.",
+        "explanation": "Author review of the complete first-class Nuxt 4.6.2 host guide against exact-version primary declarations/implementation: generated project types, directories/layers/aliases, pages/layouts/middleware, request-owned state/services, payload-aware data and cancellation, complete deterministic local catalogue application, current same-module server event/helpers, private/public runtime configuration, SSR/hydration/head and deployment/cache privacy are substantive owning sections. Contextual alternatives identify their containing file and prerequisites; no invented credentials, backend persistence or native audit vector is supplied. Scoped parent check IDs link actual recorded acceptance only when those checks exist; they do not certify live authentication or every optional deployment.",
+        "primary_urls": [
+          "https://unpkg.com/nuxt@4.6.2/package.json",
+          "https://unpkg.com/nuxt@4.6.2/dist/server/index.d.ts",
+          "https://unpkg.com/nuxt@4.6.2/dist/app/composables/asyncData.js",
+          "https://unpkg.com/nuxt@4.6.2/dist/app/composables/fetch.js"
+        ]
+      },
+      "verification_check_ids": [
+        "nuxt-generated-typecheck",
+        "nuxt-ssr-request-isolation"
+      ]
+    },
+    {
+      "path": "references/nuxt-integrations.md",
+      "source_roots": [
+        "vue-expert"
+      ],
+      "resolution": {
+        "disposition": "reviewed",
+        "section": "Stable manual Vuetify integration",
+        "anchor": "stable-manual-vuetify-integration",
+        "evidence": "There is one `VApp` and one `VMain`; do not put another app wrapper in a page/layout.",
+        "explanation": "Author review of selected stable Nuxt 4.6.2/Vue 3.5.44/Vuetify 4.3.0 integration: a universal per-app plugin, explicit component imports, the single Nuxt router and root landmarks, deterministic theme/layer ownership, official Pinia 4/Colada modules and required devtools peers. Complete contextual files build on the core catalogue rather than duplicate its working application. Clerk 3.1.15 is separately credential-required; its h3-v1 event/function contract and absent-auth 401 are not a live provider pass. Scoped parent verification check IDs link only actual recorded acceptance when populated; no native verdict or fabricated authenticated session result is supplied.",
+        "primary_urls": [
+          "https://unpkg.com/vuetify@4.3.0/lib/framework.js",
+          "https://unpkg.com/vuetify@4.3.0/lib/composables/theme.js",
+          "https://unpkg.com/@pinia/nuxt@1.0.3/dist/runtime/plugin.js",
+          "https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/runtime/plugin.js",
+          "https://unpkg.com/@clerk/nuxt@3.1.15/dist/module.js",
+          "https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/clerkMiddleware.d.ts"
+        ]
+      },
+      "verification_check_ids": [
+        "nuxt-generated-typecheck",
+        "nuxt-production-build",
+        "nuxt-browser-hydration"
+      ]
     }
   ],
   "unresolved": []

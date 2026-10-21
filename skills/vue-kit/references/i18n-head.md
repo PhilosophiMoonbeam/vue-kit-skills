@@ -1,6 +1,6 @@
 # Internationalization and document head
 
-Read when localizing Vue content, switching locale, formatting values, owning page metadata, or integrating those concerns with SSR. Target Vue **3.5.44**, **vue-i18n 11.4.16**, **@unhead/vue 3.4.3**. These are separate plugins with separate ownership. Nuxt already integrates Unhead; use its framework APIs and `@nuxtjs/i18n`, not the standalone entry wiring below. See [SSR boundaries](debugging-ssr.md), [routing](routing.md), and [tooling](setup-tooling.md).
+Read when localizing Vue content, switching locale, formatting values, owning page metadata, or integrating those concerns with SSR. Standalone baseline: Vue **3.5.44**, **vue-i18n 11.4.16**, **@unhead/vue 3.4.3**, with separate plugin ownership. For new or existing Nuxt applications, [Nuxt](nuxt.md#ssr-hydration-and-head) owns the built-in Unhead instance and native head APIs; do not install a second head plugin or copy the standalone app/request factories below. If locale-aware Nuxt routing is required, evaluate the official [`@nuxtjs/i18n` module](https://i18n.nuxtjs.org/docs/getting-started) against its installed release; this guide does not certify that module's compatibility or require it for a simple translated component. See [SSR diagnosis](debugging-ssr.md); [routing](routing.md) and [tooling](setup-tooling.md) own standalone setup.
 
 ## Choose the owner before editing
 

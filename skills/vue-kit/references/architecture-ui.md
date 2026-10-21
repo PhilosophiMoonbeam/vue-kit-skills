@@ -6,6 +6,8 @@ Read when a screen combines Vuetify, design tokens, forms, overlays, tables/char
 
 Start with [application architecture](architecture.md) for feature/deployment boundaries; [data architecture](architecture-data.md) owns server-state and save concurrency. Here the unit of design is a complete user interaction, including focus, interrupted work, reduced motion, and narrow layouts—not a collection of component demos.
 
+For new or existing Nuxt applications, [Nuxt](nuxt.md) owns pages/layouts, SSR and hydration; [Nuxt integrations](nuxt-integrations.md) owns the selected Vuetify setup. Reuse component/interaction contracts here, not standalone `main.ts`, manual router installation, or app-wide plugin factories.
+
 ## Compose capabilities without duplicating ownership
 
 | Requirement | Mechanism (synthesis) | Rejected alternative and consequence | Specialist route |

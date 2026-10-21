@@ -4,7 +4,7 @@
 
 Read when a route, remote cache, Pinia store, form, and auth integration touch the same workflow. This is **authored synthesis** of coordination boundaries, not a substitute for one library's API reference. Baseline **Vue 3.5.44**; query-specific factual contracts below refer to **@tanstack/vue-query 5.104.5**, with **Pinia 4.1.0** for application-state context. Use [Query](tanstack-query.md) or [Colada](pinia-colada.md), not both caches for the same resource. Their adapters, hydration APIs, and defaults are not interchangeable. [Package versions](https://registry.npmjs.org/@tanstack/vue-query/5.104.5).
 
-Start with [application architecture](architecture.md) if deployment and ownership are undecided. Continue to [forms](forms.md), [state](state.md), [auth](auth.md), and [routing](routing.md) only for the mechanism being implemented.
+Start with [application architecture](architecture.md) if deployment and ownership are undecided. In Nuxt, [Nuxt core](nuxt.md#data-payload-and-cancellation) owns request context, native data and payloads; [Nuxt integrations](nuxt-integrations.md) owns selected auth/store/query setup. Otherwise continue to [forms](forms.md), [state](state.md), [auth](auth.md), or [routing](routing.md) only for the mechanism being implemented.
 
 ## Separate five state domains
 
@@ -79,7 +79,7 @@ Keep public caches separate if public data should survive logout. A global cache
 - The authenticated server request context supplies credentials to that request's adapters. Do not forward a shared mutable browser credential getter into server rendering.
 - Dehydrate/serialize only authorized, necessary state using the framework's safe serialization path; the browser can read everything in its payload. Escape serialization for its HTML context, and hydrate at the library's required point.
 - Response/CDN caching has its own audience and key policy. An isolated query cache does not make personalized HTML or payloads safe to share-cache.
-- In Nuxt, follow the framework/module's request context and hydration integration; do not add a second SPA query client or bypass Nuxt's data ownership accidentally.
+- In Nuxt, follow [framework request/data ownership](nuxt.md#request-context-and-state) and the [selected module integration](nuxt-integrations.md); do not install the standalone SPA helpers or create a second cache for a resource already owned by `useFetch`/`useAsyncData`.
 
 These follow the [Vue SSR isolation contract](https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution) and [Pinia SSR instance/hydration guidance](https://pinia.vuejs.org/ssr/). Per-request factories and correct instance propagation, not the package name, establish isolation.
 

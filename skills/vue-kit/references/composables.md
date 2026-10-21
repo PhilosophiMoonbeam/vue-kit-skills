@@ -254,7 +254,7 @@ Each frame also checks the live inputs before committing, so a frame queued befo
 
 ## Nuxt and server boundaries
 
-Plain Vue has no built-in auto-imported `useFetch`, `useAsyncData`, `$fetch`, `useState`, server API routes, or file-based pages. Those are framework/application contracts. The modules above explicitly import Vue; the local async primitive does not claim Nuxt SSR deduplication or hydration transfer. In an incumbent Nuxt app, inspect its exact Nuxt version and use the installed framework's request/data lifecycle; do not introduce a parallel generic fetch composable for SSR page data. See [SSR/debugging](debugging-ssr.md), [architecture/data](architecture-data.md), and [migration](migration.md#nuxt-is-not-a-plain-vue-spa).
+Plain Vue has no built-in auto-imported `useFetch`, `useAsyncData`, `$fetch`, `useState`, server API routes, or file-based pages. Those are framework/application contracts. The modules above explicitly import Vue; the local async primitive does not claim Nuxt SSR deduplication or hydration transfer. In an incumbent Nuxt app, inspect its exact Nuxt version and use the installed framework's request/data lifecycle; do not introduce a parallel generic fetch composable for SSR page data. See [SSR/debugging](debugging-ssr.md), [architecture/data](architecture-data.md), and [Nuxt data ownership](nuxt.md#data-payload-and-cancellation).
 
 ## Verification boundary
 

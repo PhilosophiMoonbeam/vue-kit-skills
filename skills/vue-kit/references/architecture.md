@@ -4,7 +4,7 @@
 
 Read before a cross-feature change, a new application, or a deployment-mode decision. For a narrow fix, inspect the incumbent implementation and preserve its stack unless the fix requires a change. This reference is **authored synthesis**, not a framework architecture guarantee. It assigns ownership and reading routes; specialist references own API implementation.
 
-Baseline: **Vue 3.5.44**, Composition API, `<script setup lang="ts">`, and **Vuetify 4.3.0**. Vuetify's declared Vue peer range includes `^3.5.0`; that is compatibility metadata, not proof that every integration works. Use the Router 4 track in [routing](routing.md), not unexamined latest-major APIs. [Setup and tooling](setup-tooling.md) owns the pinned build stack. Nuxt **4.6.2** is discussed only as a rendering/deployment alternative; this is not a tested Vue/Vuetify/Nuxt dependency matrix. [Package evidence](https://registry.npmjs.org/vuetify/4.3.0).
+Baseline: **Vue 3.5.44**, Composition API, `<script setup lang="ts">`, and **Vuetify 4.3.0**. Vuetify's declared Vue peer range includes `^3.5.0`; that is compatibility metadata, not proof that every integration works. For a standalone SPA, use the Router 4 track in [routing](routing.md) and the pinned build stack in [setup and tooling](setup-tooling.md). For new or existing Nuxt applications, [Nuxt 4.6.2](nuxt.md) owns bootstrap, routing, data and rendering; [Nuxt integrations](nuxt-integrations.md) owns selected SDK/module setup. Do not compose the SPA installation helpers into that host. Neither package peers nor this design guide certify an arbitrary Vue/Vuetify/Nuxt module matrix. [Package evidence](https://registry.npmjs.org/vuetify/4.3.0).
 
 ## Produce a compact design deliverable
 
@@ -108,9 +108,9 @@ An HTTP `If-Match` precondition is one possible real backend mechanism, not some
 | --- | --- | --- |
 | Private, highly interactive application with no initial-indexing requirement | Vue/Vite SPA with Router | Static host needs correct history fallback; initial content waits for client code/data; API remains separately authorized |
 | Public content known at build time | SSG, often VitePress for documentation | Content freshness follows rebuild/deployment; generated output has no per-request private identity |
-| Public request-dependent content with important initial HTML | Framework-managed SSR, commonly Nuxt | Request isolation, hydration, response caching/privacy, runtime hosting, and error status behavior become requirements |
-| Public pages and private workspace share one deployment | Nuxt hybrid rendering when operationally justified | Route rules do not authorize private data; never share-cache personalized HTML/payloads without a proven isolation policy |
-| Existing Nuxt application | Preserve Nuxt's application/router/data lifecycle | Do not bolt on a second standalone Vite bootstrap, router instance, or hydration cache without an explicit integration design |
+| Public request-dependent content with important initial HTML | Framework-managed SSR, commonly [Nuxt](nuxt.md) for a new application | Request isolation, hydration, response caching/privacy, runtime hosting, and error status behavior become requirements |
+| Public pages and private workspace share one deployment | [Nuxt hybrid rendering](nuxt.md#route-rules-privacy-and-deployment) when operationally justified | Route rules do not authorize private data; never share-cache personalized HTML/payloads without a proven isolation policy |
+| Existing Nuxt application | Preserve [Nuxt's application/router/data lifecycle](nuxt.md) | Do not bolt on a second standalone Vite bootstrap, router instance, or hydration cache without an explicit integration design |
 | Existing custom SSR stack | Preserve its factory/render contract while fixing the actual boundary | Audit request-local dependencies and client hydration rather than recreating the platform casually |
 
 Vue documents SSR's initial-content benefit and additional build/runtime cost; [Nuxt rendering modes](https://nuxt.com/docs/4.x/guide/concepts/rendering) document universal, client, hybrid, and prerendered boundaries. Neither promises automatic offline support, backend authorization, zero duplicate fetches, or a performance win for every application. Static prerender output alone does not include a running server endpoint.
@@ -140,7 +140,7 @@ Read this guide once; then take only the branch that owns the next implementatio
 | Remote editable resource | [data architecture](architecture-data.md), [forms](forms.md) | One query and one form-library reference, not all alternatives |
 | Shared client workflow | [state](state.md) | [auth](auth.md) only for identity/session integration |
 | New Vuetify screen | [UI architecture](architecture-ui.md), [Vuetify components](vuetify-components.md) | [design system](design-system.md), [Vuetify theme](vuetify-theme.md) for token changes |
-| Deployment or hydration change | [debugging and SSR](debugging-ssr.md), [setup and tooling](setup-tooling.md) | [i18n and head](i18n-head.md) for request-dependent locale/head |
+| Deployment or hydration change | [Nuxt](nuxt.md) for a Nuxt host; [debugging and SSR](debugging-ssr.md) for diagnosis | [Nuxt integrations](nuxt-integrations.md) for a selected SDK/module; [setup and tooling](setup-tooling.md) for standalone build changes |
 | Incumbent stack extension | Owning specialist, then [migration](migration.md) only if migration is required | [alternative UI](alternative-ui.md) or [TanStack routing](routing-tanstack.md) only for that incumbent/capability |
 | Acceptance/evidence design | [testing](testing.md) | The feature's specialist for library-specific failure modes |
 

@@ -4,8 +4,9 @@ Read for a new Vue/Vite application, dependency/toolchain changes, TypeScript or
 SFC type errors, aliases, environment variables, CSS integration, and build scripts.
 For a local application change, inspect the existing setup rather than replacing
 it with this example. Read [Vuetify setup](vuetify-setup.md) only when Vuetify is
-selected; [debugging and SSR](debugging-ssr.md) owns hydration, Nuxt, and server
-request isolation. [Migration](migration.md) owns application/API upgrades.
+selected; [Nuxt](nuxt.md) owns Nuxt host lifecycle and module boundaries.
+[Debugging and SSR](debugging-ssr.md) owns hydration diagnostics and request-isolation
+investigation. [Migration](migration.md) owns actual application/API upgrades.
 
 ## Exact example baseline and API status
 

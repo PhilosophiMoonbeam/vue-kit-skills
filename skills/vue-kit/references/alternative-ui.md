@@ -18,6 +18,8 @@ Architectural recommendation: use one application-level UI framework per surface
 
 ### Setup in a dedicated Vite app
 
+This route is **standalone Vue/Vite**, not Nuxt. For a Nuxt application, [Nuxt](nuxt.md) owns bootstrap and SSR; use the official `@primevue/nuxt-module` rather than pasting the `main.ts` below. The exact [5.0.3 module metadata](https://registry.npmjs.org/@primevue/nuxt-module/5.0.3) and [published module implementation](https://unpkg.com/@primevue/nuxt-module@5.0.3/dist/module.mjs) identify the current package and declare Nuxt `>=3.0.0`; that declaration is not an exercised Nuxt 4 compatibility claim. Verify the selected module's configuration, SSR styles and license policy for the actual app.
+
 ```sh
 bun add --exact primevue@5.0.3 @primeuix/themes@3.0.2
 ```
@@ -119,7 +121,7 @@ The theme switch is a client-event operation, not SSR setup code. An incumbent a
 - Dialog is **nonmodal by default** in 5.0.3 (`modal: false`) and uses `v-model:visible`, not Reka's `v-model:open` or Quasar/Vuetify's ordinary `v-model`. For a modal workflow, enable `modal`; its Tab/Shift+Tab containment applies in that mode. Give custom/headless content a real dialog name, keep a keyboard-operable exit, and verify initial focus and restoration. PrimeVue requires the trigger's `aria-expanded`/`aria-controls` to be handled explicitly; there is no Vuetify-style activator-slot prop bundle to copy. A standalone FocusTrap directive is not a complete modal implementation. [Exact Dialog declaration](https://unpkg.com/primevue@5.0.3/dialog/index.d.ts), [component keyboard/trigger contract](https://primevue.dev/dialog/#accessibility).
 - **Read the v5 removal table, not just the migration introduction.** It claims no breaking public component changes but explicitly lists removals: `Calendar` → `DatePicker`, `Dropdown` → `Select`, `InputSwitch` → `ToggleSwitch`, `OverlayPanel` → `Popover`, `TabView` → compound `Tabs`, Accordion `activeIndex` → `value`, config `inputStyle` → `inputVariant`. `primevue/themes` is removed; use `@primeuix/themes`. Inventory the installed version and every affected callsite before upgrading. [Official migration](https://primevue.dev/migration/v5/).
 - Still-present **deprecated** v5 APIs are not the same as removed ones. For new code use Button default-slot content instead of `label`/`icon`/`loading` props; use `Select multiple` instead of `MultiSelect`, `InputPassword` instead of `Password`, `InputTags` for AutoComplete multiple, and `@primeicons/vue` rather than `@primevue/icons`. Some replacements (Charts/Editor) belong to PrimeUI PRO, not a free drop-in replacement. Preserve incumbent behavior until a real scoped cutover is authorized.
-- Nuxt uses `@primevue/nuxt-module`; the removed `nuxt-primevue` package and Vite `main.ts` recipe are not alternatives to that module. Verify its exact release/configuration separately when the task is Nuxt-specific.
+- **Nuxt module migration only:** replace `nuxt-primevue` with `@primevue/nuxt-module` and migrate configuration to the selected release. The old **3.0.0** package remains published but is explicitly deprecated in its [registry metadata](https://registry.npmjs.org/nuxt-primevue/3.0.0); it is not an active setup alternative. The replacement's repository relocation does not itself deprecate the replacement package. Use the current module route above, not a historical install command or the Vite `main.ts` recipe.
 
 ### PrimeVue advanced configuration and component contracts
 

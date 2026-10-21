@@ -41,6 +41,15 @@ NATIVE_COUNTS = {
     'native_reference_readiness': {'ready': 37, 'mixed': 1},
 }
 
+# Current additions are reviewed separately from the immutable 38-reference
+# native population. Declaring a new file here requires its own extension review.
+CURRENT_REFERENCE_EXTENSIONS = (
+    'references/nuxt.md',
+    'references/nuxt-integrations.md',
+)
+HISTORICAL_REFERENCE_COUNT = 38
+ACTIVE_REFERENCE_COUNT = HISTORICAL_REFERENCE_COUNT + len(CURRENT_REFERENCE_EXTENSIONS)
+
 # This ledger entry is a shipped exclusion, not a compatibility alias or a scan
 # of historical audit facts. Native hypotheses retain their original identity.
 REMOVAL_ID = 'slidev-twoslash-floating-vue'
@@ -774,8 +783,9 @@ class Validator:
         guide = self.root / VITEPRESS_GUIDE
         if guide not in self.references or guide not in self.indexed:
             self.error(guide, 'VitePress-only replacement must exist and be directly indexed')
-        if len(self.references) != 38:
-            self.error(self.root / 'references', 'the cutover must retain exactly 38 directly indexed references')
+        if len(self.references) != ACTIVE_REFERENCE_COUNT:
+            self.error(self.root / 'references',
+                       f'the current package must contain exactly {ACTIVE_REFERENCE_COUNT} directly indexed references')
         record_sections = {
             self.root / REMOVAL_REFERENCE: (REMOVAL_SECTION, REMOVAL_ANCHOR, 'Removed integrations'),
             self.root / 'CHANGELOG.md': ('Removed', 'removed', 'Unreleased'),
@@ -877,7 +887,8 @@ class Validator:
 
     def validate_coverage(self):
         self.checks.extend(['standalone coverage crosswalk and preserved native verdicts',
-                            'current resolution quotes, canonical headings, and dispositions'])
+                            'current resolution quotes, canonical headings, and dispositions',
+                            'explicit current reference extensions and scoped recorded acceptance'])
         path = self.root / 'assets/coverage-audit.json'
         report = self.evidence_report('assets/coverage-audit.json')
         if report is None:
@@ -889,7 +900,9 @@ class Validator:
         if not isinstance(processing, dict):
             self.error(path, 'processing must be an object')
             processing = {}
-        for key, total in (('source', 467), ('references', 38)):
+        # These processing totals describe the accepted historical native batch,
+        # not the current active-reference inventory.
+        for key, total in (('source', 467), ('references', HISTORICAL_REFERENCE_COUNT)):
             self.compare_counts(path, f'processing.{key}', processing.get(key),
                                 {'processed': total, 'errors': 0, 'truncated': 0})
         manifest_sources = self.manifest.get('sources', []) if isinstance(self.manifest, dict) else []
@@ -1015,8 +1028,18 @@ class Validator:
             if isinstance(resolution, dict) and isinstance(resolution.get('disposition'), str):
                 reference_choices[resolution['disposition']] += 1
             self.validate_resolution(path, label, resolution, reference, {'confirmed_fixed', 'overturned'})
-        if reference_paths != {self.display(reference) for reference in self.references} or len(references) != 38:
-            self.error(path, 'references must review each of the 38 packaged references exactly once')
+        extension_paths = self.validate_reference_extensions(path, report, roots, reference_paths)
+        active_paths = {self.display(reference) for reference in self.references}
+        if (len(references) != HISTORICAL_REFERENCE_COUNT
+                or reference_paths & set(CURRENT_REFERENCE_EXTENSIONS)):
+            self.error(path, 'references must retain exactly the 38 historical native-reviewed paths, without extensions')
+        if active_paths != reference_paths | extension_paths:
+            self.error(path, 'active references must exactly match historical reviewed paths plus declared current extensions')
+        self.compare_counts(path, 'current_reference_counts', report.get('current_reference_counts'), {
+            'audited_original': HISTORICAL_REFERENCE_COUNT,
+            'extensions': len(CURRENT_REFERENCE_EXTENSIONS),
+            'active': ACTIVE_REFERENCE_COUNT,
+        })
         counts = {
             'sources': len(sources), 'roots': len(source_roots), 'references': len(references),
             'explicit_source_reviews': explicit, 'native_only_sources': native_only,
@@ -1030,6 +1053,57 @@ class Validator:
             self.compare_counts(path, key, counts[key], NATIVE_COUNTS[key])
         self.validate_native_fingerprint(path, 'sources', native_sources)
         self.validate_native_fingerprint(path, 'references', native_references)
+
+    def validate_reference_extensions(self, path, report, roots, historical_paths):
+        """Require explicit current reviews without fabricating native verdicts."""
+        extensions = report.get('current_reference_extensions')
+        if not isinstance(extensions, list):
+            self.error(path, 'current_reference_extensions must be an array')
+            extensions = []
+        verification = self.load_json('assets/verification.json')
+        checks = verification.get('checks', []) if isinstance(verification, dict) else []
+        accepted_checks = {
+            check['id'] for check in checks
+            if isinstance(check, dict) and isinstance(check.get('id'), str)
+            and check.get('result') in ('passed', 'observed')
+        } if isinstance(checks, list) else set()
+        paths = set()
+        for index, row in enumerate(extensions):
+            label = f'current_reference_extensions[{index}]'
+            required = {'path', 'source_roots', 'resolution', 'verification_check_ids'}
+            if not isinstance(row, dict) or set(row) != required:
+                self.error(path, f'{label}: expected exactly {", ".join(sorted(required))}; no native verdict is supported')
+                continue
+            reference = row.get('path')
+            if not isinstance(reference, str) or reference not in CURRENT_REFERENCE_EXTENSIONS:
+                self.error(path, f'{label}: path must identify an explicitly declared current extension')
+                continue
+            if reference in paths or reference in historical_paths:
+                self.error(path, f'{label}: duplicate reviewed extension {reference}')
+            paths.add(reference)
+            target = self.safe_path(path, reference, f'{label}.path')
+            if target not in self.references or target not in self.indexed:
+                self.error(path, f'{label}: extension must exist and be directly indexed')
+            owners = row.get('source_roots')
+            expected_owners = {identity for identity, root in roots.items()
+                               if isinstance(root.get('references'), list) and reference in root['references']}
+            if (not isinstance(owners, list) or not owners
+                    or not all(isinstance(owner, str) for owner in owners)
+                    or len(set(owners)) != len(owners) or set(owners) != expected_owners):
+                self.error(path, f'{label}: source_roots must exactly match all owning manifest roots')
+            resolution = row.get('resolution')
+            self.validate_resolution(path, label, resolution, reference, {'reviewed'})
+            if isinstance(resolution, dict) and not resolution.get('primary_urls'):
+                self.error(path, f'{label}: extension review requires primary source URLs')
+            identities = row.get('verification_check_ids')
+            if (not isinstance(identities, list) or not identities
+                    or not all(isinstance(identity, str) for identity in identities)
+                    or len(set(identities)) != len(identities)
+                    or not set(identities).issubset(accepted_checks)):
+                self.error(path, f'{label}: verification_check_ids must name distinct passed/observed recorded checks')
+        if paths != set(CURRENT_REFERENCE_EXTENSIONS) or len(extensions) != len(CURRENT_REFERENCE_EXTENSIONS):
+            self.error(path, 'current_reference_extensions must review each explicitly declared extension exactly once')
+        return paths
 
     def validate_verification(self):
         self.checks.extend(['scoped recorded verification metadata',

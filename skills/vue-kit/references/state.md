@@ -2,6 +2,8 @@
 
 Read when choosing a state owner, implementing stores, diagnosing stale destructuring, or isolating state by app/request. For authentication read [auth.md](auth.md); URL state belongs to [routing.md](routing.md). Server-owned records, invalidation, retries, and optimistic updates belong to [tanstack-query.md](tanstack-query.md) or [pinia-colada.md](pinia-colada.md), not a second client-store cache.
 
+For new or existing Nuxt applications, [Nuxt](nuxt.md#request-context-and-state) owns request-scoped `useState` and payloads; [Nuxt integrations](nuxt-integrations.md) owns `@pinia/nuxt` setup when Pinia is selected. The standalone `createPinia`/app-install, custom SSR and browser persistence helpers below are contextual examples, not Nuxt bootstrap/plugin recipes. Reuse store contracts with the framework-provided request instance; do not install another Pinia root.
+
 ## Version and selection boundary
 
 Baseline: Vue **3.5.44**, Pinia **4.1.0**, `@vue/devtools-api` **8.2.1**; optional testing companion `@pinia/testing` **2.0.2**. Pinia 4 is ESM-only, requires Vue `^3.5.11` and the devtools API peer; TypeScript `>=5.6.0` is an optional peer. These are [published package requirements](https://registry.npmjs.org/pinia/4.1.0), not requirements inferred from older tutorials. Pinia 3 applications need not migrate during an unrelated change. The bundled local workbench has its own pinned dependencies; do not interpret it as a Pinia 4 compatibility test.

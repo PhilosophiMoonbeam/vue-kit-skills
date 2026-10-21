@@ -255,107 +255,53 @@ pass listeners such as `onClickOnce` for corresponding event options. [Render re
 
 This table is a decision route, not a replacement for the [official Vue 2→3 breaking-change guide](https://v3-migration.vuejs.org/breaking-changes/). A compatibility build is a separately planned migration tool, not the permanent default of this 3.5 skill. Remove the old contract when its callers are migrated.
 
-## Nuxt is not a plain Vue SPA
+## Nuxt 3 to 4 migration
 
-Nuxt supplies its own app bootstrap, file routing, route middleware, plugins, auto-imports, SSR payload transfer, server routes, and runtime configuration. Plain Vue/Vite does not. Do not paste `definePageMeta`, `$fetch`, Nuxt `useFetch`/`useAsyncData`/`useState`, or Nitro handlers into ordinary Vue modules and pretend they are Vue APIs. Do not manually install a second Router or create a second app inside a Nuxt root.
+For new Nuxt applications and ordinary host work, use the first-class
+[Nuxt guide](nuxt.md), not this migration checklist. Nuxt owns bootstrap, routing,
+server handlers and SSR payloads; a Nuxt upgrade is not a Vue SPA rewrite.
 
-The incumbent workflow below is checked against **Nuxt 4.6.2**, whose registry
-declares Vue `^3.5.44` and Node `^22.22.3 || ^24.15.0 || >=26.0.0`. Keep this
-skill's Vue runtime/compiler pinned to 3.5.44; an accepted range is not an executed
-integration claim. Do not silently upgrade a Nuxt 3 application: inspect its
-release and migration guide, source directories, modules and generated types.
-Nuxt 4 defaults to `app/` for pages/components/layouts/composables/middleware/
-plugins, with root `server/`, `public/`, `shared/` and `nuxt.config.ts`. Preserve
-existing `srcDir`/layers; migrate aliases and include paths with directory changes.
+For an actual Nuxt 3 → **4.6.2** migration:
 
-### Incumbent Nuxt SSR/data workflow
+1. Inventory the current Nuxt release, Node engine, modules, layers, `srcDir`,
+   `serverDir` and lockfile. Check each module's current peer/runtime contract
+   before upgrading; Nuxt compatibility is not guaranteed by Vue compatibility.
+   The target requires Node `^22.22.3 || ^24.15.0 || >=26.0.0` and this track pins
+   Vue 3.5.44. Upgrade the existing package-manager manifest/lockfile deliberately,
+   without opting into Nuxt 5's `future.compatibilityVersion: 5`.
+2. Adopt the Nuxt 4 `app/` directory only as a reviewed move: app assets,
+   components, composables, layouts, middleware, pages, plugins, utils and root
+   Vue files move together. Keep root configuration, `server/`, `public/`,
+   `shared/`, `modules/` and `layers/` outside it. Reconcile explicit source/server
+   directories and layer-relative paths; `~`/`@` now normally mean `app/`,
+   while `~~`/`@@` mean the project root. Update external CSS/lint/test include
+   paths rather than retaining aliases to deleted directories.
+3. Regenerate Nuxt types and adopt its app/server/shared/node project references.
+   Remove obsolete hand-maintained generated-type includes or SPA TypeScript
+   configuration; preserve intentional custom options through Nuxt configuration.
+4. Review async-data changes: Nuxt 4 uses shallow data by default, same-key
+   callers share state and must use consistent contracts, and omitted data/error
+   defaults are `undefined` rather than an assumed `null`. Replace nested
+   snapshots or explicitly select deep tracking; review reactive keys,
+   parameter-only navigation, clearing and refresh behavior rather than copying
+   old cache assumptions.
+5. When adopting the 4.6 `nuxt/server` boundary, migrate a handler and its helpers
+   together. Explicitly import its `defineEventHandler`; auto-imported Nuxt 4
+   handlers are still h3 v1. Change `statusCode`/`statusMessage` to
+   `status`/`statusText`, request/response access and router-parameter decoding
+   according to the [current server contract](nuxt.md#server-boundaries-and-private-configuration).
+   Do not silently migrate session cookies between incompatible implementations.
+6. Exercise generated-context typechecking, production build, direct SSR and API
+   errors, hydration, parameter navigation, middleware and deployment output.
+   Retire old paths only after all callers/configuration are migrated.
 
-| Responsibility | Usable contract |
-| --- | --- |
-| Routes/layouts | `app/pages/index.vue`, `[id].vue`, `[...slug].vue` define file routes. Root `app/app.vue` uses `<NuxtLayout><NuxtPage /></NuxtLayout>` when both are selected; layouts render a slot. Put `definePageMeta({ layout, middleware })` in the **page**, not the layout, and use Nuxt's `useRoute`, not a parallel Router install. |
-| Initial SSR data | `useFetch` for URL-based reads; `useAsyncData` for a custom asynchronous read. They transfer server results in the payload; a bare `$fetch` in setup can repeat on hydration. Pass a getter/computed URL or reactive key encoding every dependency, not an interpolated snapshot. Return usable data, not `undefined` or a store-mutating side effect; use `callOnce` for deliberately once-per-app work. |
-| Current state and cache | Returned `data`, `error`, `status` are refs. Handle `idle/pending/error/success`, nullish data, `refresh`/`execute` and `clear`. `lazy: true`/lazy helpers permit nonblocking client navigation, not immediate resolved data. `server: false` waits until hydration on the client. In Nuxt 4, data is shallow by default; replace snapshots or deliberately choose `deep`. Same-key callers share state and must agree on handler/transform/default/deep contracts. `dedupe: 'cancel'|'defer'` coordinates overlapping requests, not permanent authorization-aware caching. Forward the supplied abort signal from a `useAsyncData` handler to its real request. |
-| Mutations/auth | Use `$fetch` in a user-triggered action; do not create a new setup-scoped `useFetch` for every login/button click. Keep sessions in a real server contract, not an unverified `useState` login flag. Route middleware returns/awaits `navigateTo` or aborts, but is **not** server authorization; enforce ownership/permission and validate query/body/params again in server routes. |
-| Request-local state | `useState('key', () => initial)` is SSR payload-backed app state, not a module singleton. Store serializable public state only, never secrets/classes/functions. Use the installed Pinia Nuxt module when Pinia owns state; do not manually install a second instance. |
-| Server/config/plugins | `server/api/*.get.ts`/`.post.ts` map to `/api/*`; `server/middleware` is request middleware, not Vue route middleware. Keep private runtimeConfig outside `public`; use matching `NUXT_*` runtime overrides. Plugins return `{ provide: { service } }`; consume via `useNuxtApp`, keeping request-specific clients inside that Nuxt instance. Add `.client` for browser-only dependencies; explicit `Headers.set` is preferable to treating current fetch headers as an arbitrary object. |
-| Head/rendering/deployment | Use reactive `useHead`/`useSeoMeta`; sanitize untrusted head inputs and never leak config secrets. `<ClientOnly>` omits that subtree's server render; it is **not** lazy hydration of existing HTML. Use installed Nuxt lazy-hydration APIs, not an invented `definePageMeta({ hydration: ... })` or a copied third-party option. Select server/SSR, prerender or hybrid route rules and the actual Nitro deployment preset; static output cannot host arbitrary runtime API/session routes. |
+The [official Nuxt 3→4 upgrade guide](https://nuxt.com/docs/4.x/getting-started/upgrade#migrating-to-nuxt-4)
+owns the full release-specific change list and optional codemods; review automated
+diffs rather than treating them as compatibility evidence.
+[Exact target manifest](https://unpkg.com/nuxt@4.6.2/package.json),
+[current host/data examples](nuxt.md#local-catalogue-example).
 
-Complete local **read-only catalogue demonstration**, not a real backend/session.
-Files are separate Nuxt-hosted definitions. `nuxt.config.ts`:
-
-```ts
-import { defineNuxtConfig } from 'nuxt/config'
-export default defineNuxtConfig({
-  typescript: { strict: true },
-  runtimeConfig: { catalogSecret: '', public: { catalogTitle: 'Local catalogue' } },
-})
-```
-
-Complete `server/api/catalog/[id].get.ts`:
-
-```ts
-import { createError, defineEventHandler, getRouterParam } from 'nuxt/server'
-
-const titles: Readonly<Record<string, string>> = {
-  '1': 'Component contracts',
-  '2': 'Effect ownership',
-}
-export default defineEventHandler(event => {
-  const id = getRouterParam(event, 'id', { decode: true })
-  if (!id || !Object.hasOwn(titles, id)) {
-    throw createError({ status: 404, statusText: 'Catalogue item not found' })
-  }
-  return { id, title: titles[id]! }
-})
-```
-
-Complete `app/pages/catalog/[id].vue`; Nuxt auto-imports its helpers and Vue
-computed here. The endpoint above is real local implementation, not an invented
-network service. The URL remains reactive across parameter-only navigation:
-
-```vue
-<script setup lang="ts">
-interface CatalogItem { id: string; title: string }
-definePageMeta({ layout: 'default' })
-const route = useRoute()
-const id = computed(() => String(route.params.id))
-const { data, status, error, refresh } = await useFetch<CatalogItem>(
-  () => `/api/catalog/${encodeURIComponent(id.value)}`,
-)
-useSeoMeta({ title: () => data.value?.title ?? 'Catalogue' })
-</script>
-
-<template>
-  <p v-if="status === 'pending'" role="status">Loading catalogue item</p>
-  <p v-else-if="error" role="alert">Unable to load this item.</p>
-  <article v-else-if="data"><h1>{{ data.title }}</h1></article>
-  <button type="button" :disabled="status === 'pending'" @click="refresh()">
-    Refresh
-  </button>
-</template>
-```
-
-Complete `app/layouts/default.vue`:
-
-```vue
-<template>
-  <main><slot /></main>
-</template>
-```
-
-With an application-owned root `app/app.vue`, compose `NuxtLayout` and `NuxtPage`
-as above; do not replace a root with other responsibilities just to copy this
-demonstration. A custom middleware can return
-`navigateTo('/catalog/1')`; keep protected-route decisions tied to the real
-session and reviewed redirect policy rather than this public example.
-
-**Nuxt 4.6 server boundary:** `nuxt/server` handlers/helpers use the current event
-contract; explicitly import `defineEventHandler` from **the same module** as the
-helpers. Do not combine its helpers with h3-v1's auto-imported handler/event or
-copy old `createError({ statusCode })` spelling into this example (`status` is
-current). For a handler requiring h3-specific capabilities, keep its whole event
-contract on the installed h3 integration instead. [Nuxt 4.6 upgrade contracts](https://nuxt.com/docs/4.x/getting-started/upgrade#moving-to-nuxtserver),
-[pinned server declarations](https://unpkg.com/nuxt@4.6.2/dist/server/index.d.ts).
+## Custom non-Nuxt SSR
 
 For **custom non-Nuxt SSR**, create a fresh `createSSRApp`/router/store per request,
 load and provide the initial data before `renderToString`, safely serialize it,

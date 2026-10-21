@@ -1,3 +1,5 @@
+![Vue Kit — One skill. Open horizons. A Vue-green pirate ship sails across a neon sea beneath a striped sunset.](assets/branding/vue-kit-hero.svg)
+
 # Vue Kit
 
 A unified Agent Skill for Vue 3.5 applications: TypeScript, Composition API, Vuetify-first UI and explicit ecosystem version boundaries. The master index routes agents to focused capability references and cross-library architecture instead of loading an entire skills collection.

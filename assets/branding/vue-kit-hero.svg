@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title description">
+  <title id="title">Vue Kit — One skill. Open horizons.</title>
+  <desc id="description">A bold Vue Kit wordmark beside a pirate ship with a Vue-green mainsail and a skull pennant. Layered geometric sails cross a coral and magenta striped sun above a violet ocean, a perspective grid, and mint sea spray. A unified agent skill for the Vue ecosystem.</desc>
+  <defs>
+    <!-- Atmospheric color stays in the sky and water; the ship uses solid material planes. -->
+    <linearGradient id="sky" x2="0.8" y2="1">
+      <stop stop-color="#111328"/>
+      <stop offset="0.55" stop-color="#201b3b"/>
+      <stop offset="1" stop-color="#4a2657"/>
+    </linearGradient>
+    <radialGradient id="sun-halo">
+      <stop stop-color="#ff798c" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#ff798c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sun" x2="0" y2="1">
+      <stop stop-color="#ffda9c"/>
+      <stop offset="0.46" stop-color="#ff8f9d"/>
+      <stop offset="1" stop-color="#ee4aaa"/>
+    </linearGradient>
+    <linearGradient id="sea" x2="0" y2="1">
+      <stop stop-color="#35244d"/>
+      <stop offset="1" stop-color="#12182d"/>
+    </linearGradient>
+    <linearGradient id="grid" x2="0" y2="1">
+      <stop stop-color="#b57cf4" stop-opacity="0.05"/>
+      <stop offset="0.65" stop-color="#a675df" stop-opacity="0.37"/>
+      <stop offset="1" stop-color="#6b69a8" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="quiet-water">
+      <stop stop-color="#14192d"/>
+      <stop offset="0.43" stop-color="#14192d" stop-opacity="0.93"/>
+      <stop offset="0.68" stop-color="#14192d" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="reflection" x2="0" y2="1">
+      <stop stop-color="#fa88c5" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#fa88c5" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="elevation" x="-30%" y="-25%" width="170%" height="175%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="13" flood-color="#080d20" flood-opacity="0.36"/>
+    </filter>
+    <clipPath id="frame"><rect width="1600" height="760" rx="28"/></clipPath>
+    <clipPath id="sun-disc"><circle cx="1168" cy="302" r="230"/></clipPath>
+    <clipPath id="water-clip"><path d="M0 516H1600V760H0Z"/></clipPath>
+    <!-- Original geometric lettering: no downloaded font or remote dependency. -->
+    <g id="wordmark" fill-rule="evenodd">
+      <path d="M0 0H42L82 97 122 0H164L101 144H63Z"/>
+      <path d="M185 0H224V91Q224 110 247 110Q270 110 270 91V0H309V92Q309 146 247 146Q185 146 185 92Z"/>
+      <path d="M338 0H462V34H377V54H450V87H377V110H464V144H338Z"/>
+      <path d="M0 170H39V223L91 170H139L75 236 144 314H94L39 251V314H0Z"/>
+      <path d="M174 170H214V314H174Z"/>
+      <path d="M244 170H390V207H337V314H297V207H244Z"/>
+    </g>
+    <g id="star" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M0-8V8M-8 0H8"/>
+      <circle r="2" fill="currentColor" stroke="none"/>
+    </g>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <path fill="url(#sky)" d="M0 0H1600V760H0Z"/>
+    <ellipse cx="1150" cy="300" rx="510" ry="400" fill="url(#sun-halo)"/>
+
+    <!-- A quiet celestial chart frames the ship. -->
+    <g fill="none" stroke="#c5b8df" stroke-opacity="0.13">
+      <circle cx="1168" cy="302" r="275"/>
+      <path d="M893 302H1443M1168 27V577"/>
+      <path d="M867 414A320 320 0 0 1 1428 112" stroke-dasharray="3 12"/>
+      <path d="M707 137 807 100 862 155 932 119"/>
+      <circle cx="807" cy="100" r="4" fill="#c5b8df"/>
+      <circle cx="862" cy="155" r="3" fill="#c5b8df"/>
+    </g>
+    <g color="#e0c8e9">
+      <use xlink:href="#star" x="714" y="137"/>
+      <use xlink:href="#star" x="1468" y="211"/>
+      <use xlink:href="#star" x="667" y="335" transform="rotate(15 667 335)"/>
+    </g>
+    <g fill="#bca8d6">
+      <circle cx="566" cy="93" r="2"/>
+      <circle cx="745" cy="255" r="2"/>
+      <circle cx="1397" cy="86" r="2"/>
+      <circle cx="1510" cy="357" r="2"/>
+      <circle cx="652" cy="199" r="1.5"/>
+      <circle cx="941" cy="62" r="1.5"/>
+      <circle cx="1471" cy="477" r="1.5"/>
+    </g>
+
+    <!-- The horizon sun is cut into bands, rather than covered by faux background stripes. -->
+    <g clip-path="url(#sun-disc)" fill="url(#sun)">
+      <path d="M938 72H1398V310H938ZM938 318H1398V340H938ZM938 350H1398V370H938ZM938 383H1398V401H938ZM938 417H1398V433H938ZM938 452H1398V466H938ZM938 488H1398V500H938ZM938 524H1398V534H938Z"/>
+    </g>
+    <path d="M0 525 131 497 220 512 336 475 456 518 561 496 680 522 768 489 857 516 967 500 1066 525 1258 498 1394 516 1486 474 1600 505V760H0Z" fill="#29243f"/>
+    <path d="M1394 516 1486 474 1470 514 1557 526ZM220 512 336 475 303 513 385 528Z" fill="#4d365d"/>
+
+    <!-- Ocean grid and broken sunset reflection. -->
+    <path d="M0 516H1600V760H0Z" fill="url(#sea)"/>
+    <g clip-path="url(#water-clip)" fill="none" stroke="url(#grid)" stroke-width="1.4">
+      <path d="M958 506-570 760M982 506-130 760M1006 506 280 760M1030 506 635 760M1054 506 940 760M1078 506 1235 760M1102 506 1560 760M1126 506 1920 760M1150 506 2350 760"/>
+      <path d="M0 529H1600M0 547H1600M0 571H1600M0 604H1600M0 649H1600M0 711H1600"/>
+    </g>
+    <path d="M1038 527H1294L1306 533H1028ZM1014 545H1318L1332 554H1000ZM979 571H1355L1371 584H962ZM931 610H1407L1428 628H908ZM867 663H1476L1503 687H837ZM786 735H1557L1585 760H756Z" fill="url(#reflection)"/>
+    <path d="M0 516H1600V760H0Z" fill="url(#quiet-water)"/>
+    <g fill="none" stroke-linecap="round">
+      <path d="M708 544H792M1390 550H1490M1321 577H1428M765 603H839M1468 606H1540" stroke="#c382ca" stroke-opacity="0.5" stroke-width="2"/>
+      <path d="M916 650H1035M1104 678H1304M978 703H1088" stroke="#72e6cf" stroke-opacity="0.28" stroke-width="3"/>
+    </g>
+
+    <!-- Ship: swept silhouette, cut-paper sails, mint edge light, and a black pirate pennant. -->
+    <ellipse cx="1094" cy="606" rx="277" ry="25" fill="#0a1228" opacity="0.44"/>
+    <g id="ship">
+      <!-- Rigging behind the sails. -->
+      <g fill="none" stroke="#b7a6d2" stroke-width="2" stroke-opacity="0.65">
+        <path d="M866 272 779 518 1093 165 1348 494M1093 165 1291 551M866 272 947 557M1176 281 1368 483"/>
+        <path d="M866 272 834 507M1093 165 968 535"/>
+      </g>
+      <path d="M859 269 867 267 854 532 846 532Z" fill="#9e80be"/>
+      <path d="M1088 147 1098 147 1083 550 1071 550Z" fill="#ded5f1"/>
+      <path d="M1093 147 1098 147 1083 550 1077 550Z" fill="#78709f"/>
+      <path d="M1180 278 1186 280 1179 547 1172 547Z" fill="#c0afd8"/>
+
+      <!-- The aft sail deliberately echoes a folded component panel. -->
+      <g filter="url(#elevation)">
+        <path d="M851 294Q795 304 759 293Q786 379 721 463Q783 452 842 476Z" fill="#b89aee"/>
+        <path d="M851 294 812 390 842 476Z" fill="#8566bc"/>
+        <path d="M759 293Q785 371 721 463L812 390Z" fill="#d5bdf6"/>
+      </g>
+      <path d="M754 290 854 291" fill="none" stroke="#e3d4f5" stroke-width="5" stroke-linecap="round"/>
+
+      <!-- Main sail and its Vue-inspired double chevron. -->
+      <g filter="url(#elevation)">
+        <path d="M894 207Q988 223 1078 197L1068 459Q956 422 826 466Q902 330 894 207Z" fill="#66ebbe"/>
+        <path d="M894 207Q913 323 826 466L956 422Z" fill="#a7f7dc"/>
+        <path d="M894 207 956 422Q1016 432 1068 459L1047 405Z" fill="#36bda4"/>
+        <path d="M894 207Q988 223 1078 197L1077 209Q984 232 896 220Z" fill="#d0ffec"/>
+        <path d="M911 277H947L980 334 1013 277H1049L980 397Z" fill="#183e50"/>
+        <path d="M934 277H956L980 318 1004 277H1026L980 357Z" fill="#f0fff6"/>
+      </g>
+      <path d="M885 205 1084 193" stroke="#e1fff2" stroke-width="6" stroke-linecap="round"/>
+      <path d="M826 466Q956 422 1068 459" fill="none" stroke="#c7ffe5" stroke-width="2"/>
+
+      <!-- A triangular foresail gives the ship its forward thrust. -->
+      <g filter="url(#elevation)">
+        <path d="M1115 214Q1213 340 1363 444Q1242 424 1103 466Z" fill="#ece3fc"/>
+        <path d="M1115 214 1180 406 1103 466Z" fill="#b4a1df"/>
+        <path d="M1115 214Q1213 340 1363 444L1180 406Z" fill="#f9edff"/>
+        <path d="M1180 406 1363 444Q1242 424 1103 466Z" fill="#d1b7f0"/>
+      </g>
+      <path d="M1192 310Q1295 396 1377 455L1190 471Z" fill="#ee8fc6"/>
+      <path d="M1192 310 1226 439 1377 455Z" fill="#ffb3d5"/>
+      <path d="M1192 310 1226 439 1190 471Z" fill="#c766ab"/>
+
+      <!-- Swallowtail flag with a small original geometric skull and crossed bones. -->
+      <path d="M1097 150C1130 129 1160 168 1222 139L1208 165 1225 184C1168 210 1134 166 1096 188Z" fill="#111a2c" stroke="#a992c5" stroke-width="1.5"/>
+      <g transform="translate(1151 166) rotate(9)" fill="#e9e2f6">
+        <path d="m-16 8 31 13m-30 0L16 8" fill="none" stroke="#e9e2f6" stroke-width="4" stroke-linecap="round"/>
+        <path d="M-12-4Q-12-17 0-17T12-4V1L7 5V11H-7V5L-12 1Z"/>
+        <path d="M-9-6H-2V0H-9ZM2-6H9V0H2ZM0 1 3 5H-3Z" fill="#111a2c"/>
+        <path d="M-3 7V11M3 7V11" stroke="#111a2c" stroke-width="2"/>
+      </g>
+      <path d="M859 272 862 243 915 253 862 265" fill="#f68fcb"/>
+
+      <!-- Deck, faceted hull, and the long illuminated bowsprit. -->
+      <path d="M1276 502 1433 439 1438 445 1290 518Z" fill="#d9d5f1"/>
+      <path d="M1290 518 1438 445 1379 480Z" fill="#8989b7"/>
+      <path d="M797 486 880 491 901 520 1171 521 1222 495 1367 478 1282 572 1191 610 931 594 858 560Z" fill="#1b263f" filter="url(#elevation)"/>
+      <path d="M797 486 880 491 901 520 1171 521 1222 495 1367 478 1325 509 1219 524 1179 544 891 540 857 513 811 509Z" fill="#8074b5"/>
+      <path d="M891 540 1179 544 1219 524 1325 509 1282 572 1191 610 931 594Z" fill="#293853"/>
+      <path d="M891 540 981 578 1191 610 931 594Z" fill="#49577b"/>
+      <path d="M1219 524 1325 509 1282 572 1191 610Z" fill="#354b66"/>
+      <path d="M811 509 857 513 891 540 1179 544 1219 524 1325 509" fill="none" stroke="#72f1cf" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M797 486 880 491 901 520H1171L1222 495 1367 478" fill="none" stroke="#e1cdf6" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M932 559 1170 563" fill="none" stroke="#6d81a0" stroke-width="2"/>
+      <g fill="#a0f4de">
+        <path d="M947 547H964V558H947ZM993 548H1010V559H993ZM1039 549H1056V560H1039ZM1085 550H1102V561H1085ZM1131 551H1148V562H1131Z"/>
+      </g>
+      <g fill="none" stroke="#b3a3d1" stroke-width="3">
+        <path d="M823 490V471H868V492M902 520V502M934 520V502M966 520V502M998 520V502M1030 520V502M1062 520V502M1094 520V502M1126 520V502M1158 520V502"/>
+        <path d="M901 502H1170"/>
+      </g>
+      <!-- Bow spray and wake keep the scene moving without animation. -->
+      <path d="M1211 601Q1284 571 1325 574L1296 588 1371 581 1340 596 1407 595Q1311 626 1193 620L1045 617 1132 608Z" fill="#69e4cb"/>
+      <path d="M1211 601Q1284 581 1325 574L1296 588 1371 581 1340 596 1407 595 1315 609Z" fill="#c5ffeb"/>
+      <path d="M887 596 941 609 1025 613 966 619 856 603 805 588Z" fill="#62c6c0"/>
+      <g fill="none" stroke="#b4ffe5" stroke-linecap="round">
+        <path d="M1355 565 1371 556M1391 575 1417 570M1329 554 1332 543" stroke-width="4"/>
+        <path d="M836 575 822 569M1300 632H1371M1111 638H1204" stroke-width="3"/>
+      </g>
+    </g>
+
+    <!-- Wordmark and project promise. -->
+    <g transform="translate(92 181)">
+      <use xlink:href="#wordmark" x="8" y="11" fill="#7162a1" opacity="0.5"/>
+      <use xlink:href="#wordmark" fill="#f3eefb"/>
+      <path d="M0 0H42L82 97 122 0H164L101 144H63Z" fill="#72efc4"/>
+      <path d="M0 0 82 97 63 144Z" fill="#b0ffe1"/>
+      <path d="M244 170H390V207H337V314H297V207H244Z" fill="#b9a5ec"/>
+    </g>
+    <g font-family="Arial, Helvetica, sans-serif">
+      <g fill="#bcafd2" font-size="16" font-weight="600" letter-spacing="3">
+        <text x="126" y="110">THE VUE ECOSYSTEM, UNITED</text>
+      </g>
+      <path d="M92 97H109V114H92Z" fill="none" stroke="#73edc4" stroke-width="2"/>
+      <path d="M96 102 100 109 105 101" fill="none" stroke="#73edc4" stroke-width="2"/>
+      <text x="94" y="552" fill="#f3eefb" font-size="25" font-weight="700" letter-spacing="1.7">ONE SKILL. OPEN HORIZONS.</text>
+      <text x="94" y="590" fill="#bfb6d2" font-size="21">A unified agent skill for modern Vue.</text>
+      <text x="94" y="683" fill="#9e95b5" font-size="15" font-weight="600" letter-spacing="2.2">VUE / TYPESCRIPT / VUETIFY</text>
+    </g>
+    <path d="M94 638H150" stroke="#71ebc4" stroke-width="3"/>
+
+    <!-- A small compass rose signs the lower right corner. -->
+    <g transform="translate(1483 675)">
+      <circle r="28" fill="#191c32" stroke="#9b83bc" stroke-opacity="0.5"/>
+      <path d="M0-22 5-5 22 0 5 5 0 22-5 5-22 0-5-5Z" fill="#7b6f9f"/>
+      <path d="M0-22 5-5 0 0-5-5Z" fill="#b6ffe0"/>
+      <circle r="3" fill="#e9def5"/>
+    </g>
+    <rect x="0.75" y="0.75" width="1598.5" height="758.5" rx="27.25" fill="none" stroke="#bca6dd" stroke-opacity="0.16" stroke-width="1.5"/>
+  </g>
+</svg>

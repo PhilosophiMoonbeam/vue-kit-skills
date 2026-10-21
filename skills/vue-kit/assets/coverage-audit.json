@@ -96,6 +96,34 @@
     "native_only": "17 source units retain native covered judgments and null individual resolutions. No individual manual disposition is claimed for those units.",
     "source_provenance": "Source IDs, roots, mappings and original SHA256 values come from bundled original audit/manifest metadata. Crosswalk assembly does not need the old corpus; targeted flagged-source reviews are recorded separately.",
     "quote_pointers": "Whitespace-normalized exact current quotes may occur in prose or fenced code; enclosing Markdown headings and their slugs are derived only outside fenced code. Differing author-supplied section labels are preserved as author_section.",
+    "second_pass_reconciliation": {
+      "scope": "Current explicit quote pointers and primary-source lookup URLs only; historical native judgments/probabilities, original SHA256 values, dispositions and counts remain unchanged. No new runtime claims.",
+      "changed_current_quotes": [
+        {
+          "source_index": 143,
+          "source": ".agents/skills/unovis-vue-skilld/references/events-tooltips.md",
+          "reference": "references/visualization.md",
+          "previous_evidence": "store a common X value, feed other charts through `forceShowAt: { x }`, and clear it deliberately on leave.",
+          "current_evidence": "store a common X value, feed other charts through `forceShowAt: x` (`number | Date`, **not `{ x }`**), and clear it to `undefined` on leave.",
+          "section": "Linked interaction, styling, and incumbent upgrades",
+          "anchor": "linked-interaction-styling-and-incumbent-upgrades"
+        }
+      ],
+      "canonical_reanchors": [],
+      "primary_source_url_replacements": {
+        "previous": "https://bun.com/docs/runtime/run",
+        "current": "https://bun.com/docs/runtime",
+        "occurrences": 2,
+        "locations": [
+          "/method/bun_preference_update/primary_sources/2",
+          "/sources/154/resolution/primary_urls/3"
+        ]
+      },
+      "author_quote_proposals": 10,
+      "changed_explicit_quotes": 1,
+      "unbound_author_quote_proposals": 9,
+      "unbound_note": "The CoreVue model passage and the other eight proposed replacements are not existing explicit evidence quotes; no pointer changes were made for them."
+    },
     "notes": [
       "Native labels are candidate judgments, not confirmed defects. Preserve them alongside explicit primary-evidence resolutions.",
       "450 source units have explicit agent-reviewed dispositions;17 retain native-only covered judgments. Every original335 flagged unit and final material partial/missing/contradiction candidate has an explicit disposition.",
@@ -119,7 +147,7 @@
       "primary_sources": [
         "https://bun.com/docs/pm/cli/install",
         "https://bun.com/docs/pm/bunx",
-        "https://bun.com/docs/runtime/run"
+        "https://bun.com/docs/runtime"
       ]
     }
   },
@@ -5684,7 +5712,7 @@
         "disposition": "corrected",
         "reference": "references/visualization.md",
         "section": "Linked interaction, styling, and incumbent upgrades",
-        "evidence": "store a common X value, feed other charts through `forceShowAt: { x }`, and clear it deliberately on leave.",
+        "evidence": "store a common X value, feed other charts through `forceShowAt: x` (`number | Date`, **not `{ x }`**), and clear it to `undefined` on leave.",
         "explanation": "Existing complete crosshair SFC and function-versus-tooltip-selector-map correction already resolve the source's principal contradiction. Adds omitted synced crosshair/snap/stack/range-check, selector event/attribute payload and controlled brush semantics; mark table covers plotlines/bands versus annotations and bleed. Keeps safe textContent/slot HTML trust boundary, standalone/container tooltip ownership and current-state callbacks without claiming hover is keyboard access.",
         "primary_urls": [
           "https://unpkg.com/@unovis/ts@1.7.1/components/crosshair/config.d.ts",
@@ -6126,7 +6154,7 @@
           "https://vitepress.dev/reference/cli",
           "https://unpkg.com/vitepress@1.6.4/dist/node/index.d.ts",
           "https://unpkg.com/vitepress@1.6.4/package.json",
-          "https://bun.com/docs/runtime/run"
+          "https://bun.com/docs/runtime"
         ],
         "anchor": "markdown-authoring-and-0x-migration"
       }

@@ -150,6 +150,16 @@ from the other. Vite 8 uses **Oxc** for TypeScript transformation and **Rolldown
 for bundling; older esbuild/Rollup-specific configuration recipes need version
 review, not mechanical copying. See [Vite features](https://vite.dev/guide/features).
 
+For isolated SFC evidence, distinguish `parse`, `compileScript`, and
+`compileTemplate` (or `compileScript` with explicit `inlineTemplate: true`).
+Parsing a descriptor or compiling setup alone does not establish template code
+generation. Inspect returned template/style diagnostics, supply the real binding/
+compiler options, and distinguish client from SSR compilation. Even successful
+block compilation does not resolve the application's imports, CSS preprocessors,
+plugin transforms or bundle graph; use the real build for those and runtime tests
+for behavior. [Exact compiler workflow](https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-sfc/README.md),
+[3.5.44 compiler options/results](https://unpkg.com/@vue/compiler-sfc@3.5.44/dist/compiler-sfc.d.ts).
+
 ## Minimal configuration and plugin ownership
 
 The following is a **complete alternative `vite.config.ts`** for a Vue SPA using
@@ -379,7 +389,7 @@ research; it does not record executed installs, tests, builds or browser checks.
 - [Vue quick-start](https://vuejs.org/guide/quick-start.html), [TypeScript overview](https://vuejs.org/guide/typescript/overview.html), and [Vue 3.5.44 compiler-SFC README](https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-sfc/README.md): scaffolding, SFC typechecking and matched compiler entry.
 - [Vite 8.3.4 registry metadata](https://registry.npmjs.org/vite/8.3.4), [plugin-vue 6.0.10 metadata](https://registry.npmjs.org/@vitejs/plugin-vue/6.0.10), [TypeScript 5.9.3 metadata](https://registry.npmjs.org/typescript/5.9.3), and [vue-tsc 3.3.13 metadata](https://registry.npmjs.org/vue-tsc/3.3.13): exact versions, engines and peers. The example manifest records the remaining direct pins.
 - [Vite features](https://vite.dev/guide/features), [plugin ordering](https://vite.dev/guide/using-plugins#enforcing-plugin-ordering), [shared config](https://vite.dev/config/shared-options), [env/modes](https://vite.dev/guide/env-and-mode), and [SSR boundary](https://vite.dev/guide/ssr): Vite 8 behavior. Prefer these current transform details over older references to esbuild in general Vue tooling prose.
-- [Bun install](https://bun.com/docs/pm/cli/install), [lockfile/migration](https://bun.com/docs/pm/lockfile), [dependency lifecycle trust](https://bun.com/docs/pm/lifecycle), [script launching](https://bun.com/docs/runtime/run), and [bunx](https://bun.com/docs/pm/bunx): installation, frozen-lock caveat, migration and runtime boundaries. Installed Bun 1.4.3 CLI help supplies the command flags; [npm ci](https://docs.npmjs.com/cli/v12/commands/npm-ci) applies only to an incumbent npm workflow.
+- [Bun install](https://bun.com/docs/pm/cli/install), [lockfile/migration](https://bun.com/docs/pm/lockfile), [dependency lifecycle trust](https://bun.com/docs/pm/lifecycle), [script launching](https://bun.com/docs/runtime), and [bunx](https://bun.com/docs/pm/bunx): installation, frozen-lock caveat, migration and runtime boundaries. Installed Bun 1.4.3 CLI help supplies the command flags; [npm ci](https://docs.npmjs.com/cli/v12/commands/npm-ci) applies only to an incumbent npm workflow.
 - [Vite 8.3.4 declarations](https://unpkg.com/vite@8.3.4/dist/node/index.d.ts), [server/proxy/security](https://vite.dev/config/server-options), [build/source maps](https://vite.dev/config/build-options), [Rolldown code splitting](https://rolldown.rs/reference/OutputOptions.codeSplitting).
 - [Sentry Vite plugin 11.8.0](https://unpkg.com/@sentry/vite-plugin@11.8.0/README.md), [web-vitals 6.2.3 exports](https://unpkg.com/web-vitals@6.2.3/dist/modules/index.d.ts), [web-vitals project](https://github.com/GoogleChrome/web-vitals).
 - [HTTP encoding negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Accept-Encoding), [image loading/size contracts](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img).

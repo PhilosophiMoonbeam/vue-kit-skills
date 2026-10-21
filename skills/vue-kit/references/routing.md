@@ -235,6 +235,8 @@ watch(() => props.id, async (id, _previous, onCleanup) => {
 
 Router cancellation prevents an older navigation from committing, but does not undo arbitrary store writes or cancel your network calls. Await guard work; return its decision; do not fire untracked requests then immediately allow navigation. Pass signals where supported and avoid committing global state for obsolete targets. A query library can own this lifetime instead; do not copy its result into a second store. [Data fetching](https://router.vuejs.org/guide/advanced/data-fetching.html).
 
+The component's watcher covers **route-id changes only**. For private data, the host must also hide/key its owner on user/session/org generation changes as specified in [auth.md](auth.md); a tenant switch can keep the same `id` and URL. Check that generation after token acquisition and before every data/error/loading commit. Neither route reuse handling nor a navigation-cancellation result invalidates requests under a different identity automatically.
+
 ## Guards, injection, failures, and metadata
 
 | Return from `beforeEach` / `beforeResolve` / update/leave guard | Meaning |

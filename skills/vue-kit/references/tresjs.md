@@ -73,7 +73,7 @@ onErrorCaptured(cause => {
     <h2>Lit cube</h2>
     <p>A blue cube illuminated from above. Rotation is optional; no information requires 3D.</p>
     <p v-if="failure" role="alert">{{ failure }}</p>
-    <SceneCanvas v-else-if="ready" />
+    <SceneCanvas v-else-if="ready" @error="failure = $event.message" />
     <p v-else role="status">Preparing the interactive scene.</p>
   </section>
 </template>
@@ -86,6 +86,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { TresCanvas } from '@tresjs/core'
 import SpinningCube from './SpinningCube.vue'
 
+const emit = defineEmits<{ error: [cause: Error] }>()
 const playing = ref(false)
 const reduced = ref(true)
 const active = computed(() => playing.value && !reduced.value)
@@ -115,6 +116,7 @@ onBeforeUnmount(() => media?.removeEventListener('change', syncMotion))
       <TresCanvas
         :render-mode="active ? 'always' : 'on-demand'"
         :dpr="1" :fps-limit="30" clear-color="#17212b"
+        @error="emit('error', $event)"
       >
         <TresPerspectiveCamera :position="[3, 2, 4]" :look-at="[0, 0, 0]" />
         <TresAmbientLight :intensity="0.8" />
@@ -154,7 +156,7 @@ onBeforeRender(({ delta }) => {
 </template>
 ```
 
-The client-only host delays importing the canvas module until after mount; server and first client render share the preparation text. WebGL probing is capability detection, not a guarantee that later context creation succeeds; captured scene errors replace the canvas with a real error message. In a production information interface, preserve an equivalent image/text/table, not only a loading placeholder. In Nuxt, a `.client.vue` boundary plus useful `<ClientOnly>` fallback is another host-specific choice.
+The client-only host delays importing the canvas module until after mount; server and first client render share the preparation text. WebGL probing is capability detection, not a guarantee that later context creation succeeds. The canvas's emitted renderer `error` is explicitly forwarded to the DOM host; `onErrorCaptured` handles descendant Vue exceptions, not component-emitted errors. Both paths replace the scene with a real error message. In a production information interface, preserve an equivalent image/text/table, not only a loading placeholder. In Nuxt, a `.client.vue` boundary plus useful `<ClientOnly>` fallback is another host-specific choice.
 
 ## Render loop and reference lifetimes
 
@@ -211,7 +213,7 @@ Debug missing picks in order: canvas/overlay actually receives input, camera/fru
 | Cross-renderer injection | `enableProvideBridge` defaults true. Keep provided business state scoped to the host; disabling the bridge intentionally changes injection visibility. `customRendererOptions.primitivePrefix` changes the primitive tag to avoid host collisions; coordinate compiler handling too. |
 | Library-level renderer/camera owner | `useCameraManager`, `useRendererManager`, and `useTresContextProvider` are exported building blocks, not prerequisites for normal app code. Reuse TresCanvas/TresCanvasContext unless you are deliberately assuming scene, sizing, camera registration, loop, event and disposal ownership. |
 
-`@ready` gives initialized context; `@error` reports renderer errors (`TresRendererError`, code `INITIALIZATION_FAILED`), and `@before-loop`/`@loop` work on the canvas itself without descendant injection. `useLoop` registrations return `{ off }` for early removal; `start`/`stop` and `isActive` control its registered callbacks. Do not manually call the exposed canvas `dispose()` again after ordinary Vue unmount has already released the owner.
+`@ready` gives initialized context; `@error` reports renderer errors (`TresRendererError`, code `INITIALIZATION_FAILED`), and `@before-loop`/`@loop` work on the canvas itself without descendant injection. `useLoop` registrations return `{ off }` for early removal and are removed with their Vue scope. Its `start`/`stop` and `isActive` control the **shared canvas loop**, not only that component's callbacks; use a local playing guard or remove one registration when unrelated scene animation must continue. Do not manually call the exposed canvas `dispose()` again after ordinary Vue unmount has already released the owner.
 
 `useGraph(object)` returns **one computed map**, not an object of refs: keep `const graph = useGraph(computed(() => model.value?.scene))`, then read `graph.value?.nodes[name]`, `.materials[name]`, or `.meshes[name]`. `buildGraph(object)` is the nonreactive snapshot form. The source's destructured `{ nodes, materials } = useGraph(...)` drops this contract. Names can be absent/duplicated and material changes can affect shared meshes; inspect the map and resource ownership before edits. [Pinned composables/components](https://unpkg.com/@tresjs/core@5.9.3/dist/tres.d.ts), [portal semantics](https://docs.tresjs.org/api/components/tres-portal), [host canvas](https://docs.tresjs.org/api/components/tres-context).
 
@@ -263,13 +265,15 @@ Decoder and asset rules:
 
 | Resource | Lifetime rule |
 | --- | --- |
-| Template-created geometry/material | Tres recursively cleans up on removal; do not dispose while a live scene still uses it. |
+| Template-created geometry/material | Tres recursively cleans up on removal by default; do not dispose while a live scene still uses it. Set `:dispose="null"` on the resource-sharing subtree to opt out, then let its explicit shared owner release resources after the final consumer. |
 | Programmatically owned primitive | Generic primitives do not establish ownership. Call exported `dispose(object)` when its sole owner releases it; loader-owned glTF scenes are the specific exception described above. |
 | Shared geometry/material/texture | Use an explicit shared owner/reference lifetime; one unmounted mesh must not invalidate another live mesh. |
 | Separately created Texture/render target/decoder/composer | Follow its actual `.dispose()`/cleanup API. Object disposal is not a claim that unrelated resources or external event handlers are freed. |
 | DOM listeners/observers outside Tres | Clean up with the Vue owner, as in the media-query listener example. |
 
 The exported `dispose` is an Object3D-oriented recursive utility, not a universal function for arbitrary resource types. For standalone programmatic geometry/material/texture objects, call their actual Three `.dispose()` methods. Never render the same programmatic object under two parents and then dispose it twice.
+
+The subtree opt-out affects renderer removal, **not** `useLoader`'s separate glTF cleanup. Do not put a cache-shared `scene` into that loader-owned lifetime or assume cloning its hierarchy isolates GPU resources. Cache-owned assets need a cache owner that controls final disposal; use per-instance clones with deliberately shared or independently cloned materials/textures. In **5.9.3**, exported `dispose(object)` disposes mesh geometry, material(s), and their `map` textures, not every possible texture slot. Track other owned maps/targets separately and dispose each only after its final consumer. [Pinned removal, loader, and disposal implementation](https://unpkg.com/@tresjs/core@5.9.3/dist/tres.js), [Three resource cleanup](https://threejs.org/manual/en/cleanup.html).
 
 Bound DPR and FPS according to measured quality needs. Reuse geometry/materials, use instancing for repeated meshes, reduce draw calls and expensive shadows, and avoid per-frame allocation of vectors/materials/arrays. Do not turn ordinary constructor changes into an animation strategy. Renderer-creation props such as `antialias`, `alpha`, and WebGL context settings are mount-time decisions; changing them requires a deliberate renderer remount, not an assumed live patch.
 

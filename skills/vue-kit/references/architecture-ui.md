@@ -40,6 +40,8 @@ Vuetify preference is a project default, not an assertion that every component m
 
 Place DOM refs, resize observers, focus, drag listeners and cleanup with the UI that owns them. Do not move them into a global Pinia store for convenience. If descendants share a capability, provide a typed scoped instance at their actual owner; do not inject an entire screen controller. [Components](components.md) and [composables](composables.md) own those patterns.
 
+The route/feature creates the overlay interaction instance; opening allocates an edit-session identity, not another global controller. Closing retires that identity and its delayed UI effects. Unmount disposes DOM subscriptions; [KeepAlive deactivation](https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance) needs an explicit suspend/close policy. Neither path cancels a server write. Scope-loss disposal follows [data architecture](architecture-data.md#tenant-switch-logout-and-permission-loss-protocol).
+
 ### Overlay protocol and focus ledger
 
 For every modal or popup, record: opener, semantic name, initial focus, keyboard behavior, scroll/portal container, close routes, pending-work policy, and return-focus fallback. This small ledger exposes composition bugs before CSS tuning.
@@ -130,6 +132,8 @@ export type EditIntent =
 | Any completion with another session ID | No UI transition; the data coordinator separately handles any real server outcome |
 
 Do not dispatch `write-rejected` merely because the transport lost its response. An ordinary refetch that happens not to show the change may be insufficient to prove a command cannot still commit. If the real service cannot establish an outcome, retain the uncertainty warning and offer navigation/reload/contact guidance appropriate to the product rather than manufacturing an idempotency guarantee. Use the richer outcomes in [data architecture](architecture-data.md).
+
+Async validation remains form-owned while the interaction is `editing`. If close/discard retires that session before validation finishes, its completion must not dispatch `submit-valid-draft`, focus an error, or publish errors into a later session. Retaining the dialog during validation is another valid policy, but must be explicit; the submission lock alone protects neither navigation nor session ownership.
 
 ## Focused component example: real local selection clearing
 
@@ -223,6 +227,8 @@ The example intentionally disables the dialog transition rather than claiming a 
 ## Design tokens, accessibility, adaptive states
 
 **Synthesis:** tokens express semantic roles and coordinated state. Use roles such as primary action, error, focus, selected, surface, and muted text, not a page's hard-coded color. Map them into Vuetify themes/defaults and chart series/text/selection styles through one design-system policy. A semantic error token does not itself prove contrast on every surface; light/dark, disabled, hover/focus, selected, and chart overlays need separate evaluation. Use shape, labels and icons/text as well as color.
+
+**Peccable visual-system policy (synthesis):** infer the current system from actual tokens, shared components, assets and rendered states. Refine an established identity; extend it for a demonstrated missing role/state; replace it only under an authorized redesign. Preserve incumbent token names and one authoritative definition per role rather than adding parallel “semantic” aliases to an existing semantic system. Extract repeated intent and behavior, not merely similar pixels; keep one-off composition local. Record meaningful exceptions in existing system documentation. [Design system](design-system.md) owns the typography/color/layout/interaction implementation routes; no extra design framework or mandatory sidecar is required.
 
 | State | Visual/content behavior | Interaction/focus behavior |
 | --- | --- | --- |

@@ -12,6 +12,8 @@ Read before copying an older Vue example, upgrading runtime/compiler tooling, or
 
 Registry and declaration evidence: [3.5.44 metadata](https://registry.npmjs.org/vue/3.5.44), [pinned entry declarations](https://unpkg.com/vue@3.5.44/dist/vue.d.ts).
 
+Alignment to 3.5.44 above applies to an **explicitly authorized adoption of this baseline**, not an instruction to downgrade or upgrade an incumbent framework during diagnosis. Keep its mutually compatible runtime/compiler/renderer until that migration is in scope. Vue's release policy warns that newer-minor compiler output may require the newer runtime; beta/RC/edge exports are not evidence for a stable 3.5 API. Test a deliberately selected prerelease in a separate exactly pinned integration, not by mixing a 3.6 compiler into this target. [Official compiler compatibility and prerelease policy](https://vuejs.org/about/releases.html#compiled-code-compatibility-with-older-runtime).
+
 ## What is and is not a Vue 3.5 API
 
 | Version/status | Usable contract in this target | Boundary |

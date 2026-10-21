@@ -4,7 +4,7 @@ Read this before resolving contradictory examples, changing a package version, a
 
 ## Baseline and authority
 
-The authored baseline is **Vue 3.5.44** with **Vuetify 4.3.0**. Composition API, TypeScript and `<script setup lang="ts">` are the greenfield default; preserve a working incumbent stack during a narrow task. These are pinned authoring versions, not a promise that every optional ecosystem package is installed or jointly tested.
+The authored baseline is **Vue 3.5.44** with pinned **Vuetify 4.3.0**; **Vuetify 4.3.x** is preferred for new general-purpose UI. Composition API, TypeScript and `<script setup lang="ts">` are the greenfield default; preserve a working incumbent stack during a narrow task. These are authoring preferences, not a promise that every optional ecosystem package is installed or jointly tested.
 
 Use this order when sources disagree:
 
@@ -77,11 +77,13 @@ These are primary navigation entry points. Exact versions and API contracts live
   Flagged means the triage required verification or had uncertain classification; **335 flagged documents does not mean 335 confirmed defects**. Original migration totals: verify 312, retain 144, rewrite 6, mixed 4, unrelated 1.
 - Prefilter accounting: 10 non-Markdown-extension items and one utility document excluded; zero truncated documents and zero audit processing errors. Excluded utility roots/caches are described in the audit rubric. Those zero counts concern the source audit, not application tests or replacement quality.
 - [Replacement crosswalk](../assets/coverage-audit.json): all 467 source units and 38 reference reviews, including 450 explicit source dispositions and 17 native-only covered units. Every original triage flag and material residual coverage/contradiction candidate has an individual disposition. Native partial/missing and mixed-reference hypotheses remain visible alongside their resolutions; `corrected` does not mean every historical source was defective.
-- [Scoped verification](../assets/verification.json): fresh Bun workflow checks and archived compiler/browser observations with their original packaged-file snapshots. Historical results are not retroactively rerun when command guidance changes. The validator detects stale/missing current evidence; hashes do not authenticate an execution claim or prove upstream correctness.
+- [Scoped verification](../assets/verification.json): recorded workflow checks and archived compiler/browser observations with their packaged-file snapshots. Historical results are not retroactively rerun when command guidance changes. The validator detects stale/missing current evidence; hashes do not authenticate an execution claim or prove upstream correctness.
 
 A source path or hash is a historical identifier, **not a file required at runtime**. The replacement references stand alone. Original source material was not bulk reclassified manually: the snapshot supplied per-document judgments; only flagged material needed for corrections was escalated to authors. `retain` means the original audit found no visible conflict, not that the advice was independently proven; `verify`, `rewrite` and `mixed` are original triage labels, not unresolved release blockers. The audit's `source_caveats` records primary-evidence resolutions; the owning reference teaches the replacement contract. A path's original migration judgment remains unchanged after correction to preserve the snapshot.
 
 Hashes allow comparison against the original snapshot **if those historical inputs are separately available**. They do not reconstruct source text, prove authorship/license, certify semantic completeness or require redistributing the old corpus. Input-artifact hashes identify exactly which coverage metadata was transformed into the bundled assets.
+
+The separate [second-pass replacement audit](../assets/second-pass-audit.json) classified 39 Markdown units (master plus 38 references): 36 correctness hypotheses and 3 mixed hypotheses, all low confidence, with 17 deterministic exclusions, no truncations and no processing errors. These are escalation counts, not confirmed defects, completed dispositions or evidence that acceptance passed. Keep them separate from the 467-document historical source snapshot and from exercised verification results.
 
 ## Material source caveats
 

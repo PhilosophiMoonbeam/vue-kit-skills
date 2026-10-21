@@ -194,6 +194,8 @@ Use semantic HTML headings independently of typography classes: an `h1` can have
 | `text-body-2`, `text-caption` | `text-body-medium`, `text-body-small` |
 | `text-button`, `text-subtitle-2`, `text-overline` | `text-label-large`, `text-label-large`, `text-label-small` |
 
+The table follows the tagged typography guide's **role-oriented quick reference**, not its conservative size mapping. For size-preserving migration inspect `text-h2` → `text-display-large`, `text-h3` → `text-display-medium`, `text-h5` → `text-headline-small`, `text-h6` → `text-title-large`, `text-subtitle-2` → `text-title-small`, and `text-overline` → `text-label-medium`; v3's 96px `text-h1` needs a custom variant. The same tagged docs contain both mappings, so do not apply the quick table as an automatic visual-equivalence codemod. [4.3 conservative mapping](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/getting-started/typography-migration.md#conservative-migration-mapping).
+
 The mapping is a migration starting point, not a guarantee of identical metrics. Check wrapping, truncation, hierarchy, and translated copy. `--v-font-body` and `--v-font-heading` are supported runtime font-family hooks in the default Sass settings. To use platform fonts intentionally, this is complete app CSS:
 
 ```css
@@ -233,11 +235,20 @@ The 4.3 framework declares these layers in order:
 
 For normal declarations, later layers beat earlier ones, and **unlayered** author CSS beats layered author CSS regardless of selector specificity. Important declarations reverse layer priority. Do not assume a class in a scoped SFC automatically belongs to the component's framework layer. [Exact layer declarations](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/styles/generic/_layers.scss).
 
-Complete application CSS example defining intentional order:
+Complete unbundled `public/layers.css` example defining intentional top-level **and nested** order:
 
 ```css
 @layer vuetify-core, app-base, vuetify-components, vuetify-overrides,
   app-overrides, vuetify-utilities, vuetify-final;
+@layer vuetify-core {
+  @layer reset, base;
+}
+@layer vuetify-utilities {
+  @layer theme-base, typography, helpers, theme-background, theme-foreground;
+}
+@layer vuetify-final {
+  @layer transitions, trumps;
+}
 
 @layer app-base {
   .page-title { max-inline-size: 30ch; }
@@ -248,7 +259,13 @@ Complete application CSS example defining intentional order:
 }
 ```
 
-Load the order declaration before framework/component styles first establish layer order. Later declarations cannot reorder already-created layers. In this example Vuetify utilities intentionally beat `app-overrides`; place an app layer later only if it should win. Inspect the winning rule and layer before adding `!important` or an internal-element selector. Utility precedence is not an excuse to remove focus styles.
+Link this file first in `index.html`'s head, before other stylesheets or module scripts; use the app's public base path when not deployed at `/`:
+
+```html
+<link rel="stylesheet" href="/layers.css">
+```
+
+Do not rely on a JavaScript import or a bundled CSS `@import` to establish first delivery. Load the order declaration before framework/component styles first establish layer order. Later declarations cannot reorder already-created layers. The nested declarations also prevent early generated theme CSS from fixing `theme-background`/`theme-foreground` ahead of typography/helpers. In this example Vuetify utilities intentionally beat `app-overrides`; place an app layer later only if it should win. Inspect the winning rule and layer before adding `!important` or an internal-element selector. Utility precedence is not an excuse to remove focus styles. [4.3 custom layer loading](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/styles/layers.md#custom-layer-order).
 
 For a translucent role, use `color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, transparent)` rather than assuming the stored channel list contains exactly three channels. For Tailwind/UnoCSS coexistence, map the installed framework's reset and utility layers explicitly; do not paste legacy `@tailwind` syntax into a different major version. See [alternative-ui.md](alternative-ui.md).
 
@@ -280,7 +297,7 @@ export default defineConfig({
 );
 ```
 
-Keep `import 'vuetify/styles'` in the JavaScript plugin/entry: `vite-plugin-vuetify` redirects global and component CSS imports to configured Sass. Do not write `@use 'vuetify/styles'` in Sass; it resolves to precompiled CSS. `@use 'vuetify'` can generate global framework styles; `vuetify/settings` configures variables without generating a second framework stylesheet.
+Keep `import 'vuetify/styles'` in the JavaScript plugin/entry: `vite-plugin-vuetify` redirects global and component CSS imports to configured Sass. For a deliberately Sass-generated global entry prefer `@use 'vuetify'`; `vuetify/settings` configures variables without generating a second framework stylesheet. The 4.3 export map includes a Sass target for `vuetify/styles`, and the tagged style-entry guide permits that spelling, while the tagged Sass guide still warns about resolver-dependent precompiled CSS. Do not claim the Sass entry was removed; this recipe avoids that resolution ambiguity. [4.3 style entry points](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/styles/entry-points.md#from-sass), [plugin 2.1.3 implementation](https://unpkg.com/vite-plugin-vuetify@2.1.3/dist/index.mjs).
 
 Settings are loaded before many component stylesheets, so put only configuration/functions/mixins there, **not emitted selectors** that would be duplicated. Use a separate app stylesheet for CSS rules. To consume configured values elsewhere, `@forward 'vuetify/settings' with (...)` from the settings module and `@use` that local module. Keep comma-separated Sass values parenthesized. Sass customization recompiles framework styles and increases build work; do not enable it merely to change a theme color available at runtime. [Tagged Sass guide](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/features/sass-variables.md).
 

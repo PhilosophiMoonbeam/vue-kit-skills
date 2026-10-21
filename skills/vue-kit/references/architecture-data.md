@@ -62,8 +62,10 @@ export const caseKeys = {
 
 **Synthesis:** implement scope transition as a coordinated operation, not scattered watchers.
 
+For an elective switch, settle save/discard/stay before retiring the old scope. **Stay** leaves that scope and draft intact; **save** must finish under the old scope before the switch proceeds; **discard** authorizes retirement. The steps below apply to an accepted switch or involuntary access loss. Do not invalidate an in-flight save's UI ownership merely to ask whether switching should occur.
+
 1. Enter a blocked/transitioning access state, immediately hide old private content, and invalidate the old UI operation epoch. Stop accepting edits/commands in that scope.
-2. Resolve dirty draft policy before an elective switch. Involuntary session loss cannot be canceled by a dirty-form guard; close the private surface and follow an explicit privacy policy for unsaved data.
+2. Apply the accepted dirty-draft disposition. Involuntary session loss cannot be canceled by a dirty-form guard; close the private surface and follow an explicit privacy policy for unsaved data.
 3. Dispose old feature subscriptions and cancel private reads where supported. Remove old private cache entries and persisted private partitions; reset shared client workflows, selections, and draft instances. Do not remove only the visible detail key while list, summary, or export data remain.
 4. Establish the new session/tenant context through the real auth integration. Do not retag an old session's response as the new tenant's data. Await the integration's actual readiness contract.
 5. Create or activate the new scope, then enable its queries. Do not use previous-tenant data as placeholder content for the new scope.
@@ -113,6 +115,8 @@ For an editor, a pessimistic save is usually the smallest honest design: hold th
 | `fresh/stale → next view` | Reset baseline from accepted result; navigate/close/announce only if the operation still owns the active view |
 
 Returning/awaiting invalidation in mutation success callbacks can extend pending state; detached invalidation does not do the same. This is the [Query mutation sequencing contract](https://tanstack.com/query/latest/docs/framework/vue/guides/invalidations-from-mutations), not a guarantee that refetch succeeded or that all inactive queries were fetched. If accepting a canonical detail result cancels an older detail read, do so through the chosen library's actual cancellation API before it can overwrite the accepted value. Define list membership changes: after closing a case it may disappear from an `open` list; the focus fallback and count reconciliation must reflect that.
+
+**Adapter postcondition:** in Query **5.104.5**, `invalidateQueries` defaults to active-query refetching; `refetchQueries` catches individual fetch errors unless `throwOnError: true`, excludes disabled/static queries, and resolves paused fetches without waiting for their eventual result. These are [release-matched implementation facts](https://unpkg.com/@tanstack/query-core@5.104.5/src/queryClient.ts), not synthesis. Thus `acceptAndRefresh` must define which visible queries require successful refresh, propagate errors for those reads, and inspect their completion state. A resolved invalidation promise alone cannot justify the example's `view: 'refreshed'`; inactive/paused data may remain stale.
 
 ### Typed save coordinator without fabricated transport
 
@@ -224,5 +228,6 @@ Do not let the form's generic catch handler turn `committed/stale` into “Save 
 
 - [Vue 3.5.44 metadata](https://registry.npmjs.org/vue/3.5.44), [Pinia 4.1.0 metadata](https://registry.npmjs.org/pinia/4.1.0), [@tanstack/vue-query 5.104.5 metadata](https://registry.npmjs.org/@tanstack/vue-query/5.104.5).
 - [Query keys and dependencies](https://tanstack.com/query/latest/docs/framework/vue/guides/query-keys), [cancellation behavior](https://tanstack.com/query/latest/docs/framework/vue/guides/query-cancellation), [mutation invalidation sequencing](https://tanstack.com/query/latest/docs/framework/vue/guides/invalidations-from-mutations).
+- [Query core 5.104.5 invalidation/refetch implementation](https://unpkg.com/@tanstack/query-core@5.104.5/src/queryClient.ts).
 - [Vue watcher side-effect cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [Vue SSR isolation](https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution), [Pinia SSR and hydration](https://pinia.vuejs.org/ssr/).
 - [OWASP authorization, server-side enforcement and every-request checks](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html).

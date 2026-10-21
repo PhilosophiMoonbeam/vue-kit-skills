@@ -121,6 +121,8 @@ The language control demonstrates eager messages; in a real shell also derive `h
 
 [Scope](https://vue-i18n.intlify.dev/guide/essentials/scope.html), [fallback](https://vue-i18n.intlify.dev/guide/essentials/fallback.html), [pluralization](https://vue-i18n.intlify.dev/guide/essentials/pluralization.html), [components](https://vue-i18n.intlify.dev/guide/advanced/component.html).
 
+`globalInjection` defaults to **true** in 11.4.16 Composition mode; the examples deliberately set it false to require explicit `useI18n` bindings. This disables injected `$t`/`$n`/`$d`/`$rt`/`$tm` and `$i18n` helpers, not the global Composer or `useI18n({ useScope: 'global' })`. Component registration is a separate `globalInstall` install option. [Exact installation/defaults](https://unpkg.com/vue-i18n@11.4.16/dist/vue-i18n.mjs).
+
 ### Composer interop, incumbent Legacy and resource contracts
 
 - No-options `useI18n()` selects local scope when the SFC has an `<i18n>` block, otherwise global. Nonempty options without `useScope` select local. `useScope: 'parent'` explicitly searches ancestors; an SFC block does **not** implicitly select parent. `useScope: 'isolated'` is present in 11.4.16 and permits multiple independent Composers in one setup; it still receives a parent/root reference. Set `inheritLocale: false` and `fallbackRoot: false` when actual language/vocabulary isolation is required. Custom elements can provide the installed instance through `I18nInjectionKey`; do not assume app-level injection crosses a custom-element boundary. [Exact scope implementation](https://unpkg.com/vue-i18n@11.4.16/dist/vue-i18n.mjs).
@@ -249,13 +251,20 @@ export function createAppI18n() {
     return task
   }
 
-  async function setLocale(locale: Locale): Promise<boolean> {
+  async function setLocale(locale: Locale, signal?: AbortSignal): Promise<boolean> {
+    if (signal?.aborted) return false
     const ticket = ++generation
-    await ensureLocale(locale)
-    if (ticket !== generation) return false
+    const current = () => ticket === generation && !signal?.aborted
+    try {
+      await ensureLocale(locale)
+    } catch (error) {
+      if (!current()) return false
+      throw error
+    }
+    if (!current()) return false
     i18n.global.locale.value = locale
     await nextTick()
-    return ticket === generation
+    return current()
   }
 
   return { i18n, setLocale }
@@ -275,6 +284,8 @@ export function createAppI18n() {
 ```
 
 Integration fragment: create `{ i18n, setLocale }` once at app creation, install `i18n`, and provide `setLocale` to the shell or router through the app's explicit service contract. Validate route/storage/cookie values against `en`/`fr` before calling. Await it before completing locale-dependent navigation; only persist the selection when it returns true. Catch import errors at that caller and show a real failure while retaining the last committed locale. A failed load is not marked loaded and can be retried by another explicit selection. The counter prevents late French from overwriting a newer English selection; it cannot cancel a dynamic import. Apply the same freshness policy to dependent API responses. [Upstream lazy-loading pattern](https://vue-i18n.intlify.dev/guide/advanced/lazy.html).
+
+Pass an owner-controlled `AbortSignal` when navigation cancellation, component disposal, or app teardown can invalidate a pending selection; abort it in that owner's cleanup. Cancellation prevents a later locale commit but does not undo an already committed selection or unload cached messages. `false` means superseded/cancelled: publish neither success nor failure for that selection. Only a still-current failed load rejects; this also prevents a late failed import from replacing a newer successful selection's UI with a stale error. Keep imported resources cached per app/request; an aborted selection need not discard a safely loaded catalog.
 
 For typed catalogs, use a canonical schema with `createI18n`/`useI18n` generics or augment `DefineLocaleMessage`; compare all translated catalogs against it. TypeScript cannot discover runtime CMS keys or prove translation quality. JSON modules require the project's JSON-module support. SFC `<i18n>` blocks require build integration; they are not native Vue syntax without a plugin.
 

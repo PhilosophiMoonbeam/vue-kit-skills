@@ -267,6 +267,8 @@ function retry() {
 
 The retry remounts this section; it does not guarantee a failed transport will recover or preserve unsaved child state. Adopt that behavior only when appropriate. Returning `false` from `onErrorCaptured` deliberately stops propagation to further boundaries and `app.config.errorHandler`; do so only when the error has actually been handled under an explicit reporting policy. Never return `false` just to quiet a test.
 
+This is a **client recovery boundary**, not a server response policy. In 3.5.44, `onErrorCaptured` also registers during SSR, but changing `failed` after a descendant fails does not restart an already-rendering parent to produce its fallback HTML. The standalone request owner must handle renderer rejection/reported errors and choose the HTTP status/body; a logged error or resolved HTML string is not proof of a successful response. Exercise the actual failing server route and its first client render separately; in Nuxt retain the framework's error-page/response handling. [Exact lifecycle registration](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiLifecycle.ts), [exact server rendering path](https://github.com/vuejs/core/blob/v3.5.44/packages/server-renderer/src/render.ts).
+
 For warnings, retain the full message/component trace and fix the broken contract: missing injection, prop mismatch, undeclared event, non-prop attrs, invalid child or duplicate key. A narrowly scoped warning assertion can document a known integration limitation; a global `console.warn`/`console.error` no-op or blank app handler conceals unrelated defects. Clear temporary diagnostic hooks after localization; do not mutate state from tracking/trigger callbacks.
 
 ## Tree E — SSR, hydration or first-load-only failure
@@ -367,6 +369,8 @@ test('independent server apps do not share initial user state', async () => {
 ```
 
 The spies preserve console behavior; the assertions fail on unexpected diagnostics instead of suppressing them. This fixture checks a deterministic local renderer/hydrator pair and request-local factory shape. It does **not** verify a real HTTP response, secure payload serialization, production manifests, Suspense streaming, Teleport injection, Nuxt request isolation or cross-browser parsing. Those require targeted integration/browser tests against the actual SSR server. In production, use the framework's safe state serializer: blindly interpolating `JSON.stringify(userData)` into a script tag can introduce script-breaking/XSS payloads.
+
+The two counter renders contain no controlled asynchronous data boundary. `Promise.all` starts both renders but does not establish that request-specific work actually interleaved. To protect a production request-isolation regression, hold two distinguishable users' real data dependencies pending, overlap their requests, release them in reverse order, and assert each response/payload and hydrated UI contains only its own authorized state. Include request-aware stores, service clients and response caches that the application actually uses.
 
 ### Teleport and lazy hydration boundaries
 

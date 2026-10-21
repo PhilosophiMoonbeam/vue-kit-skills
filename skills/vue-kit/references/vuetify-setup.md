@@ -6,6 +6,8 @@ Read when installing Vuetify, diagnosing missing components/styles/icons, choosi
 
 This reference targets **Vuetify 4.3.0 + Vue 3.5.44**, not Vuetify 2 or an assumption that every Vuetify 3 example remains compatible. Registry metadata confirms Vuetify's Vue peer `^3.5.0 || ^3.6.0-0`; TypeScript `>=4.7`, `vite-plugin-vuetify >=2.1.0`, and `webpack-plugin-vuetify >=3.1.0` are optional peers. An optional peer is not installed automatically merely because a feature needs it. Use normal Vue SFC compilation, not Vue 3.6 prerelease-only APIs. [Exact metadata](https://registry.npmjs.org/vuetify/4.3.0).
 
+Prefer the **4.3.x** line for new applications when no UI framework is prescribed; the exact reproducible baseline here is 4.3.0. This preference does not authorize replacing an incumbent UI library, upgrading an existing Vuetify major, or changing its package manager/lockfile. Keep those choices unless the task explicitly calls for migration.
+
 The Vite path below pins `vite-plugin-vuetify 2.1.3`, Vite `8.3.4`, and `@vitejs/plugin-vue 6.0.10`. Their declared peers cover this combination; this is metadata evidence, not an executed build. Vite and the Vue plugin require Node `^20.19.0 || >=22.12.0`. Keep an incumbent supported toolchain unless its task requires upgrading. See [setup-tooling.md](setup-tooling.md).
 
 ## Choose one import strategy
@@ -28,6 +30,30 @@ In an existing Vite project, retain its entry HTML, TypeScript configuration, an
 bun add --exact vue@3.5.44 vuetify@4.3.0 @fontsource/roboto@5.3.0
 bun add --dev --exact vite@8.3.4 @vitejs/plugin-vue@6.0.10 vite-plugin-vuetify@2.1.3
 ```
+
+For a new app without an existing layer-order policy, create `public/layers.css`. Component CSS and generated theme CSS can otherwise establish layers before the global stylesheet:
+
+```css
+@layer vuetify-core {
+  @layer reset, base;
+}
+@layer vuetify-components;
+@layer vuetify-overrides;
+@layer vuetify-utilities {
+  @layer theme-base, typography, helpers, theme-background, theme-foreground;
+}
+@layer vuetify-final {
+  @layer transitions, trumps;
+}
+```
+
+Link it first in the existing `index.html` head, before module scripts or other stylesheets; adjust the public URL for the app's deployment base:
+
+```html
+<link rel="stylesheet" href="/layers.css">
+```
+
+Keep this file unbundled: a JavaScript CSS import does not guarantee first delivery in production. It declares ordering only and does **not** replace `vuetify/styles`. Preserve an incumbent custom order if it already establishes these framework layers and sublayers correctly. [4.3 layer-order integration](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/styles/layers.md), [exact layer-only entry](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/styles/layers.scss).
 
 `vite.config.ts`:
 
@@ -127,6 +153,8 @@ Resolve imports from the **installed 4.3.0 export map**, not a v3 or 4.0 labs in
 
 In 4.3.0 labs exports are `VAudio`, `VCommandPalette`, `VDateRangePicker`, `VMonthPicker`, `VHeatmap`, `VInfiniteCarousel`, `VLoadingIndicator`, `VMaskInput`, `VMediaProgressBar`, `VMediaVolume`, `VPie`, `VSplitBtn`, `VTimeInput`, and `VVideo`. Import only the selected `vuetify/labs/<Name>` group, pin the release, and review changes before updates: labs can break between patch releases. `VCalendar`, `VHotkey`, `VDateInput`, `VFileUpload`, `VAvatarGroup`, `VIconBtn`, `VPicker`, `VColorInput`, `VStepperVertical`, and `VPullToRefresh` are stable 4.3 exports. A directory found in a package is not proof of a public stable export.
 
+Labs is not the preferred production path: the [4.3 Labs policy](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/labs/introduction.md#what-is-labs) calls these unfinished alpha components test-only and not production ready, with patch-breaking changes and no support. Stable exports and labs exports are separate adoption decisions.
+
 Directives are DOM behaviors, not component registration: `ClickOutside`, `Intersect`, `Mutate`, `Resize`, `Ripple`, `Scroll`, `Touch`, and `Tooltip` export through `vuetify/directives` or their named subpaths. In an explicitly imported SFC, `import { Intersect as vIntersect } from 'vuetify/directives/Intersect'` makes `v-intersect` available; implement the documented callback and observer options for that directive rather than copying another directive's signature. Built-in component dependencies need no redundant global registration. Theme/default aliases, blueprint selection, color utilities, and style exports are covered in [vuetify-theme.md](vuetify-theme.md).
 
 Sources: [4.3 export map](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/package.json), [stable exports](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/index.ts), [labs exports](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/labs/components.ts), [directive exports](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/directives/index.ts).
@@ -159,6 +187,8 @@ const inputAttrs = { required: true } satisfies InputHTMLAttributes
 ```
 
 Keep Vuetify's component props (`label`, `loading`, etc.) as component props, not in a native bag. Native `required` is not a substitute for awaited `VForm`/server validation. Report standard SFC compilation and strict-fixture checking as separate proof profiles; the other examples retain readable runtime-native syntax. [Tagged VBtn root/emits](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VBtn/VBtn.tsx), [VTextField input forwarding](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VTextField/VTextField.tsx), [Vue fallthrough attributes](https://vuejs.org/guide/components/attrs.html).
+
+Keep stored bags narrow. A whole `ButtonHTMLAttributes` annotation widens overlapping `disabled` to `Booleanish`, incompatible with Vuetify's boolean prop. For a weak-type error on an all-native bag, use a narrow `Pick` retaining optional shared `class`/`style` in its type without adding a runtime value.
 
 ## Styles and icon contracts
 

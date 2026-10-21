@@ -53,29 +53,27 @@ const [email, emailAttrs] = defineField('email', state => ({
   },
 }))
 
+let focusEmail = false
 const validatedSubmit = handleSubmit(async values => {
   const result = await props.save({ email: values.email })
   if (!result.ok) {
     failure.value = result.message
     setFieldError('email', result.fields.email)
-    if (result.fields.email) {
-      await nextTick()
-      emailInput.value?.focus()
-    }
+    focusEmail = Boolean(result.fields.email)
     return
   }
   resetForm({ values: result.value }, { force: true })
   status.value = 'Changes accepted.'
-}, async () => {
+}, () => {
   failure.value = 'Correct the marked field.'
-  await nextTick()
-  emailInput.value?.focus()
+  focusEmail = true
 })
 
 async function submit(event: Event) {
   event.preventDefault()
   if (busy.value) return
   busy.value = true
+  focusEmail = false
   failure.value = ''
   status.value = ''
   try {
@@ -84,6 +82,11 @@ async function submit(event: Event) {
     failure.value = cause instanceof Error ? cause.message : 'Could not save changes.'
   } finally {
     busy.value = false
+    if (focusEmail) {
+      focusEmail = false
+      await nextTick()
+      emailInput.value?.focus()
+    }
   }
 }
 
@@ -123,6 +126,8 @@ function discard() {
 
 The regex is a lightweight client check, not full mailbox validation. `handleSubmit` validates, touches fields, and awaits the callback; it is a factory, not the handler itself. The wrapper supplies the synchronous duplicate guard and catches callback rejection. `resetForm({ values }, { force: true })` replaces the accepted baseline, resets errors/touched/submit count, and prevents old optional keys surviving a merge. `setValues` updates values but is not “accept this new baseline.” Never mutate the readonly `values` object directly.
 
+Error callbacks only request email focus. The wrapper clears `busy` first, then awaits Vue's [`nextTick`](https://vuejs.org/api/general.html#nexttick) so the native fieldset and contextual Vuetify field are enabled in the DOM before calling `focus()`. Awaiting a tick inside a validation/save callback is too early: the wrapper still holds the editing lock until that callback returns.
+
 For a fully local consumer, this complete parent SFC implements the same contract honestly; name the component above `ProfileForm.vue`. Nothing survives unmount/reload and no server validation is simulated.
 
 ```vue
@@ -146,9 +151,12 @@ async function applyForSession(draft: { email: string }) {
 
 `defineField` returns `[model, attrs]`; use `v-model` plus `v-bind`. For a custom input built on `useField`, opt into `syncVModel: true` only when its public `v-model` contract requires it. Pass a changing name as `useField(() => props.name)`, not a snapshot of a prop.
 
-Contextual replacement for the main component's `defineField` declaration and native field. Import `VTextField` from `vuetify/components`; keep the same `useForm` owner, native `<form>`, and submission handler. Do **not** add Vuetify `rules` or a second `VForm.validate()`.
+Contextual replacement for the main component's native `emailInput` ref, `defineField` declaration, and field element. Keep the same `useForm` owner, native `<form>`, and submission handler; replace the old ref declaration rather than adding another one. The component ref preserves invalid-submit focus. Do **not** add Vuetify `rules` or a second `VForm.validate()`.
 
 ```ts
+import { VTextField } from 'vuetify/components'
+
+const emailInput = useTemplateRef<InstanceType<typeof VTextField>>('emailInput')
 const [email, emailAttrs] = defineField('email', state => ({
   validateOnModelUpdate: state.touched,
   props: { 'error-messages': state.errors },
@@ -157,14 +165,19 @@ const [email, emailAttrs] = defineField('email', state => ({
 
 ```vue
 <VTextField
-  v-model="email"
+  ref="emailInput"
+  :model-value="email"
   v-bind="emailAttrs"
   label="Email"
   name="email"
   type="email"
   autocomplete="email"
+  :disabled="busy"
+  @update:model-value="email = $event ?? ''"
 />
 ```
+
+`emailAttrs` forwards blur/change/input handlers and error messages; the explicit model update writes only the existing vee-validate field and normalizes a nullable clear to `''`. There is no second draft ref. Global Vuetify defaults can enable clearing even when the local component does not declare `clearable`. If using strict template checking, bind native fallthrough through the [checked attribute-bag recipe](vuetify-setup.md#strict-template-checking-and-native-fallthrough), not a fabricated Vuetify prop declaration.
 
 For `<Field v-slot>`, `field` targets native value/input/change bindings; `componentField` targets `modelValue`/`update:modelValue` controls. Do not combine an independent outer `v-model` with `v-bind="field"` on the same input. `<Form>` is the component alternative to `useForm`; choose one context, rather than mounting both for the same logical form. Global `configure({ validateOnBlur, validateOnChange, validateOnInput, validateOnModelUpdate })` trigger defaults apply to `<Field>`, not `useField`; configure the latter explicitly. `defineInputBinds`, `defineComponentBinds`, and `useFieldModel` are deprecated; use `defineField`.
 

@@ -220,16 +220,25 @@ export function useTweenedNumber(
       [() => toValue(source), () => toValue(reducedMotion)],
       ([target, reduce], _old, onCleanup) => {
         if (reduce) { displayed.value = target; return }
+        let active = true
+        let frame = 0
+        onCleanup(() => {
+          active = false
+          cancelAnimationFrame(frame)
+        })
         const from = displayed.value
         const start = performance.now()
-        let frame = 0
         function step(now: number) {
+          if (!active) return
+          if (toValue(source) !== target || toValue(reducedMotion) !== reduce) {
+            frame = requestAnimationFrame(step)
+            return
+          }
           const fraction = Math.min(1, (now - start) / durationMs)
           displayed.value = from + (target - from) * fraction
           if (fraction < 1) frame = requestAnimationFrame(step)
         }
         frame = requestAnimationFrame(step)
-        onCleanup(() => cancelAnimationFrame(frame))
       },
       { immediate: true },
     )
@@ -240,6 +249,8 @@ export function useTweenedNumber(
 ```
 
 Render the returned display ref, not a duplicate domain field; changes restart from the last displayed value. Use an installed animation library when its interpolation capabilities are needed, but kill its prior tween in the same watcher cleanup contract. Numbers outside JavaScript's safe precision are not made exact by tweening. See [component animation decisions](components.md#transition-and-persistent-element-animation-contracts) and [motion](motion.md).
+
+Each frame also checks the live inputs before committing, so a frame queued before a batched watcher reruns cannot write an obsolete target or ignore a newly enabled reduced-motion preference. Cleanup marks that run inactive as well as cancelling its queued frame. Intermediate input changes batched away do not create separate runs.
 
 ## Nuxt and server boundaries
 
@@ -254,4 +265,5 @@ All TypeScript fences are complete modules with application-owned contracts stat
 - [Vue 3.5.44 reactive declarations](https://unpkg.com/@vue/reactivity@3.5.44/dist/reactivity.d.ts), [reactivity utilities](https://vuejs.org/api/reactivity-utilities.html), [type utilities](https://vuejs.org/api/utility-types.html).
 - [Official composable conventions and side effects](https://vuejs.org/guide/reusability/composables.html), [watcher cleanup and scheduling](https://vuejs.org/guide/essentials/watchers.html).
 - [Effect scopes and shallow boundaries](https://vuejs.org/api/reactivity-advanced.html), [external state integration](https://vuejs.org/guide/extras/reactivity-in-depth.html#integration-with-external-state-systems).
+- [Vue 3.5.44 watcher invalidation and stop cleanup](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/watch.ts), [value/ref/getter normalization](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/ref.ts).
 - [Custom refs](https://vuejs.org/api/reactivity-advanced.html#customref), [Vue animation techniques](https://vuejs.org/guide/extras/animation.html), [animation frame scheduling](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame).

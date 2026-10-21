@@ -68,6 +68,8 @@ const remaining = computed(() => tasks.value.filter(task => !task.done).length)
 
 `watch` is lazy unless `immediate: true`; `watchEffect` runs immediately. Default watcher callbacks run after parent updates and before the owner's DOM updates. Sources may be refs, getters, reactive objects, or arrays of sources. Reads inside a `watch` callback are not additional tracked sources. [Watcher guide](https://vuejs.org/guide/essentials/watchers.html).
 
+Watch getters track the reactive reads used to produce their result, but the callback normally runs only when that result changes (`Object.is` comparison), not on every dependency mutation. Use an array of sources when each input change matters independently; a getter returning a fresh array/object creates a different result on each reevaluation. Deep traversal and direct reactive sources have their own trigger rules; none supplies an automatic historical snapshot.
+
 - Directly watching a reactive object is implicitly deep. A getter returning that object tracks replacement unless `deep` is requested.
 - In **3.5**, `deep` accepts a maximum traversal depth number. `deep: true` traverses nested properties; do not use it to compensate for an incorrectly chosen source. On nested mutation, old and new values can be the same proxy, not before/after snapshots.
 - For an array ref, replacement is observed by default; `deep: 1` observes replacement and array mutations in 3.5 without traversing fields inside each entry. Watch a projection when the actual dependency is narrower.
@@ -114,6 +116,8 @@ watch(expanded, () => {
 | `onServerPrefetch` | Server render awaits the registered promise; coordinate transferred data to avoid duplicate client work. See [SSR/debugging](debugging-ssr.md). |
 
 Register lifecycle hooks synchronously during setup. DOM lifecycle hooks do not run during SSR. Browser globals belong in client-only execution, not module initialization or server setup.
+
+Synchronous registration can occur inside an ordinary helper called from setup; it need not be lexically in the SFC. Arbitrary async continuations lose that active instance/scope. The compiler restores instance context for top-level `<script setup>` await, an explicit exception rather than permission to call lifecycle/injection helpers after any await; see [SFC boundaries](components.md#sfc-and-typescript-boundaries).
 
 **Do not mutate component state in `onUpdated()`.** A source example that writes a “last synced” ref inside `updated` conflicts with the official infinite-loop warning. Use an explicit event/action, a targeted watcher, or `nextTick` after the relevant mutation instead. `onUpdated` is appropriate for unavoidable post-render synchronization, including reading latest non-reactive attrs; it is not a universal persistence trigger. There is no framework guarantee of 60fps. [Official lifecycle contract](https://vuejs.org/api/composition-api-lifecycle.html#onupdated).
 
@@ -181,5 +185,6 @@ The Vue fences are complete SFCs; the memoized HTML fence is explicitly a contex
 
 - [Vue 3.5.44 registry metadata](https://registry.npmjs.org/vue/3.5.44) and [pinned reactive declarations](https://unpkg.com/@vue/reactivity@3.5.44/dist/reactivity.d.ts).
 - [Reactivity core](https://vuejs.org/api/reactivity-core.html), [advanced reactivity](https://vuejs.org/api/reactivity-advanced.html), [watchers](https://vuejs.org/guide/essentials/watchers.html).
+- [Vue 3.5.44 ref implementation](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/ref.ts), [watch source/comparison/cleanup implementation](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/watch.ts).
 - [Lifecycle API](https://vuejs.org/api/composition-api-lifecycle.html), [performance guide](https://vuejs.org/guide/best-practices/performance.html), [security](https://vuejs.org/guide/best-practices/security.html).
 - [Built-in memo directives](https://vuejs.org/api/built-in-directives.html#v-memo), [reactivity debugging](https://vuejs.org/guide/extras/reactivity-in-depth.html#reactivity-debugging), [TypeScript Composition API](https://vuejs.org/guide/typescript/composition-api.html).

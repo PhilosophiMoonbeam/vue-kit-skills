@@ -17,7 +17,7 @@ metadata:
 Use this skill as a task router, not a reading checklist. It is self-contained;
 load only the relevant references and the companions needed by the actual change.
 
-Prefer **Bun** for new projects and equivalent package-management workflows:
+Prefer **Bun 1.4.3** for new projects and equivalent package-management workflows:
 `bun install` for a manifest, `bun add` for dependencies, `bun run <script>` for
 scripts, and `bunx` for package executables. Respect an incumbent project's
 explicit package-manager pin and authoritative lockfile; do not migrate managers
@@ -38,8 +38,9 @@ Follow [setup tooling](references/setup-tooling.md) for lockfile and runtime pol
 3. Default new Vue code to Composition API and `<script setup lang="ts">`.
    The documented baseline is [Vue 3.5.44](https://github.com/vuejs/core/releases/tag/v3.5.44)
    with [Vuetify 4.3.0](https://github.com/vuetifyjs/vuetify/releases/tag/v4.3.0)
-   preferred for a new general-purpose UI. These are preferences, not permission
-   to replace an incumbent alternative or require Vuetify for headless/3D work.
+   as the pinned authoring baseline and **Vuetify 4.3.x** preferred for a new
+   general-purpose UI. These are preferences, not permission to replace an
+   incumbent alternative or require Vuetify for headless/3D work.
    Preserve Options API and JSX where the application requires them.
    The example's Router/Pinia/tooling pins are a bounded runnable snapshot, not
    ecosystem-wide version ceilings or instructions to downgrade newer incumbents.
@@ -76,7 +77,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | --- | --- | --- |
 | VueUse core/shared/math/components utilities and browser lifecycles | [VueUse](references/vueuse.md) | Composables for application-owned capability design |
 | VueUse integrations with Axios, focus trap, cookies, QR, or external packages | [VueUse integrations](references/vueuse-integrations.md) | VueUse for shared conventions; auth for identity-sensitive cookies |
-| Pinia, local/shared state, hydration, store contracts | [State](references/state.md) | Architecture data for ownership decisions; auth for session state |
+| Pinia, TanStack Vue Store, local/shared state, hydration, store contracts | [State](references/state.md) | Architecture data for ownership decisions; auth for session state |
 | Clerk Vue, session loading, sign-in UX, client guard/server authorization boundary | [Auth](references/auth.md) | Routing for protected navigation; debugging SSR for server applications |
 | Vue Router routes, params, guards, navigation/history, v5 file routing or experimental loaders | [Routing](references/routing.md) | Auth for identity checks; testing for navigation; keep `vue-router/experimental` APIs distinct from stable imports |
 | Explicit TanStack Vue Router adapter evaluation or incumbent usage | [TanStack routing](references/routing-tanstack.md) | Routing for the stable Vue Router alternative; heed adapter status |

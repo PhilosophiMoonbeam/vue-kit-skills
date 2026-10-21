@@ -52,6 +52,8 @@ The inbox route composes access readiness, resource queries, list presentation, 
 
 Vue explicitly warns about module-singleton cross-request state pollution and recommends a fresh application/store per request. Merely importing Pinia does not establish isolation. Browser-only mounting hooks do not run during SSR; cleanup-dependent timers should not start in universal setup. These are [Vue SSR contracts](https://vuejs.org/guide/scaling-up/ssr.html#writing-ssr-friendly-code), not optional layering preferences.
 
+**Creator/disposal contract (synthesis):** the application bootstrap—or SSR request factory—creates the router, store/cache instances and auth integration. A feature provider creates shared feature capabilities once; each editor session creates its draft and save coordinator. The UI owner creates browser effects and disposes them with its interaction. Route departure, access retirement and application/request completion are distinct teardown points; [KeepAlive deactivation](https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance) is not unmount/disposal. Name the owner of any work intentionally outliving these boundaries.
+
 ## Boundaries that survive feature growth
 
 **Synthesis:** start with cohesive feature slices. Extract when a boundary hides meaningful policy, a stateful invariant, a lifecycle, or an independently changing UI responsibility. File length and reuse count are signals, not rules.
@@ -97,6 +99,8 @@ export interface CaseCommands {
 ```
 
 The server must atomically enforce the revision precondition for `conflict` to be meaningful. If the real API has no conditional-write contract, do not claim lost-update protection; record that prerequisite and design truthful reconciliation. A TypeScript union documents expected results but validates neither untrusted JSON nor server behavior.
+
+An HTTP `If-Match` precondition is one possible real backend mechanism, not something this seam assumes: [RFC 9110 §13.1.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1) requires strong entity-tag comparison and forbids performing the method when the condition fails. A revision string is not automatically an ETag. Returning `conflict.latest` also requires authorization to disclose that snapshot; a failed write must not become an unauthorized read. Adapt to the service's actual contract rather than inventing a conflict payload.
 
 ## SPA, SSR, SSG, or Nuxt: choose the operational contract
 
@@ -151,3 +155,4 @@ This is a proposed design and contract, not an exercised inbox implementation. B
 - [Vue component events](https://vuejs.org/guide/components/events.html) and [provide/inject ownership](https://vuejs.org/guide/components/provide-inject.html).
 - [Nuxt 4.6.2 metadata](https://registry.npmjs.org/nuxt/4.6.2) and [Nuxt 4 rendering modes](https://nuxt.com/docs/4.x/guide/concepts/rendering).
 - [OWASP authorization: every request, server-side enforcement](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html).
+- [RFC 9110 conditional writes and `If-Match`](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1).

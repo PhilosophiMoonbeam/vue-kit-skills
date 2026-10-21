@@ -179,7 +179,7 @@ async function submit(event: SubmitEventPromise) {
     notes.value.push({ id: nextId++, title: title.value.trim() })
     title.value = ''
     await nextTick()
-    await form.value?.resetValidation()
+    form.value?.resetValidation()
     notification.value = 'Note added for this session only.'
     notificationOpen.value = true
     titleField.value?.focus()
@@ -254,6 +254,8 @@ function restoreResetFocus() {
 `VForm.validate()` returns `Promise<{ valid, errors }>`; testing the promise or the whole result object as a boolean is incorrect. `VForm`'s `v-model` can be `null` before validation, and `validate-on="submit"` is not permission to submit without awaiting. For an **imperative action outside a form submit**, use `const result = await form.value.validate()` after checking the ref; for `@submit`, await the `SubmitEventPromise` instead of starting a redundant validation pass. `.prevent` prevents the default native navigation. Async rules must settle to `true`/an error message and handle their own expected service errors. Keep duplicate mutations disabled while validation/submission is pending. [VForm source](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VForm/VForm.tsx), [validation types](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/form.ts).
 
 `reset()` clears field models and validation; `resetValidation()` clears validation state without intentionally clearing the input. In Vuetify 4, VForm **slot** values such as `isValid` are already unwrapped. Do not write slot `isValid.value`. Server field errors remain authoritative; client rules are only UX. Complex schemas and app-owned form state belong in [forms.md](forms.md), [vee-validate.md](vee-validate.md), or [tanstack-form.md](tanstack-form.md), without two independent validation engines fighting for the same field state.
+
+The return types differ: `validate()` and the submit event are awaitable, but **form-level** `reset()`/`resetValidation()` return `void` in 4.3. They invoke each registered field's reset without aggregating its promises. Do not treat `await form.resetValidation()` as proof that all field work has settled; use `nextTick()` for a required Vue DOM update, not as a replacement validation result. [Exact form implementation](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/form.ts).
 
 ### Input models, timing, and cross-field validation
 
@@ -702,7 +704,7 @@ async function begin(row: Row | null, remove: boolean, event: MouseEvent) {
   deleting.value = remove
   open.value = true
   await nextTick()
-  await editor.value?.resetValidation()
+  editor.value?.resetValidation()
 }
 
 async function save(event: SubmitEventPromise) {

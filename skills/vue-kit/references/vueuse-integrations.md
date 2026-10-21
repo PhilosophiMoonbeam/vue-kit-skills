@@ -125,6 +125,8 @@ interface RepositorySummary {
   stargazers_count: number
 }
 const notice = ref('')
+const busy = ref(false)
+let disposed = false
 const { data, isLoading, execute, abort } = useAxios<RepositorySummary>(
   'https://api.github.com/repos/vueuse/vueuse',
   { method: 'GET' },
@@ -132,27 +134,38 @@ const { data, isLoading, execute, abort } = useAxios<RepositorySummary>(
 )
 
 async function load() {
+  if (busy.value || disposed) return
+  busy.value = true
   notice.value = ''
   try {
     await execute()
   }
   catch (cause) {
+    if (disposed) return
     notice.value = isCancel(cause)
       ? 'Request canceled.'
       : cause instanceof Error ? cause.message : String(cause)
   }
+  finally {
+    if (!disposed) busy.value = false
+  }
 }
-onScopeDispose(abort)
+onScopeDispose(() => {
+  disposed = true
+  abort()
+})
 </script>
 
 <template>
-  <button type="button" :disabled="isLoading" @click="load">Load repository</button>
+  <button type="button" :disabled="busy" @click="load">Load repository</button>
   <button type="button" :disabled="!isLoading" @click="abort()">Cancel request</button>
   <p v-if="isLoading" role="status">Loading</p>
   <p v-if="notice" role="status">{{ notice }}</p>
   <p v-if="data">{{ data.full_name }}: {{ data.stargazers_count }} stars</p>
 </template>
 ```
+
+`busy` owns serialization through the **settled execute promise**, not just the wrapper's loading flag. In v15, `abort()` sets `isLoading` false immediately, before the aborted request's catch/finally runs. Re-enabling Load from that flag alone permits an old cancellation to overwrite a new execution's error and contaminate its shared thenable. The guard also rejects same-tick/programmatic duplicate loads; scope disposal prevents this example's notice/finally callbacks from publishing after unmount. Abort still permits the wrapper's internal error ref to settle; it is not disposal of the controller's refs. [Exact abort and shared thenable](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAxios.js)
 
 Create credential-bearing Axios instances per SSR request/app as appropriate. Do not mutate a server-global Axios default Authorization header with a user's token. Interceptor attachment and ejection belong to the instance owner, not every rendering consumer. Use [Query](tanstack-query.md) or [Colada](pinia-colada.md) when the actual requirement is resource caching/invalidation rather than imperative transport state.
 

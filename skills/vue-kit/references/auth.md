@@ -99,18 +99,23 @@ This complete integration module exposes real SDK operations without copying res
 
 ```ts
 // src/use-organization-commands.ts
+import { watch } from 'vue'
 import { useAuth, useClerk, useUser } from '@clerk/vue'
 
 export function useOrganizationCommands() {
   const clerk = useClerk()
   const { isLoaded, isSignedIn, userId, sessionId } = useAuth()
   const { user, isLoaded: userLoaded } = useUser()
+  let sessionGeneration = 0
+  watch([isLoaded, isSignedIn, userId, sessionId], () => {
+    sessionGeneration++
+  }, { flush: 'sync' })
 
   function owner(): string {
     if (!isLoaded.value || !isSignedIn.value || !sessionId.value || !userId.value) {
       throw new Error('An active session is required.')
     }
-    return JSON.stringify([userId.value, sessionId.value])
+    return JSON.stringify([sessionGeneration, userId.value, sessionId.value])
   }
 
   async function memberships(page = 1) {
@@ -138,6 +143,8 @@ export function useOrganizationCommands() {
 ```
 
 Use an id from the current user's returned memberships, or `null` to leave organization context; do not activate a route/body-supplied tenant as proof of membership. On user/session transition discard pages, reset page to 1, and hide the picker/private subtree; on org transition apply the identity teardown below. A stale request check prevents consuming its result; it **does not cancel or undo** an activation already issued to Clerk. Do not issue competing activations or keep stale membership pages visible while switching accounts. SDK/backend authorization still decides access, and a removed membership can reject activation. [Exact SDK exports](https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/index.d.ts), [matching shared 4.41.0 user declaration](https://cdn.jsdelivr.net/npm/@clerk/shared@4.41.0/dist/types/user.d.ts), [activation declaration](https://cdn.jsdelivr.net/npm/@clerk/shared@4.41.0/dist/types/clerk.d.ts), [user membership API](https://clerk.com/docs/vue/reference/objects/user#getorganizationmemberships). The shared package is a ranged SDK dependency; the app lockfile determines its resolved release.
+
+The synchronous session-generation watcher also rejects an old membership response after A → B → A returns to the same user/session identifiers. Identifier equality alone cannot detect that intervening teardown. It is scoped to the composable's setup owner; do not keep calling its commands after that owner is disposed.
 
 ## Vue Router guard, not a server security boundary
 
@@ -302,25 +309,31 @@ export const useAccessStore = defineStore('access', () => {
 
 Consumers use `storeToRefs(access)` for reactive computed fields and call `await access.requestToken()` (a Pinia action, not Clerk's computed function ref). Token rejection still propagates; never store its result as state. This store has no owned mutable session state to `$reset`, and no resource/persistence plugin should mirror SDK internals. `canEnterOrganization` is only a navigation/display prerequisite, not a permission or backend authorization check. If first instantiated outside setup, pass the correct Pinia and establish a supported injection context; a request-global active root is not sufficient. SDK refs are reactive without a manual SDK listener or `onMounted` copy. [Pinia app-context setup execution](https://unpkg.com/pinia@4.1.0/dist/pinia.js), [Clerk computed-ref declaration](https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts).
 
-The following complete composable accepts an **application-owned synchronous cleanup contract**. Call once from the app shell, supply the real cleanup implementation, and key the private subtree by its returned identity key. It catches changes initiated elsewhere, not just the local sign-out button.
+The following complete composable accepts an **application-owned synchronous cleanup contract**. Call once from the app shell, supply the real cleanup implementation, and key the private subtree by its returned generation. It catches changes initiated elsewhere, not just the local sign-out button.
 
 ```ts
 // src/use-identity-boundary.ts
-import { computed, watch } from 'vue'
+import { computed, readonly, shallowRef, watch } from 'vue'
 import { useAuth } from '@clerk/vue'
 
 export function useIdentityBoundary(clearIdentityState: () => void) {
   const { isLoaded, isSignedIn, userId, sessionId, orgId } = useAuth()
+  const generation = shallowRef(0)
   const identityKey = computed(() => {
     if (!isLoaded.value || !isSignedIn.value) return null
     return JSON.stringify([userId.value, sessionId.value, orgId.value ?? null])
   })
-  watch(identityKey, () => clearIdentityState(), { immediate: true, flush: 'sync' })
-  return { identityKey }
+  watch(identityKey, () => {
+    generation.value++
+    clearIdentityState()
+  }, { immediate: true, flush: 'sync' })
+  return { identityKey, generation: readonly(generation) }
 }
 ```
 
 The callback must synchronously hide/erase identity-owned client state and invalidate the generation under which pending requests may commit. It should initiate cancellation/eviction of identity-scoped server caches and remove identity-scoped persisted records; query implementations and their async cancellation contracts belong to [tanstack-query.md](tanstack-query.md) / [pinia-colada.md](pinia-colada.md). Key every private query by user **and** active organization (session when its semantics require it), enable it only for a loaded usable identity, and ignore late responses from previous generations. Clear on logout, account switch, session switch, org switch, and revocation. Component unmount alone does not erase a global cache. Do not reset unrelated anonymous preferences automatically.
+
+Capture `generation.value` **before the first await**, including token retrieval; check that it is unchanged before dispatching identity-bound I/O and before publishing data, errors, or completion flags. Compare generations, not just the identity string: A → B → A must reject A's first request even when its IDs match again. Render the generation-keyed private subtree only when `identityKey` is non-null. Async cache teardown must target the captured old scope, not clear the newly active identity's cache after awaiting cancellation. Do not enable the new private subtree until its required cleanup has completed; cancellation that a transport ignores is not a publication barrier. These are application lifetime requirements, not automatic Clerk behavior. [Synchronous watcher timing](https://vuejs.org/guide/essentials/watchers.html#sync-watchers), [exact Clerk reactive auth contract](https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts).
 
 For explicit logout, close/hide the private subtree and clear sensitive client state before it can render to another identity; then await Clerk sign-out, show failures honestly, and redirect to a fixed public destination. The SDK owns session termination: clearing Pinia is not logout. Conversely, SDK sign-out does not automatically know about application drafts, query caches, persisted records, sockets, or background jobs. A failed sign-out can leave the server session active even though local sensitive data was erased.
 

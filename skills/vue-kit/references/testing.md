@@ -69,6 +69,8 @@ bunx --no-install vitest run
 bunx --no-install vitest src/SaveTitle.spec.ts
 ```
 
+Here Bun is the package manager/launcher, **not the test runner**: the installed `vitest` executable retains its Node shebang and the Node engine requirements above. `bun test` selects Bun's different runner; `bunx --bun vitest` forces a different runtime. Neither is an equivalent execution of these fixtures. Preserve an incumbent runner and its locked launcher rather than changing runtimes to make a failure disappear. [Bun executable/shebang policy](https://bun.com/docs/pm/bunx).
+
 Keep tests in explicit files and import `test`, `expect` and hooks rather than assuming globals. Set a Node environment per file/project for pure tests instead of imposing jsdom on every unit. Type checking is separate from successful test transpilation; use the application's `vue-tsc` check from [tooling](setup-tooling.md).
 
 ## Wait for the cause, not elapsed wall time

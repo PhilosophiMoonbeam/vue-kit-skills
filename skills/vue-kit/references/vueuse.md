@@ -125,39 +125,51 @@ Use a function for repeatable executions. Passing an already-created promise sta
 
 The v15 execution counter protects the latest state/error/loading commits. It does not cancel earlier work, prevent stale `onSuccess`/`onError` callbacks, or dispose a transport. A non-abortable operation still runs after the owner ends. [Exact implementation](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useAsyncState/index.ts).
 
-Runnable TypeScript composable; `task` is an explicit application-owned abort-aware contract, not an assumed backend:
+When cancellation must also prohibit publication after input invalidation or owner disposal, an AbortController around `useAsyncState` alone is insufficient: its execution counter changes only when another execute starts. A canceled task can still resolve, and stopping the scope does not invalidate that counter. Use the existing query owner for shared resources; for a local URL-bound read, an ordinary scoped watcher provides the required publication boundary without a catch-all task wrapper.
 
-```ts
-import { onScopeDispose } from 'vue'
-import { useAsyncState } from '@vueuse/core'
+Complete SFC against an application-supplied public text URL (`null` means no request). It renders escaped text, not HTML. Every URL change clears the previous identity's display, cancels the previous transport, and invalidates its success/error/finally commits; unmount does the same even if the transport ignores abort:
 
-export function useAbortableTask<T>(
-  task: (signal: AbortSignal) => Promise<T>,
-  initial: T,
-) {
-  let controller: AbortController | undefined
-  const result = useAsyncState(async () => {
-    controller?.abort()
-    controller = new AbortController()
-    return task(controller.signal)
-  }, initial, {
-    immediate: false,
-    resetOnExecute: false,
-    onError: (cause: unknown) => {
-      if (!(cause instanceof DOMException && cause.name === 'AbortError'))
-        console.error(cause)
-    },
+```vue
+<script setup lang="ts">
+import { ref, shallowRef, watch } from 'vue'
+
+const props = defineProps<{ url: string | null }>()
+const text = shallowRef<string>()
+const error = shallowRef<unknown>()
+const pending = ref(false)
+
+watch(() => props.url, async (url, _previous, onCleanup) => {
+  let current = true
+  const controller = new AbortController()
+  onCleanup(() => {
+    current = false
+    controller.abort()
   })
-
-  function cancel() {
-    controller?.abort()
+  text.value = undefined
+  error.value = undefined
+  pending.value = url !== null
+  if (url === null) return
+  try {
+    const response = await fetch(url, { signal: controller.signal })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const body = await response.text()
+    if (current) text.value = body
+  } catch (cause) {
+    if (current) error.value = cause
+  } finally {
+    if (current) pending.value = false
   }
-  onScopeDispose(cancel)
-  return { ...result, run: result.executeImmediate, cancel }
-}
+}, { immediate: true, flush: 'sync' })
+</script>
+
+<template>
+  <p v-if="pending" role="status">Loading text</p>
+  <p v-if="error" role="alert">{{ String(error) }}</p>
+  <pre v-if="text !== undefined">{{ text }}</pre>
+</template>
 ```
 
-Call this during setup. Cancellation is expected and still appears in the composable's `error` when it belongs to the latest execution; the callback only avoids logging expected DOM aborts. Choose the application's cancellation classification if its transport throws another error shape. `cancel` is not a reset operation and does not make uncooperative work abortable.
+The synchronous flush invalidates the old request as soon as the URL changes, before queued promise continuations can publish. The watcher is created during setup and disposed with that component; it is not a keyed cache or SSR prefetch integration. Do not attach private headers to arbitrary caller-controlled URLs. [Vue watcher cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [v15 execution counter](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useAsyncState/index.ts).
 
 ## Storage and serialization
 

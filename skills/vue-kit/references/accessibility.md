@@ -72,6 +72,8 @@ After full route changes, provide meaningful page title and predictable focus/an
 
 For modal dialogs follow the [WAI-ARIA APG dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/):
 
+WCAG success criteria and normative ARIA requirements define conformance; the [APG is informative, not a separate conformance standard](https://www.w3.org/WAI/ARIA/apg/about/introduction/#apg-is-not-a-normative-standard). The pattern below is the recommended implementation contract, not a claim that WCAG mandates every listed tactic. In particular, a visible close button is strongly recommended by APG, while the appropriate initial/return focus target depends on content and workflow. Record the applicable criterion and observed failure separately from departures from a recommended pattern.
+
 1. Give the dialog an accessible name tied to its visible title; associate a short simple description when useful. Do not flatten complex structured content into one `aria-describedby` announcement.
 2. Move focus inside on opening. For destructive final steps, the least destructive action is often appropriate; for long structured content, a `tabindex="-1"` heading/intro can preserve reading context.
 3. Contain Tab/Shift+Tab while modal, and prevent interaction with the background. `aria-modal="true"` is a semantic statement, not a focus trap or an implementation of inertness.

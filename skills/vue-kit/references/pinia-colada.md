@@ -102,15 +102,22 @@ const { state, asyncStatus, isPlaceholderData } = useQuery(() => ({
 }))
 
 const cache = useQueryCache()
+const reconciliationError = ref<unknown>(null)
 const { mutate, isLoading: saving, error: saveError } = useMutation({
+  onMutate: () => { reconciliationError.value = null },
   mutation: async (input: Rename): Promise<Task> => {
     const task = records.find((item) => item.tenant === input.tenant && item.id === input.id)
     if (!task) throw new Error('Task no longer exists in this local dataset')
     task.title = input.title
     return { ...task }
   },
-  onSuccess: (_saved, input) =>
-    cache.invalidateQueries({ key: ['memory-tasks', input.tenant] }),
+  onSuccess: async (_saved, input) => {
+    try {
+      await cache.invalidateQueries({ key: ['memory-tasks', input.tenant] })
+    } catch (cause) {
+      reconciliationError.value = cause
+    }
+  },
 })
 </script>
 
@@ -126,6 +133,9 @@ const { mutate, isLoading: saving, error: saveError } = useMutation({
     <p v-if="asyncStatus === 'loading'" role="status">Loading or refreshing page</p>
     <p v-if="state.status === 'error'" role="alert">{{ state.error.message }}</p>
     <p v-if="saveError" role="alert">{{ saveError.message }}</p>
+    <p v-if="reconciliationError" role="alert">
+      The local rename succeeded, but refreshing failed. {{ String(reconciliationError) }}
+    </p>
     <p v-if="isPlaceholderData">Showing the previous page while the next page loads.</p>
     <ul v-if="state.data">
       <li v-for="task in state.data.items" :key="task.id">
@@ -151,6 +161,8 @@ const { mutate, isLoading: saving, error: saveError } = useMutation({
 Plain `useQuery` calls with the same key resolve to the same cached entry; do not claim they each create an independent canonical result. They must agree on the resource and request semantics. Use `defineQueryOptions` for independent component parameters. Use `defineQuery` when the setup's **additional state itself** should be shared, such as one shared filter/controller. Its setup must be synchronous. A component-local filter and an intentionally global filter are different ownership choices; cache-key deduplication does not decide that choice.
 
 Do not depend on whichever observer last supplied an entry's options to reconcile conflicting functions under one key. A store that owns a live query can keep that query active for the store's lifetime. Prefer cache reads for passive access, guard genuine live queries with reactive `enabled`, and dispose feature scopes when their lifetime ends. Extra refs returned by `defineQuery` are not ordinary Pinia-serialized state: serialize/hydrate those separately or move intentionally shared SSR inputs into a real application store. [Reusable queries](https://pinia-colada.esm.dev/advanced/reusable-queries.md), [pinned cache reuse implementation](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs).
+
+In 1.4.8, `defineQuery` retains one setup result per query-cache instance. Losing the last scoped consumer **pauses** its setup scope and untracks its entries; it does not stop/recreate that setup or reset extra refs. A later consumer resumes the same setup. Entry `gcTime` governs cached query entries, not these extra controller refs. The setup scope belongs to the Pinia cache store and ends when that Pinia is disposed. Do not equate route unmount, cache-entry GC, and store disposal. [Exact `ensureDefinedQuery` / `defineQuery` lifecycle](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs)
 
 ## Freshness, errors, and cancellation
 
@@ -192,6 +204,7 @@ Throw/reject for failures; never catch and return `[]` to make a failed query ap
 Complete cache-optimism composable against an **application-owned service interface**. Instantiate it **once in a shared app/feature provider** and route all relevant writes through the returned `rename`. It enforces one pending command in that shared writer; the service implementation and server conflict policy are application responsibilities.
 
 ```ts
+import { shallowRef } from 'vue'
 import { defineQueryOptions, useMutation, useQueryCache } from '@pinia/colada'
 
 export interface Task { id: number; tenant: string; title: string }
@@ -211,6 +224,7 @@ export function taskOptions(service: TaskService, tenant: string, id: number) {
 export function useSingleWriterRename(service: TaskService) {
   const cache = useQueryCache()
   let writing = false
+  const reconciliationError = shallowRef<unknown>(null)
   const mutation = useMutation({
     onMutate: (input: Rename) => {
       const key = taskOptions(service, input.tenant, input.id).key
@@ -226,22 +240,30 @@ export function useSingleWriterRename(service: TaskService) {
         cache.setQueryData(snapshot.key, snapshot.previous)
       }
     },
-    onSettled: (_data, _error, input) =>
-      cache.invalidateQueries({ key: ['tasks', input.tenant] }),
+    onSettled: async (_data, _error, input) => {
+      try {
+        await cache.invalidateQueries({ key: ['tasks', input.tenant] })
+      } catch (cause) {
+        reconciliationError.value = cause
+      }
+    },
   })
 
   async function rename(input: Rename): Promise<Task> {
     if (writing) throw new Error('A rename is already pending in this writer')
     writing = true
+    reconciliationError.value = null
     try {
       return await mutation.mutateAsync({ ...input })
     } finally {
       writing = false
     }
   }
-  return { rename, isLoading: mutation.isLoading, error: mutation.error }
+  return { rename, isLoading: mutation.isLoading, error: mutation.error, reconciliationError }
 }
 ```
+
+The separate `reconciliationError` is intentional, not a swallowed write error: consumers must present it as “refresh failed,” while `rename` still resolves an accepted write or rejects the original write failure. In 1.4.8, a rejecting `onSettled` overrides the mutation promise's outcome and prevents the following assignment of `asyncStatus = 'idle'`. Catch/report refresh failures inside that hook rather than misclassifying an accepted write or leaving loading stuck. [Pinned mutation-cache `mutate` finally block](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs)
 
 An unconditional snapshot rollback can erase another mutation or a background refresh. A reference-equality guard prevents restoring over a different installed value but **does not compose overlapping snapshots**: B can snapshot A's optimistic value, then restore it after both fail. Separately instantiated writers are not serialized. For overlapping writers, use an app-wide per-resource coordinator, operation overlays with rebasing, or server versions/conflict resolution. Earlier invalidations can overwrite later optimism too; a bare `onError => restore(previous)` is not a general concurrency solution. Never restore across a principal/tenant cache reset. [Optimistic updates](https://pinia-colada.esm.dev/guide/optimistic-updates.md), [invalidation](https://pinia-colada.esm.dev/guide/query-invalidation.md).
 

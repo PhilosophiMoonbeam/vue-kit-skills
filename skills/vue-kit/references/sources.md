@@ -63,7 +63,7 @@ These are primary navigation entry points. Exact versions and API contracts live
 | [Three.js](tresjs.md) | [TresJS](https://docs.tresjs.org/), [Three.js](https://threejs.org/docs/) |
 | [Motion](motion.md) | [Motion for Vue](https://motion.dev/docs/vue), [VueUse Motion](https://motion.vueuse.org/) |
 | [Localization and head](i18n-head.md) | [Vue I18n](https://vue-i18n.intlify.dev/), [Unhead Vue](https://unhead.unjs.io/docs/vue/head/guides/get-started/overview) |
-| [Documentation and slides](docs-slides.md) | [VitePress](https://vitepress.dev/), [Slidev](https://sli.dev/) |
+| [VitePress documentation](docs-vitepress.md) | [VitePress](https://vitepress.dev/) |
 | [Testing](testing.md), [debugging/SSR](debugging-ssr.md) | [Vue Test Utils](https://test-utils.vuejs.org/), [Vitest](https://vitest.dev/guide/), [Playwright](https://playwright.dev/docs/intro), [Vue SSR](https://vuejs.org/guide/scaling-up/ssr.html) |
 | [AI streaming](ai-streaming.md) | [TanStack AI](https://tanstack.com/ai/latest/docs/overview), [Vue adapter source](https://github.com/TanStack/ai/tree/main/packages/vue-ai) |
 | [Toolchain](setup-tooling.md) | [Vite](https://vite.dev/guide/), [Vue TypeScript](https://vuejs.org/guide/typescript/overview.html), [Vue language tools](https://github.com/vuejs/language-tools), [TypeScript](https://www.typescriptlang.org/docs/) |
@@ -72,7 +72,7 @@ These are primary navigation entry points. Exact versions and API contracts live
 
 ## Reproducible coverage assets
 
-- [Source manifest](../assets/source-manifest.json): schema version 1; exact Vue/Vuetify baseline; **49 unique source-root IDs**; substantive replacement reference paths; document and flagged-document counts per root. A source can map to several capability/architecture references. Mapping is a coverage claim, not a sentence-by-sentence translation or an instruction to preserve obsolete advice.
+- [Source manifest](../assets/source-manifest.json): schema version 1; exact Vue/Vuetify baseline; **49 historical source-root IDs, 48 active roots and one excluded root**. The excluded presentation-integration root has **9 documents** and maps only to the removal record below. Active roots map to substantive capability/architecture references with document and flagged-document counts. Mapping is a coverage claim, not an instruction to preserve obsolete or unsupported advice.
 - [Source audit](../assets/source-audit.json): the **467-document** historical snapshot, **335 flagged documents**, each repository-relative source path, original SHA-256, domain, migration judgment and flag. It preserves the original rubric/counts plus resolved caveats and input-metadata hashes without duplicating source text.
   Flagged means the triage required verification or had uncertain classification; **335 flagged documents does not mean 335 confirmed defects**. Original migration totals: verify 312, retain 144, rewrite 6, mixed 4, unrelated 1.
 - Prefilter accounting: 10 non-Markdown-extension items and one utility document excluded; zero truncated documents and zero audit processing errors. Excluded utility roots/caches are described in the audit rubric. Those zero counts concern the source audit, not application tests or replacement quality.
@@ -83,7 +83,28 @@ A source path or hash is a historical identifier, **not a file required at runti
 
 Hashes allow comparison against the original snapshot **if those historical inputs are separately available**. They do not reconstruct source text, prove authorship/license, certify semantic completeness or require redistributing the old corpus. Input-artifact hashes identify exactly which coverage metadata was transformed into the bundled assets.
 
-The separate [second-pass replacement audit](../assets/second-pass-audit.json) classified 39 Markdown units (master plus 38 references): 36 correctness hypotheses and 3 mixed hypotheses, all low confidence, with 17 deterministic exclusions, no truncations and no processing errors. These are escalation counts, not confirmed defects, completed dispositions or evidence that acceptance passed. Keep them separate from the 467-document historical source snapshot and from exercised verification results.
+The archived [second-pass replacement audit](../assets/second-pass-audit.json) classified 39 Markdown units (master plus 38 references): 36 correctness hypotheses and 3 mixed hypotheses, all low confidence, with 17 deterministic exclusions, no truncations and no processing errors. Its original 39 units, 40 author handoff maps, snapshots, results and input/output hashes remain historical; those hashes do not identify the current shipped output. The [removal ledger](../assets/removals.json) supersedes its integration-adoption conclusions for the excluded capability. These are escalation counts, not confirmed defects, completed dispositions or evidence that current acceptance passed. Keep them separate from the 467-document historical source snapshot and current exercised verification.
+
+## Removed integrations
+
+### Slidev, Twoslash, and FloatingVue
+
+Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.
+
+The removal decision is dated **2026-10-21** and recorded in the machine-readable [removal ledger](../assets/removals.json), with the original provenance retained rather than rewritten. The latest-version reproduction used `@slidev/cli` **53.0.0**, `@slidev/client` **53.0.0**, `@shikijs/vitepress-twoslash` **4.5.0** and `floating-vue` **5.4.0**. Real Chromium startup logged `Failed to patch FloatingVue`, with a caught `TypeError` reading `Popper`. The client's unconditionally installed plugin assumes `VMenu.components.Popper.extends`, but the registered component has no `components` object. This is an observed compatibility defect in that integration, not a claim that every package is obsolete or inoperative.
+
+Ordinary type hover was observed working. The failed patch is the desktop drag/text-selection guard; working hover, deck rendering or a successful build does not establish clean initialization or correct selection/drag interactions. Vue Kit does not ship a private-component shim, error suppression or an unsupported dependency downgrade. The former combined guide has been replaced by the VitePress-only reference; the nine historical source documents are explicit exclusions, not routes to a supported slide capability. **VitePress, `@floating-ui/vue` and Reka remain in scope**; Floating UI's Vue adapter is a different library from `floating-vue`.
+
+Primary evidence: [CLI 53.0.0 metadata](https://unpkg.com/@slidev/cli@53.0.0/package.json), [client dependency contract](https://unpkg.com/@slidev/client@53.0.0/package.json), [client setup](https://unpkg.com/@slidev/client@53.0.0/setup/main.ts), [Twoslash 4.5.0 patch implementation](https://unpkg.com/@shikijs/vitepress-twoslash@4.5.0/dist/client.mjs), and [FloatingVue 5.4.0 metadata](https://unpkg.com/floating-vue@5.4.0/package.json). These sources explain the contract and failure mechanism; the runtime observation is distinct from a registry or source inspection. Decision/evidence tracking: `vue-kit-skills-bt3` and `vue-kit-skills-9uu`.
+
+Reintroduction requires all of the following, recorded against exact installed versions and fresh evidence:
+
+1. A supported compatible source/release fix for the integration, not merely a new `latest` tag, a local shim or a suppressed diagnostic.
+2. Clean real-browser startup without the patch error or uncaught initialization failures.
+3. Tooltip/type-hover, query and completion behavior, plus desktop drag/text-selection acceptance with both keyboard and pointer interactions.
+4. A production build and real integration checks on the authored Vue **3.5.44** baseline, with the exact dependency graph, browser environment and exercised limits recorded.
+
+Until these conditions are met, historical successful subfeatures and archived runs do not authorize restoring the removed capability.
 
 ## Material source caveats
 
@@ -111,7 +132,7 @@ Detailed source paths, package versions, primary URLs and resolutions are machin
 | Unit/component tests | Assertions exercised in their stated renderer/environment | Every browser, screen reader, backend, SSR request lifecycle or production deployment |
 | Browser/SSR integration and accessibility checks | Observed behavior for named versions, routes, interactions and environments | An unrestricted ecosystem-wide certification or manual screen-reader coverage not performed |
 
-The workbench is local and in memory, not an authenticated backend or persistence demonstration. The [verification record](../assets/verification.json) separates current checks from `historical_runs` bound to earlier file snapshots; reference acceptance paragraphs identify obligations in a consuming application, not an ecosystem-wide certification. Keep syntax compilation, strict TypeScript, template-checking mode, production builds, observed browser paths and unexercised provider/SSR/accessibility obligations distinct. The documented [Slidev tooltip incompatibility](docs-slides.md#observed-slidev-53-tooltip-boundary) remains an upstream limitation, not a concealed clean-runtime pass.
+The workbench is local and in memory, not an authenticated backend or persistence demonstration. The [verification record](../assets/verification.json) separates current checks from `historical_runs` bound to earlier file snapshots; reference acceptance paragraphs identify obligations in a consuming application, not an ecosystem-wide certification. Keep syntax compilation, strict TypeScript, template-checking mode, production builds, observed browser paths and unexercised provider/SSR/accessibility obligations distinct. The [removed-integration decision](#removed-integrations) is a shipped exclusion, not an accepted upstream boundary for an advertised capability.
 
 ## Authorship and licensing boundary
 

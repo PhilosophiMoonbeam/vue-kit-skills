@@ -11,8 +11,8 @@
     "explicit_source_reviews": 450,
     "native_only_sources": 17,
     "source_resolution_choices": {
-      "corrected": 372,
-      "out_of_scope": 2,
+      "corrected": 363,
+      "out_of_scope": 11,
       "covered": 76
     },
     "native_source_choices": {
@@ -94,7 +94,7 @@
     "native_judgments": "Frozen native judge_batch coverage/contradiction and readiness/risk/evidence/density rubrics produce historical candidate judgments, not confirmed defects. Full native result objects and original labels are preserved unchanged.",
     "explicit_resolutions": "Accepted individual primary-evidence dispositions are recorded separately with exact current replacement quotes and canonical enclosing headings/anchors. Explicit dispositions may overturn native hypotheses; a corrected disposition means replacement guidance was repaired or expanded, not that a historical source defect was confirmed.",
     "native_only": "17 source units retain native covered judgments and null individual resolutions. No individual manual disposition is claimed for those units.",
-    "source_provenance": "Source IDs, roots, mappings and original SHA256 values come from bundled original audit/manifest metadata. Crosswalk assembly does not need the old corpus; targeted flagged-source reviews are recorded separately.",
+    "source_provenance": "Source IDs, roots and original SHA256 values come from bundled original audit/manifest metadata. Current mappings reflect the explicit removal cutover; native judgments remain historical. Crosswalk assembly does not need the old corpus; targeted flagged-source reviews are recorded separately.",
     "quote_pointers": "Whitespace-normalized exact current quotes may occur in prose or fenced code; enclosing Markdown headings and their slugs are derived only outside fenced code. Differing author-supplied section labels are preserved as author_section.",
     "second_pass_reconciliation": {
       "scope": "Current explicit quote pointers and primary-source lookup URLs only; historical native judgments/probabilities, original SHA256 values, dispositions and counts remain unchanged. No new runtime claims.",
@@ -137,7 +137,7 @@
       "changed_current_quotes": [
         {
           "source": ".agents/skills/vitepress-skilld/references/cli.md",
-          "reference": "references/docs-slides.md",
+          "reference": "references/docs-vitepress.md",
           "previous_evidence": "`npm run docs:dev -- --port 5174 --strictPort --open` forwards real dev flags",
           "current_evidence": "`bun run docs:dev --port 5174 --strictPort --open` forwards real dev flags",
           "reason": "Requested Bun preference and direct Bun argument forwarding; no new VitePress runtime certification implied."
@@ -149,6 +149,19 @@
         "https://bun.com/docs/pm/bunx",
         "https://bun.com/docs/runtime"
       ]
+    },
+    "removal_cutover": {
+      "record": "assets/removals.json",
+      "removed_source_root": "slidev-cli-skilld",
+      "excluded_source_documents": 9,
+      "source_roots_historical": 49,
+      "source_roots_active": 48,
+      "reference_migration": {
+        "from": "references/docs-slides.md",
+        "to": "references/docs-vitepress.md"
+      },
+      "native_reference_identity": "The current docs-vitepress reference retains native_path references/docs-slides.md solely as the identity of its frozen native hypothesis. Fingerprint native reference maps under native_path when present; it is not a live compatibility alias.",
+      "policy": "All nine excluded source dispositions point to the exact removal quote in references/sources.md. Remaining VitePress mappings and the renamed current reference review point only to retained VitePress contracts. Native source/reference objects, original source hashes and native counts are unchanged."
     }
   },
   "sources": [
@@ -984,7 +997,7 @@
         "reference": "references/design-system.md",
         "section": "1. Establish the task and authority",
         "evidence": "Planning delivers a scoped brief, and read-only review delivers prioritized findings with location, evidence, impact and remedy; neither authorizes unsolicited implementation or persisted sidecars.",
-        "explanation": "Retains autonomous evidence-led continuation, consequential-question boundary, refine/extend/replace authority, product truth and smallest causal intervention. Sections 2–5 retain product-specific composition, role vocabulary, complete states and actual working outcomes. Added advanced craft/interop responsibilities through Palette ramps, Typography and layout diagnostics, Media, Task topology, Motion ownership, Performance investigation and Platform adaptation. Sections 7–8 retain consumer cutover, useful learning, evidence provenance, correction/convergence and honest blocked handoff. Accessibility owns semantics, targets, focus and equivalent operation. No runtime was exercised by this repair.",
+        "explanation": "Retains autonomous evidence-led continuation, consequential-question boundary, refine/extend/replace authority, product truth and smallest causal intervention. Sections 2\u20135 retain product-specific composition, role vocabulary, complete states and actual working outcomes. Added advanced craft/interop responsibilities through Palette ramps, Typography and layout diagnostics, Media, Task topology, Motion ownership, Performance investigation and Platform adaptation. Sections 7\u20138 retain consumer cutover, useful learning, evidence provenance, correction/convergence and honest blocked handoff. Accessibility owns semantics, targets, focus and equivalent operation. No runtime was exercised by this repair.",
         "primary_urls": [
           "https://vuejs.org/guide/best-practices/accessibility.html",
           "https://www.w3.org/TR/WCAG22/",
@@ -1024,7 +1037,7 @@
         "reference": "references/design-system.md",
         "section": "Palette ramps, materials, and data",
         "evidence": "For sequential scales make ordering readable, for diverging scales identify the meaningful midpoint, and for categorical scales provide distinguishable labels/markers rather than adding endless hues.",
-        "explanation": "Existing role mapping, identity preservation, action hierarchy, theme pairs and accessibility contrast calculations already cover the core. Added missing ramp/gamut and CSS-only OKLCH boundary, material light-direction/depth, solid translucency fallback, weakest text-over-image region, state/theme inspection and supplemental color-vision/grayscale checks. Authored palette judgment is distinguished from CSS Color 4 definitions and WCAG luminance; arbitrary CSS color functions are not promised as Vuetify parser inputs. Accessibility sections 2–4 retain exact threshold scope/exceptions and focus/selected contrast rather than copying oversimplified source rules.",
+        "explanation": "Existing role mapping, identity preservation, action hierarchy, theme pairs and accessibility contrast calculations already cover the core. Added missing ramp/gamut and CSS-only OKLCH boundary, material light-direction/depth, solid translucency fallback, weakest text-over-image region, state/theme inspection and supplemental color-vision/grayscale checks. Authored palette judgment is distinguished from CSS Color 4 definitions and WCAG luminance; arbitrary CSS color functions are not promised as Vuetify parser inputs. Accessibility sections 2\u20134 retain exact threshold scope/exceptions and focus/selected contrast rather than copying oversimplified source rules.",
         "primary_urls": [
           "https://www.w3.org/TR/css-color-4/",
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/theme.ts",
@@ -1065,7 +1078,7 @@
         "reference": "references/design-system.md",
         "section": "Media, composition references, and provenance",
         "evidence": "Optional sketches/composition prompts should specify authorized content in reading order, the primary action, one dominant idea, and the intended viewport/output scale.",
-        "explanation": "Core copy, truthful claims, state-specific recovery, full localization messages and real data ranges were already present in sections 1, 4 and 5. Added optional composition/media workflow (live text/control separation, intended scale, accepted-comp reuse) and contextual onboarding/permission/practice boundaries, rather than requiring image generation. Task topology adds pre-submit eligibility/units/consequences, retained uploaded work and primary-message/internal-diagnostic separation. Accessibility sections 1, 5–7 own persistent labels/name alignment, linked errors and announcements, truncation/full value, RTL isolation and media/chart alternatives; the existing i18n companion remains the implementation owner. No fictional product facts or backend capabilities were introduced.",
+        "explanation": "Core copy, truthful claims, state-specific recovery, full localization messages and real data ranges were already present in sections 1, 4 and 5. Added optional composition/media workflow (live text/control separation, intended scale, accepted-comp reuse) and contextual onboarding/permission/practice boundaries, rather than requiring image generation. Task topology adds pre-submit eligibility/units/consequences, retained uploaded work and primary-message/internal-diagnostic separation. Accessibility sections 1, 5\u20137 own persistent labels/name alignment, linked errors and announcements, truncation/full value, RTL isolation and media/chart alternatives; the existing i18n companion remains the implementation owner. No fictional product facts or backend capabilities were introduced.",
         "primary_urls": [
           "https://web.dev/learn/images/descriptive",
           "https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html",
@@ -1270,7 +1283,7 @@
         "disposition": "corrected",
         "reference": "references/design-system.md",
         "section": "Platform adaptation and alternate outputs",
-        "evidence": "Apple's current HIG lists **44 × 44 pt default** and **28 × 28 pt minimum** controls for iOS/iPadOS, not a universal 44pt minimum; aim for comfortable targets and spacing.",
+        "evidence": "Apple's current HIG lists **44 \u00d7 44 pt default** and **28 \u00d7 28 pt minimum** controls for iOS/iPadOS, not a universal 44pt minimum; aim for comfortable targets and spacing.",
         "explanation": "Added missing native/cross-platform/alternate-output responsibilities as concrete design and interop contracts, explicitly not native SDK snippets. Covers mobile web capability/input coexistence, browser chrome/safe area/keyboard/viewport units, iOS tabs-stack-sheets/Back/Dynamic Type/system roles/symbols/VoiceOver, Android bars-rails-drawers/Back-vs-Up/predictive Back/edge-to-edge/IME/sp/48dp/Dynamic Color fallback/TalkBack, tablet/multi-window/foldable pane continuity/hinge/posture, and print/email constraints. Current Apple primary HIG overturns the source's universal 44pt-minimum wording; Android still documents 48dp targets. Preserves source-level distinction between webview and true native, emulator and hardware, and unobserved gestures/performance. Accessibility sections 3 and 6 retain web targets, orientation, zoom/reflow and scaling rather than importing native dimensions as WCAG minima.",
         "primary_urls": [
           "https://developer.apple.com/design/human-interface-guidelines/accessibility",
@@ -2507,7 +2520,7 @@
         "disposition": "corrected",
         "reference": "references/alternative-ui.md",
         "section": "Quasar utility, layout and upgrade contracts",
-        "evidence": "Do not apply the older source's “no APIs added in 2.33.x” claim to all later 2.35.x releases.",
+        "evidence": "Do not apply the older source's \u201cno APIs added in 2.33.x\u201d claim to all later 2.35.x releases.",
         "explanation": "Adds retained 2.33 pagination/date/color/virtual-scroll fixes, 2.32 SSR images/aspect/transition/native-layout changes, 2.31 readonly/dark/field CSS, 2.30 observer callback/timing, 2.29 activation and 2.28 popup/platform changes, earlier language/textarea/virtual SSR/RTL/SSG boundaries. Added-API lookup preserves all capability categories without freezing obsolete counts, and nativeEl/disable-tab-selection guidance is explicit. Older wrapper advice is superseded by separately documented exact app-vite3.10.3 API, not silently dropped.",
         "primary_urls": [
           "https://github.com/quasarframework/quasar/releases/tag/quasar-v2.33.0",
@@ -3034,7 +3047,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "701e6699cdf015c04d13f768c09ceb043f1cd74d2234947ad3c817565b801ced",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3054,17 +3067,17 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "Slidev: complete minimal deck",
-        "evidence": "Do not add `createApp`, a custom RouterView or an independent Vite entry to render these slides.",
-        "explanation": "Preserved pinned environment, dedicated package, complete deck/component, authoring, export/browser and SPA hosting. Added missing theme eject/format, detailed command flags, MCP operations, click/code/layout/config and persistent-lifetime contracts in the following advanced sections. Replaced source's blanket tunnel rejection with actual CLI behavior: tunnel is enabled only with remote; without it CLI reports the requirement.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://unpkg.com/@slidev/cli@53.0.0/package.json",
           "https://unpkg.com/@slidev/cli@53.0.0/dist/cli.mjs",
           "https://sli.dev/builtin/cli"
         ],
-        "anchor": "slidev-complete-minimal-deck"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3072,7 +3085,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "8f225653c1a6245f88328d59b09a166cdf2e90909122160e1395ac6adadceb3d",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3092,16 +3105,16 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "Advanced deck syntax, code and click contracts",
-        "evidence": "`v-click=\"[2,5]\"` is visible on clicks 2, 3, 4; end 5 is **exclusive**.",
-        "explanation": "Added concrete relative/absolute/range/hide positioning, v-after, nested/group clicks and VSwitch; clicks/clicksStart, motion/click variants, directional/custom transitions/CSS classes, Rough Notation and drawings visibility/persistence/sync. Corrected old source's unquoted numeric relative syntax, -1-as-previous assumption and inclusive range ambiguity against official click contract. Accessibility/static export concerns remain linked and actionable.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://sli.dev/guide/animations",
           "https://unpkg.com/@slidev/types@53.0.0/dist/index.d.mts"
         ],
-        "anchor": "advanced-deck-syntax-code-and-click-contracts"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3109,7 +3122,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "cdcb43483d895e260d59dde0d2594218c1bfaa1e313f2cb27a0a4e97158d3655",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3129,16 +3142,16 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "CLI workflow, browsers and deployment",
-        "evidence": "The strict CLI rejects unknown flags.",
-        "explanation": "Retained local scripts/npm flag forwarding and complete export commands; added explicit-port/default-port distinction, remote/tunnel/bind trust, inspect/force, terminal shortcuts, router modes/output/multiple entries and export format/range/dark/scale/background/TOC/per-slide contracts. Layout section covers theme eject and source-owning constraints; MCP section supplies stdio command. Export-notes and in-place format are explained. Source tunnel wording is corrected to actual warning/disabled-tunnel behavior rather than claiming a parser rejection.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://unpkg.com/@slidev/cli@53.0.0/dist/cli.mjs",
           "https://sli.dev/builtin/cli"
         ],
-        "anchor": "cli-workflow-browsers-and-deployment"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3146,7 +3159,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "bc2d141fcf81edf8eb61c28f310f067015c95af383d152f669b600f9789d014e",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3166,18 +3179,18 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "Advanced deck syntax, code and click contracts",
-        "evidence": "Outer **four** backticks with `md magic-move`, inner triple fences for successive code states",
-        "explanation": "Added line highlight stages/synchronization, option groups, line numbers/scroll heights, TwoSlash dependency boundary, Monaco/diff/run/custom-runner/autorun/output behavior, rooted and regional imported snippets and source-writing permission, Comark code-group syntax and real complete Magic Move slide. Tuning options are retained without pretending displayed code runs automatically.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://sli.dev/features/import-snippet",
           "https://sli.dev/features/monaco-run",
           "https://sli.dev/features/comark",
           "https://unpkg.com/@slidev/cli@53.0.0/dist/serve-DzvJFv6v.mjs"
         ],
-        "anchor": "advanced-deck-syntax-code-and-click-contracts"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3185,7 +3198,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "5de7b6d079b604ec3f8bac3623df5b84d8b35e4cdcb2e8599b81c86ad49d74dc",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3205,17 +3218,17 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "Layout extension and persistent slide lifetimes",
-        "evidence": "Slide instances persist while inactive: `onMounted`/`onUnmounted` alone do not start/stop work on each visit.",
-        "explanation": "Added layout provider precedence, image/iframe props and named/default-slot custom layout; navigation/meta, positioning/dragging, media, conditional render and light/dark component workflows; exposed globals/composables and actual active-slide timer plus navigation hooks/cleanup. Source's dummy startAnimation/cleanup symbols are not copied. Security explains RenderWhen does not keep presenter content secret.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://sli.dev/builtin/components",
           "https://sli.dev/builtin/layouts",
           "https://unpkg.com/@slidev/cli@53.0.0/skills/slidev/references/api-slide-hooks.md"
         ],
-        "anchor": "layout-extension-and-persistent-slide-lifetimes"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3223,7 +3236,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "38eccfbe916c3ec3ab574de31c9da8b602ce1a99947814ac50e5c6443a8ccd8f",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3243,17 +3256,17 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "Headmatter capabilities and source-editing MCP",
-        "evidence": "`browserExporter: false` explicitly disables that page in 53.0.0",
-        "explanation": "Added practical geometry/fonts/color, metadata/SEO/html attrs/defaults/addons/themeConfig, mode-gated presenter/exporter/editor/recording UI, download/export/remote-assets and per-slide appearance/identity/visibility/preload boundaries. Advanced code/click section covers Shiki/Twoslash/Monaco/Magic Move, clicks, drawings and slide imports; layout section covers drag positions and layout props. Explicitly corrected browser-exporter false restriction from related old source using exact config and CLI implementation.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://unpkg.com/@slidev/types@53.0.0/dist/index.d.mts",
           "https://unpkg.com/@slidev/cli@53.0.0/dist/cli.mjs",
           "https://sli.dev/custom/"
         ],
-        "anchor": "headmatter-capabilities-and-source-editing-mcp"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3261,7 +3274,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "c0cfcbe252ffcfdff5f990951ed86f9087c36ac66f0651cdbec129f838b9c6f1",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3281,18 +3294,18 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "CLI workflow, browsers and deployment",
-        "evidence": "`--per-slide` can isolate global-layer state but breaks cross-slide links/TOC",
-        "explanation": "Existing CLI/browser exporters, exact Playwright pin, notes, build/base/publication and editable-PPTX limitations were already substantive; added global/slide-layer diagnosis, real CI fonts, range/render options and routing for hosts without rewrites. Headmatter section covers export config/download/remote assets. Omitted vendor-specific CI boilerplate and unpinned Docker command are deployment alternatives, not lost capabilities: static dist and host fallback/hash contract applies across hosts. Actual browserExporter false support corrects stale source statement.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://sli.dev/guide/exporting",
           "https://sli.dev/guide/hosting",
           "https://unpkg.com/@slidev/cli@53.0.0/dist/cli.mjs",
           "https://unpkg.com/@slidev/types@53.0.0/dist/index.d.mts"
         ],
-        "anchor": "cli-workflow-browsers-and-deployment"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3300,7 +3313,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "033d8de20af70fe152e77aa1487da791f4ff30fb0f35ce19f8b2a11da4ff6125",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3320,16 +3333,16 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "Headmatter capabilities and source-editing MCP",
-        "evidence": "`slidev-update-slide` accepts `{ no, content?, note?, frontmatter? }`",
-        "explanation": "Replaced one-line stdio mention with full HTTP/stdio selection, disabling/trust, all eight operations, input payloads, clear/delete versus omitted-field semantics, rendered numbering/relisting, first-entry protection, imported-file ownership and same-file move limits. Live navigation and visual verification are explicitly unavailable via stdio. Exact current tool schema, not old remembered MCP behavior, decides payloads.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://unpkg.com/@slidev/cli@53.0.0/dist/serve-DzvJFv6v.mjs",
           "https://sli.dev/builtin/cli"
         ],
-        "anchor": "headmatter-capabilities-and-source-editing-mcp"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -3337,7 +3350,7 @@
       "source_root": "slidev-cli-skilld",
       "sha256": "a6833f009686990958657c5963445d81f8f7caf8977aee31599b534ec5303a21",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "native": {
         "coverage": {
@@ -3357,17 +3370,17 @@
         }
       },
       "resolution": {
-        "disposition": "corrected",
-        "reference": "references/docs-slides.md",
-        "section": "Advanced deck syntax, code and click contracts",
-        "evidence": "`comark: true` enables current attribute/component syntax (formerly MDC)",
-        "explanation": "Existing complete deck preserves separators, YAML, notes, Vue component and slots. Added imported slide ranges/ownership, per-slide scripts/styles, UnoCSS and Iconify install contract, math/highlight, Mermaid and PlantUML approved-renderer/privacy contract, Comark/current versus accepted mdc and advanced code syntax. Not reproducing old source snippets as fake standalone demos; fragments are explicitly contextual.",
+        "disposition": "out_of_scope",
+        "reference": "references/sources.md",
+        "section": "Slidev, Twoslash, and FloatingVue",
+        "evidence": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+        "explanation": "Explicitly excluded from the shipped capability set after the observed current-version FloatingVue compatibility defect. Original source identity, SHA256 and native judgment are historical evidence, not supported implementation guidance. Reintroduction requires the repaired supported integration and browser/production acceptance recorded in assets/removals.json.",
         "primary_urls": [
           "https://sli.dev/guide/syntax",
           "https://sli.dev/features/comark",
           "https://unpkg.com/@slidev/cli@53.0.0/dist/serve-DzvJFv6v.mjs"
         ],
-        "anchor": "advanced-deck-syntax-code-and-click-contracts"
+        "anchor": "slidev-twoslash-and-floatingvue"
       }
     },
     {
@@ -4728,7 +4741,7 @@
         "disposition": "corrected",
         "reference": "references/data-tables.md",
         "section": "Incumbent migration audit beyond the composable rename",
-        "evidence": "Split `enablePinning` into `enableColumnPinning`/`enableRowPinning`; rename `columnSizingInfo` → `columnResizing`, `setColumnSizingInfo` → `setColumnResizing`, and its change callback.",
+        "evidence": "Split `enablePinning` into `enableColumnPinning`/`enableRowPinning`; rename `columnSizingInfo` \u2192 `columnResizing`, `setColumnSizingInfo` \u2192 `setColumnResizing`, and its change callback.",
         "explanation": "Adds the omitted full coherent migration audit: processing/function slots, per-slice atoms/state, renderer/footer, prototype/internal method removal, every logical pinning region and argument, sizing/resizing split, some-versus-all/Shift selection, feature-first generics, metadata/registry typing and removal of stock bridge. Advanced feature section supplies current aggregation definitions/depth semantics and app table factories; no alias shim or forced unrelated migration.",
         "primary_urls": [
           "https://tanstack.com/table/latest/docs/framework/vue/guide/migrating"
@@ -4912,7 +4925,7 @@
         "disposition": "covered",
         "reference": "references/virtualization.md",
         "section": "Geometry contract",
-        "evidence": "Reactive counts/options require `computed(() => ({ … }))` or a ref of the **whole options object**.",
+        "evidence": "Reactive counts/options require `computed(() => ({ \u2026 }))` or a ref of the **whole options object**.",
         "explanation": "Overturns low-confidence warning: Version and adapter boundary already states imports, exact adapter/core, Ref/.value/script-template behavior and Vue peer; Geometry contract already explains null-then-mounted scroll ref, reactive whole options and scope cleanup, and complete example tracks items/total in computed. Added advanced section makes observer override/onChange ownership explicit. Vue2 peer compatibility is recorded, not taught as the Vue3.5 implementation target.",
         "primary_urls": [
           "https://unpkg.com/@tanstack/vue-virtual@3.13.47/dist/esm/index.d.ts",
@@ -5598,7 +5611,7 @@
         "disposition": "corrected",
         "reference": "references/visualization.md",
         "section": "Linked interaction, styling, and incumbent upgrades",
-        "evidence": "use shared domains and capture the widest-mark chart's `onRenderComplete(svg, margin, bleed, …)` horizontal bleed",
+        "evidence": "use shared domains and capture the widest-mark chart's `onRenderComplete(svg, margin, bleed, \u2026)` horizontal bleed",
         "explanation": "Preserves exact matched wrapper/core 1.7.1 composition/lifecycle/standalone/data contracts and full safe line SFC. Adds advanced mark/topology/categorical/waterfall/bleed, theme/pattern/legend and incumbent debugging workflows. Existing Crosshair.template=function is correct and overturns source's selector-map example; wrappers are not manually destroyed while live. SSR/MCP sections now give versioned real incumbent workflows.",
         "primary_urls": [
           "https://unovis.dev/releases/1.7",
@@ -6049,7 +6062,7 @@
       "source_root": "vitepress-skilld",
       "sha256": "d0c4998f2853828c1a3b6c5f54c4311e514502932a0a67de258bec1b7656abf3",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "native": {
         "coverage": {
@@ -6070,7 +6083,7 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/docs-slides.md",
+        "reference": "references/docs-vitepress.md",
         "section": "VitePress runtime, configuration and extension contracts",
         "evidence": "These are VitePress APIs, not Vue Router.",
         "explanation": "Original complete package/site/theme/component/loader and browser-only examples remain. Added runtime state/router/content hooks, custom config typing and Node APIs, theme/search/localization, actual Markdown snippets/config and migration/CLI diagnosis. Fixed source-inherited stale ideas through exact 1.6.4 declarations and tagged Markdown rather than copying erroneous syntax or narrowing VitePress to scaffolding.",
@@ -6088,7 +6101,7 @@
       "source_root": "vitepress-skilld",
       "sha256": "d354da7e9beba211ee41f70d4636d6d84cacb1b041753dc355173fc64f8e06a6",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "native": {
         "coverage": {
@@ -6109,7 +6122,7 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/docs-slides.md",
+        "reference": "references/docs-vitepress.md",
         "section": "VitePress runtime, configuration and extension contracts",
         "evidence": "`onAfterPageLoad` is before component update; `onAfterRouteChange` is after route change.",
         "explanation": "Added useData/useRoute/useRouter/go and correct cancellation versus after-hook contracts, onContentUpdated idempotent DOM enhancement, public theme composables/components and custom config/Node API boundaries. Existing Content/theme and createContentLoader examples retained; loader options, defineLoader/watch/serialized data, source-root URL/base behavior and experimental cached Markdown renderer disposal now explicit. Corrected source claim all hooks cancel using exact client declarations.",
@@ -6125,7 +6138,7 @@
       "source_root": "vitepress-skilld",
       "sha256": "a7d642dc948087be4ae215c9400dcf8e081c31a9362a8d289880dd5f1ebb869a",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "native": {
         "coverage": {
@@ -6146,7 +6159,7 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/docs-slides.md",
+        "reference": "references/docs-vitepress.md",
         "section": "Markdown authoring and 0.x migration",
         "evidence": "`bun run docs:dev --port 5174 --strictPort --open` forwards real dev flags",
         "explanation": "Existing complete package scripts/dev/build/preview and output/base hosting remain. Added dev force/strict-port, build target/outDir/minify/assets flags, preview serve alias, DEBUG/inspector/TTY diagnosis. Init and programmatic scaffold remain in the runtime/config contract. VitePress1/Vite5 versus rolldown and separately planned v2 migration are explicit; no actual checks run.",
@@ -6164,7 +6177,7 @@
       "source_root": "vitepress-skilld",
       "sha256": "6e6b332953bfa978d5439f811a827e991c4181b7f3d42f34ba60c89d02735784",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "native": {
         "coverage": {
@@ -6185,7 +6198,7 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/docs-slides.md",
+        "reference": "references/docs-vitepress.md",
         "section": "Default-theme navigation, search and localization",
         "evidence": "A custom `_render` must preserve the `search: false` exclusion itself.",
         "explanation": "Added path-keyed/sidebar base/collapse/navigation regex semantics, logos/title, outline/edit/timestamp/footer/social/localized control ownership, locale routing, local versus Algolia search/security and complete selective local-search config. Existing home frontmatter/CSS variables/layout slots and no-font theme preserved; public useSidebar/useLocalNav/components handled in runtime section. Current sidebar item link support is preserved rather than repeating overbroad source migration restriction.",
@@ -6202,7 +6215,7 @@
       "source_root": "vitepress-skilld",
       "sha256": "d5254a27684a1cbb9f88a65be124f2fceca65f36e1ef7d1619935febddc135cf",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "native": {
         "coverage": {
@@ -6223,7 +6236,7 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/docs-slides.md",
+        "reference": "references/docs-vitepress.md",
         "section": "Markdown authoring and 0.x migration",
         "evidence": "Not obsolete `@[code]`, `<code-group>` or invented `group` fences.",
         "explanation": "Added actual VitePress anchors/TOC, containers/alerts, code highlight/focus/diff/warning/numbers, source-root/region snippet and include syntax, code groups, literal Vue/style isolation, parser extension order and Shiki/math configuration. Explicitly replaced source's wrong code-group/file-import syntax with tagged official guide. Programmatic Markdown rendering remains experimental and its shared-instance disposal contract is preserved. Existing trust/SSR boundaries and complete page examples retained.",
@@ -6239,7 +6252,7 @@
       "source_root": "vitepress-skilld",
       "sha256": "9c45ac3e716e7cd9aeb5544e0e9fe6e92b7aafcd2e267206e9be295a27154d9a",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "native": {
         "coverage": {
@@ -6260,7 +6273,7 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/docs-slides.md",
+        "reference": "references/docs-vitepress.md",
         "section": "Markdown authoring and 0.x migration",
         "evidence": "migrate old group shapes rather than rejecting valid v1 `SidebarItem.link`.",
         "explanation": "Added concrete old sidebar/collapse/pathname/shikiji/router/theme/search migrations, page.isNotFound/layout and force-auto behavior, current headers versus visible outline, and VitePress2/rolldown boundary. Runtime/config table covers newer hash/page-load/content hooks, merge/loader/client-component/public theme APIs and experimental rewrites/sitemap/metaChunk/MPA/build concurrency. Source's broad ban on top-level sidebar link is corrected against current SidebarItem declarations.",
@@ -6278,7 +6291,7 @@
       "source_root": "vitepress-skilld",
       "sha256": "51cfef2ee18fcd2d78032d7d328695b709159c44ae421571c96818060fca2a7c",
       "mapped_references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "native": {
         "coverage": {
@@ -6299,7 +6312,7 @@
       },
       "resolution": {
         "disposition": "corrected",
-        "reference": "references/docs-slides.md",
+        "reference": "references/docs-vitepress.md",
         "section": "VitePress runtime, configuration and extension contracts",
         "evidence": "`transformHead` appends `HeadConfig[]` before writing HTML",
         "explanation": "Added actionable config reuse/custom typing, input/exclusion/output/assets/cache, Git timestamp, Vue/Vite pass-through, prefetch/preload and experimental sitemap/rewrites/MPA/metaChunk/concurrency boundaries; build hooks now describe timing, outputs and secret leakage. Existing base/clean URL/assets/data-loading and SSG examples preserved. Resolved config/Node APIs are tooling-only; no fake RSS writer, empty hook or dead-link suppression is introduced.",
@@ -6669,7 +6682,7 @@
         "reference": "references/components.md",
         "section": "Async components and built-in boundaries",
         "evidence": "After resolving, it reenters pending when the default root is replaced",
-        "explanation": "Overturn warning: experimental status, single root per slot, root replacement/key, fallback timeout on reversion, pending/resolve/fallback events, ancestor error capture, nested suspensible and RouterView→Transition→KeepAlive→Suspense ordering are all explicit. Not every deeper fetch retriggers fallback, nor is nested delegation mandatory in every design.",
+        "explanation": "Overturn warning: experimental status, single root per slot, root replacement/key, fallback timeout on reversion, pending/resolve/fallback events, ancestor error capture, nested suspensible and RouterView\u2192Transition\u2192KeepAlive\u2192Suspense ordering are all explicit. Not every deeper fetch retriggers fallback, nor is nested delegation mandatory in every design.",
         "primary_urls": [
           "https://vuejs.org/guide/built-ins/suspense.html"
         ],
@@ -6991,7 +7004,7 @@
         "reference": "references/virtualization.md",
         "section": "Geometry contract",
         "evidence": "A one-time `{ count: rows.value.length }` does not update when rows change.",
-        "explanation": "Overturn uncertain coverage: exact Vue adapter/ref API, bounded scrolling/spacer/position geometry, stable keys, reactive counts, estimates/overscan and measureElement are concrete; Complete example: dynamic read-only rows implements variable heights and hydration/focus boundaries. Core rejects arbitrary50–100-row/fps rules. TanStack headless current path is usable; incumbent alternative selection is not a forced migration.",
+        "explanation": "Overturn uncertain coverage: exact Vue adapter/ref API, bounded scrolling/spacer/position geometry, stable keys, reactive counts, estimates/overscan and measureElement are concrete; Complete example: dynamic read-only rows implements variable heights and hydration/focus boundaries. Core rejects arbitrary50\u2013100-row/fps rules. TanStack headless current path is usable; incumbent alternative selection is not a forced migration.",
         "primary_urls": [
           "https://registry.npmjs.org/@tanstack/vue-virtual/3.13.47",
           "https://tanstack.com/virtual/latest/docs/framework/vue/vue-virtual"
@@ -7464,7 +7477,7 @@
         "disposition": "covered",
         "reference": "references/debugging-ssr.md",
         "section": "Start at the first divergent boundary",
-        "evidence": "Compilation/import failure → tree A. State is wrong or stale → tree B. State is correct but DOM/interaction is wrong → tree C. Late work/errors/leaks → tree D. Initial server HTML differs from client → tree E.",
+        "evidence": "Compilation/import failure \u2192 tree A. State is wrong or stale \u2192 tree B. State is correct but DOM/interaction is wrong \u2192 tree C. Late work/errors/leaks \u2192 tree D. Initial server HTML differs from client \u2192 tree E.",
         "explanation": "Read the entire historical index. Its broad navigation responsibilities are preserved by the new master diagnostic route plus focused trees and advanced matrices; every underlying source unit has an individual disposition. An old index does not require reinstalling its 139 child files or duplicating that navigation architecture. The candidate missing label is overturned by this explicit entry and the complete underlying crosswalk.",
         "primary_urls": [
           "https://vuejs.org/guide/scaling-up/ssr.html",
@@ -8221,7 +8234,7 @@
         "primary_urls": [
           "https://vuejs.org/guide/extras/reactivity-in-depth"
         ],
-        "author_section": "Tree B — state is stale, unexpectedly shared or recursively updating",
+        "author_section": "Tree B \u2014 state is stale, unexpectedly shared or recursively updating",
         "anchor": "b2-is-the-derived-state-pure-and-the-effect-bounded"
       }
     },
@@ -8586,7 +8599,7 @@
       "resolution": {
         "disposition": "covered",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "Use a top-level macro; use imported values where allowed.",
         "explanation": "Existing macro branch preserves top-level defineEmits, emit reuse, imported runtime options and exclusive runtime/type declaration. B3/A1 clarify this must not become the source blanket prohibition on all other macro locals.",
         "primary_urls": [
@@ -8784,7 +8797,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "Use Vite's `import.meta.glob` with literal patterns and deliberate eager/lazy handling;",
         "explanation": "Tree A already replaces require.context with literal import.meta.glob and deliberate eager/lazy handling, linked to tooling. Added registration scope/name diagnosis preserves usable Vite cutover without inventing a second glob convention.",
         "primary_urls": [
@@ -9249,7 +9262,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "Local registration is not transitive.",
         "explanation": "Tree A and A1 preserve local non-transitive registration and actual-consumer imports, self-reference/import aliases and app-global lookup; slot lexical scope is retained in C1.",
         "primary_urls": [
@@ -9437,7 +9450,7 @@
       "resolution": {
         "disposition": "covered",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "`v-if` has higher priority than `v-for`",
         "explanation": "Already preserves Vue 3 precedence and two valid repairs: computed filtering for item predicates or separate conditional/loop nodes for whole-list visibility; no old Vue 2 priority copy.",
         "primary_urls": [
@@ -9594,7 +9607,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "Register plugins, provides, global components and error/warn handlers on the app before `app.mount`.",
         "explanation": "Tree A retains all app configuration and plugins before mount, dependency order and duplicate plugin install behavior; A1 makes augmentation/runtime installation separation concrete.",
         "primary_urls": [
@@ -9714,7 +9727,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "Use a top-level macro; use imported values where allowed.",
         "explanation": "Tree A preserves hoisted defineProps/defineEmits runtime-options limitations and imported binding repair; A1 distinguishes module versus instance scope. Does not copy the source prohibition onto unrelated macros with different semantics.",
         "primary_urls": [
@@ -10394,7 +10407,7 @@
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
         "section": "C1a. Discriminate native input and listener failures",
-        "evidence": "For an empty select use model `''` with `<option disabled value=\"\">Choose…</option>` to avoid iOS's first-option change trap.",
+        "evidence": "For an empty select use model `''` with `<option disabled value=\"\">Choose\u2026</option>` to avoid iOS's first-option change trap.",
         "explanation": "Adds concrete empty model/disabled empty option contract and explains the iOS first-option change-event trap, instead of requiring a placeholder for selects that already have a valid initial option.",
         "primary_urls": [
           "https://vuejs.org/guide/essentials/forms"
@@ -10707,7 +10720,7 @@
         "reference": "references/debugging-ssr.md",
         "section": "C2. Separate identity, DOM availability and style ancestry",
         "evidence": "Loose top-level slot content normally supplies default content.",
-        "explanation": "Adds explicit loose top-level content → default slot rule and explicit default template when scoped/named slots mix; slot placement remains a consumer lexical-scope contract.",
+        "explanation": "Adds explicit loose top-level content \u2192 default slot rule and explicit default template when scoped/named slots mix; slot placement remains a consumer lexical-scope contract.",
         "primary_urls": [
           "https://vuejs.org/guide/extras/render-function"
         ],
@@ -10851,7 +10864,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "`v-slot` belongs on components or `<template>`, not a native element.",
         "explanation": "Tree A preserves v-slot placement on components/templates; C2 explicitly retains mixed named/default scoped slot syntax and render-function forwarding. No native-element v-slot workaround.",
         "primary_urls": [
@@ -11821,7 +11834,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "An absent Boolean prop is normally cast to `false`; use an explicit `default: undefined` when absence must remain distinguishable.",
         "explanation": "Tree A preserves Boolean absent-to-false casting and explicit default undefined for three-state absence; A1 preserves actual runtime/tooling separation rather than requiring null/string workarounds.",
         "primary_urls": [
@@ -11860,7 +11873,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "supported imported types do not imply support for a conditional type describing the entire props object.",
         "explanation": "Tree A preserves AST-based imported/limited-complex props types, conditional entire-object limitation and supported individual prop use; A1 retains module export/import scope instead of copying old-version blanket imported-type bans.",
         "primary_urls": [
@@ -11899,7 +11912,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "Type DOM handlers as `Event`/the actual event type and narrow `event.target` before accessing input-specific fields.",
         "explanation": "Tree A retains Event/actual event typing with target narrowing; A1 preserves valid template assertions under real invariants. Vue receives native DOM events, not the source synthetic-event mental model.",
         "primary_urls": [
@@ -11938,7 +11951,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "Prefer inference for `reactive()` because its deep ref unwrapping can differ from a supplied generic type.",
         "explanation": "Tree A retains inferred reactive return type and deep-ref-unwrapping/generic mismatch; B3 explains shallow/raw ownership boundaries. It does not ban generics that already match their true return contract.",
         "primary_urls": [
@@ -12212,7 +12225,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A — compilation, resolution or application setup fails",
+        "section": "Tree A \u2014 compilation, resolution or application setup fails",
         "evidence": "`v-else(-if)` must immediately follow the conditional branch;",
         "explanation": "Tree A preserves immediately adjacent v-else(-if) and separated condition/loop nodes; A1 explicitly distinguishes v-show from branch pairing. No silent unconditionally rendered else workaround.",
         "primary_urls": [
@@ -14497,7 +14510,7 @@
         "disposition": "corrected",
         "reference": "references/routing.md",
         "section": "Guards, injection, failures, and metadata",
-        "evidence": "A target must be outside the rule redirecting to it; two individually non-self redirects can still form A→B→A.",
+        "evidence": "A target must be outside the rule redirecting to it; two individually non-self redirects can still form A\u2192B\u2192A.",
         "explanation": "Added concrete redirect-graph debugging using guarded destination/decision tracing, resolve(...).matched, shallow metadata and a single readiness/policy snapshot; covers login, guest-only/error/onboarding/direct-entry cases. Existing return table exempts public destinations and auth companion owns identity implementation. Explicitly rejects user-controlled _redirectCount as a loop fix, rather than copying the source workaround or implying a production runtime loop detector is a security boundary.",
         "primary_urls": [
           "https://router.vuejs.org/guide/advanced/navigation-guards.html",
@@ -14835,7 +14848,7 @@
         "disposition": "corrected",
         "reference": "references/routing.md",
         "section": "Incumbent migrations",
-        "evidence": "**Router 4 classic → 5:** upstream describes no breaking classic-route change except the IIFE devtools bundle limitation.",
+        "evidence": "**Router 4 classic \u2192 5:** upstream describes no breaking classic-route change except the IIFE devtools bundle limitation.",
         "explanation": "Added requested version-bounded v3 constructor/history/catch-all/readiness/ref/scroll/dynamic-route/app and RouterView/Link migration checklist, non-forced classic v4 upgrade, and complete external-unplugin plugin/utilities/loaders/virtual-module/Volar/client-types/generated-map dependency cutover. Experimental deprecations distinguish reroute, removed selectNavigationResult and ESM-only opt-in code. Relevant current features from historical release notes are owned in guard/parser/file-generation sections; obsolete release bug lists are not promoted to additional current APIs.",
         "primary_urls": [
           "https://router.vuejs.org/guide/migration/v4-to-v5.md",
@@ -15169,7 +15182,7 @@
         "disposition": "corrected",
         "reference": "references/testing.md",
         "section": "Mounting and wrapper API contracts for incumbent suites",
-        "evidence": "`scopedSlots` → `slots`, `setChecked`/`setSelected` → `setValue`,",
+        "evidence": "`scopedSlots` \u2192 `slots`, `setChecked`/`setSelected` \u2192 `setValue`,",
         "explanation": "Added remaining v1 option/method removals, attachToDocument/scopedSlots/setChecked/setSelected/createWrapper/enableAutoDestroy conversions, stub spelling/default-slot scope, string scoped params, config entry changes and v2.5 shared config. Existing class-component removal/emission clearing retained. No deprecated aliases shipped as shims.",
         "primary_urls": [
           "https://unpkg.com/@vue/test-utils@2.5.1/dist/src/types.d.ts",
@@ -15884,7 +15897,7 @@
         "reference": "references/vuetify-components.md",
         "section": "Actions, cards, alerts, and chip selection",
         "evidence": "`image` is a card background, not a substitute for informative image alt text.",
-        "explanation": "Added card parts/title/subtitle/text, slot-based media, sizing/aspect/crop/alt boundaries, link versus nested action semantics, and loading-color contract; card-grid recipe is under Page composition and transactional editing. Existing root equal-height grid preserved. Theme handles supported variants/radii/elevation0–5 instead of source dark prop and 0–24 assumption; source loading=\"saving\" was not copied as a state API.",
+        "explanation": "Added card parts/title/subtitle/text, slot-based media, sizing/aspect/crop/alt boundaries, link versus nested action semantics, and loading-color contract; card-grid recipe is under Page composition and transactional editing. Existing root equal-height grid preserved. Theme handles supported variants/radii/elevation0\u20135 instead of source dark prop and 0\u201324 assumption; source loading=\"saving\" was not copied as a state API.",
         "primary_urls": [
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VCard/VCard.tsx",
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VImg/VImg.tsx"
@@ -16047,7 +16060,7 @@
         "disposition": "corrected",
         "reference": "references/vuetify-components.md",
         "section": "Input models, timing, and cross-field validation",
-        "evidence": "`lazy` skips initial validation (`lazy` alone means `input lazy`), **not** “submit only” or “wait until first submit”.",
+        "evidence": "`lazy` skips initial validation (`lazy` alone means `input lazy`), **not** \u201csubmit only\u201d or \u201cwait until first submit\u201d.",
         "explanation": "Retained complete typed VForm submit/reset example; added input-specific variants/models/null clearing, textarea, password accessible reveal/autocomplete, boolean switch/checkbox, array values/indeterminate, radios/sliders/precision boundary, exact timing and cross-field/wizard revalidation. Existing selects section covers object identity/multiple/clear values. Corrected source validate-on-blur/lazy misconceptions and credentials logging; auth ownership remains real app provider.",
         "primary_urls": [
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/validation.ts",
@@ -17534,7 +17547,7 @@
         "reference": "references/vueuse.md",
         "section": "Reactive math",
         "evidence": "- Projection extrapolates; it does not clamp. Guard a zero-width input domain. `createProjection` reuses reactive numeric domains; `createGenericProjection` requires a custom projector for non-number domains.",
-        "explanation": "Overturned partial warning: existing section covers all material math responsibilities without a redundant export inventory—dedicated scalar wrappers and callable-key useMath, aggregation forms and empty NaN/infinities, getter/ref input tracking, writable clamp read/write mutation, reactive domains and custom reusable projection, precision modes/numeric rather than financial/localized guarantees, logicAnd/Or/Not and aliases. Complete createMetrics factory preserves request/setup ownership and guarded empty mean.",
+        "explanation": "Overturned partial warning: existing section covers all material math responsibilities without a redundant export inventory\u2014dedicated scalar wrappers and callable-key useMath, aggregation forms and empty NaN/infinities, getter/ref input tracking, writable clamp read/write mutation, reactive domains and custom reusable projection, precision modes/numeric rather than financial/localized guarantees, logicAnd/Or/Not and aliases. Complete createMetrics factory preserves request/setup ownership and guarded empty mean.",
         "primary_urls": [
           "https://cdn.jsdelivr.net/npm/@vueuse/math@15.0.0/dist/index.d.ts",
           "https://github.com/vueuse/vueuse/blob/v15.0.0/packages/math/useClamp/index.ts"
@@ -19711,7 +19724,7 @@
       }
     },
     {
-      "path": "references/docs-slides.md",
+      "path": "references/docs-vitepress.md",
       "native": {
         "readiness": {
           "type": "choice",
@@ -19752,19 +19765,17 @@
       },
       "resolution": {
         "disposition": "confirmed_fixed",
-        "section": "Advanced deck syntax, code and click contracts",
-        "evidence": "`v-after` means relative `'+0'`, not `'-1'`.",
-        "explanation": "Confirmed material omissions in the authored reference, not a general absence of evidence: added usable VitePress runtime/config/hooks/search/localization/Markdown/migration workflows and Slidev code, click, layout, lifecycle, headmatter, MCP and CLI workflows. Existing complete site/deck examples are preserved. Original broad evidence-gap warning is overturned insofar as the original already cited exact metadata and labeled execution unobserved; new API contracts cite exact declarations/implementation. No build, export, browser, typecheck or other runtime success is claimed.",
+        "section": "VitePress runtime, configuration and extension contracts",
+        "evidence": "These are VitePress APIs, not Vue Router.",
+        "explanation": "Retained VitePress runtime/configuration/hooks, search/localization, Markdown and migration contracts address the VitePress portion of the historical review. The former deck implementation guidance is removed, not repaired or certified; its exclusion is recorded in references/sources.md#slidev-twoslash-and-floatingvue and assets/removals.json. native_path preserves the original reference identity and unchanged native probabilities; this current quote supports only the retained VitePress navigation contract. No new execution result is claimed.",
         "primary_urls": [
           "https://unpkg.com/vitepress@1.6.4/dist/client/index.d.ts",
           "https://unpkg.com/vitepress@1.6.4/dist/node/index.d.ts",
-          "https://github.com/vuejs/vitepress/blob/v1.6.4/docs/en/guide/markdown.md",
-          "https://unpkg.com/@slidev/cli@53.0.0/dist/serve-DzvJFv6v.mjs",
-          "https://unpkg.com/@slidev/cli@53.0.0/dist/cli.mjs",
-          "https://sli.dev/guide/animations"
+          "https://github.com/vuejs/vitepress/blob/v1.6.4/docs/en/guide/markdown.md"
         ],
-        "anchor": "advanced-deck-syntax-code-and-click-contracts"
-      }
+        "anchor": "vitepress-runtime-configuration-and-extension-contracts"
+      },
+      "native_path": "references/docs-slides.md"
     },
     {
       "path": "references/debugging-ssr.md",
@@ -20255,7 +20266,7 @@
         "disposition": "overturned",
         "section": "Baseline and authority",
         "evidence": "Declarations settle import/signature questions; implementation settles behavior that declarations cannot express.",
-        "explanation": "The provenance reference separates installed implementation/declarations, primary release evidence, discovery and historical source material. Its final integration revision links actual scoped verification and current package snapshots, distinguishes consuming-application acceptance obligations, preserves historical labels and records the observed upstream Slidev limitation rather than claiming a clean ecosystem runtime.",
+        "explanation": "The provenance reference separates installed implementation/declarations, primary release evidence, discovery and historical source material. It distinguishes consuming-application acceptance obligations from recorded observations and preserves historical labels. The explicit removal record excludes the defective integration from current shipped capability coverage; it does not claim a clean ecosystem runtime.",
         "primary_urls": [
           "https://registry.npmjs.org/vue/3.5.44",
           "https://registry.npmjs.org/vuetify/4.3.0",

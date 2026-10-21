@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "recorded_at": "2026-10-21T12:39:49.524010+00:00",
-  "status": "complete_for_recorded_scope",
+  "status": "historical_superseded",
   "scope": {
     "skill_documents": 39,
     "additional_repository_documents": 1,
@@ -32,7 +32,8 @@
     },
     "handoff_labels": "Second handoff-judge probabilities and choices are preserved as frozen candidate judgments, not accepted facts. Later primary-source reinforcement is captured in current dispositions without rewriting or claiming a rerun of those native maps.",
     "author_evidence": "Findings, overturned hypotheses and evidence_notes are attributed author/source reasoning. Source/type evidence is not promoted to a browser, provider, backend, GPU, SSR or accessibility result.",
-    "hashes": "Input hashes identify frozen/current evidence inputs; per-file output hashes identify bytes captured at recorded_at, not semantic correctness or final gate completion. This asset does not hash itself."
+    "hashes": "Input hashes identify frozen/current evidence inputs; per-file output hashes identify bytes captured at recorded_at, not semantic correctness or final gate completion. This asset does not hash itself.",
+    "current_support": "Any current/final wording inside the preserved historical payload is relative to its recorded snapshot only. It does not establish current capability coverage; consult assets/removals.json and the current scoped verification record."
   },
   "inputs": [
     {
@@ -3257,7 +3258,7 @@
         "findings": [
           {
             "summary": "Wired renderer error emissions through SceneCanvas to the DOM host instead of relying only on onErrorCaptured.",
-            "evidence": "5.9.3 creates the renderer synchronously through getRenderer()/new WebGLRenderer before initializeRenderer's try/catch (dist/tres.js approximately 827–839 versus 869–882). Default-WebGL constructor failures therefore reach the existing Vue onErrorCaptured path, not the component error emission. The later initializeRenderer catch wraps asynchronous WebGPU renderer.init() failures as INITIALIZATION_FAILED; context/canvas forward that hook as emit('error', error). The added forwarding preserves that distinct emitted-error contract, but is not a correction to default-WebGL constructor exception capture and has not been runtime-exercised.",
+            "evidence": "5.9.3 creates the renderer synchronously through getRenderer()/new WebGLRenderer before initializeRenderer's try/catch (dist/tres.js approximately 827\u2013839 versus 869\u2013882). Default-WebGL constructor failures therefore reach the existing Vue onErrorCaptured path, not the component error emission. The later initializeRenderer catch wraps asynchronous WebGPU renderer.init() failures as INITIALIZATION_FAILED; context/canvas forward that hook as emit('error', error). The added forwarding preserves that distinct emitted-error contract, but is not a correction to default-WebGL constructor exception capture and has not been runtime-exercised.",
             "primary_sources": [
               "https://unpkg.com/@tresjs/core@5.9.3/dist/tres.js",
               "https://unpkg.com/@tresjs/core@5.9.3/dist/tres.d.ts",
@@ -4588,7 +4589,7 @@
           "reset_preserves_draft": true,
           "route_navigation_and_back_preserve_task_state": true,
           "route_title_and_focus": {
-            "title": "About this example · Vue Kit Workbench",
+            "title": "About this example \u00b7 Vue Kit Workbench",
             "focus": "main-content"
           },
           "skip_link_focus": "main-content",
@@ -6076,5 +6077,7 @@
     "scope": "Parent final verification.json integration",
     "contract": "Parent may store id-based pointers into this audit observed_verification.checks instead of duplicating the current proof. The previous packaged verification remains a historical record, not a claimed rerun. Final standalone/complete snapshot results must be written from observed gates after this artifact lands.",
     "current_check_count": 18
-  }
+  },
+  "superseded_by": "assets/removals.json",
+  "historical_notice": "This is a frozen historical second-pass audit of the recorded pre-removal capability set, not current shipped-capability guidance or acceptance. Slidev and its coupled Twoslash/FloatingVue integration are removed; assets/removals.json and references/sources.md#slidev-twoslash-and-floatingvue govern that exclusion. Original units, handoff maps, paths, hashes, snapshots, observations and results below remain unmodified historical provenance. Old paths are evidence identities, not live links or support declarations; no historical run is relabeled as current."
 }

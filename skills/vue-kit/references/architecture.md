@@ -31,7 +31,7 @@ A useful design fits around one flow. A package list, file tree, or universal `u
 | Tenant change must not flash old content | Access-scope transition closes old interactions and resets private state | Replacing tenant ID while old promises still publish | An old result must not operate on the new view | [auth](auth.md), [data architecture](architecture-data.md) |
 | Keyboard-operable editing | One Vuetify overlay owner; form emits semantic save/close results | Nesting competing focus traps from two libraries | Defined initial focus, close policy, and return-focus target | [UI architecture](architecture-ui.md), [accessibility](accessibility.md) |
 | Chart selection and list agree | Chart emits domain filter intent; route coordinator updates canonical URL | Chart-local filtered data and a second list filter | One meaning for clear selection, Back, and shareable links | [visualization](visualization.md) |
-| Private interaction, public discovery | SPA inbox; separately prerendered help, or a justified Nuxt hybrid deployment | SSR everywhere solely because it is available | Choose deployment based on initial-content and operational requirements | [debugging and SSR](debugging-ssr.md), [docs and slides](docs-slides.md) |
+| Private interaction, public discovery | SPA inbox; separately prerendered help, or a justified Nuxt hybrid deployment | SSR everywhere solely because it is available | Choose deployment based on initial-content and operational requirements | [debugging and SSR](debugging-ssr.md), [VitePress](docs-vitepress.md) |
 
 The inbox route composes access readiness, resource queries, list presentation, and an editor boundary. It does not own editor input events, focus-trap internals, chart drawing, or HTTP authorization policy.
 

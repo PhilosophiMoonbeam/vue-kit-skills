@@ -120,7 +120,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | Task trigger | Read | Add only when needed |
 | --- | --- | --- |
 | Vue I18n and Unhead, locale/head state and SSR isolation | [I18n and head](references/i18n-head.md) | Debugging SSR for hydration; routing for route-driven locale |
-| VitePress documentation or Slidev decks, build/export/deployment | [Docs and slides](references/docs-slides.md) | Setup tooling for shared runtime constraints; distinguish framework-owned config |
+| VitePress documentation sites, static rendering, build and deployment | [VitePress](references/docs-vitepress.md) | Setup tooling for shared runtime constraints; preserve the documentation tool's app lifecycle |
 | Vitest, Vue Test Utils, browser/E2E behavior and test boundaries | [Testing](references/testing.md) | The affected feature owner; accessibility for keyboard/focus assertions |
 | Runtime warnings, async errors, SSR/Nuxt, hydration, request isolation | [Debugging and SSR](references/debugging-ssr.md) | Core Vue for semantics; relevant cache/router/head owner |
 | TanStack AI Vue chat/streaming, transport, server secrets and tool approval | [AI streaming](references/ai-streaming.md) | Auth and architecture data when identity or persistence is involved |

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "vue": "3.5.44",
+    "vuetify": "4.3.0"
+  },
+  "removed_integrations": [
+    {
+      "id": "slidev-twoslash-floating-vue",
+      "status": "removed",
+      "removed_at": "2026-10-21",
+      "packages": {
+        "@slidev/cli": "53.0.0",
+        "@slidev/client": "53.0.0",
+        "@shikijs/vitepress-twoslash": "4.5.0",
+        "floating-vue": "5.4.0"
+      },
+      "source_roots": [
+        "slidev-cli-skilld"
+      ],
+      "source_documents": 9,
+      "reason": "The exact current package combination reproduced a browser initialization compatibility defect in the coupled Twoslash/FloatingVue desktop drag and text-selection patch. Removal is a shipped capability boundary, not a claim that every package or ordinary type hover is obsolete or inoperative.",
+      "evidence": {
+        "primary_urls": [
+          "https://unpkg.com/@slidev/cli@53.0.0/package.json",
+          "https://unpkg.com/@slidev/client@53.0.0/package.json",
+          "https://unpkg.com/@slidev/client@53.0.0/setup/main.ts",
+          "https://unpkg.com/@shikijs/vitepress-twoslash@4.5.0/dist/client.mjs",
+          "https://unpkg.com/@shikijs/vitepress-twoslash@4.5.0/package.json",
+          "https://unpkg.com/floating-vue@5.4.0/package.json"
+        ],
+        "runtime_observation": "Real Chromium with CLI/client 53.0.0, @shikijs/vitepress-twoslash 4.5.0 and floating-vue 5.4.0 logged 'Failed to patch FloatingVue'. The caught TypeError reading Popper came from a desktop drag/text-selection patch assuming VMenu.components.Popper.extends when VMenu.components was absent. Ordinary type hover worked; that observation does not establish clean startup or working patched drag/text-selection interoperability. No workaround, compatibility shim or log suppression is shipped.",
+        "beads": [
+          "vue-kit-skills-bt3",
+          "vue-kit-skills-9uu"
+        ]
+      },
+      "record_reference": "references/sources.md",
+      "record_section": "Slidev, Twoslash, and FloatingVue",
+      "record_anchor": "slidev-twoslash-and-floatingvue",
+      "exclusion_quote": "Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit capability set; their source records are historical exclusions, not supported implementation guidance.",
+      "reference_migration": {
+        "from": "references/docs-slides.md",
+        "to": "references/docs-vitepress.md"
+      },
+      "reintroduction_requirements": [
+        "A supported compatible source or release fix repairs the integration defect; a latest tag alone is insufficient.",
+        "Clean startup in a real browser without the FloatingVue patch failure, workaround, shim or log suppression.",
+        "Verified tooltip, type-query and completion behavior plus drag/text-selection acceptance through keyboard and pointer interactions.",
+        "Verified production behavior and integration on the Vue 3.5.44 baseline, not only a successful build."
+      ],
+      "non_targets": [
+        "vitepress",
+        "@floating-ui/vue"
+      ]
+    }
+  ],
+  "unresolved": []
+}

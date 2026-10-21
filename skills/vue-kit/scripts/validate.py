@@ -41,6 +41,31 @@ NATIVE_COUNTS = {
     'native_reference_readiness': {'ready': 37, 'mixed': 1},
 }
 
+# This ledger entry is a shipped exclusion, not a compatibility alias or a scan
+# of historical audit facts. Native hypotheses retain their original identity.
+REMOVAL_ID = 'slidev-twoslash-floating-vue'
+REMOVED_ROOT = 'slidev-cli-skilld'
+OLD_GUIDE = 'references/docs-slides.md'
+VITEPRESS_GUIDE = 'references/docs-vitepress.md'
+REMOVAL_REFERENCE = 'references/sources.md'
+REMOVAL_SECTION = 'Slidev, Twoslash, and FloatingVue'
+REMOVAL_ANCHOR = 'slidev-twoslash-and-floatingvue'
+EXCLUSION_QUOTE = ('Slidev and its Twoslash/FloatingVue integration are removed from the shipped Vue Kit '
+                   'capability set; their source records are historical exclusions, not supported implementation guidance.')
+REMOVED_PACKAGES = {
+    '@slidev/cli': '53.0.0',
+    '@slidev/client': '53.0.0',
+    '@shikijs/vitepress-twoslash': '4.5.0',
+    'floating-vue': '5.4.0',
+}
+REINTRODUCTION_REQUIREMENTS = (
+    'A supported compatible source or release fix repairs the integration defect; a latest tag alone is insufficient.',
+    'Clean startup in a real browser without the FloatingVue patch failure, workaround, shim or log suppression.',
+    'Verified tooltip, type-query and completion behavior plus drag/text-selection acceptance through keyboard and pointer interactions.',
+    'Verified production behavior and integration on the Vue 3.5.44 baseline, not only a successful build.',
+)
+REMOVED_TERMS = re.compile(r'(?i)(?<![\w])(?:slidev|twoslash|floating-vue|floatingvue)(?![\w])')
+
 
 class FrontmatterError(ValueError):
     pass
@@ -693,6 +718,147 @@ class Validator:
             position = body.find(quote, position + 1)
         self.error(owner, f'{label}: section/anchor must match the quote’s canonical enclosing heading in {reference}')
 
+    def validate_removals(self):
+        self.checks.extend(['explicit removal policy, evidence, and reintroduction requirements',
+                            'removed capability boundaries and VitePress-only reference migration'])
+        path = self.root / 'assets/removals.json'
+        report = self.evidence_report('assets/removals.json')
+        if report is not None:
+            entries = report.get('removed_integrations')
+            if not isinstance(entries, list) or len(entries) != 1 or not isinstance(entries[0], dict):
+                self.error(path, 'removed_integrations must contain the one explicit removed integration')
+            else:
+                entry = entries[0]
+                required = {
+                    'id': REMOVAL_ID, 'status': 'removed', 'removed_at': '2026-10-21',
+                    'packages': REMOVED_PACKAGES, 'source_roots': [REMOVED_ROOT],
+                    'source_documents': 9, 'record_reference': REMOVAL_REFERENCE,
+                    'record_section': REMOVAL_SECTION, 'record_anchor': REMOVAL_ANCHOR,
+                    'exclusion_quote': EXCLUSION_QUOTE,
+                    'reference_migration': {'from': OLD_GUIDE, 'to': VITEPRESS_GUIDE},
+                    'non_targets': ['vitepress', '@floating-ui/vue'],
+                    'reintroduction_requirements': list(REINTRODUCTION_REQUIREMENTS),
+                }
+                for key, expected in required.items():
+                    if entry.get(key) != expected or (key == 'source_documents' and type(entry.get(key)) is not int):
+                        self.error(path, f'{REMOVAL_ID}.{key}: must preserve the explicit removal contract')
+                reason = entry.get('reason')
+                if not isinstance(reason, str) or not reason.strip():
+                    self.error(path, 'removal reason must describe the observed integration compatibility defect')
+                evidence = entry.get('evidence')
+                if not isinstance(evidence, dict):
+                    self.error(path, 'removal evidence must be an object')
+                    evidence = {}
+                observation = evidence.get('runtime_observation')
+                if not isinstance(observation, str) or not observation.strip():
+                    self.error(path, 'runtime_observation must be a nonempty string describing the observed integration defect')
+                beads = evidence.get('beads')
+                if (not isinstance(beads, list) or not all(isinstance(item, str) for item in beads)
+                        or set(beads) != {'vue-kit-skills-bt3', 'vue-kit-skills-9uu'} or len(beads) != 2):
+                    self.error(path, 'evidence.beads must identify both original observation and removal decisions')
+                urls = evidence.get('primary_urls')
+                expected_urls = {f'https://unpkg.com/{name}@{version}/package.json'
+                                 for name, version in REMOVED_PACKAGES.items()}
+                if (not isinstance(urls, list) or not all(isinstance(url, str) for url in urls)
+                        or len(set(urls)) != len(urls) or not expected_urls.issubset(urls)):
+                    self.error(path, 'evidence.primary_urls must include exact metadata for every observed package')
+                self.validate_resolution(path, REMOVAL_ID, {
+                    'disposition': 'out_of_scope', 'section': entry.get('record_section'),
+                    'anchor': entry.get('record_anchor'), 'evidence': entry.get('exclusion_quote'),
+                    'explanation': reason, 'primary_urls': urls,
+                }, entry.get('record_reference'), {'out_of_scope'})
+
+        old = self.root / OLD_GUIDE
+        if old.exists() or old.is_symlink():
+            self.error(old, 'removed combined guide must be absent; no compatibility alias is supported')
+        guide = self.root / VITEPRESS_GUIDE
+        if guide not in self.references or guide not in self.indexed:
+            self.error(guide, 'VitePress-only replacement must exist and be directly indexed')
+        if len(self.references) != 38:
+            self.error(self.root / 'references', 'the cutover must retain exactly 38 directly indexed references')
+        record_sections = {
+            self.root / REMOVAL_REFERENCE: (REMOVAL_SECTION, REMOVAL_ANCHOR, 'Removed integrations'),
+            self.root / 'CHANGELOG.md': ('Removed', 'removed', 'Unreleased'),
+        }
+        for document_path in self.documents:
+            try:
+                text = document_path.read_text(encoding='utf-8')
+                prose = prose_lines(text, lambda message: None)
+                record_lines = set()
+                record_section = record_sections.get(document_path)
+                if record_section is not None:
+                    # Only these exact canonical removal subsections can discuss
+                    # excluded products; the rest remains active routing.
+                    lines = text.splitlines()
+                    headings = []
+                    for start, title, anchor in markdown_headings(prose):
+                        marker = re.match(r'^ {0,3}(#{1,6})\s+', lines[start])
+                        level = len(marker[1]) if marker else (1 if lines[start + 1].lstrip().startswith('=') else 2)
+                        headings.append((start, title, anchor, level))
+                    parent = None
+                    for index, (start, title, anchor, level) in enumerate(headings):
+                        if level <= 2:
+                            parent = title if level == 2 else None
+                        if ((title, anchor, parent) == record_section
+                                and lines[start].strip() == f'### {record_section[0]}'):
+                            end = next((position for position, _, _, depth in headings[index + 1:]
+                                        if depth <= 3), len(lines))
+                            record_lines.update(range(start + 1, end + 1))
+                for number, line in enumerate(text.splitlines(), 1):
+                    # Fenced recipes are not removal evidence, including inside
+                    # the ledger subsection. prose_lines blanks fenced content.
+                    if number in record_lines and prose[number - 1]:
+                        continue
+                    if REMOVED_TERMS.search(line) or OLD_GUIDE in line or 'docs-slides.md' in line:
+                        self.error(document_path, f'line {number}: removed integration must not be advertised or taught')
+            except (OSError, UnicodeError) as exc:
+                self.error(document_path, f'cannot inspect active removal boundary: {exc}')
+        for package_path in self.packaged_paths():
+            if package_path.name != 'package.json':
+                continue
+            package = self.load_json(self.display(package_path))
+            if not isinstance(package, dict):
+                self.error(package_path, 'packaged package.json must be an object')
+                continue
+            for group in ('dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'):
+                dependencies = package.get(group, {})
+                if not isinstance(dependencies, dict):
+                    self.error(package_path, f'{group} must be an object')
+                    continue
+                for name, version in dependencies.items():
+                    if REMOVED_TERMS.search(name) or (
+                            isinstance(version, str) and version.startswith('npm:')
+                            and REMOVED_TERMS.search(version[4:])):
+                        self.error(package_path, f'{group}.{name}: removed integration must not be a direct dependency')
+
+        record = self.root / REMOVAL_REFERENCE
+        try:
+            lines = prose_lines(record.read_text(encoding='utf-8'), lambda message: None)
+            parent = None
+            found = False
+            for line in lines:
+                if re.match(r'^##\s+', line):
+                    parent = line.strip()
+                if line.strip() == f'### {REMOVAL_SECTION}':
+                    found = True
+                    if parent != '## Removed integrations':
+                        self.error(record, 'removal section must be under ## Removed integrations')
+            if not found:
+                self.error(record, 'exact removal section heading is required')
+        except (OSError, UnicodeError) as exc:
+            self.error(record, f'cannot inspect removal section: {exc}')
+        sources = self.manifest.get('sources', []) if isinstance(self.manifest, dict) else []
+        excluded = [source for source in sources if isinstance(source, dict) and source.get('id') == REMOVED_ROOT] if isinstance(sources, list) else []
+        if len(excluded) != 1:
+            self.error(path, 'manifest must preserve exactly one historical excluded source root')
+        else:
+            source = excluded[0]
+            if source.get('references') != [REMOVAL_REFERENCE] or source.get('documents') != 9:
+                self.error(path, 'excluded manifest root must route its nine historical documents only to the removal record')
+            notes = source.get('notes')
+            if not isinstance(notes, str) or not re.search(r'exclu(?:ded|sion)', notes, re.I):
+                self.error(path, 'excluded manifest root notes must explicitly identify exclusion')
+
     def native_choice(self, native, key):
         if not isinstance(native, dict) or not isinstance(native.get(key), dict):
             return None
@@ -762,6 +928,8 @@ class Validator:
                 self.error(path, f'{label}: source_root must match the original manifest ID')
             if identity in roots:
                 source_roots.add(identity)
+            if 'native_path' in row:
+                self.error(path, f'{label}: native_path is not supported for source records')
             if row.get('sha256') != original.get('sha256'):
                 self.error(path, f'{label}: sha256 differs from the original source snapshot')
             mappings = row.get('mapped_references')
@@ -784,6 +952,15 @@ class Validator:
             contradiction = native.get('contradiction') if isinstance(native, dict) else None
             risk = contradiction.get('bool') if isinstance(contradiction, dict) else None
             material = choice in ('partial', 'missing') or (type(risk) in (int, float) and risk >= 0.5)
+            if identity == REMOVED_ROOT:
+                required = {
+                    'disposition': 'out_of_scope', 'reference': REMOVAL_REFERENCE,
+                    'section': REMOVAL_SECTION, 'anchor': REMOVAL_ANCHOR,
+                    'evidence': EXCLUSION_QUOTE,
+                }
+                if not isinstance(row.get('resolution'), dict) or any(
+                        row['resolution'].get(key) != value for key, value in required.items()):
+                    self.error(path, f'{label}: excluded source must point to the exact out_of_scope removal record')
             resolution = row.get('resolution')
             if 'resolution' not in row:
                 self.error(path, f'{label}: resolution is required (null only for native-only units)')
@@ -819,7 +996,18 @@ class Validator:
                 self.error(path, f'{label}: duplicate reviewed reference {reference}')
             reference_paths.add(reference)
             native = row.get('native')
-            native_references[reference] = native
+            native_path = row.get('native_path', reference)
+            if reference == VITEPRESS_GUIDE:
+                if row.get('native_path') != OLD_GUIDE:
+                    self.error(path, f'{label}: renamed reference must preserve native_path {OLD_GUIDE}')
+            elif 'native_path' in row:
+                self.error(path, f'{label}: native_path is permitted only for the fixed VitePress guide migration')
+            if not isinstance(native_path, str):
+                self.error(path, f'{label}: native_path must be the historical reference path')
+            elif native_path in native_references:
+                self.error(path, f'{label}: duplicate native reference identity {native_path}')
+            else:
+                native_references[native_path] = native
             choice = self.native_choice(native, 'readiness')
             if choice is not None:
                 native_reference_choices[choice] += 1
@@ -988,6 +1176,7 @@ class Validator:
         else:
             self.validate_documents()
             self.validate_provenance()
+            self.validate_removals()
             self.validate_package()
             self.validate_coverage()
             self.validate_verification()

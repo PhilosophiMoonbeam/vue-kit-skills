@@ -122,11 +122,11 @@
     {
       "id": "slidev-cli-skilld",
       "references": [
-        "references/docs-slides.md"
+        "references/sources.md"
       ],
       "documents": 9,
       "flagged_documents": 9,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Excluded from active capability coverage. All 9 documents remain historical source records only; see references/sources.md#slidev-twoslash-and-floatingvue and assets/removals.json. Slidev and its coupled Twoslash/FloatingVue integration are removed, not supported implementation guidance."
     },
     {
       "id": "tanstack-ai-vue-skilld",
@@ -243,7 +243,7 @@
     {
       "id": "vitepress-skilld",
       "references": [
-        "references/docs-slides.md"
+        "references/docs-vitepress.md"
       ],
       "documents": 7,
       "flagged_documents": 7,

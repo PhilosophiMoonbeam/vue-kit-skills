@@ -2,6 +2,8 @@
 
 Read for a bespoke interaction missing from the incumbent component system, an existing Reka/shadcn app, or anchored-positioning defects. Vuetify remains the default: use its dialog/menu/tooltip before introducing another overlay manager. See [Vuetify components](vuetify-components.md), [accessibility](accessibility.md), and [design system](design-system.md). These libraries are not interchangeable adapters.
 
+In an OpenVue application, first inspect its [Dialog, Select and overlay contracts](alternative-ui.md#openvue-1x-plugin-and-token-theme). OpenVue Dialog uses `v-model:visible`, not Reka's `v-model:open`; nesting another modal manager does not fix a label, portal-theme or focus-ownership defect.
+
 ## Release and selection boundary
 
 Registry metadata and published declarations checked 2026-10-21; examples target Vue **3.5.44**, not Vue 3.6 prereleases.

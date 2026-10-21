@@ -36,8 +36,8 @@ Follow [setup tooling](references/setup-tooling.md) for lockfile and runtime pol
    standalone SPA; choose Nuxt when framework-managed routing, rendering or server
    endpoints fit the requirements. Preserve an existing host during a narrow fix.
    For **any Nuxt task**, load [Nuxt](references/nuxt.md) first; add
-   [Nuxt integrations](references/nuxt-integrations.md) only for the selected SDK
-   or module. Do not paste SPA bootstrap/router/plugin helpers into Nuxt.
+   [Nuxt integrations](references/nuxt-integrations.md) only for the selected
+   local library or module. Do not paste SPA bootstrap/router/plugin helpers into Nuxt.
    For a **new application, broad feature, or structural redesign**, use
    [architecture](references/architecture.md) for the ownership decision.
    Otherwise go directly to the relevant task reference.
@@ -58,6 +58,10 @@ Follow [setup tooling](references/setup-tooling.md) for lockfile and runtime pol
 5. Select evidence appropriate to the change. Separate proposed checks from checks
    actually run, record failures honestly, and do not claim production, SSR,
    accessibility, or performance support from a successful bundle alone.
+6. Keep integrations service-independent. Do not introduce hosted identity,
+   provider-key management, commercial cloud SDKs, or account provisioning.
+   Application-owned APIs and self-hostable libraries are valid explicit contracts;
+   client identity state never substitutes for verified server authorization.
 
 ## Route by task
 
@@ -69,7 +73,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | Task trigger | Read | Add only when needed |
 | --- | --- | --- |
 | Nuxt application, pages/layouts, middleware, useFetch/useAsyncData/useState, Nitro/server API, runtime config, rendering, deployment or Nuxt migration | [Nuxt](references/nuxt.md) | [Nuxt 3 → 4 migration](references/migration.md#nuxt-3-to-4-migration) only for that cutover; debugging SSR for a localized rendering failure |
-| Nuxt with Clerk, Pinia, selected Colada cache, or Vuetify | [Nuxt integrations](references/nuxt-integrations.md) | Nuxt core remains the host owner; the selected library reference owns reusable library semantics, not a second app/bootstrap |
+| Nuxt with Pinia, selected Colada cache, or Vuetify | [Nuxt integrations](references/nuxt-integrations.md) | Nuxt core remains the host owner; the selected library reference owns reusable library semantics, not a second app/bootstrap |
 
 ### Foundations and architecture
 
@@ -91,7 +95,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | VueUse core/shared/math/components utilities and browser lifecycles | [VueUse](references/vueuse.md) | Composables for application-owned capability design |
 | VueUse integrations with Axios, focus trap, cookies, QR, or external packages | [VueUse integrations](references/vueuse-integrations.md) | VueUse for shared conventions; auth for identity-sensitive cookies |
 | Pinia, TanStack Vue Store, local/shared state, hydration, store contracts | [State](references/state.md) | Architecture data for ownership decisions; auth for session state |
-| Clerk Vue, session loading, sign-in UX, client guard/server authorization boundary | [Auth](references/auth.md) | Routing for protected navigation; debugging SSR for server applications |
+| Application-owned sessions, identity loading, safe redirects, client guards and server authorization boundaries | [Session boundaries](references/auth.md) | Routing for protected navigation; debugging SSR for server applications; no hosted authentication SDK |
 | Vue Router routes, params, guards, navigation/history, v5 file routing or experimental loaders | [Routing](references/routing.md) | Auth for identity checks; testing for navigation; keep `vue-router/experimental` APIs distinct from stable imports |
 | Explicit TanStack Vue Router adapter evaluation or incumbent usage | [TanStack routing](references/routing-tanstack.md) | Routing for the stable Vue Router alternative; heed adapter status |
 | TanStack Vue Query cache, queries, mutations, invalidation, SSR | [TanStack Query](references/tanstack-query.md) | Architecture data for cache ownership; auth for user-scoped caches |
@@ -116,7 +120,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | UI design/review, hierarchy, tokens, responsive states, coherent product patterns | [Design system](references/design-system.md) | Accessibility; the chosen UI component owner |
 | Keyboard/focus, names/labels, dialogs, error announcements, reduced motion | [Accessibility](references/accessibility.md) | Headless UI or Vuetify components for implementation contracts |
 | Reka UI, Floating UI Vue, shadcn-vue primitives and positioning | [Headless UI](references/headless-ui.md) | Accessibility; design system for styling |
-| PrimeVue, Quasar, or other incumbent UI alternative | [Alternative UI](references/alternative-ui.md) | Setup tooling for integration; do not install competing UI systems casually |
+| OpenVue 1.x or newer, Quasar, or an incumbent UI alternative | [Alternative UI](references/alternative-ui.md) | Setup tooling for integration; do not install competing UI systems casually |
 
 ### Data presentation and motion
 
@@ -136,7 +140,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | VitePress documentation sites, static rendering, build and deployment | [VitePress](references/docs-vitepress.md) | Setup tooling for shared runtime constraints; preserve the documentation tool's app lifecycle |
 | Vitest, Vue Test Utils, browser/E2E behavior and test boundaries | [Testing](references/testing.md) | The affected feature owner; accessibility for keyboard/focus assertions |
 | Runtime warnings, async errors, SSR/Nuxt, hydration, request isolation | [Debugging and SSR](references/debugging-ssr.md) | Core Vue for semantics; relevant cache/router/head owner |
-| TanStack AI Vue chat/streaming, transport, server secrets and tool approval | [AI streaming](references/ai-streaming.md) | Auth and architecture data when identity or persistence is involved |
+| TanStack AI Vue chat/streaming against application-owned or self-hosted endpoints | [AI streaming](references/ai-streaming.md) | Auth and architecture data when identity or persistence is involved; no hosted-provider account or key setup |
 | Version/provenance questions, source conflicts, experimental status | [Sources](references/sources.md) | The owning reference for exact APIs and primary links |
 
 ## Resolve API and version uncertainty
@@ -172,18 +176,13 @@ to load every linked document. Combine owners only when the task crosses domains
   `--json`; an optional positional root selects another installed skill copy.
   It does not execute example tests or builds and cannot establish runtime API
   correctness, accessibility, SSR safety, or source accuracy.
-- [Source manifest](assets/source-manifest.json) and
-  [source audit](assets/source-audit.json): coverage/provenance records, not
-  additional runtime dependencies or instructions to reinstall source skills.
-- [Fourth-pass audit](assets/fourth-pass-audit.json): 41 current native-reviewed
-  documents (master plus 40 references), 467 source rows and the adjudicated
-  39-document/46-source escalation populations. Native labels are hypotheses,
-  not defect totals. All 467 sources now have explicit resolutions; the 17
-  mapped-evidence promotions are not 17 added capabilities.
-  [Scoped verification](assets/verification.json) records exercised checks and
-  limits; [earlier audits](references/sources.md#preserved-third-pass-audit)
-  retain their historical populations and snapshots. Neither audit counts nor
-  historical passes certify current runtime behavior.
+- [Source manifest](assets/source-manifest.json), [source audit](assets/source-audit.json)
+  and [coverage routing](assets/coverage-audit.json): retained historical input
+  identities and current reference ownership, not semantic or runtime certification.
+  Superseded vendor-bound reports remain in repository history, outside this skill.
+- [Scoped verification](assets/verification.json): exercised checks, exact versions,
+  limitations and content-addressed packaged files. Earlier checks do not certify
+  changed examples; consult [sources](references/sources.md) for evidence policy.
 
 When verification is authorized, select the repository's own typecheck, tests,
 production build, and browser checks that exercise the change. For UI behavior,

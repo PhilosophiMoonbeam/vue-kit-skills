@@ -20,7 +20,7 @@ The following is an architectural recommendation, not an upstream mandate to put
 | Cross-route client workflow or preferences | Pinia | Vue integration, devtools, actions, plugins, per-app ownership |
 | Framework-independent immutable domain state | TanStack Store | Share pure state/actions with non-Vue consumers; Vue uses selector subscriptions |
 | Fetched server records | Query/Colada cache | Cache owns freshness, deduplication, cancellation, and mutations; do not copy its data into Pinia |
-| Identity/session/token/active organization | Clerk SDK or incumbent auth provider | Derive UI from provider state; client state is never authorization evidence |
+| Identity/session/token/active organization | Application's existing session mechanism | Derive UI from its readiness contract; client state is never authorization evidence |
 | Durable sensitive data | Authorized backend | Browser persistence, devtools, and hydration payloads are observable and tamperable |
 
 A store definition can be module-scoped; a user-specific **instance** must not be a server module singleton. A small, typed scoped Vue state object is valid production code. Application size alone does not require Pinia.
@@ -117,7 +117,7 @@ import App from './App.vue'
 createApp(App).use(createPinia()).mount('#app')
 ```
 
-Pinia's [setup-store contract](https://pinia.vuejs.org/core-concepts/#setup-stores): returned refs/reactive objects are state, computed refs are getters, functions are actions. Return **all owned state**, including bookkeeping such as `nextId`; do not hide it or return readonly wrappers around owned state. That breaks hydration, devtools, or plugins. Injected dependencies such as the router or Clerk resources are not store-owned state: use them internally rather than returning them as hydrated state.
+Pinia's [setup-store contract](https://pinia.vuejs.org/core-concepts/#setup-stores): returned refs/reactive objects are state, computed refs are getters, functions are actions. Return **all owned state**, including bookkeeping such as `nextId`; do not hide it or return readonly wrappers around owned state. That breaks hydration, devtools, or plugins. Injected dependencies such as the router or external session resources are not store-owned state: use them internally rather than returning them as hydrated state.
 
 The store object unwraps refs: `store.count`, not `store.count.value`. Destructure state/getters with `storeToRefs(store)`; plain `{ count } = store` captures a value. Actions are bound and may be destructured directly. Both `@click="store.$reset"` and `@click="store.$reset()"` preserve a Pinia action's context; arguments/event forwarding, not a blanket `this` rule, determine which to use.
 

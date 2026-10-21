@@ -21,7 +21,7 @@ For new or existing Nuxt applications, [Nuxt](nuxt.md) owns pages/layouts, SSR a
 | Understandable analytical view | One chart engine, derived presentation model, text summary and equivalent data access | Decorative charts or pointer-only tooltips conceal meaning and exclude users | [visualization](visualization.md) |
 | Actual 3D interaction | TresJS only when spatial content is required | WebGL decoration adds loading, fallback, lifecycle and access costs | [TresJS](tresjs.md) |
 | Translated interface and route metadata | One locale/direction coordinator; app and component catalogs follow it | Updating text but not RTL, dates, charts, validation and page title yields a mixed-locale screen | [i18n and head](i18n-head.md) |
-| An established PrimeVue/Quasar application | Extend the incumbent framework and token system | Preferred-stack migration can dominate an unrelated feature | [alternative UI](alternative-ui.md) |
+| An established OpenVue/Quasar application | Extend the incumbent framework and token system | Preferred-stack migration can dominate an unrelated feature | [alternative UI](alternative-ui.md) |
 
 Vuetify preference is a project default, not an assertion that every component meets every accessibility requirement. A headless primitive provides behavior only within its own documented contract; a positioner computes placement, not complete menu semantics. Evaluate the assembled interaction.
 

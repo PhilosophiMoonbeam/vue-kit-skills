@@ -1,46 +1,69 @@
-# Incumbent PrimeVue and Quasar applications
+# OpenVue and incumbent Quasar applications
 
-Read when the application already uses PrimeVue/Quasar, or a documented requirement justifies that alternative. **Vuetify 4.3.0 remains the default for new UI**; a narrow bug fix is not a migration mandate. Inspect package/lockfile, entry point, build integration, theme, overlay ownership and target platforms before changing setup. For default-stack setup see [Vuetify setup](vuetify-setup.md); for a headless capability gap see [headless UI](headless-ui.md).
+Read when the application uses OpenVue/Quasar, or a documented requirement justifies that alternative. **Vuetify 4.3.0 remains the default for new UI**; a narrow bug fix is not a migration mandate. Inspect package/lockfile, entry point, build integration, theme, overlay ownership and target platforms before changing setup. For default-stack setup see [Vuetify setup](vuetify-setup.md); for a headless capability gap see [headless UI](headless-ui.md).
 
 ## Selection and exact release boundary
 
-Registry metadata, published declarations/package assets and official docs checked 2026-10-21. Examples target Vue **3.5.44**.
+Registry metadata, published declarations/package assets, the read-only upstream checkout and official docs checked 2026-10-21. Examples target Vue **3.5.44**. Context7 did not resolve this library; the primary sources below establish the API boundary, not a runtime pass.
 
-| Alternative | Verified releases | Keep/select for | Do not assume |
+**OpenVue 1.x and newer, a fork of PrimeVue 4.5.5**, is the supported alternative route. The researched stable release is **1.0.0**; do not treat a future major as automatically compatible. The core and theme packages are **MIT licensed**, with no application license key, account or hosted service required. Preserve license notices when redistributing.
+
+| Alternative | Researched releases | Keep/select for | Do not assume |
 | --- | --- | --- | --- |
-| PrimeVue | `primevue` **5.0.3**, `@primevue/core` **5.0.3**, `@primeuix/themes` **3.0.2** | Existing component/token system; rich data/input widgets whose integration cost is justified | MIT licensing, v4 theme files, or public-API compatibility for APIs listed as removed |
+| OpenVue | `openvue` **1.0.0**, `@openvue/core` **1.0.0**, `@openvue/themes` **1.0.0** | Existing token-based UI, or rich data/input widgets whose integration cost is justified | APIs from a different vendor or major, compound carousel exports, or a multiple-selection mode on Select |
 | Quasar, plain Vite | `quasar` **2.35.2**, `@quasar/vite-plugin` **2.0.2** | Existing Vite client app using Quasar components/styles | Full Quasar CLI modes, supported SSR/SSG, CLI boot aliases or platform packaging |
 | Quasar CLI with Vite | `quasar` **2.35.2**, `@quasar/app-vite` **3.10.3**, `create-quasar` **5.0.35** | Existing Quasar architecture or integrated SPA/PWA/SSR/SSG/Capacitor/Cordova/Electron/BEX builds | Drop-in Vite configuration or compatibility with every incumbent router/Node version |
 
-Architectural recommendation: use one application-level UI framework per surface. Do not install an alternative framework's global reset/base stylesheet on top of Vuetify by default. CSS layers can order rules; they cannot reconcile competing focus managers, body classes, scroll locks or component APIs. If coexistence is required, document concrete boundaries and test the actual combination; there is no universal Vuetify-to-PrimeVue/Quasar adapter.
+Architectural recommendation: use one application-level UI framework per surface. Do not install an alternative framework's global reset/base stylesheet on top of Vuetify by default. CSS layers can order rules; they cannot reconcile competing focus managers, body classes, scroll locks or component APIs. If coexistence is required, document concrete boundaries and test the actual combination; there is no universal Vuetify-to-OpenVue/Quasar adapter.
 
-## PrimeVue 5: plugin, license and token theme
+## OpenVue 1.x: plugin and token theme
 
 ### Setup in a dedicated Vite app
 
-This route is **standalone Vue/Vite**, not Nuxt. For a Nuxt application, [Nuxt](nuxt.md) owns bootstrap and SSR; use the official `@primevue/nuxt-module` rather than pasting the `main.ts` below. The exact [5.0.3 module metadata](https://registry.npmjs.org/@primevue/nuxt-module/5.0.3) and [published module implementation](https://unpkg.com/@primevue/nuxt-module@5.0.3/dist/module.mjs) identify the current package and declare Nuxt `>=3.0.0`; that declaration is not an exercised Nuxt 4 compatibility claim. Verify the selected module's configuration, SSR styles and license policy for the actual app.
+This complete client-only example needs Node **24.15.0** and Bun **1.4.3** (or the incumbent package manager). In an empty dedicated directory, install the direct dependencies below and create the four named files. Do not overwrite an existing application's shell.
 
 ```sh
-bun add --exact primevue@5.0.3 @primeuix/themes@3.0.2
+bun add --exact vue@3.5.44 openvue@1.0.0 @openvue/themes@1.0.0
+bun add --dev --exact vite@8.3.4 @vitejs/plugin-vue@6.0.10 typescript@5.9.3
+bunx --no-install vite --host 127.0.0.1
 ```
 
-The plugin configures defaults; components still require imports/registration. `primevue/config` re-exports the core plugin; the current core `PrimeVueConfiguration` declares `license?: string`. The package's own older duplicate declaration may omit it. Use the published core declaration rather than suppressing types or inventing a different option. [Vite setup](https://primevue.dev/vite/), [core declaration](https://unpkg.com/@primevue/core@5.0.3/config/index.d.ts).
+Run the last command after creating the files. `@openvue/core` and component SVG icons are transitive dependencies; the example needs no separate icon font, utility CSS framework or remote assets. The plugin configures defaults; components still require imports/registration. The published `openvue/config` entry re-exports the default plugin from `@openvue/core/config`. [Vite setup](https://openvue.dev/vite), [published plugin entry](https://unpkg.com/openvue@1.0.0/config/index.mjs).
 
-PrimeVue 5 is under the **PrimeUI Community/Commercial dual license**, not the old blanket MIT assumption. A valid key is required. Confirm Community eligibility or obtain a Commercial license under the [actual terms](https://primeui.dev/licenses/community); do not bypass notices. Verification is offline; missing/invalid/expired keys may show a notice. The following real configuration requires an application-supplied key, not a fabricated key or backend service. Anything embedded in a browser build is visible to its users; never reuse this pattern for server secrets.
+Complete `index.html`:
 
-Complete `src/main.ts` for the `App.vue` below, in an ordinary Vue Vite shell with `#app`:
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenVue office preview</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+Complete `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({ plugins: [vue()] })
+```
+
+Complete `src/main.ts`:
 
 ```ts
 import { createApp } from 'vue'
-import PrimeVue from 'primevue/config'
-import { definePreset } from '@primeuix/themes'
-import Aura from '@primeuix/themes/aura'
+import OpenVue from 'openvue/config'
+import { definePreset } from '@openvue/themes'
+import Aura from '@openvue/themes/aura'
 import App from './App.vue'
-
-const license = import.meta.env.VITE_PRIMEUI_LICENSE_KEY
-if (typeof license !== 'string' || !license.trim()) {
-  throw new Error('Set VITE_PRIMEUI_LICENSE_KEY to your valid PrimeUI license key.')
-}
 
 const preset = definePreset(Aura, {
   semantic: {
@@ -50,8 +73,7 @@ const preset = definePreset(Aura, {
   },
 })
 
-createApp(App).use(PrimeVue, {
-  license,
+createApp(App).use(OpenVue, {
   theme: {
     preset,
     options: { darkModeSelector: '.app-dark', cssLayer: false },
@@ -59,27 +81,25 @@ createApp(App).use(PrimeVue, {
 }).mount('#app')
 ```
 
-Complete `src/App.vue`; local selection only, with a label, stable option value, honest feedback and slot-based v5 buttons:
+Complete `src/App.vue`; selection and dialog state are local, with stable option values and honest feedback:
 
 ```vue
 <script setup lang="ts">
-import { shallowRef, useId } from 'vue'
-import Button from 'primevue/button'
-import Select from 'primevue/select'
+import { computed, shallowRef, useId } from 'vue'
+import Button from 'openvue/button'
+import Dialog from 'openvue/dialog'
+import Select from 'openvue/select'
 
 const fieldId = useId()
+const dialogId = useId()
 const office = shallowRef<string | null>(null)
-const notice = shallowRef('')
+const visible = shallowRef(false)
 const dark = shallowRef(false)
 const offices = [
   { code: 'lon', name: 'London' },
   { code: 'nyc', name: 'New York' },
 ]
-
-function preview() {
-  const selected = offices.find(item => item.code === office.value)
-  if (selected) notice.value = `Previewing ${selected.name}; nothing was saved.`
-}
+const selectedOffice = computed(() => offices.find(item => item.code === office.value))
 
 function toggleTheme() {
   dark.value = !dark.value
@@ -96,71 +116,86 @@ function toggleTheme() {
       :ariaLabelledby="`${fieldId}-label`"
       option-label="name" option-value="code" placeholder="Choose an office"
     />
-    <Button type="button" :disabled="office === null" @click="preview">Preview office</Button>
-    <Button type="button" @click="toggleTheme">
-      {{ dark ? 'Use light theme' : 'Use dark theme' }}
-    </Button>
-    <p role="status">{{ notice }}</p>
+    <Button
+      type="button" label="Preview office" :disabled="office === null"
+      aria-haspopup="dialog" :aria-expanded="visible"
+      :aria-controls="visible ? dialogId : undefined" @click="visible = true"
+    />
+    <Button
+      type="button" :label="dark ? 'Use light theme' : 'Use dark theme'"
+      @click="toggleTheme"
+    />
+    <p role="status">{{ selectedOffice ? `Selected ${selectedOffice.name}; nothing was saved.` : 'No office selected.' }}</p>
+    <Dialog
+      :pt="{ root: { id: dialogId } }" v-model:visible="visible" modal header="Office preview"
+      :draggable="false" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+    >
+      <p>{{ selectedOffice?.name }} is a local preview; nothing was saved.</p>
+      <template #footer>
+        <Button type="button" label="Close preview" autofocus @click="visible = false" />
+      </template>
+    </Dialog>
   </main>
 </template>
 
 <style scoped>
 .office-preview { display: grid; gap: .75rem; max-width: 28rem; margin: 2rem auto; padding: 1rem; }
+:global(html) { color-scheme: light; background: var(--p-content-background); color: var(--p-text-color); }
+:global(html.app-dark) { color-scheme: dark; }
 </style>
 ```
 
 The theme switch is a client-event operation, not SSR setup code. An incumbent app should initialize its theme from its existing preference owner rather than introducing this second local flag. See [theme architecture](design-system.md).
 
-In **5.0.3**, noneditable Select renders its focusable combobox as a `span`, not a native labelable input. Use the current `labelId` prop for the focused element's ID and label-click handling; `inputId` is deprecated. Bind the declared `ariaLabelledby` prop to the visible label ID; Select forwards this as DOM `aria-labelledby`. `label[for]` alone does not name that span. Use the component prop spelling, not a raw `aria-labelledby` component attribute, for strict template checking. [Exact Select render and label-click implementation](https://unpkg.com/primevue@5.0.3/select/index.mjs); [declared Select props](https://unpkg.com/primevue@5.0.3/select/index.d.ts).
+In **1.0.0**, noneditable Select renders its focusable combobox as a `span`, not a native labelable input. Use `labelId` for that element's ID and label-click handling; `inputId` is deprecated in the actual release. Bind the declared `ariaLabelledby` prop to the visible label ID; Select forwards it as DOM `aria-labelledby`. A `label[for]` alone does not name the span. This is a verified API detail, not an assumption based on ancestry. [Published Select implementation](https://unpkg.com/openvue@1.0.0/select/index.mjs), [Select declarations](https://unpkg.com/openvue@1.0.0/select/index.d.ts).
 
-**Browser acceptance plan, not an observed pass:** mount this shell at 320px and 1280px CSS width in each theme. Tab to the combobox and inspect its accessible name: it must remain “Office” before and after selecting London/New York, not become the placeholder or selected city. Click the visible label to focus it; use Space/Arrow keys/Enter to select, Escape to dismiss, then Tab to Preview office and activate it. Confirm local-only status, visible focus, reachable theme/preview actions and no clipped label or popup at either width.
+Dialog uses **`v-model:visible`**, is **nonmodal by default** (`modal: false`), and appends to `body` by default. The example explicitly enables modal focus containment, supplies its name with `header`, and keeps a keyboard-operable close action. Its trigger owns `aria-haspopup`, `aria-expanded` and `aria-controls`; there is no activator-slot prop bundle to copy. Verify initial focus and trigger restoration, including Escape and programmatic dismissal. Custom container/header slots must preserve or replace the dialog's accessible naming. [Dialog API](https://openvue.dev/dialog), [published declarations](https://unpkg.com/openvue@1.0.0/dialog/index.d.ts).
 
-### Theming, migration and failure guidance
+With `strictTemplates`, forward native root attributes through the declared `pt.root` contract: the example places the dialog's `id` there, and the carousel below supplies its accessible label the same way. Do not weaken template checking because the component's props omit native attributes.
 
-- PrimeVue styled mode consists of a base plus preset tokens: primitive palette → semantic roles → component tokens. Customize with `definePreset`; use per-component `dt` for scoped token overrides. Do not patch generated internal CSS as the first solution. `unstyled: true` removes built-in styling; it does not turn the component into a Vuetify component or provide your accessibility/design styles. [Styled mode](https://primevue.dev/theming/styled/).
-- Standard v5 presets assume a **16px** root. Existing 14px layouts can use `@primeuix/themes/aura-compat` (and corresponding Lara/Material/Nora variants), maintained upstream until **June 2027**, while migrating deliberately. Do not change the document root font merely to fix one widget.
-- The default dark selector is `system`; set an explicit class selector when the application owns dark mode. Apply it on a common ancestor of portals, usually the document root. `cssLayer` defaults to false; when enabled, reason about both named-layer order and the higher priority of unlayered CSS. Adding another reset is not a theme fix.
-- PrimeVue overlays commonly teleport to `body`; consult the component's actual `appendTo` API before choosing `self` or another container. Match theme scope, clipping and stacking. Global config includes overlay `zIndex` defaults; raising them does not fix another library's focus trap. PassThrough (`pt`) attributes can reach internal nodes; do not overwrite generated ARIA/state handlers accidentally.
-- Services are separate installations: import and install `ToastService` from `primevue/toastservice` before `useToast()`, and render a `Toast` host from `primevue/toast`. The same distinction applies to confirmation/dynamic-dialog services and their hosts. A component import alone does not install the service.
-- Inputs' `invalid` styling is not validation or a screen-reader error description. Supply visible labels, error text linked with `aria-describedby`, invalid state and an appropriate announcement policy. Check keyboard behavior in the specific component documentation, especially editable comboboxes and virtualized tables. Icon-only controls need accessible names. Follow [accessibility](accessibility.md) and [forms](forms.md).
-- Dialog is **nonmodal by default** in 5.0.3 (`modal: false`) and uses `v-model:visible`, not Reka's `v-model:open` or Quasar/Vuetify's ordinary `v-model`. For a modal workflow, enable `modal`; its Tab/Shift+Tab containment applies in that mode. Give custom/headless content a real dialog name, keep a keyboard-operable exit, and verify initial focus and restoration. PrimeVue requires the trigger's `aria-expanded`/`aria-controls` to be handled explicitly; there is no Vuetify-style activator-slot prop bundle to copy. A standalone FocusTrap directive is not a complete modal implementation. [Exact Dialog declaration](https://unpkg.com/primevue@5.0.3/dialog/index.d.ts), [component keyboard/trigger contract](https://primevue.dev/dialog/#accessibility).
-- **Read the v5 removal table, not just the migration introduction.** It claims no breaking public component changes but explicitly lists removals: `Calendar` → `DatePicker`, `Dropdown` → `Select`, `InputSwitch` → `ToggleSwitch`, `OverlayPanel` → `Popover`, `TabView` → compound `Tabs`, Accordion `activeIndex` → `value`, config `inputStyle` → `inputVariant`. `primevue/themes` is removed; use `@primeuix/themes`. Inventory the installed version and every affected callsite before upgrading. [Official migration](https://primevue.dev/migration/v5/).
-- Still-present **deprecated** v5 APIs are not the same as removed ones. For new code use Button default-slot content instead of `label`/`icon`/`loading` props; use `Select multiple` instead of `MultiSelect`, `InputPassword` instead of `Password`, `InputTags` for AutoComplete multiple, and `@primeicons/vue` rather than `@primevue/icons`. Some replacements (Charts/Editor) belong to PrimeUI PRO, not a free drop-in replacement. Preserve incumbent behavior until a real scoped cutover is authorized.
-- **Nuxt module migration only:** replace `nuxt-primevue` with `@primevue/nuxt-module` and migrate configuration to the selected release. The old **3.0.0** package remains published but is explicitly deprecated in its [registry metadata](https://registry.npmjs.org/nuxt-primevue/3.0.0); it is not an active setup alternative. The replacement's repository relocation does not itself deprecate the replacement package. Use the current module route above, not a historical install command or the Vite `main.ts` recipe.
+**Browser acceptance plan, not an observed pass:** mount this shell at 320px and 1280px CSS width in both themes. Tab to the combobox and inspect its name: it must remain “Office” before and after selecting London/New York, not become the placeholder or city. Click its label to focus it; use Space/Arrow keys/Enter to select and Escape to dismiss. Open Preview office; inspect the dialog's name, initial focus, Tab/Shift+Tab containment, Escape dismissal and trigger-focus restoration. Confirm local-only feedback, visible focus and no clipped popup/dialog. Toggle the theme before opening overlays to check body-portal scope.
 
-### PrimeVue advanced configuration and component contracts
+### Nuxt availability is a separate integration
 
-Use explicit `primevue/<name>` component/module imports as above; the root exports also exist, and `primevue/<name>/style` addresses a component's style implementation, **not** a stylesheet that replaces the theme preset. `@primevue/auto-import-resolver` **5.0.3** is the researched resolver for an incumbent `unplugin-vue-components` pipeline; auto-importing components does not install services/directives or supply a license. [Resolver release](https://registry.npmjs.org/@primevue%2fauto-import-resolver/5.0.3), [auto-import setup](https://primevue.dev/autoimport/).
+The official **`@openvue/nuxt-module@1.0.0` exists** and depends on `openvue@1.0.0`. Its published implementation declares Nuxt `>=3.0.0`; package development metadata uses Nuxt 3.15.4. These are source facts, **not** an exercised Nuxt 4 compatibility claim. For Nuxt, [Nuxt host guidance](nuxt.md) owns bootstrap/SSR; use the [official Nuxt setup](https://openvue.dev/nuxt), not this Vite `main.ts`.
 
-- Configure `locale` at plugin installation, or update the reactive `usePrimeVue().config.locale` in setup when the application changes languages. Include translated ARIA labels/date metadata, not just visible text; keep its date-format contract distinct from application date storage.
-- `pt` is keyed by the installed component's sections; directive global PassThrough lives under `directives`. `ptOptions` defaults to `mergeSections: true`, `mergeProps: false`; choose merge behavior intentionally before layering global and local attrs. Use the declared section names rather than brittle descendant selectors or replacing state listeners.
-- Use `inputVariant: 'filled'` for an app-wide input policy; an ancestor CSS class does not reach body-teleported dialogs. Configure ripple deliberately (default false). Under CSP, pass the response's real nonce as `csp: { nonce }` for injected styles, and match the actual response policy; a fixed example nonce is not a security control.
-- Runtime preset APIs (`usePreset`, `updatePreset`, `updatePrimaryPalette`, `updateSurfacePalette`) belong to `@primeuix/themes`; `$dt` inspects resolved tokens, `palette` generates a scale. Preserve `colorScheme.light/dark` structure when overriding color-scheme-dependent semantic/component tokens; otherwise a flat override can lose to the scheme-specific token. Use the application's existing theme owner, not two independent runtime preset controllers. [Styled tokens](https://primevue.dev/theming/styled/), [exact config including locale/PT/CSP](https://unpkg.com/@primevue/core@5.0.3/config/index.d.ts).
+Do not invent an `openvue` Nuxt configuration key, renamed runtime composable or resolver export: some **1.0.0 public identifiers retain historical names**. Read the exact installed module/types and upstream setup before configuring it; this reference intentionally does not reproduce those identifiers. For an explicitly chosen Nuxt integration, install `openvue@1.0.0`, `@openvue/themes@1.0.0` and the development dependency `@openvue/nuxt-module@1.0.0`, then verify the actual application's server rendering, injected theme styles, hydration and portal theme scope. [Module metadata](https://registry.npmjs.org/@openvue%2fnuxt-module/1.0.0), [published implementation](https://unpkg.com/@openvue/nuxt-module@1.0.0/dist/module.mjs).
 
-The following is a selection/implementation contract, not a list of interchangeable components:
+### Theming, services and cutover contracts
 
-| Workflow | Composition and state contract |
+- Styled mode consists of a base plus preset tokens: primitive palette → semantic roles → component tokens. `@openvue/themes` exports `definePreset`, `usePreset`, `updatePreset`, `updatePrimaryPalette`, `updateSurfacePalette`, `palette`, `$dt` and `$t`; its implementation re-exports the styling engine. Aura, Lara, Material and Nora preset subpaths exist. Choose the OpenVue theme package consistently; no second direct engine-theme dependency is needed. Use component `dt` for scoped tokens before patching internal CSS. `unstyled: true` removes built-in styling; it does not supply your design or accessibility styles. [Styled mode](https://openvue.dev/theming/styled), [theme entry](https://unpkg.com/@openvue/themes@1.0.0/index.mjs).
+- Preserve `colorScheme.light/dark` nesting when overriding scheme-specific tokens; a flat override can lose to the original scheme-specific token. Components use `rem` units and inherit fonts. The docs site uses a 14px root; this is not an application requirement or a separate compatibility-preset API. Keep the application's existing root scale.
+- The default dark selector is `system`; set an explicit class selector when the application owns dark mode and apply it on a common ancestor of portals, usually the document root. `cssLayer` defaults to false. When enabled, reason about named-layer order and the higher priority of unlayered CSS. Adding another reset is not a theme fix.
+- Consult each overlay's `appendTo` API before choosing `self` or another container. Match theme scope, clipping and stacking. Global `zIndex` defaults do not resolve another library's focus trap. PassThrough (`pt`) reaches documented internal sections; do not overwrite generated ARIA/state handlers. Read the installed section names and merge options.
+- Configure `locale`, translated ARIA labels and date metadata through the plugin's declared options, synchronized with the existing locale owner. Set `inputVariant: 'filled'` or ripple deliberately. Under CSP, pass the real response nonce as `csp: { nonce }`; a fixed example nonce is not a security control. [Configuration](https://openvue.dev/configuration), [core declarations](https://unpkg.com/@openvue/core@1.0.0/config/index.d.ts).
+- Services here are **local UI plugin services, not hosted backends**. Install `ToastService` from `openvue/toastservice` before using `useToast` from `openvue/usetoast`, and render a `Toast` host from `openvue/toast`. ConfirmationService + ConfirmDialog/ConfirmPopup + `useConfirm().require(...)`, and DialogService + DynamicDialog + `useDialog().open(...)`, follow the same plugin/host/caller distinction. Importing a component does not install its service. Handle cancellation as well as success. [Toast](https://openvue.dev/toast), [confirmation](https://openvue.dev/confirmdialog), [dynamic dialog](https://openvue.dev/dynamicdialog).
+- Directives such as Tooltip, Ripple, StyleClass, FocusTrap, KeyFilter and AnimateOnScroll need explicit registration when used manually. A standalone FocusTrap is not a complete modal. Terminal is a local command UI, not permission to execute shell commands.
+- Inputs' `invalid` styling is not validation or a screen-reader error description. Supply visible labels, linked help/errors, invalid state and an appropriate announcement policy. Follow [accessibility](accessibility.md) and [forms](forms.md).
+- For an authorized framework cutover, inventory all dependencies, imports, templates, slots, styles, directives, plugin services, theme files and Nuxt integration. [Upstream migration guidance](https://openvue.dev/migrate) and the opt-in `@openvue/migrate` codemod can assist, but inspect the resulting diff and migrate every caller; remove obsolete packages/configuration rather than adding dependency aliases or shims. Keep unrelated incumbent frameworks unchanged.
+
+### OpenVue component contracts, not cross-vendor substitutions
+
+Use explicit `openvue/<name>` imports as above. The root package also exports components; `<name>/style` addresses a style implementation, not a stylesheet replacing the theme preset. An existing auto-import pipeline can use **`@openvue/auto-import-resolver@1.0.0`**, but read its actual named export before adoption rather than inventing one. Auto-importing components does not install services/directives. [Published package exports](https://registry.npmjs.org/openvue/1.0.0), [auto-import setup](https://openvue.dev/autoimport).
+
+| Workflow | OpenVue 1.0.0 composition and state contract |
 | --- | --- |
-| Multiple values and tags | `Select multiple` models selected values; use stable `optionValue`/`optionLabel` rather than persisting display labels. InputTags models `string[]`; `typeahead` enables suggestions and `@complete` carries `event.query`. Choose `max`, `allowDuplicate`, `delimiter` and add-on-blur/paste/tab policy explicitly. `add`/`remove` are events, not a server persistence contract. [Exact InputTags](https://unpkg.com/primevue@5.0.3/inputtags/index.d.ts) |
-| Password / mask | InputPassword ordinary `v-model` is the password, `v-model:mask` is the separate display state; compose a labeled toggle/spinner/meter yourself. A mask is formatting, not validation: register the default directive from `primevue/mask` as `vMask` in script setup (or `app.directive('mask', Mask)`), then use `v-mask="{ mask: '99-9999', unmask: true }"` on InputText. `onChange` provides both `value` and `rawValue`; choose which reaches storage. Never log password values. [InputPassword](https://unpkg.com/primevue@5.0.3/inputpassword/index.d.ts), [Mask](https://unpkg.com/primevue@5.0.3/mask/index.d.ts) |
-| Tabs, Accordion and Stepper | Tabs/TabList/Tab/TabPanels/TabPanel match corresponding `value`s; Accordion/AccordionPanel/Header/Content uses `v-model:value` (arrays for multiple expansion). Stepper uses StepList/Step + StepPanels/StepPanel; vertical layouts add StepItem. Do not nest panel bodies under unrelated headers or retain removed TabView/AccordionTab props. Navigation tabs omit panels and compose actual router links; do not label route navigation as in-place panel switching. [Tabs](https://primevue.dev/tabs/), [Stepper](https://primevue.dev/stepper/) |
-| Responsive application sidebar | SidebarLayout coordinates the registered sidebar/main layout; Sidebar requires a unique `id` **inside that layout**, with `v-model:open`, side, width, `variant` (sidebar/floating/inset), `collapsible` (offcanvas/icon/none). Compose Aside/Main/Header/Content/Footer, Group/GroupLabel/GroupContent and Menu/Item/Button families; use Trigger/Rail for controls. This is not the old overlay Sidebar: that role is Drawer. Review mobile overlay/outside-dismiss and focus behavior separately from desktop collapse. [Exact Sidebar](https://unpkg.com/primevue@5.0.3/sidebar/index.d.ts), [anatomy](https://primevue.dev/sidebar/) |
-| Gallery / Carousel / Compare | GalleryItem/Thumbnail/Content and its header/footer/backdrop/control parts coordinate media; control `activeIndex` and `fullscreen` separately, and label rotate/zoom/download/previous/next actions. Carousel models `page` and renders Content/Item plus Prev/Next/Indicators; data-driven `value` still works but is deprecated. Compare models a numeric position bounded by min/max with Item/Handle/Indicator parts; provide meaningful comparison labels. [Gallery](https://unpkg.com/primevue@5.0.3/gallery/index.d.ts), [Carousel](https://unpkg.com/primevue@5.0.3/carousel/index.d.ts), [Compare](https://unpkg.com/primevue@5.0.3/compare/index.d.ts) |
-| Command palette / multi-level menu | CommandMenu takes a `model` of items with labels, disabled state, keywords and command callbacks; bind search separately with `v-model:search`. Keep navigation targets and actions distinct and close/focus behavior appropriate to its host. Menu supports nested `items`/toggleable groups; replacing PanelMenu is a structural migration, not changing its tag alone. [CommandMenu](https://primevue.dev/commandmenu/), [Menu](https://primevue.dev/menu/) |
-| Color / scroll surface | InputColor models a string (`format` defaults to hsba) and composes Area/Slider/Swatch/EyeDropper/Input parts; label channels, preserve format at the application boundary, and feature-detect eyedropper support. ScrollArea requires Viewport/Content/Scrollbar/Handle and optional Corner; bound its height and keep keyboard/native scroll behavior, not only visible custom bars. [InputColor](https://unpkg.com/primevue@5.0.3/inputcolor/index.d.ts), [ScrollArea](https://primevue.dev/scrollarea/) |
-| Forms and input decoration | FloatLabel/IftaLabel/plain label supplies labeling, not validation. Fluid can size a region; IconField/InputIcon and InputGroup/Addon decorate actual controls. `@primevue/forms` is separate Form/FormField/resolver integration using the input `name`/formControl contract; plain `v-model` remains valid. Do not let both it and a second form owner independently reset/submit the same field. See [forms](forms.md), [official integration](https://primevue.dev/forms/). |
-| Large DataTable / TreeTable | Compose DataTable with Column/ColumnGroup/Row; TreeTable shares Column but models hierarchical data. Set `dataKey` to stable row identity; object `expandedRows` keyed by identity avoids scanning an array of row objects. `stateStorage` plus user/table-specific `stateKey` persists UI state, not server data; invalidate incompatible saved schemas and avoid persisting sensitive filter values. VirtualScroller needs `items`, matching `itemSize` and bounded geometry; `delay` throttles rendering, not remote fetching. See [data tables](data-tables.md), [virtualization](virtualization.md), [DataTable primary API](https://primevue.dev/datatable/). |
+| Single/multiple selection and tags | Select models one value; **MultiSelect** is the separate multiple-value component. Use stable `optionValue`/`optionLabel`, not display text as identity. AutoComplete with `multiple` models multiple suggestions; its `complete` event supplies `event.query`. These are not a `Select multiple` or InputTags API. [Select](https://openvue.dev/select), [MultiSelect](https://openvue.dev/multiselect), [AutoComplete](https://openvue.dev/autocomplete) |
+| Password / mask | **Password** supplies password visibility/feedback behavior; `toggleMask` enables its visibility control. **InputMask** is the component for formatting masked text, with `mask` and optional `unmask`. They are not InputPassword or a mask directive. Formatting does not validate server input; never log passwords. [Password](https://openvue.dev/password), [InputMask](https://openvue.dev/inputmask) |
+| Tabs, Accordion and Stepper | Tabs/TabList/Tab/TabPanels/TabPanel match `value`s; Accordion/AccordionPanel/AccordionHeader/AccordionContent uses `v-model:value` (arrays for multiple expansion). Stepper composes StepList/Step and StepPanels/StepPanel; vertical layouts add StepItem. Keep navigation links distinct from in-place tab panels. [Tabs](https://openvue.dev/tabs), [Accordion](https://openvue.dev/accordion), [Stepper](https://openvue.dev/stepper) |
+| Sidebar / menus | **Drawer** is the overlay-side-panel component with `v-model:visible`; there is no compound application SidebarLayout contract to import. Build permanent application layout with ordinary layout primitives. PanelMenu remains the hierarchical accordion-menu component; Menu/TieredMenu/Menubar have their own model and popup/navigation contracts. [Drawer](https://openvue.dev/drawer), [PanelMenu](https://openvue.dev/panelmenu) |
+| Media / scrolling / color | **Galleria**, Image, **ImageCompare**, **ColorPicker** and **ScrollPanel** are the named families. Do not substitute invented Gallery, Compare, InputColor or ScrollArea imports. Carousel is data-driven as below. Label media and comparison controls, bound scroll geometry and preserve keyboard/native scroll operation. [Galleria](https://openvue.dev/galleria), [ImageCompare](https://openvue.dev/imagecompare), [ScrollPanel](https://openvue.dev/scrollpanel) |
+| Forms / decoration | Plain `v-model` remains valid. FloatLabel/IftaLabel/plain labels do not validate; Fluid sizes a region; IconField/InputIcon/InputGroup/InputGroupAddon decorate controls. **`@openvue/forms@1.0.0`** is opt-in Form/FormField/resolver integration, not part of core installation or permission for a second form owner to reset/submit the same draft. [Forms](https://openvue.dev/forms) |
+| Large DataTable / TreeTable | Compose DataTable with Column/ColumnGroup/Row; TreeTable shares Column but models hierarchical data. Set stable `dataKey`; persisted `stateStorage`/`stateKey` stores UI state, not server data. VirtualScroller requires matching geometry and data; its render delay is not remote-fetch throttling. Keep request cancellation/cache ownership in the data layer. [DataTable](https://openvue.dev/datatable), [TreeTable](https://openvue.dev/treetable), [data tables](data-tables.md), [virtualization](virtualization.md) |
+| Charts / editor | Chart uses the optional **Chart.js 4** peer; Editor uses the optional **Quill 2** peer. Install them only for that capability and inspect their licensing/security and actual Vue wrapper contracts. They are not mandatory packages for Select/Dialog/Carousel. [Chart](https://openvue.dev/chart), [Editor](https://openvue.dev/editor) |
 
-Complete local compound-carousel SFC for the already-installed PrimeVue shell; no network images, autoplay or omitted symbols:
+### Complete data-driven carousel
+
+Replace only `src/App.vue` in the dedicated Vite shell above with this complete SFC. OpenVue **1.0.0** uses `value`, `#item="{ data, index }"` and `v-model:page`; **there are no CarouselContent/CarouselItem/CarouselPrev/CarouselNext imports** in this release. `value` is the documented data API, not deprecated. `numVisible` and `numScroll` control layout/navigation; `responsiveOptions` can override them by breakpoint. The example keeps one item per page so the displayed stage count remains correct. [Carousel docs](https://openvue.dev/carousel), [exact declarations](https://unpkg.com/openvue@1.0.0/carousel/index.d.ts).
 
 ```vue
 <script setup lang="ts">
 import { shallowRef } from 'vue'
-import Carousel from 'primevue/carousel'
-import CarouselContent from 'primevue/carouselcontent'
-import CarouselItem from 'primevue/carouselitem'
-import CarouselPrev from 'primevue/carouselprev'
-import CarouselNext from 'primevue/carouselnext'
+import Carousel from 'openvue/carousel'
 
 const page = shallowRef(0)
 const cards = [
@@ -170,22 +205,32 @@ const cards = [
 </script>
 
 <template>
-  <Carousel v-model:page="page" :num-visible="1" :num-scroll="1" aria-label="Planning stages">
-    <CarouselContent>
-      <CarouselItem v-for="card in cards" :key="card.id">
-        <article><h2>{{ card.title }}</h2><p>{{ card.detail }}</p></article>
-      </CarouselItem>
-    </CarouselContent>
-    <CarouselPrev aria-label="Previous stage" />
-    <CarouselNext aria-label="Next stage" />
-  </Carousel>
-  <p>Stage {{ page + 1 }} of {{ cards.length }}</p>
+  <main class="stage-preview">
+    <h1>Planning stages</h1>
+    <Carousel
+      v-model:page="page" :value="cards" :num-visible="1" :num-scroll="1"
+      :autoplay-interval="0" :circular="false" :pt="{ root: { 'aria-label': 'Planning stages' } }"
+      :prev-button-props="{ 'aria-label': 'Previous stage' }"
+      :next-button-props="{ 'aria-label': 'Next stage' }"
+    >
+      <template #item="{ data }">
+        <article :key="data.id" class="stage-card">
+          <h2>{{ data.title }}</h2>
+          <p>{{ data.detail }}</p>
+        </article>
+      </template>
+    </Carousel>
+    <p role="status">Stage {{ page + 1 }} of {{ cards.length }}</p>
+  </main>
 </template>
+
+<style scoped>
+.stage-preview { max-width: 36rem; margin: 2rem auto; padding: 1rem; }
+.stage-card { padding: 1rem; overflow-wrap: anywhere; }
+</style>
 ```
 
-Other opt-in services follow the same three-part pattern: ConfirmationService + ConfirmDialog/ConfirmPopup + `useConfirm().require(...)`; DialogService + DynamicDialog + `useDialog().open(Component, { props, data })`. Dynamic dialog result/data is application-owned; always handle cancel as well as success. Toast supports `remove`, `removeGroup`, `removeAllGroups` in addition to `add`. TerminalService is a command bus, not permission to execute arbitrary shell commands. Directives Tooltip/Ripple/StyleClass/FocusTrap/KeyFilter/AnimateOnScroll/Mask need explicit directive registration when used manually; components do not register them. `blockBodyScroll`/`unblockBodyScroll` are paired utilities, not a replacement for the overlay family's cleanup. [Toast](https://primevue.dev/toast/), [dynamic dialogs](https://primevue.dev/dynamicdialog/), [confirmation](https://primevue.dev/confirmdialog/).
-
-For a v4→v5 cutover, search **all** imports/templates/slots/styles, not only renamed component tags. Besides the removals above: Chips/InputChips→InputTags, TabMenu→Tabs without panels, AccordionTab→Panel/Header/Content, v-badge→OverlayBadge, InlineMessage→Message; Button plain→contrast severity; overlay panel* props→overlay*; InputNumber increment/decrementButtonIcon→increment/decrementIcon. Match the removal table's exact icon-slot renames (e.g. Toast icon→messageicon, Column rowtogglericon→rowtoggleicon, OrderList/PickList item→option). Replace UniqueComponentId with `uuid` from `@primeuix/utils`, hasFluid/filled instance getters with `$fluid`/`$filled`, and remove reliance on internal root `$pc`. Use Message `life` instead of removed sticky and `usePreset` instead of switchTheme. Complete the separate deprecated migrations only within authorized scope, including Galleria/Image→Gallery, ColorPicker→InputColor, ImageCompare→Compare, ScrollPanel→ScrollArea, InputMask→Mask, PanelMenu→Menu. Charts/Editor PRO may introduce licensing/capability changes; they are not universal same-package replacements. [Authoritative full removal/deprecation table](https://primevue.dev/migration/v5/).
+**Carousel acceptance plan, not an observed pass:** at 320px and 1280px, navigate with labeled previous/next buttons and indicators, confirm page/status updates and disabled end controls, and inspect visible/hidden slide semantics and focus. No autoplay or remote images are involved. Adding autoplay requires a user-operable pause policy and reduced-motion consideration; adding interactive slides requires checking that offscreen controls cannot receive focus.
 
 ## Quasar: choose one build route
 
@@ -401,4 +446,4 @@ For added APIs, inspect the **installed** descriptors before using newer members
 
 Code above is authored against the cited packages/types, not executed here. Setup snippets are complete within the named app shells; the CLI config is deliberately contextual to a generated CLI project. Proposed checks: plugin/service injection, CSS and icon loading, keyboard/label/error behavior, local-only feedback, dark-mode portal scope, actual build-mode entry points, SSR request isolation, test-bundler resolution, and target-platform permissions. Use [testing](testing.md) and [SSR debugging](debugging-ssr.md); source evidence is not a runtime accessibility or compatibility pass.
 
-Primary releases: [PrimeVue 5.0.3](https://registry.npmjs.org/primevue/5.0.3), [themes 3.0.2](https://registry.npmjs.org/@primeuix%2fthemes/3.0.2), [PrimeVue license](https://unpkg.com/primevue@5.0.3/LICENSE.md), [Quasar 2.35.2](https://registry.npmjs.org/quasar/2.35.2), [Vite plugin 2.0.2](https://registry.npmjs.org/@quasar%2fvite-plugin/2.0.2), [app-vite 3.10.3](https://registry.npmjs.org/@quasar%2fapp-vite/3.10.3), [create-quasar 5.0.35](https://registry.npmjs.org/create-quasar/5.0.35). Current API guidance: [PrimeVue configuration](https://primevue.dev/configuration/), [styled themes](https://primevue.dev/theming/styled/), [v5 migration/removals](https://primevue.dev/migration/v5/), [Quasar Vite](https://quasar.dev/start/vite-plugin/), [CLI config](https://quasar.dev/quasar-cli-vite/quasar-config-file/), [platform](https://quasar.dev/options/platform-detection/), [installed-plugin implementation](https://unpkg.com/quasar@2.35.2/src/install-quasar.js), [plugin declarations](https://unpkg.com/@quasar/vite-plugin@2.0.2/index.d.ts).
+Primary releases: [OpenVue 1.0.0](https://registry.npmjs.org/openvue/1.0.0), [OpenVue themes 1.0.0](https://registry.npmjs.org/@openvue%2fthemes/1.0.0), [MIT license](https://github.com/openvi-foundation/openvue/blob/main/LICENSE.md), [release history](https://openvue.dev/changelog), [Quasar 2.35.2](https://registry.npmjs.org/quasar/2.35.2), [Vite plugin 2.0.2](https://registry.npmjs.org/@quasar%2fvite-plugin/2.0.2), [app-vite 3.10.3](https://registry.npmjs.org/@quasar%2fapp-vite/3.10.3), [create-quasar 5.0.35](https://registry.npmjs.org/create-quasar/5.0.35). Current API guidance: [OpenVue configuration](https://openvue.dev/configuration), [styled themes](https://openvue.dev/theming/styled), [migration](https://openvue.dev/migrate), [upstream repository](https://github.com/openvi-foundation/openvue), [Quasar Vite](https://quasar.dev/start/vite-plugin/), [CLI config](https://quasar.dev/quasar-cli-vite/quasar-config-file/), [platform](https://quasar.dev/options/platform-detection/), [installed-plugin implementation](https://unpkg.com/quasar@2.35.2/src/install-quasar.js), [plugin declarations](https://unpkg.com/@quasar/vite-plugin@2.0.2/index.d.ts).

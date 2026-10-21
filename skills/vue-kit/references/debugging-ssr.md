@@ -2,7 +2,7 @@
 
 Read when Vue throws, warns, stops updating, renders the wrong subtree, leaks resources or fails hydration. This is a decision workflow, not a catalogue of warning suppressions. It covers Vue **3.5.44** and matching **@vue/compiler-sfc 3.5.44 / @vue/server-renderer 3.5.44**. Composition API with `<script setup lang="ts">` is the default; preserve an incumbent Options API or JSX boundary rather than rewriting it during diagnosis. Testing examples use the exact setup in [testing](testing.md): VTU **2.5.1**, Vitest **5.0.5**, jsdom **30.1.3**. Nuxt-specific notes describe **Nuxt 4.6.2**, not standalone Vue APIs. `<Suspense>` remains **experimental** in Vue 3.5; lazy-hydration strategies and `useTemplateRef` are 3.5+ APIs. [Vue async components](https://vuejs.org/guide/components/async), [Suspense status](https://vuejs.org/guide/built-ins/suspense).
 
-For any Nuxt application task, [Nuxt](nuxt.md) owns the host lifecycle; use this reference for diagnosis, not a replacement bootstrap. Add [Nuxt integrations](nuxt-integrations.md) only when the failure involves the selected Clerk, Pinia, Colada or Vuetify setup. The standalone renderer/hydrator fixtures below are not Nuxt entrypoints or proof of Nuxt request isolation.
+For any Nuxt application task, [Nuxt](nuxt.md) owns the host lifecycle; use this reference for diagnosis, not a replacement bootstrap. Add [Nuxt integrations](nuxt-integrations.md) only when the failure involves the selected Pinia, Colada or Vuetify setup. The standalone renderer/hydrator fixtures below are not Nuxt entrypoints or proof of Nuxt request isolation.
 
 ## Start at the first divergent boundary
 

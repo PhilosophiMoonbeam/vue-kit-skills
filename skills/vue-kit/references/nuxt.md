@@ -1,6 +1,6 @@
 # Nuxt
 
-First-class host guide for **Nuxt 4.6.2 + Vue 3.5.44**, for new applications and ordinary extension work. Nuxt owns bootstrap, file routing, SSR, payload transfer and the server engine; do not create a second Vue app, Router, Pinia instance or SPA hydration pipeline. Use [migration](migration.md#nuxt-3-to-4-migration) only for an actual Nuxt 3 upgrade. Add [selected Nuxt integrations](nuxt-integrations.md) only when Vuetify, Pinia, Clerk or an additional query owner is required; that guide is not certification of every optional module.
+First-class host guide for **Nuxt 4.6.2 + Vue 3.5.44**, for new applications and ordinary extension work. Nuxt owns bootstrap, file routing, SSR, payload transfer and the server engine; do not create a second Vue app, Router, Pinia instance or SPA hydration pipeline. Use [migration](migration.md#nuxt-3-to-4-migration) only for an actual Nuxt 3 upgrade. Add [selected Nuxt integrations](nuxt-integrations.md) only when Vuetify, Pinia, or an additional query owner is required; that guide is not certification of every optional module.
 
 ## Start and generated types
 

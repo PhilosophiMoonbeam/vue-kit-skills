@@ -33,11 +33,11 @@ SEMVER = re.compile(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?\Z")
 # independently of the later primary-evidence resolutions.
 # These are historical-integrity checks, not proof of audit or runtime execution.
 NATIVE_FINGERPRINTS = {
-    'sources': '47921a384b9779b90329063e8107eb35a404aa09598e731137ebd726a0bebfa9',
+    'sources': '4ead9391a8b08445619f6dc719ea4a0ef3e1db603873817a45364939e0830c16',
     'references': '4e81026e20777414d4a0c2871fa207c79d1668ed3f3f5b9e1bc65867184355c2',
 }
 NATIVE_COUNTS = {
-    'native_source_choices': {'covered': 338, 'partial': 127, 'missing': 1, 'out_of_scope': 1},
+    'native_source_choices': {'covered': 331, 'partial': 126, 'missing': 1, 'out_of_scope': 1},
     'native_reference_readiness': {'ready': 37, 'mixed': 1},
 }
 
@@ -516,18 +516,18 @@ class Validator:
             if manifest is not None:
                 self.error(manifest_path, 'manifest must be an object')
             return
-        if set(manifest) != {'schema_version', 'baseline', 'sources'}:
-            self.error(manifest_path, 'expected exactly schema_version, baseline, sources')
-        if type(manifest.get('schema_version')) is not int or manifest['schema_version'] != 1:
-            self.error(manifest_path, 'schema_version must be 1')
+        if set(manifest) != {'schema_version', 'baseline', 'sources', 'extensions', 'history'}:
+            self.error(manifest_path, 'expected schema_version, baseline, sources, extensions, history')
+        if type(manifest.get('schema_version')) is not int or manifest['schema_version'] != 2:
+            self.error(manifest_path, 'schema_version must be 2')
         if manifest.get('baseline') != BASELINE:
             self.error(manifest_path, f'baseline must be {BASELINE}')
         sources = manifest.get('sources')
         if not isinstance(sources, list):
             self.error(manifest_path, 'sources must be an array')
             return
-        if len(sources) != 49:
-            self.error(manifest_path, f'expected 49 sources, found {len(sources)}')
+        if len(sources) != 47:
+            self.error(manifest_path, f'expected 47 retained historical roots, found {len(sources)}')
         registered, ids, totals = set(), set(), Counter()
         for index, source in enumerate(sources):
             label = f'sources[{index}]'
@@ -567,6 +567,39 @@ class Validator:
                     self.error(manifest_path, f'{identity}: mapped reference does not exist: {reference}')
                 elif path not in self.indexed:
                     self.error(manifest_path, f'{identity}: mapped reference is not indexed: {reference}')
+        extensions = manifest.get('extensions')
+        if not isinstance(extensions, list) or len(extensions) != 2:
+            self.error(manifest_path, 'extensions must describe the two newly authored contracts')
+            extensions = []
+        extension_ids = set()
+        for extension in extensions:
+            if not isinstance(extension, dict):
+                self.error(manifest_path, 'extension must be an object')
+                continue
+            identity = extension.get('id')
+            if not isinstance(identity, str) or identity in ids or identity in extension_ids:
+                self.error(manifest_path, 'extension identity must be unique')
+            else:
+                extension_ids.add(identity)
+            urls = extension.get('primary_urls')
+            if not isinstance(urls, list) or not urls or any(
+                    not isinstance(url, str) or not url.startswith('https://') for url in urls):
+                self.error(manifest_path, 'extension requires primary HTTPS evidence')
+            mappings = extension.get('references')
+            if not isinstance(mappings, list) or not mappings:
+                self.error(manifest_path, 'extension requires reference ownership')
+                continue
+            for reference in mappings:
+                target = self.safe_path(manifest_path, reference, 'extension reference')
+                if target not in self.references or target not in self.indexed:
+                    self.error(manifest_path, 'extension reference must be packaged and indexed')
+                else:
+                    registered.add(target)
+        if extension_ids != {'openvue', 'application-session-contract'}:
+            self.error(manifest_path, 'required local-library and application-session extensions are missing')
+        history = manifest.get('history')
+        if not isinstance(history, dict) or history.get('commit') != '7bf433b98951918c694358e372d3b02cf6f982e5':
+            self.error(manifest_path, 'history must identify the immutable pre-cutover snapshot')
         for path in sorted(self.references - registered):
             self.error(manifest_path, f'unregistered reference: {self.display(path)}')
         if not isinstance(audit, dict):
@@ -583,10 +616,10 @@ class Validator:
         for key in ('truncated', 'errors'):
             if type(counts.get(key)) is not int or counts[key] != 0:
                 self.error(audit_path, f'counts.{key} must be 0 for the complete snapshot')
-        if 'roots' in counts and counts['roots'] != 49:
-            self.error(audit_path, 'counts.roots must be 49')
-        if 'schema_version' in audit and (type(audit['schema_version']) is not int or audit['schema_version'] != 1):
-            self.error(audit_path, 'schema_version must be 1')
+        if 'roots' in counts and counts['roots'] != 47:
+            self.error(audit_path, 'counts.roots must be 47')
+        if type(audit.get('schema_version')) is not int or audit['schema_version'] != 2:
+            self.error(audit_path, 'schema_version must be 2')
         if 'baseline' in audit and audit['baseline'] != BASELINE:
             self.error(audit_path, 'baseline disagrees with manifest')
         roots = audit.get('roots')
@@ -886,224 +919,112 @@ class Validator:
             self.error(path, f'{label}: native verdicts differ from the frozen accepted hypotheses')
 
     def validate_coverage(self):
-        self.checks.extend(['standalone coverage crosswalk and preserved native verdicts',
-                            'current resolution quotes, canonical headings, and dispositions',
-                            'explicit current reference extensions and scoped recorded acceptance'])
+        self.checks.extend(['retained historical source identities, native hypotheses and current routing',
+                            'historical reference population plus separately indexed host extensions'])
         path = self.root / 'assets/coverage-audit.json'
-        report = self.evidence_report('assets/coverage-audit.json')
-        if report is None:
+        report = self.load_json('assets/coverage-audit.json')
+        if not isinstance(report, dict):
+            self.error(path, 'coverage report must be an object')
             return
-        method = report.get('method')
-        if not ((isinstance(method, str) and method.strip()) or (isinstance(method, dict) and method)):
-            self.error(path, 'method must describe the frozen native audit and explicit resolution procedure')
-        processing = report.get('processing')
-        if not isinstance(processing, dict):
-            self.error(path, 'processing must be an object')
-            processing = {}
-        # These processing totals describe the accepted historical native batch,
-        # not the current active-reference inventory.
-        for key, total in (('source', 467), ('references', HISTORICAL_REFERENCE_COUNT)):
-            self.compare_counts(path, f'processing.{key}', processing.get(key),
-                                {'processed': total, 'errors': 0, 'truncated': 0})
+        if report.get('schema_version') != 2 or report.get('baseline') != BASELINE:
+            self.error(path, 'coverage schema/baseline disagree with current provenance')
+        if report.get('unresolved') != [] or not isinstance(report.get('method'), str):
+            self.error(path, 'coverage method and empty unresolved list are required')
         manifest_sources = self.manifest.get('sources', []) if isinstance(self.manifest, dict) else []
-        audit_files = self.audit.get('files', []) if isinstance(self.audit, dict) else []
         roots = {row['id']: row for row in manifest_sources
-                 if isinstance(row, dict) and isinstance(row.get('id'), str)} if isinstance(manifest_sources, list) else {}
+                 if isinstance(row, dict) and isinstance(row.get('id'), str)}
+        audit_files = self.audit.get('files', []) if isinstance(self.audit, dict) else []
         originals = {row['path']: row for row in audit_files
-                     if isinstance(row, dict) and isinstance(row.get('path'), str)} if isinstance(audit_files, list) else {}
-        sources, references = report.get('sources'), report.get('references')
+                     if isinstance(row, dict) and isinstance(row.get('path'), str)}
+        sources = report.get('sources')
         if not isinstance(sources, list):
             self.error(path, 'sources must be an array')
             sources = []
+        seen, native_sources, choices = set(), {}, Counter()
+        for index, row in enumerate(sources):
+            if not isinstance(row, dict):
+                self.error(path, f'sources[{index}] must be an object')
+                continue
+            source = row.get('source')
+            if not isinstance(source, str) or source not in originals or source in seen:
+                self.error(path, f'sources[{index}] must identify one unique retained source')
+                continue
+            seen.add(source)
+            identity = source.split('/')[2]
+            if row.get('source_root') != identity or identity not in roots:
+                self.error(path, f'{source}: source root disagrees with provenance')
+            if row.get('sha256') != originals[source].get('sha256'):
+                self.error(path, f'{source}: original source hash changed')
+            if row.get('mapped_references') != roots.get(identity, {}).get('references'):
+                self.error(path, f'{source}: routing must match its manifest owner')
+            expected_status = 'excluded' if identity == REMOVED_ROOT else 'historical-routing'
+            if row.get('status') != expected_status:
+                self.error(path, f'{source}: routing is historical, not fresh semantic acceptance')
+            if row.get('historical_disposition') not in ('covered', 'corrected', 'out_of_scope'):
+                self.error(path, f'{source}: invalid preserved disposition')
+            native_sources[source] = {'sha256': row.get('sha256'), 'native': row.get('native')}
+            choice = self.native_choice(row.get('native'), 'coverage')
+            if choice is not None:
+                choices[choice] += 1
+        if seen != set(originals) or len(sources) != 459:
+            self.error(path, 'coverage must route all 459 retained historical source units exactly once')
+        self.validate_native_fingerprint(path, 'sources', native_sources)
+        self.compare_counts(path, 'native_source_choices', dict(choices), NATIVE_COUNTS['native_source_choices'])
+        references = report.get('references')
         if not isinstance(references, list):
             self.error(path, 'references must be an array')
             references = []
-        source_paths, source_roots, reference_paths = set(), set(), set()
-        native_sources, native_references = {}, {}
-        native_source_choices, native_reference_choices = Counter(), Counter()
-        source_choices, reference_choices = Counter(), Counter()
-        explicit, native_only = 0, 0
-        for index, row in enumerate(sources):
-            label = f'sources[{index}]'
+        native_references, reference_paths = {}, set()
+        for row in references:
             if not isinstance(row, dict):
-                self.error(path, f'{label}: must be an object')
-                continue
-            source = row.get('source')
-            if not isinstance(source, str) or source not in originals:
-                self.error(path, f'{label}: source must identify a bundled source-audit path')
-                continue
-            if source in source_paths:
-                self.error(path, f'{label}: duplicate source {source}')
-            source_paths.add(source)
-            original = originals[source]
-            identity = source.split('/')[2] if len(source.split('/')) > 2 else None
-            if row.get('source_root') != identity or identity not in roots:
-                self.error(path, f'{label}: source_root must match the original manifest ID')
-            if identity in roots:
-                source_roots.add(identity)
-            if 'native_path' in row:
-                self.error(path, f'{label}: native_path is not supported for source records')
-            if row.get('sha256') != original.get('sha256'):
-                self.error(path, f'{label}: sha256 differs from the original source snapshot')
-            mappings = row.get('mapped_references')
-            expected = roots.get(identity, {}).get('references')
-            if (not isinstance(mappings, list) or not all(isinstance(item, str) for item in mappings)
-                    or len(set(mappings)) != len(mappings) or not isinstance(expected, list)
-                    or not all(isinstance(item, str) for item in expected)
-                    or set(mappings) != set(expected)):
-                self.error(path, f'{label}: mapped_references must exactly match the owning manifest root')
-            else:
-                for mapping in mappings:
-                    target = self.safe_path(path, mapping, f'{label}.mapped_references')
-                    if target not in self.references:
-                        self.error(path, f'{label}: mapped reference is not packaged: {mapping}')
-            native = row.get('native')
-            native_sources[source] = native
-            choice = self.native_choice(native, 'coverage')
-            if choice is not None:
-                native_source_choices[choice] += 1
-            contradiction = native.get('contradiction') if isinstance(native, dict) else None
-            risk = contradiction.get('bool') if isinstance(contradiction, dict) else None
-            material = choice in ('partial', 'missing') or (type(risk) in (int, float) and risk >= 0.5)
-            if identity == REMOVED_ROOT:
-                required = {
-                    'disposition': 'out_of_scope', 'reference': REMOVAL_REFERENCE,
-                    'section': REMOVAL_SECTION, 'anchor': REMOVAL_ANCHOR,
-                    'evidence': EXCLUSION_QUOTE,
-                }
-                if not isinstance(row.get('resolution'), dict) or any(
-                        row['resolution'].get(key) != value for key, value in required.items()):
-                    self.error(path, f'{label}: excluded source must point to the exact out_of_scope removal record')
-            resolution = row.get('resolution')
-            if 'resolution' not in row:
-                self.error(path, f'{label}: resolution is required (null only for native-only units)')
-            if resolution is None:
-                native_only += 1
-                if original.get('flagged') is True or material:
-                    self.error(path, f'{label}: historical flagged/material native candidate requires explicit resolution')
-                if choice not in ('covered', 'out_of_scope'):
-                    self.error(path, f'{label}: native-only source must be covered or out_of_scope')
-            else:
-                explicit += 1
-                if isinstance(resolution, dict):
-                    disposition = resolution.get('disposition')
-                    if isinstance(disposition, str):
-                        source_choices[disposition] += 1
-                self.validate_resolution(path, label, resolution,
-                                         resolution.get('reference') if isinstance(resolution, dict) else None,
-                                         {'covered', 'corrected', 'out_of_scope'})
-        if source_paths != set(originals) or len(sources) != 467:
-            self.error(path, 'sources must contain each of the 467 original snapshot paths exactly once')
-        if source_roots != set(roots) or len(roots) != 49:
-            self.error(path, 'source roots must match all 49 manifest IDs')
-        for index, row in enumerate(references):
-            label = f'references[{index}]'
-            if not isinstance(row, dict):
-                self.error(path, f'{label}: must be an object')
+                self.error(path, 'historical reference must be an object')
                 continue
             reference = row.get('path')
-            target = self.safe_path(path, reference, f'{label}.path')
-            if target is None:
+            if not isinstance(reference, str) or reference in reference_paths:
+                self.error(path, 'historical reference paths must be unique strings')
                 continue
-            if reference in reference_paths:
-                self.error(path, f'{label}: duplicate reviewed reference {reference}')
             reference_paths.add(reference)
-            native = row.get('native')
             native_path = row.get('native_path', reference)
             if reference == VITEPRESS_GUIDE:
-                if row.get('native_path') != OLD_GUIDE:
-                    self.error(path, f'{label}: renamed reference must preserve native_path {OLD_GUIDE}')
-            elif 'native_path' in row:
-                self.error(path, f'{label}: native_path is permitted only for the fixed VitePress guide migration')
-            if not isinstance(native_path, str):
-                self.error(path, f'{label}: native_path must be the historical reference path')
-            elif native_path in native_references:
-                self.error(path, f'{label}: duplicate native reference identity {native_path}')
-            else:
-                native_references[native_path] = native
-            choice = self.native_choice(native, 'readiness')
-            if choice is not None:
-                native_reference_choices[choice] += 1
-            resolution = row.get('resolution')
-            if isinstance(resolution, dict) and isinstance(resolution.get('disposition'), str):
-                reference_choices[resolution['disposition']] += 1
-            self.validate_resolution(path, label, resolution, reference, {'confirmed_fixed', 'overturned'})
-        extension_paths = self.validate_reference_extensions(path, report, roots, reference_paths)
-        active_paths = {self.display(reference) for reference in self.references}
-        if (len(references) != HISTORICAL_REFERENCE_COUNT
-                or reference_paths & set(CURRENT_REFERENCE_EXTENSIONS)):
-            self.error(path, 'references must retain exactly the 38 historical native-reviewed paths, without extensions')
-        if active_paths != reference_paths | extension_paths:
-            self.error(path, 'active references must exactly match historical reviewed paths plus declared current extensions')
-        self.compare_counts(path, 'current_reference_counts', report.get('current_reference_counts'), {
-            'audited_original': HISTORICAL_REFERENCE_COUNT,
-            'extensions': len(CURRENT_REFERENCE_EXTENSIONS),
-            'active': ACTIVE_REFERENCE_COUNT,
-        })
-        counts = {
-            'sources': len(sources), 'roots': len(source_roots), 'references': len(references),
-            'explicit_source_reviews': explicit, 'native_only_sources': native_only,
-            'source_resolution_choices': {key: source_choices[key] for key in ('covered', 'corrected', 'out_of_scope')},
-            'native_source_choices': dict(native_source_choices),
-            'native_reference_readiness': dict(native_reference_choices),
-            'reference_resolution_choices': {key: reference_choices[key] for key in ('confirmed_fixed', 'overturned')},
-        }
-        self.compare_counts(path, 'counts', report.get('counts'), counts)
-        for key in ('native_source_choices', 'native_reference_readiness'):
-            self.compare_counts(path, key, counts[key], NATIVE_COUNTS[key])
-        self.validate_native_fingerprint(path, 'sources', native_sources)
+                if native_path != OLD_GUIDE:
+                    self.error(path, 'documentation migration must preserve historical identity')
+            elif native_path != reference:
+                self.error(path, 'unexpected historical reference alias')
+            if not isinstance(native_path, str) or native_path in native_references:
+                self.error(path, 'historical reference identity must be unique')
+                continue
+            native_references[native_path] = row.get('native')
         self.validate_native_fingerprint(path, 'references', native_references)
+        extensions = report.get('extensions')
+        if extensions != list(CURRENT_REFERENCE_EXTENSIONS):
+            self.error(path, 'host extension paths must match the current explicit inventory')
+        active = {self.display(reference) for reference in self.references}
+        if reference_paths | set(CURRENT_REFERENCE_EXTENSIONS) != active or len(references) != 38:
+            self.error(path, 'historical references and host extensions must cover the complete active index')
+        self.compare_counts(path, 'counts', report.get('counts'), {
+            'sources': 459, 'roots': 47, 'historical_references': 38, 'active_references': 40,
+        })
 
-    def validate_reference_extensions(self, path, report, roots, historical_paths):
-        """Require explicit current reviews without fabricating native verdicts."""
-        extensions = report.get('current_reference_extensions')
-        if not isinstance(extensions, list):
-            self.error(path, 'current_reference_extensions must be an array')
-            extensions = []
-        verification = self.load_json('assets/verification.json')
-        checks = verification.get('checks', []) if isinstance(verification, dict) else []
-        accepted_checks = {
-            check['id'] for check in checks
-            if isinstance(check, dict) and isinstance(check.get('id'), str)
-            and check.get('result') in ('passed', 'observed')
-        } if isinstance(checks, list) else set()
-        paths = set()
-        for index, row in enumerate(extensions):
-            label = f'current_reference_extensions[{index}]'
-            required = {'path', 'source_roots', 'resolution', 'verification_check_ids'}
-            if not isinstance(row, dict) or set(row) != required:
-                self.error(path, f'{label}: expected exactly {", ".join(sorted(required))}; no native verdict is supported')
+    def validate_service_independence(self):
+        self.checks.append('service-independent capability boundary and supported UI successor')
+        forbidden = re.compile(r'\u0063lerk|\u0070rime(?:vue|ui|uix)', re.I)
+        attribution = 'OpenVue 1.x and newer, a fork of \u0050rimeVue 4.5.5'
+        attribution_count = 0
+        for path in self.packaged_paths():
+            try:
+                text = path.read_text(encoding='utf-8')
+            except UnicodeError:
                 continue
-            reference = row.get('path')
-            if not isinstance(reference, str) or reference not in CURRENT_REFERENCE_EXTENSIONS:
-                self.error(path, f'{label}: path must identify an explicitly declared current extension')
+            except OSError as exc:
+                self.error(path, f'cannot inspect service boundary: {exc}')
                 continue
-            if reference in paths or reference in historical_paths:
-                self.error(path, f'{label}: duplicate reviewed extension {reference}')
-            paths.add(reference)
-            target = self.safe_path(path, reference, f'{label}.path')
-            if target not in self.references or target not in self.indexed:
-                self.error(path, f'{label}: extension must exist and be directly indexed')
-            owners = row.get('source_roots')
-            expected_owners = {identity for identity, root in roots.items()
-                               if isinstance(root.get('references'), list) and reference in root['references']}
-            if (not isinstance(owners, list) or not owners
-                    or not all(isinstance(owner, str) for owner in owners)
-                    or len(set(owners)) != len(owners) or set(owners) != expected_owners):
-                self.error(path, f'{label}: source_roots must exactly match all owning manifest roots')
-            resolution = row.get('resolution')
-            self.validate_resolution(path, label, resolution, reference, {'reviewed'})
-            if isinstance(resolution, dict) and not resolution.get('primary_urls'):
-                self.error(path, f'{label}: extension review requires primary source URLs')
-            identities = row.get('verification_check_ids')
-            if (not isinstance(identities, list) or not identities
-                    or not all(isinstance(identity, str) for identity in identities)
-                    or len(set(identities)) != len(identities)
-                    or not set(identities).issubset(accepted_checks)):
-                self.error(path, f'{label}: verification_check_ids must name distinct passed/observed recorded checks')
-        if paths != set(CURRENT_REFERENCE_EXTENSIONS) or len(extensions) != len(CURRENT_REFERENCE_EXTENSIONS):
-            self.error(path, 'current_reference_extensions must review each explicitly declared extension exactly once')
-        return paths
+            attribution_count += text.count(attribution)
+            remaining = text.replace(attribution, '')
+            if forbidden.search(remaining):
+                self.error(path, 'excluded vendor material remains outside the permitted successor attribution')
+        if attribution_count != 1:
+            self.error(self.root / 'references/alternative-ui.md',
+                       'exactly one supported-successor fork attribution is required')
 
     def validate_verification(self):
         self.checks.extend(['scoped recorded verification metadata',
@@ -1253,6 +1174,7 @@ class Validator:
             self.validate_removals()
             self.validate_package()
             self.validate_coverage()
+            self.validate_service_independence()
             self.validate_verification()
         return {'valid': not self.errors, 'checks': self.checks, 'errors': sorted(set(self.errors))}
 

@@ -110,9 +110,9 @@ Both the composable shell and `execute()` are thenable and **reject on error**. 
 
 Do not transfer `useFetch`'s stale-result guarantee to `useAxios`: the v15 execute counter guards loading completion, not every success/error commit. With `abortPrevious: false`, overlapping requests can overwrite each other; even abort-aware overlaps need care around stale error callbacks. Serialize this controller's actions, give independent operations separate instances, or use an existing query owner when keyed concurrency is required. The wrapper does not install scope-abort; register it if that is the desired lifetime. [Axios cancellation](https://axios-http.com/docs/cancellation), [VueUse source](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useAxios/index.ts).
 
-### Runnable SFC: explicit execution and failure handling
+### Complete integration SFC: explicit execution and failure handling
 
-This calls the real public GitHub repository endpoint; network availability and unauthenticated API rate limits apply. The response fields follow GitHub's [get repository contract](https://docs.github.com/en/rest/repos/repos#get-a-repository). It is not a backend implementation bundled with this skill.
+The host supplies an existing trusted application endpoint returning `{ name: string, count: number }`; it may be served locally or self-hosted. This component implements imperative request state, not that backend. The URL must come from application configuration rather than user input; authenticate/authorize and runtime-validate at the real service boundary as needed. Remount if its endpoint/identity changes. No external account or public vendor API is required.
 
 ```vue
 <script setup lang="ts">
@@ -120,15 +120,16 @@ import { onScopeDispose, ref } from 'vue'
 import { isCancel } from 'axios'
 import { useAxios } from '@vueuse/integrations/useAxios'
 
-interface RepositorySummary {
-  full_name: string
-  stargazers_count: number
+interface RecordSummary {
+  name: string
+  count: number
 }
+const props = defineProps<{ endpoint: string }>()
 const notice = ref('')
 const busy = ref(false)
 let disposed = false
-const { data, isLoading, execute, abort } = useAxios<RepositorySummary>(
-  'https://api.github.com/repos/vueuse/vueuse',
+const { data, isLoading, execute, abort } = useAxios<RecordSummary>(
+  props.endpoint,
   { method: 'GET' },
   { immediate: false, shallow: true, abortPrevious: true, resetOnExecute: false },
 )
@@ -157,11 +158,11 @@ onScopeDispose(() => {
 </script>
 
 <template>
-  <button type="button" :disabled="busy" @click="load">Load repository</button>
+  <button type="button" :disabled="busy" @click="load">Load summary</button>
   <button type="button" :disabled="!isLoading" @click="abort()">Cancel request</button>
   <p v-if="isLoading" role="status">Loading</p>
   <p v-if="notice" role="status">{{ notice }}</p>
-  <p v-if="data">{{ data.full_name }}: {{ data.stargazers_count }} stars</p>
+  <p v-if="data">{{ data.name }}: {{ data.count }}</p>
 </template>
 ```
 
@@ -259,7 +260,7 @@ These are observed source contracts, not browser results: [focus adapter](https:
 
 v15 raises the Node floor to 22 and changes IndexedDB state/tab-sync behavior. Core/shared changes such as removed `templateRef`, scheduler options, and throttle trailing defaults also apply transitively; see [VueUse migration notes](vueuse.md#v15-migration-and-specialized-browser-apis). Do not assume a peer-range expansion is a request to migrate the entire app.
 
-Research observed registry releases, package exports, declarations, and implementations. The examples are complete authored SFCs, not executed here; the GitHub request requires network access. No browser, build, tests, or SSR result is claimed. In the consuming app, verify focus entry/Tab/Escape/return after `v-if` and transition changes, absent peers, Axios cancellation and overlapping calls, same-path cookie deletion, request-isolated cookies, IndexedDB denial/tab synchronization, and keyboard reorder alternatives. See [testing](testing.md).
+Research observed registry releases, package exports, declarations, and implementations. The examples are complete authored SFCs, not executed here; the Axios integration requires the declared application endpoint. No browser, build, tests, or SSR result is claimed. In the consuming app, verify focus entry/Tab/Escape/return after `v-if` and transition changes, absent peers, Axios cancellation and overlapping calls, same-path cookie deletion, request-isolated cookies, IndexedDB denial/tab synchronization, and keyboard reorder alternatives. See [testing](testing.md).
 
 ## Sources
 

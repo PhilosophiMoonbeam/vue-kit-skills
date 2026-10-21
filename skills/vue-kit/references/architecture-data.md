@@ -4,7 +4,7 @@
 
 Read when a route, remote cache, Pinia store, form, and auth integration touch the same workflow. This is **authored synthesis** of coordination boundaries, not a substitute for one library's API reference. Baseline **Vue 3.5.44**; query-specific factual contracts below refer to **@tanstack/vue-query 5.104.5**, with **Pinia 4.1.0** for application-state context. Use [Query](tanstack-query.md) or [Colada](pinia-colada.md), not both caches for the same resource. Their adapters, hydration APIs, and defaults are not interchangeable. [Package versions](https://registry.npmjs.org/@tanstack/vue-query/5.104.5).
 
-Start with [application architecture](architecture.md) if deployment and ownership are undecided. In Nuxt, [Nuxt core](nuxt.md#data-payload-and-cancellation) owns request context, native data and payloads; [Nuxt integrations](nuxt-integrations.md) owns selected auth/store/query setup. Otherwise continue to [forms](forms.md), [state](state.md), [auth](auth.md), or [routing](routing.md) only for the mechanism being implemented.
+Start with [application architecture](architecture.md) if deployment and ownership are undecided. In Nuxt, [Nuxt core](nuxt.md#data-payload-and-cancellation) owns request context, native data and payloads; [Nuxt integrations](nuxt-integrations.md) owns selected store/query setup and a provider-neutral private-cache contract. Otherwise continue to [forms](forms.md), [state](state.md), [auth](auth.md), or [routing](routing.md) only for the mechanism being implemented.
 
 ## Separate five state domains
 
@@ -14,11 +14,11 @@ Start with [application architecture](architecture.md) if deployment and ownersh
 | Query cache | Parsed server snapshots, fetch/error/freshness state | Cache/access scope; query/mutation adapter reconciles | Editing cached objects through form `v-model` |
 | Pinia | Genuinely shared client workflow, selected workspace intent, preferences | App or explicit feature scope; actions maintain invariants | Treating every response as permanent application state |
 | Local draft/form | Editable values, baseline revision, touched/errors, pending validation | One edit session; form operations write | Refetch resetting dirty fields or cancel modifying server state |
-| Auth | Loading/signed-out/signed-in state and current credential access | SDK/session scope | Persisting a token or copying a mutable SDK user into every store |
+| Auth | Loading/signed-out/ready/error state and current credential access | Application's real session boundary | Persisting a token or copying mutable session resources into every store |
 
 **Synthesis:** keep one canonical owner per fact. Derive display state instead of synchronizing copies. A local search textbox may hold uncommitted input while the URL owns the committed query; they are different facts, not mirrors. Do not put private search text, credentials, or unsaved case content into a URL. Parse route arrays/nulls/unknown enum values before they become cache keys or request parameters.
 
-The auth SDK owns identity readiness. The application may own tenant-selection intent, but a selected tenant ID is not proof of membership. A route guard avoids an inappropriate screen; only server enforcement authorizes the operation. [OWASP requires checks on every request, in a trusted server-side location](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html#validate-the-permissions-on-every-request).
+The application's real session mechanism owns identity readiness. The application may own tenant-selection intent, but a selected tenant ID is not proof of membership. A route guard avoids an inappropriate screen; only server enforcement authorizes the operation. [OWASP requires checks on every request, in a trusted server-side location](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html#validate-the-permissions-on-every-request).
 
 ## Make cache identity match response identity
 
@@ -71,7 +71,7 @@ For an elective switch, settle save/discard/stay before retiring the old scope. 
 5. Create or activate the new scope, then enable its queries. Do not use previous-tenant data as placeholder content for the new scope.
 6. Guard every delayed UI effect against the captured scope/operation identity: notifications, form reset, navigation, selected-row updates, and focus restoration. A completed old mutation may require later reconciliation, but must not repopulate a retired private partition or move the new tenant's UI.
 
-Keep public caches separate if public data should survive logout. A global cache clear is a valid simpler policy when all cached data is private; targeted removal requires an inventory of every private family and persistence layer. Resetting a Pinia store is not the same as clearing the query cache, auth SDK state, local storage, service-worker data, or a kept-alive draft.
+Keep public caches separate if public data should survive logout. A global cache clear is a valid simpler policy when all cached data is private; targeted removal requires an inventory of every private family and persistence layer. Resetting a Pinia store is not the same as clearing the query cache, ending the server session, erasing local storage/service-worker data, or disposing a kept-alive draft.
 
 ### SSR isolation is a separate boundary
 

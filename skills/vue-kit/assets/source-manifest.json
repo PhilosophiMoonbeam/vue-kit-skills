@@ -1,19 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "baseline": {
     "vue": "3.5.44",
     "vuetify": "4.3.0"
   },
   "sources": [
-    {
-      "id": "clerk-vue-patterns",
-      "references": [
-        "references/auth.md"
-      ],
-      "documents": 4,
-      "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
-    },
     {
       "id": "create-adaptable-composable",
       "references": [
@@ -21,7 +12,7 @@
       ],
       "documents": 1,
       "flagged_documents": 0,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "floating-ui-vue-skilld",
@@ -30,7 +21,7 @@
       ],
       "documents": 3,
       "flagged_documents": 3,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "formkit-core-skilld",
@@ -40,7 +31,7 @@
       ],
       "documents": 8,
       "flagged_documents": 8,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "motion-v-skilld",
@@ -49,7 +40,7 @@
       ],
       "documents": 4,
       "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "peccable",
@@ -60,7 +51,7 @@
       ],
       "documents": 13,
       "flagged_documents": 5,
-      "notes": "Design/accessibility invariants are retained as applicable guidance; architecture-ui is authored cross-library synthesis, not an upstream framework mandate. Unrelated agent utilities are not runtime dependencies. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "pinia-colada-skilld",
@@ -70,7 +61,7 @@
       ],
       "documents": 8,
       "flagged_documents": 8,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "pinia-skilld",
@@ -80,16 +71,7 @@
       ],
       "documents": 9,
       "flagged_documents": 9,
-      "notes": "State API guidance is version-qualified; architecture-data is authored synthesis of provider lifetime, ownership and request isolation, not a Pinia-prescribed architecture. Fixture Pinia 3.0.4 does not limit current Pinia 4.x reference guidance."
-    },
-    {
-      "id": "primevue-skilld",
-      "references": [
-        "references/alternative-ui.md"
-      ],
-      "documents": 4,
-      "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "quasar-skilld",
@@ -98,7 +80,7 @@
       ],
       "documents": 7,
       "flagged_documents": 7,
-      "notes": "Incumbent Quasar alternative; verify package identity, CLI ownership, supported exports and plugin configuration against exact official release."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "reka-ui-skilld",
@@ -107,7 +89,7 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "shadcn-vue-skilld",
@@ -117,7 +99,7 @@
       ],
       "documents": 7,
       "flagged_documents": 7,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "slidev-cli-skilld",
@@ -126,7 +108,7 @@
       ],
       "documents": 9,
       "flagged_documents": 9,
-      "notes": "Excluded from active capability coverage. All 9 documents remain historical source records only; see references/sources.md#slidev-twoslash-and-floatingvue and assets/removals.json. Slidev and its coupled Twoslash/FloatingVue integration are removed, not supported implementation guidance."
+      "notes": "Excluded historical presentation integration; routes only to the removal decision."
     },
     {
       "id": "tanstack-ai-vue-skilld",
@@ -135,7 +117,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "tanstack-vue-form-skilld",
@@ -145,7 +127,7 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "tanstack-vue-query-skilld",
@@ -155,7 +137,7 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "tanstack-vue-router-skilld",
@@ -164,7 +146,7 @@
       ],
       "documents": 9,
       "flagged_documents": 9,
-      "notes": "Adapter maturity and API status are exact-version concerns; Vue Router remains the baseline unless existing requirements justify an alternative."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "tanstack-vue-store-skilld",
@@ -174,7 +156,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Exact Vue Store exports and selector lifetime are covered in state; architecture-data is authored ownership synthesis, not a guarantee or prescribed architecture from TanStack."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "tanstack-vue-table-skilld",
@@ -183,7 +165,7 @@
       ],
       "documents": 4,
       "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "tanstack-vue-virtual-skilld",
@@ -192,7 +174,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "tresjs-core-skilld",
@@ -201,7 +183,7 @@
       ],
       "documents": 7,
       "flagged_documents": 7,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "unhead-vue-skilld",
@@ -210,7 +192,7 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "unovis-ts-skilld",
@@ -219,7 +201,7 @@
       ],
       "documents": 4,
       "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "unovis-vue-skilld",
@@ -228,7 +210,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vee-validate-skilld",
@@ -238,7 +220,7 @@
       ],
       "documents": 7,
       "flagged_documents": 7,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vitepress-skilld",
@@ -247,7 +229,7 @@
       ],
       "documents": 7,
       "flagged_documents": 7,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-best-practices",
@@ -260,7 +242,7 @@
       ],
       "documents": 23,
       "flagged_documents": 10,
-      "notes": "Correct unsupported shallowRef-for-all-primitives advice and updated-hook state writes; retain explicit ownership and composable boundaries."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-data-ui-skilld",
@@ -269,7 +251,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-debug-guides",
@@ -281,7 +263,7 @@
       ],
       "documents": 140,
       "flagged_documents": 48,
-      "notes": "Vue 3.5 supports useTemplateRef inside v-for; array order is not a data-index contract. Debugging recommendations are not observed runtime results. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 12 previously native-only covered source units; snapshot counts and native judgments remain historical, not confirmed gap totals."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-expert",
@@ -297,7 +279,7 @@
       ],
       "documents": 8,
       "flagged_documents": 6,
-      "notes": "Vue/Vite setup and authored architecture synthesis; Nuxt core host and selected integrations have first-class owning guides, separate from SPA bootstrap and historical migration guidance."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-i18n-skilld",
@@ -306,7 +288,7 @@
       ],
       "documents": 9,
       "flagged_documents": 9,
-      "notes": "Composition API guidance is version-qualified; legacy API status must follow the exact release, not a source removal forecast. See source-audit.json caveats."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-jsx-best-practices",
@@ -316,7 +298,7 @@
       ],
       "documents": 2,
       "flagged_documents": 2,
-      "notes": "Incumbent Vue JSX/TSX interoperability; do not substitute React event, slot or compiler contracts."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-options-api-best-practices",
@@ -327,7 +309,7 @@
       ],
       "documents": 11,
       "flagged_documents": 3,
-      "notes": "Incumbent Options API interoperability, not the default for new code. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-patterns",
@@ -340,7 +322,7 @@
       ],
       "documents": 1,
       "flagged_documents": 1,
-      "notes": "Vue ownership/composition patterns contribute to authored application architecture synthesis and the Nuxt host's SSR/data ownership guide; architectural recommendations are distinct from upstream API guarantees."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-pinia-best-practices",
@@ -350,7 +332,7 @@
       ],
       "documents": 7,
       "flagged_documents": 5,
-      "notes": "Pinia lifetime and ownership guidance contributes to authored data-architecture synthesis. URL ownership is limited to normalized nonsensitive shareable view state; a store name alone does not guarantee SSR isolation. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-router-best-practices",
@@ -359,7 +341,7 @@
       ],
       "documents": 9,
       "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-router-skilld",
@@ -368,7 +350,7 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-skilld",
@@ -381,7 +363,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Vue 3.5.44 API baseline; reject mixed Vue 3.6/Vapor guidance. Sources is the authored provenance/authority synthesis route, not an upstream Vue API surface."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-test-utils-skilld",
@@ -390,7 +372,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vue-testing-best-practices",
@@ -399,7 +381,7 @@
       ],
       "documents": 12,
       "flagged_documents": 11,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vuetify-4",
@@ -412,7 +394,7 @@
       ],
       "documents": 23,
       "flagged_documents": 23,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vuetify-skilld",
@@ -424,7 +406,7 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vueuse-components-skilld",
@@ -433,7 +415,7 @@
       ],
       "documents": 4,
       "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vueuse-core-skilld",
@@ -442,7 +424,7 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vueuse-integrations-skilld",
@@ -451,7 +433,7 @@
       ],
       "documents": 4,
       "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vueuse-math-skilld",
@@ -460,7 +442,7 @@
       ],
       "documents": 3,
       "flagged_documents": 3,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vueuse-motion-skilld",
@@ -469,7 +451,7 @@
       ],
       "documents": 5,
       "flagged_documents": 5,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "vueuse-shared-skilld",
@@ -478,7 +460,7 @@
       ],
       "documents": 8,
       "flagged_documents": 8,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     },
     {
       "id": "web-ui-vuetify",
@@ -491,7 +473,37 @@
       ],
       "documents": 6,
       "flagged_documents": 6,
-      "notes": "Vuetify 4.3.0 rewrite: replace the stale current-major v3 claim and verify breakpoints, deprecated theme setters, styles and stable/Labs exports against exact v4 source. See source-audit.json caveats."
+      "notes": "Historical source identity and routing input. Current APIs and primary evidence belong to the owning references; original triage flags are not confirmed defects."
     }
-  ]
+  ],
+  "extensions": [
+    {
+      "id": "openvue",
+      "references": [
+        "references/alternative-ui.md"
+      ],
+      "primary_urls": [
+        "https://github.com/openvi-foundation/openvue",
+        "https://registry.npmjs.org/openvue/1.0.0",
+        "https://registry.npmjs.org/@openvue/themes/1.0.0",
+        "https://registry.npmjs.org/@openvue/nuxt-module/1.0.0"
+      ],
+      "notes": "OpenVue 1.x and newer is the supported successor; exact authoring snapshot is 1.0.0. Verify installed exports and integration contracts rather than assuming future-major compatibility."
+    },
+    {
+      "id": "application-session-contract",
+      "references": [
+        "references/auth.md"
+      ],
+      "primary_urls": [
+        "https://vuejs.org/api/reactivity-core.html#watch",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+      ],
+      "notes": "Application-owned client session boundaries, not an authentication provider or complete server login implementation."
+    }
+  ],
+  "history": {
+    "commit": "7bf433b98951918c694358e372d3b02cf6f982e5",
+    "policy": "Superseded audit bodies remain in repository history, not the installed skill. Retained native judgments describe historical inputs, not current semantic or runtime acceptance."
+  }
 }

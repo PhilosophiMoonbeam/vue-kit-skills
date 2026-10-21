@@ -1,6 +1,6 @@
 # Selected Nuxt integrations
 
-Read after [Nuxt](nuxt.md) when adding Vuetify, domain state, an optional query cache or Clerk. These are selected integration contracts, not blanket support for every Nuxt module. Nuxt remains the only application/router/SSR owner; do not copy the plain-Vue bootstrap from the linked SPA guides.
+Read after [Nuxt](nuxt.md) when adding Vuetify, domain state, or an optional query cache. These are selected self-hostable library integration contracts, not blanket support for every Nuxt module or authentication-service setup. Nuxt remains the only application/router/SSR owner; do not copy the plain-Vue bootstrap from the linked SPA guides.
 
 ## Selected versions and ownership
 
@@ -11,11 +11,8 @@ Use **Bun 1.4.3** for a new application's package management and Node **24.15.0*
 | Material UI | `vuetify@4.3.0` | Stable manual universal plugin below; explicit component imports, SSR enabled |
 | Domain/UI state | `pinia@4.1.0`, `@pinia/nuxt@1.0.3`, `@vue/devtools-api@8.2.1` | Module creates the app/request instance and transfers its state |
 | Optional server-state cache | `@pinia/colada@1.4.8`, `@pinia/colada-nuxt@1.2.0`, `@pinia/colada-devtools@2.0.1` | Official module, after Pinia; one query owner per feature |
-| Optional authentication | `@clerk/nuxt@3.1.15`, direct `h3@1.15.11` for its h3-specific endpoint | Real Clerk application/keys; default Nitro 2 server boundary, not arbitrary builder certification |
 
 Pinia's Vue peer is `^3.5.11`; its **required** devtools peer is `@vue/devtools-api ^8.2.1` (TypeScript `>=5.6.0` is optional). `@pinia/nuxt@1.0.3` requires Pinia `^4.1.0`. Colada requires Vue `^3.5.41` and admits Pinia `^2.2.6 || ^3.0.0 || ^4.0.2`; its Nuxt module requires Colada `>=1.4.5`. The module's `@pinia/colada-devtools ^2.0.0` peer is **optional** in both its published manifest and registry metadata; omit it when no panel is wanted. The devtools package's Vite/Devframe integration peers are optional too. The module only registers an installed panel with the Vite builder and compatible Nuxt DevTools 4 during development. These peer ranges admit the selected versions; they are not runtime proof. [Pinia metadata](https://registry.npmjs.org/pinia/4.1.0), [Pinia module metadata](https://registry.npmjs.org/@pinia/nuxt/1.0.3), [Colada metadata](https://registry.npmjs.org/@pinia/colada/1.4.8), [Colada module manifest](https://unpkg.com/@pinia/colada-nuxt@1.2.0/package.json), [registry metadata](https://registry.npmjs.org/@pinia/colada-nuxt/1.2.0), [devtools metadata](https://registry.npmjs.org/@pinia/colada-devtools/2.0.1), [module implementation](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/module.mjs).
-
-Clerk Nuxt 3.1.15 declares Nuxt `>=4.0.0` module compatibility and depends on `@clerk/vue ^2.5.13` and `@clerk/backend ^3.26.0`, not exact transitive pins. Retain the resolved lockfile; hosted Clerk JavaScript/UI have their own delivery/version boundary. Do not install the Vue SDK separately or call `clerkPlugin` alongside the Nuxt module. [Exact package](https://registry.npmjs.org/@clerk/nuxt/3.1.15), [module source](https://unpkg.com/@clerk/nuxt@3.1.15/dist/module.js), [hosted component versioning](https://clerk.com/docs/reference/components/versioning).
 
 ## Stable manual Vuetify integration
 
@@ -25,7 +22,7 @@ Start with the complete core catalogue files. Install the stable UI and state pr
 bun add --exact vuetify@4.3.0 pinia@4.1.0 @pinia/nuxt@1.0.3 @vue/devtools-api@8.2.1
 ```
 
-Replace the core `nuxt.config.ts` with this complete public profile. The Colada section below adds its module only if chosen; Clerk is a separate credential-required addition.
+Replace the core `nuxt.config.ts` with this complete public profile. The Colada section below adds its module only if chosen.
 
 ```ts
 // nuxt.config.ts
@@ -183,7 +180,7 @@ const { compact } = storeToRefs(preferences)
 </template>
 ```
 
-This is application memory with SSR payload transfer, not durable persistence. Initial `false` must be isolated across requests; a browser mutation persists across in-app navigation but not a new unpersisted session. Never persist Clerk proof/tokens or mirror remote query records here. Use [state](state.md) for store design, not its SPA installer.
+This is application memory with SSR payload transfer, not durable persistence. Initial `false` must be isolated across requests; a browser mutation persists across in-app navigation but not a new unpersisted session. Never persist session proof/tokens or mirror remote query records here. Use [state](state.md) for store design, not its SPA installer.
 
 ## Optional Colada query owner
 
@@ -256,143 +253,41 @@ The module depends on the Pinia plugin, installs Colada once, serializes/hydrate
 
 The static topic title is intentional for this version profile. The module serializes the query cache and then clears it in `app:rendered`; reactive query state is not a durable post-render head snapshot. In the selected runtime, deriving the title directly from that state produced the fallback SSR title even though the body contained the item and hydration reused its payload without an initial browser API read. Do not claim item-specific SSR SEO from that reactive getter or patch the module to retain a shared server cache. This demo keeps `Query catalogue` consistent across SSR/hydration/navigation. If item-specific SSR metadata is required, prefer the core [native Nuxt data owner](nuxt.md#local-catalogue-example), which awaits the read before deriving its title, instead of adding a second native read around Colada. Verify final HTML metadata separately from body/payload success. [Exact module lifecycle](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/runtime/plugin.js).
 
-## Clerk module and authorization
-
-This optional profile requires the **intended existing Clerk application**, its real publishable/secret keys, enabled sign-in methods, and an allowed application origin/redirect configuration. Do not create a replacement application or use invented keys to make a build look authenticated. Keep these prerequisites distinct from the credential-free public profile.
-
-```sh
-bun add --exact @clerk/nuxt@3.1.15 h3@1.15.11
-```
-
-Supply `NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `NUXT_CLERK_SECRET_KEY` through the development environment/secret store. The former is intentionally public; the latter must never enter public runtime config, a Vue component, URL, log, static asset or payload. Production requires the same runtime environment names; a production server does not load the development `.env` automatically. [Official manual setup](https://clerk.com/docs/nuxt/getting-started/quickstart.md?manual=1), [exact module runtime keys](https://unpkg.com/@clerk/nuxt@3.1.15/dist/module.js), [server client configuration](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/clerkClient.js).
-
-Contextual additions to the public `nuxt.config.ts`: put this guard after its import and before `defineNuxtConfig`, then add `@clerk/nuxt` once to its existing `modules` array. The selected reproducible profile deliberately refuses implicit keyless provisioning; missing configuration is a failure, not successful anonymous authentication.
-
-```ts
-if (!process.env.NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY || !process.env.NUXT_CLERK_SECRET_KEY) {
-  throw new Error('Clerk requires NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY and NUXT_CLERK_SECRET_KEY')
-}
-```
-
-Contextual properties inside that same `defineNuxtConfig` object, replacing the existing `modules` property. Omit the Colada entry only if that optional query track was not installed:
-
-```ts
-modules: ['@pinia/nuxt', '@pinia/colada-nuxt', '@clerk/nuxt'],
-clerk: { signInUrl: '/sign-in', signInFallbackRedirectUrl: '/account' },
-```
-
-Also add these entries to its **existing** `routeRules` object; do not prerender, SWR/ISR-cache or CDN-share-cache these pages/APIs or their extracted payloads:
-
-```ts
-'/account': { headers: { 'cache-control': 'private, no-store' } },
-'/sign-in/**': { headers: { 'cache-control': 'private, no-store' } },
-'/api/private/**': { headers: { 'cache-control': 'private, no-store' } },
-```
-
-These route rules express the intended response policy, not a guarantee over every final response. The endpoint below sets `private, no-store` on its normal response, but Nuxt/Nitro's global error handling can replace headers (for example with `no-cache`) after a thrown error. Its generic 401 contains no private identity payload. Inspect the actual final headers/body on success, unsigned rejection, middleware failure and deployment error paths; configure the real error handler/CDN policy before relying on all auth responses being non-cacheable. Never put private details into an error merely because a route rule requests `no-store`.
-
-The module installs its universal Vue plugin and default server middleware. **Do not** also add `server/middleware/clerk.ts` calling `clerkMiddleware()`. If the deployment requires a custom `authorizedParties` policy, explicitly replace that default using the SDK's `skipServerMiddleware: true` option and exactly one custom middleware with the actual trusted origins. Never trust a client-supplied origin list. [Exact options](https://unpkg.com/@clerk/nuxt@3.1.15/dist/module.d.ts), [middleware API](https://clerk.com/docs/nuxt/reference/clerk-middleware), [actual implementation](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/clerkMiddleware.js).
-
-### Route middleware is navigation policy
-
-Complete `app/middleware/auth.ts`:
-
-```ts
-import { useAuth } from '@clerk/nuxt/composables'
-
-export default defineNuxtRouteMiddleware(() => {
-  const { isLoaded, isSignedIn } = useAuth()
-  if (!isLoaded.value) {
-    return abortNavigation(createError({
-      statusCode: 503,
-      statusMessage: 'Authentication is not ready',
-    }))
-  }
-  if (!isSignedIn.value) return navigateTo('/sign-in')
-})
-```
-
-Unknown/loading is not signed out: this deliberately fails closed rather than entering protected UI or inventing a session. A product can present an explicit public loading/error shell; do not grant access while waiting. Server and client navigation may both execute middleware. A rejected operation/loading failure does not become an authenticated fallback. [Official route-middleware guidance](https://clerk.com/docs/nuxt/guides/secure/protect-content), [actual exported composables](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/composables/index.d.ts).
-
-Complete `app/pages/sign-in/[[...sign-in]].vue`. The optional catch-all handles Clerk's nested sign-in steps; `with-sign-up` lets its prebuilt flow own registration too. Return targets are fixed application paths, not an unvalidated query parameter.
-
-```vue
-<script setup lang="ts">
-import { SignIn } from '@clerk/nuxt/components'
-</script>
-
-<template>
-  <section>
-    <h1>Sign in</h1>
-    <SignIn routing="path" path="/sign-in" fallback-redirect-url="/account" with-sign-up />
-  </section>
-</template>
-```
-
-Complete `app/pages/account.vue`:
-
-```vue
-<script setup lang="ts">
-import { useAuth } from '@clerk/nuxt/composables'
-import { UserButton } from '@clerk/nuxt/components'
-
-definePageMeta({ middleware: 'auth' })
-const { isLoaded, isSignedIn, userId } = useAuth()
-</script>
-
-<template>
-  <section>
-    <h1>Account</h1>
-    <p v-if="!isLoaded" role="status">Loading authentication</p>
-    <template v-else-if="isSignedIn">
-      <p>Signed in as {{ userId }}</p>
-      <UserButton />
-      <a href="/api/private/session">Read server-verified session identity</a>
-    </template>
-    <p v-else>Sign in to access your account.</p>
-  </section>
-</template>
-```
-
-These UI components/composables are exported by the selected module; use the prebuilt flow rather than an incomplete password-only implementation. Clerk owns sign-out errors/session tasks and its user menu; the account page does not create a parallel token store. [Exact component exports](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/components/index.d.ts), [sign-in prop declarations](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/components/uiComponents.d.ts).
-
-### Server authorization and event compatibility
-
-Complete `server/api/private/session.get.ts` for this **Nitro 2/h3 v1** profile:
-
-```ts
-import { createError, defineEventHandler, setResponseHeader } from 'h3'
-
-export default defineEventHandler((event) => {
-  setResponseHeader(event, 'cache-control', 'private, no-store')
-  const auth = typeof event.context.auth === 'function' ? event.context.auth() : undefined
-  if (!auth?.userId) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
-  return { userId: auth.userId, sessionId: auth.sessionId, orgId: auth.orgId ?? null }
-})
-```
-
-`event.context.auth` is a **function**. The default middleware verifies the request and installs it; no context function or no accepted signed-in session produces 401 here. The SDK defaults to session-token auth for this call, not arbitrary machine-token acceptance. Do not copy stale declaration comments using `event.context.auth.userId`. This endpoint returns only the caller's verified identity; when adding records/tenant operations, independently authorize the requested resource and active organization on **every** server request, returning 403/404 as appropriate. A URL/key containing an organization ID is not authority. Never accept a client `userId` in place of the verified server identity. [Exact authentication function type](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/types.d.ts), [middleware implementation](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/clerkMiddleware.js).
-
-Nuxt 4.6's portable `defineEventHandler` from `nuxt/server` passes `RequestEvent`; Clerk 3.1.15's `clerkMiddleware`/`clerkClient` declarations use **h3 v1 `H3Event`** and the module augments `h3.H3EventContext`. Therefore the Clerk-specific endpoint above deliberately imports its handler and helpers together from `h3`; the independent core catalogue keeps `nuxt/server`. Do not pass a portable event into `clerkClient`, cast it to `H3Event`, mix portable helpers with an h3 event or assume that upgrading to another server builder ports this SDK. The published `clerkMiddleware.d.ts` itself contains a package-internal pnpm h3 path: do not reproduce that path in application imports. Keep generated Nuxt/module declarations and report a genuine upstream declaration-resolution error rather than masking it with an invented event augmentation. [Exact middleware declaration](https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/clerkMiddleware.d.ts), [Nuxt server imports](https://nuxt.com/docs/4.x/guide/going-further/server-imports), [server compatibility](https://nuxt.com/docs/4.x/guide/modules/server-compatibility).
-
 ## Identity transitions and private caches
 
-Clerk owns reactive user/session/organization state; do not duplicate it in Pinia or treat hydrated profile data as proof. The public Colada page above intentionally contains no private data, and the base account page above does not cache its server identity response. If introducing a private query, make that feature choose **either** native Nuxt data **or** Colada, never both. Include loaded/accepted identity, session, active organization and every result-changing input in its key; disable work until identity is ready. Forward request credentials only to the intended API and authorize there. A client key isolates display caches, not backend access.
+The application's real session mechanism owns user/session/organization readiness; do not duplicate it in Pinia or treat hydrated profile data as proof. The public Colada page above intentionally contains no private data. If introducing a private query, make that feature choose **either** native Nuxt data **or** Colada, never both. Include accepted identity, session, active organization and every result-changing input in its key; disable work until identity is ready. Forward request credentials only to the intended API and authorize there. A client key isolates display caches, not backend access.
 
 On sign-out, user/session change or organization switch, immediately stop rendering the old identity's data, cancel old reads, remove their entries and reset identity-bound drafts/stores before enabling new work. Pass cancellation signals to transport and reject stale mutation results before committing them. Do not retain previous private data as placeholder content during the transition. Do not indiscriminately persist/hydrate the entire private cache. For native Nuxt private data, use a consistent private-key namespace, the same identity partitioning and each owner's returned `clear()` (or an explicitly owned transport controller), then `clearNuxtData` for namespace invalidation. In 4.6.2, `clearNuxtData` alone deletes pending-promise bookkeeping but does **not** abort the transport; the core [data lifecycle](nuxt.md#data-payload-and-cancellation) owns that alternative.
 
-The following complete contextual files apply **only when Clerk and Colada are both selected and private Colada consumers are introduced**. They use the existing authenticated `/api/private/session` endpoint, not a substitute backend. The boundary owns an immutable accepted identity and a monotonically increasing epoch; children never derive a changing private key directly from Clerk's live refs. Its synchronous gate invalidates old callbacks before the next render. It cancels reads, waits for child teardown, re-enumerates/removes inactive private entries, then accepts the latest identity. Checking only entries captured before teardown misses entries created meanwhile. An active entry after teardown fails closed rather than enabling another identity over an incomplete reset.
+The following complete frontend components apply **only when private Colada consumers are introduced into an application with an existing, implemented session boundary**. They do not install authentication or implement a private endpoint. The application supplies a stable `SessionIdentitySource` object containing a readonly reactive session ref, and a real `PrivateSessionReader`. The source must replace its snapshot synchronously on every invalidation, including logout, permission loss and tenant changes; `revision` must increase even for A → B → A. Use loading/error rather than retaining a formerly ready identity during revalidation. The reader must authenticate the current server request, return only that caller's server-verified identity, runtime-validate its response and reject unauthorized access. It must forward the signal and use the real request-local credentials during SSR. A browser-supplied identity is never server proof.
 
-Complete `shared/types/private-identity.ts`. These public identifiers partition a recipient's cache; they are not session proof:
+The boundary owns an immutable accepted identity and a monotonically increasing epoch; children never derive a changing private key directly from a live session. Its synchronous gate invalidates old callbacks before the next render. It cancels reads, waits for child teardown, re-enumerates/removes inactive private entries, then accepts the latest identity. An active entry after teardown fails closed. The source is a stable holder around the ref rather than a snapshot prop, so invalidation is observable immediately without waiting for parent-to-child prop rendering.
+
+For real private pages/APIs and session responses, prohibit prerender/SWR/ISR/shared CDN caching and set `Cache-Control: private, no-store` on success and failure at the actual response owner. Route rules alone do not prove final error-handler/CDN behavior. Inspect final headers/bodies and keep errors free of private details. Nuxt navigation middleware remains a UX gate; the reader's server must verify credentials and authorize each operation independently.
+
+Complete `shared/types/private-identity.ts`. These application-owned interfaces are cache/display contracts, not an authentication implementation or session proof:
 
 ```ts
-export interface PrivateIdentity {
-  readonly epoch: number
+import type { Ref } from 'vue'
+
+export interface VerifiedSession {
   readonly sessionId: string
   readonly userId: string
   readonly orgId: string | null
+}
+
+export type SessionSnapshot =
+  | { readonly revision: number; readonly status: 'loading' | 'signed-out' | 'error' }
+  | { readonly revision: number; readonly status: 'ready'; readonly identity: VerifiedSession }
+
+export interface SessionIdentitySource {
+  readonly current: Readonly<Ref<SessionSnapshot>>
+}
+
+export type PrivateSessionReader = (signal: AbortSignal) => Promise<VerifiedSession>
+
+export interface PrivateIdentity extends VerifiedSession {
+  readonly epoch: number
 }
 ```
 
@@ -401,26 +296,28 @@ Complete `app/components/PrivateCacheBoundary.vue`:
 ```vue
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onUnmounted, shallowRef, watch } from 'vue'
-import { useAuth } from '@clerk/nuxt/composables'
 import { useQueryCache } from '@pinia/colada'
-import type { PrivateIdentity } from '#shared/types/private-identity'
+import type { PrivateIdentity, SessionIdentitySource } from '#shared/types/private-identity'
 
-const { isLoaded, isSignedIn, sessionId, userId, orgId } = useAuth()
+const props = defineProps<{ session: SessionIdentitySource }>()
+const session = computed(() => props.session.current.value)
 const cache = useQueryCache()
 const transitioning = shallowRef(false)
 const blocked = shallowRef(false)
 let epoch = 0
 let disposed = false
-const identityKey = computed(() => JSON.stringify([
-  isLoaded.value, isSignedIn.value, sessionId.value ?? null,
-  userId.value ?? null, orgId.value ?? null,
-]))
+const identityKey = computed(() => {
+  const current = session.value
+  return JSON.stringify(current.status === 'ready'
+    ? [current.revision, current.status, current.identity.sessionId,
+        current.identity.userId, current.identity.orgId]
+    : [current.revision, current.status])
+})
 let acceptedIdentityKey = identityKey.value
 function captureIdentity(version: number): PrivateIdentity | null {
-  const session = sessionId.value
-  const user = userId.value
-  return isLoaded.value && isSignedIn.value && session && user
-    ? Object.freeze({ epoch: version, sessionId: session, userId: user, orgId: orgId.value ?? null })
+  const current = session.value
+  return current.status === 'ready'
+    ? Object.freeze({ ...current.identity, epoch: version })
     : null
 }
 const accepted = shallowRef<PrivateIdentity | null>(captureIdentity(epoch))
@@ -467,34 +364,31 @@ onUnmounted(() => { purgePrivateEntries() })
     <slot v-bind="{ identity: accepted, isCurrent }" />
   </div>
   <p v-else-if="blocked" role="alert">Private data could not be reset.</p>
-  <p v-else-if="transitioning || !isLoaded" role="status">Loading authentication</p>
+  <p v-else-if="transitioning || session.status === 'loading'" role="status">Loading session</p>
+  <p v-else-if="session.status === 'error'" role="alert">Session is unavailable.</p>
   <p v-else>Sign in to view private data.</p>
 </template>
 ```
 
-Complete `app/components/PrivateSession.vue`. Its fixed snapshot key starts with `['private', sessionId, userId, orgId, epoch, ...]`. The guard also covers imperative `refetch()`, which is not disabled by `enabled: false` in Colada. A response must still belong to the captured identity before entering its cache:
+Complete `app/components/PrivateSession.vue`. Its fixed snapshot key starts with `['private', sessionId, userId, orgId, epoch, ...]`. The guard also covers imperative `refetch()`, which is not disabled by `enabled: false` in Colada. The application reader's response must still belong to the captured identity before entering its cache:
 
 ```vue
 <script setup lang="ts">
 import { useQuery } from '@pinia/colada'
-import type { PrivateIdentity } from '#shared/types/private-identity'
+import type { PrivateIdentity, PrivateSessionReader } from '#shared/types/private-identity'
 
 const props = defineProps<{
   identity: PrivateIdentity
   isCurrent: (identity: PrivateIdentity) => boolean
+  readSession: PrivateSessionReader
 }>()
 const identity = props.identity
-const requestFetch = useRequestFetch()
 const { state, asyncStatus, refetch } = useQuery({
   key: ['private', identity.sessionId, identity.userId, identity.orgId, identity.epoch, 'session'],
   enabled: () => props.isCurrent(identity),
   query: async ({ signal }) => {
     if (!props.isCurrent(identity)) throw new Error('Private session changed')
-    const result = await requestFetch<{
-      userId: string
-      sessionId: string | null
-      orgId: string | null
-    }>('/api/private/session', { signal })
+    const result = await props.readSession(signal)
     if (!props.isCurrent(identity) || result.userId !== identity.userId
       || result.sessionId !== identity.sessionId || result.orgId !== identity.orgId) {
       throw new Error('Private session changed')
@@ -515,32 +409,31 @@ const { state, asyncStatus, refetch } = useQuery({
 </template>
 ```
 
-Complete optional replacement `app/pages/account.vue` when enabling that private query. The existing `/account` private/no-store route rule and `auth` middleware still apply:
+Complete `app/components/PrivateAccount.vue`, an application integration component rather than a replacement Nuxt page or invented login flow. Its host supplies the actual session source and reader under the contract above. Protect its real route/API at the server and response-cache boundaries; this component alone cannot do so.
 
 ```vue
 <script setup lang="ts">
-import { UserButton } from '@clerk/nuxt/components'
+import type { PrivateSessionReader, SessionIdentitySource } from '#shared/types/private-identity'
 import PrivateCacheBoundary from '~/components/PrivateCacheBoundary.vue'
 import PrivateSession from '~/components/PrivateSession.vue'
 
-definePageMeta({ middleware: 'auth' })
+defineProps<{ session: SessionIdentitySource; readSession: PrivateSessionReader }>()
 </script>
 
 <template>
   <section>
     <h1>Account</h1>
-    <PrivateCacheBoundary v-slot="{ identity, isCurrent }">
-      <UserButton />
-      <PrivateSession :identity="identity" :is-current="isCurrent" />
+    <PrivateCacheBoundary :session="session" v-slot="{ identity, isCurrent }">
+      <PrivateSession :identity="identity" :is-current="isCurrent" :read-session="readSession" />
     </PrivateCacheBoundary>
   </section>
 </template>
 ```
 
-Mount one boundary around **all** private consumers; public entries remain untouched. Private consumers, including `defineQuery` subscribers, must be subtree-owned: no retained store/effect scope outside it, `KeepAlive`, or leave transition that keeps them active after the teardown tick. Unmount also cancels/removes the departing subtree's cache so a later sign-out while it is absent cannot leave its private entries behind. The watcher is component-owned, and its epoch/disposal checks prevent an already-awaiting callback from reopening an unmounted or superseded subtree. Reset any real private drafts in the transition owner before accepting another identity; the supplied `preferences` store contains none. Apply `isCurrent(capturedIdentity)` before committing mutation results too; browser cancellation cannot undo an authorized server write. [Exact query-cache lifecycle implementation](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs), [query-cache APIs](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts), [Clerk computed auth contract](https://unpkg.com/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts), [identity design](auth.md#identity-teardown-and-pinia-integration).
+Mount one boundary around **all** private consumers; public entries remain untouched. Private consumers, including `defineQuery` subscribers, must be subtree-owned: no retained store/effect scope outside it, `KeepAlive`, or leave transition that keeps them active after the teardown tick. Unmount also cancels/removes the departing subtree's cache. The watcher is component-owned; epoch/disposal checks prevent an awaiting callback from reopening an unmounted or superseded subtree. Reset private drafts in the transition owner before publishing the next ready session; the supplied `preferences` store contains none. Apply `isCurrent(capturedIdentity)` before committing mutation results too; cancellation cannot undo a server write. [Exact cache lifecycle](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs), [cache APIs](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts), [identity design](auth.md#identity-teardown-and-pinia-integration).
 
 ## Verification boundaries
 
-Verify the public profile separately from the credential-required Clerk profile. For the public app, regenerate Nuxt contexts, typecheck/build, request SSR and both API records, navigate between IDs, refresh/error states, mutate Pinia then navigate back, and check clean browser hydration plus the single app/main landmark and emitted Vuetify theme styles. Request isolation and accessible controls are runtime obligations, not consequences of compatible peers.
+For the public app, regenerate Nuxt contexts, typecheck/build, request SSR and both API records, navigate between IDs, refresh/error states, mutate Pinia then navigate back, and check clean browser hydration plus the single app/main landmark and emitted Vuetify theme styles. Request isolation and accessible controls are runtime obligations, not consequences of compatible peers.
 
-For Clerk, verify missing-key configuration rejection without inventing credentials. A local direct request to the endpoint with no authenticated context must return 401 even without a page guard; that proves this handler's fail-closed path, **not** that the provider middleware/session verification ran successfully. With real configured keys, separately verify actual unsigned 401, signed-in SSR and client navigation, sign-out, account/organization transitions, forbidden resources and cache isolation. A build with SDK declarations is not a live sign-in pass. No real Clerk application credentials are available in the authoring environment; provider UI, token verification against that application, and authenticated tenant-transition results must remain explicitly unverified until those prerequisites are supplied. Never label the credential-free public fixture a fully verified Clerk application.
+For the contextual private boundary, use the real application's session mechanism and reader to verify unsigned server rejection, signed-in SSR/client navigation, sign-out, account/session/organization A → B → A transitions with pending reads, late mutation suppression, public-cache retention and private-cache teardown. Verify that an intentionally retained private consumer prevents acceptance of the next identity. Compiler success cannot prove server session verification or tenant authorization. These contracts require no hosted-service account or vendor SDK; no live authentication result is claimed.

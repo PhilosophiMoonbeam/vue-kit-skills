@@ -250,7 +250,7 @@ Prefer return-based guards. **Router 4 still supports `next`**, exactly once per
 
 Resolution order: deactivated leave guards → global `beforeEach` → reused-component update guards → route `beforeEnter` → async components → activated enter guards → global `beforeResolve` → confirmation → `afterEach` → DOM update → enter callbacks. `beforeResolve` is useful for work that should wait until entry checks and async components resolve. `afterEach` cannot redirect or cancel.
 
-Vue 3.3+ permits `inject()` inside global guards. Install Pinia/providers before `app.use(router)`; obtain injections synchronously before an `await`, not at module evaluation. The following contextual installer requires a real application access service and aborts denied navigation without inventing a login destination. Clerk-specific redirects and their complete public-route contract belong to [auth.md](auth.md).
+Vue 3.3+ permits `inject()` inside global guards. Install Pinia/providers before `app.use(router)`; obtain injections synchronously before an `await`, not at module evaluation. The following contextual installer requires a real application access service and aborts denied navigation without inventing a login destination. Provider-neutral session readiness, redirect validation and server authorization boundaries belong to [auth.md](auth.md).
 
 ```ts
 import { inject, type App, type InjectionKey } from 'vue'
@@ -579,7 +579,7 @@ Migrate only when requested, across configuration, runtime imports, virtual modu
 
 ## Verification boundary
 
-Executed compiler/type scopes are in the [verification record](../assets/verification.json). The classic entry and generated-route files are standalone alternatives within a configured Vite app; service-injected async UI, access installer, replacement loader script, and resolver replacement are explicitly contextual. The bundled [workbench](../assets/example-app/package.json) remains Router 4.6.4, not runtime proof of experimental v5 routing.
+The classic entry and generated-route files are standalone alternatives within a configured Vite app; service-injected async UI, access installer, replacement loader script, and resolver replacement are explicitly contextual. The bundled [workbench](../assets/example-app/package.json) remains Router 4.6.4, not runtime proof of experimental v5 routing. Compiler/type success does not establish browser navigation, request isolation, or server authorization.
 
 An integrating agent should check direct/deep-link reloads and base paths; initial SSR/client URL agreement; param/query changes on a reused page; repeatable/invalid inputs; guard loops, denial and injected readiness; rapid A→B navigation and stale results; aborted/duplicated navigation; missing chunks; back/forward/hash scroll; focus and announcements; generated types after page renames; cache invalidation/auth-scope changes; and per-request isolation.
 

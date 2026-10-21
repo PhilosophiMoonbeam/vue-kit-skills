@@ -1,0 +1,494 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "vue": "3.5.44",
+    "vuetify": "4.3.0"
+  },
+  "sources": [
+    {
+      "id": "clerk-vue-patterns",
+      "references": [
+        "references/auth.md"
+      ],
+      "documents": 4,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "create-adaptable-composable",
+      "references": [
+        "references/composables.md"
+      ],
+      "documents": 1,
+      "flagged_documents": 0,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "floating-ui-vue-skilld",
+      "references": [
+        "references/headless-ui.md"
+      ],
+      "documents": 3,
+      "flagged_documents": 3,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "formkit-core-skilld",
+      "references": [
+        "references/forms.md",
+        "references/formkit.md"
+      ],
+      "documents": 8,
+      "flagged_documents": 8,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "motion-v-skilld",
+      "references": [
+        "references/motion.md"
+      ],
+      "documents": 4,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "peccable",
+      "references": [
+        "references/design-system.md",
+        "references/accessibility.md",
+        "references/architecture-ui.md"
+      ],
+      "documents": 13,
+      "flagged_documents": 5,
+      "notes": "Design/accessibility invariants are retained as applicable guidance; architecture-ui is authored cross-library synthesis, not an upstream framework mandate. Unrelated agent utilities are not runtime dependencies."
+    },
+    {
+      "id": "pinia-colada-skilld",
+      "references": [
+        "references/pinia-colada.md",
+        "references/architecture-data.md"
+      ],
+      "documents": 8,
+      "flagged_documents": 8,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "pinia-skilld",
+      "references": [
+        "references/state.md",
+        "references/architecture-data.md"
+      ],
+      "documents": 9,
+      "flagged_documents": 9,
+      "notes": "State API guidance is version-qualified; architecture-data is authored synthesis of provider lifetime, ownership and request isolation, not a Pinia-prescribed architecture. Fixture Pinia 3.0.4 does not limit current Pinia 4.x reference guidance."
+    },
+    {
+      "id": "primevue-skilld",
+      "references": [
+        "references/alternative-ui.md"
+      ],
+      "documents": 4,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "quasar-skilld",
+      "references": [
+        "references/alternative-ui.md"
+      ],
+      "documents": 7,
+      "flagged_documents": 7,
+      "notes": "Incumbent Quasar alternative; verify package identity, CLI ownership, supported exports and plugin configuration against exact official release."
+    },
+    {
+      "id": "reka-ui-skilld",
+      "references": [
+        "references/headless-ui.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "shadcn-vue-skilld",
+      "references": [
+        "references/headless-ui.md",
+        "references/alternative-ui.md"
+      ],
+      "documents": 7,
+      "flagged_documents": 7,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "slidev-cli-skilld",
+      "references": [
+        "references/docs-slides.md"
+      ],
+      "documents": 9,
+      "flagged_documents": 9,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "tanstack-ai-vue-skilld",
+      "references": [
+        "references/ai-streaming.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "tanstack-vue-form-skilld",
+      "references": [
+        "references/forms.md",
+        "references/tanstack-form.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "tanstack-vue-query-skilld",
+      "references": [
+        "references/tanstack-query.md",
+        "references/architecture-data.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "tanstack-vue-router-skilld",
+      "references": [
+        "references/routing-tanstack.md"
+      ],
+      "documents": 9,
+      "flagged_documents": 9,
+      "notes": "Adapter maturity and API status are exact-version concerns; Vue Router remains the baseline unless existing requirements justify an alternative."
+    },
+    {
+      "id": "tanstack-vue-store-skilld",
+      "references": [
+        "references/state.md",
+        "references/architecture-data.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Exact Vue Store exports and selector lifetime are covered in state; architecture-data is authored ownership synthesis, not a guarantee or prescribed architecture from TanStack."
+    },
+    {
+      "id": "tanstack-vue-table-skilld",
+      "references": [
+        "references/data-tables.md"
+      ],
+      "documents": 4,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "tanstack-vue-virtual-skilld",
+      "references": [
+        "references/virtualization.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "tresjs-core-skilld",
+      "references": [
+        "references/tresjs.md"
+      ],
+      "documents": 7,
+      "flagged_documents": 7,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "unhead-vue-skilld",
+      "references": [
+        "references/i18n-head.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "unovis-ts-skilld",
+      "references": [
+        "references/visualization.md"
+      ],
+      "documents": 4,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "unovis-vue-skilld",
+      "references": [
+        "references/visualization.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vee-validate-skilld",
+      "references": [
+        "references/forms.md",
+        "references/vee-validate.md"
+      ],
+      "documents": 7,
+      "flagged_documents": 7,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vitepress-skilld",
+      "references": [
+        "references/docs-slides.md"
+      ],
+      "documents": 7,
+      "flagged_documents": 7,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vue-best-practices",
+      "references": [
+        "references/core-vue.md",
+        "references/components.md",
+        "references/composables.md",
+        "references/migration.md",
+        "references/architecture-ui.md"
+      ],
+      "documents": 23,
+      "flagged_documents": 10,
+      "notes": "Correct unsupported shallowRef-for-all-primitives advice and updated-hook state writes; retain explicit ownership and composable boundaries."
+    },
+    {
+      "id": "vue-data-ui-skilld",
+      "references": [
+        "references/visualization.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vue-debug-guides",
+      "references": [
+        "references/debugging-ssr.md",
+        "references/testing.md",
+        "references/core-vue.md",
+        "references/components.md"
+      ],
+      "documents": 140,
+      "flagged_documents": 48,
+      "notes": "Vue 3.5 supports useTemplateRef inside v-for; array order is not a data-index contract. Debugging recommendations are not observed runtime results."
+    },
+    {
+      "id": "vue-expert",
+      "references": [
+        "references/core-vue.md",
+        "references/components.md",
+        "references/composables.md",
+        "references/migration.md",
+        "references/setup-tooling.md",
+        "references/architecture.md"
+      ],
+      "documents": 8,
+      "flagged_documents": 6,
+      "notes": "Vue/Vite setup and authored architecture synthesis; Nuxt integration is an explicit boundary, not an assumed SPA equivalent."
+    },
+    {
+      "id": "vue-i18n-skilld",
+      "references": [
+        "references/i18n-head.md"
+      ],
+      "documents": 9,
+      "flagged_documents": 9,
+      "notes": "Composition API guidance is version-qualified; legacy API status must follow the exact release, not a source removal forecast. See source-audit.json caveats."
+    },
+    {
+      "id": "vue-jsx-best-practices",
+      "references": [
+        "references/components.md",
+        "references/migration.md"
+      ],
+      "documents": 2,
+      "flagged_documents": 2,
+      "notes": "Incumbent Vue JSX/TSX interoperability; do not substitute React event, slot or compiler contracts."
+    },
+    {
+      "id": "vue-options-api-best-practices",
+      "references": [
+        "references/core-vue.md",
+        "references/components.md",
+        "references/migration.md"
+      ],
+      "documents": 11,
+      "flagged_documents": 3,
+      "notes": "Incumbent Options API interoperability, not the default for new code."
+    },
+    {
+      "id": "vue-patterns",
+      "references": [
+        "references/core-vue.md",
+        "references/components.md",
+        "references/composables.md",
+        "references/architecture.md"
+      ],
+      "documents": 1,
+      "flagged_documents": 1,
+      "notes": "Vue ownership/composition patterns contribute to authored application architecture synthesis; architectural recommendations are distinct from upstream API guarantees."
+    },
+    {
+      "id": "vue-pinia-best-practices",
+      "references": [
+        "references/state.md",
+        "references/architecture-data.md"
+      ],
+      "documents": 7,
+      "flagged_documents": 5,
+      "notes": "Pinia lifetime and ownership guidance contributes to authored data-architecture synthesis. URL ownership is limited to normalized nonsensitive shareable view state; a store name alone does not guarantee SSR isolation."
+    },
+    {
+      "id": "vue-router-best-practices",
+      "references": [
+        "references/routing.md"
+      ],
+      "documents": 9,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vue-router-skilld",
+      "references": [
+        "references/routing.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vue-skilld",
+      "references": [
+        "references/core-vue.md",
+        "references/components.md",
+        "references/composables.md",
+        "references/migration.md",
+        "references/sources.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Vue 3.5.44 API baseline; reject mixed Vue 3.6/Vapor guidance. Sources is the authored provenance/authority synthesis route, not an upstream Vue API surface."
+    },
+    {
+      "id": "vue-test-utils-skilld",
+      "references": [
+        "references/testing.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vue-testing-best-practices",
+      "references": [
+        "references/testing.md"
+      ],
+      "documents": 12,
+      "flagged_documents": 11,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vuetify-4",
+      "references": [
+        "references/vuetify-setup.md",
+        "references/vuetify-components.md",
+        "references/vuetify-theme.md",
+        "references/forms.md",
+        "references/data-tables.md"
+      ],
+      "documents": 23,
+      "flagged_documents": 23,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vuetify-skilld",
+      "references": [
+        "references/vuetify-setup.md",
+        "references/vuetify-components.md",
+        "references/vuetify-theme.md",
+        "references/setup-tooling.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vueuse-components-skilld",
+      "references": [
+        "references/vueuse.md"
+      ],
+      "documents": 4,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vueuse-core-skilld",
+      "references": [
+        "references/vueuse.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vueuse-integrations-skilld",
+      "references": [
+        "references/vueuse-integrations.md"
+      ],
+      "documents": 4,
+      "flagged_documents": 4,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vueuse-math-skilld",
+      "references": [
+        "references/vueuse.md"
+      ],
+      "documents": 3,
+      "flagged_documents": 3,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vueuse-motion-skilld",
+      "references": [
+        "references/motion.md"
+      ],
+      "documents": 5,
+      "flagged_documents": 5,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "vueuse-shared-skilld",
+      "references": [
+        "references/vueuse.md"
+      ],
+      "documents": 8,
+      "flagged_documents": 8,
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+    },
+    {
+      "id": "web-ui-vuetify",
+      "references": [
+        "references/vuetify-setup.md",
+        "references/vuetify-components.md",
+        "references/vuetify-theme.md",
+        "references/forms.md",
+        "references/data-tables.md"
+      ],
+      "documents": 6,
+      "flagged_documents": 6,
+      "notes": "Vuetify 4.3.0 rewrite: replace the stale current-major v3 claim and verify breakpoints, deprecated theme setters, styles and stable/Labs exports against exact v4 source. See source-audit.json caveats."
+    }
+  ]
+}

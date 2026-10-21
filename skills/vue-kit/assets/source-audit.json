@@ -1,0 +1,4746 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "vue": "3.5.44",
+    "vuetify": "4.3.0"
+  },
+  "counts": {
+    "documents": 467,
+    "flagged": 335,
+    "truncated": 0,
+    "errors": 0,
+    "prefilter_removed": {
+      "extension": 10,
+      "utility_document": 1
+    }
+  },
+  "summary": {
+    "roots": 49,
+    "migration": {
+      "mixed": 4,
+      "retain": 144,
+      "rewrite": 6,
+      "unrelated": 1,
+      "verify": 312
+    },
+    "domains": {
+      "forms": 31,
+      "mixed": 2,
+      "other": 2,
+      "platform_tooling": 60,
+      "remote_data": 17,
+      "routing_auth_state": 55,
+      "ui_systems": 62,
+      "visualization_motion": 55,
+      "vue_core": 183
+    },
+    "unflagged_documents": 132
+  },
+  "rubric": {
+    "unit": "One Markdown source document in .agents/skills, identified by its repository-relative path.",
+    "questions": {
+      "domain": {
+        "type": "choice",
+        "instructions": "Classify the technical responsibility of this source document for a unified Vue 3.5 and TypeScript skill with Vuetify 4.3.x preferred. Choose mixed only for genuinely inseparable cross-domain guidance.",
+        "criteria": {
+          "vue_core": "The document primarily teaches Vue reactivity, components, composables, lifecycle, rendering, or TypeScript contracts.",
+          "routing_auth_state": "The document primarily teaches routing, authentication, application state, Pinia, or state lifetime.",
+          "remote_data": "The document primarily teaches server-state queries, caching, mutations, or streamed AI data.",
+          "forms": "The document primarily teaches form state, validation, submission, or field integration.",
+          "ui_systems": "The document primarily teaches UI component libraries, headless primitives, positioning, or interface design.",
+          "visualization_motion": "The document primarily teaches charts, tables, virtualization, 3D, animation, or motion.",
+          "platform_tooling": "The document primarily teaches testing, debugging, internationalization, head management, build tooling, documentation sites, or slide decks.",
+          "architecture": "The document primarily teaches cross-library ownership, architecture, or coordinated application design.",
+          "mixed": "The document materially teaches several of the listed domains without a dominant responsibility.",
+          "other": "The document does not teach an applicable Vue ecosystem or interface-design responsibility."
+        }
+      },
+      "migration": {
+        "type": "choice",
+        "instructions": "Assess safe use as evidence when replacing source skills with a Vue 3.5 / TypeScript / Vuetify 4.3.x-first unified master skill. Do not assume source examples are current.",
+        "criteria": {
+          "retain": "The document contains applicable, internally consistent guidance without a visible version conflict or unsupported API claim.",
+          "verify": "The document contains version-sensitive APIs, package-specific integration, exact compatibility claims, or incomplete evidence that needs checking against current primary sources.",
+          "rewrite": "The document contains a visible obsolete API, contradictory instruction, broken example, or instruction incompatible with the target stack.",
+          "mixed": "The document combines directly usable guidance with material that visibly requires correction.",
+          "unrelated": "The document has no applicable technical or design content for this Vue skill."
+        }
+      },
+      "coverage": {
+        "type": "bool",
+        "instructions": "Does the document describe at least one concrete API, edge case, integration, workflow, or design invariant that the unified Vue ecosystem skill should route users to?"
+      }
+    },
+    "pre_filter": {
+      "extensions": [
+        ".md"
+      ],
+      "excluded_roots": [
+        "beads",
+        "find-docs",
+        "find-skills",
+        "agents"
+      ],
+      "excluded_names": [
+        "LICENSE.md",
+        "CHANGELOG.md"
+      ],
+      "zero_bytes": true,
+      "excluded_path_components": [
+        ".skilld",
+        "node_modules",
+        ".git",
+        ".cache"
+      ],
+      "reason": "Exclude raw vendored documentation caches and non-Vue agent utilities, retain authored SKILL.md and reference Markdown."
+    },
+    "escalation": "Read only documents whose migration is verify/rewrite/mixed, whose primary top probability is below 0.70, whose coverage probability is in [0.30,0.70], or which errored or were truncated; all other units are represented by verdict plus path.",
+    "cap": 48000
+  },
+  "roots": {
+    "clerk-vue-patterns": {
+      "documents": 4,
+      "flagged": 4,
+      "domains": {
+        "routing_auth_state": 4
+      },
+      "migration": {
+        "verify": 4
+      }
+    },
+    "create-adaptable-composable": {
+      "documents": 1,
+      "flagged": 0,
+      "domains": {
+        "vue_core": 1
+      },
+      "migration": {
+        "retain": 1
+      }
+    },
+    "floating-ui-vue-skilld": {
+      "documents": 3,
+      "flagged": 3,
+      "domains": {
+        "ui_systems": 3
+      },
+      "migration": {
+        "verify": 3
+      }
+    },
+    "formkit-core-skilld": {
+      "documents": 8,
+      "flagged": 8,
+      "domains": {
+        "forms": 8
+      },
+      "migration": {
+        "verify": 8
+      }
+    },
+    "motion-v-skilld": {
+      "documents": 4,
+      "flagged": 4,
+      "domains": {
+        "visualization_motion": 4
+      },
+      "migration": {
+        "verify": 4
+      }
+    },
+    "peccable": {
+      "documents": 13,
+      "flagged": 5,
+      "domains": {
+        "other": 2,
+        "ui_systems": 8,
+        "visualization_motion": 1,
+        "platform_tooling": 2
+      },
+      "migration": {
+        "unrelated": 1,
+        "retain": 12
+      }
+    },
+    "pinia-colada-skilld": {
+      "documents": 8,
+      "flagged": 8,
+      "domains": {
+        "remote_data": 8
+      },
+      "migration": {
+        "verify": 8
+      }
+    },
+    "pinia-skilld": {
+      "documents": 9,
+      "flagged": 9,
+      "domains": {
+        "routing_auth_state": 8,
+        "platform_tooling": 1
+      },
+      "migration": {
+        "verify": 9
+      }
+    },
+    "primevue-skilld": {
+      "documents": 4,
+      "flagged": 4,
+      "domains": {
+        "ui_systems": 4
+      },
+      "migration": {
+        "verify": 4
+      }
+    },
+    "quasar-skilld": {
+      "documents": 7,
+      "flagged": 7,
+      "domains": {
+        "ui_systems": 4,
+        "platform_tooling": 3
+      },
+      "migration": {
+        "rewrite": 4,
+        "verify": 3
+      }
+    },
+    "reka-ui-skilld": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "ui_systems": 6
+      },
+      "migration": {
+        "verify": 6
+      }
+    },
+    "shadcn-vue-skilld": {
+      "documents": 7,
+      "flagged": 7,
+      "domains": {
+        "ui_systems": 6,
+        "platform_tooling": 1
+      },
+      "migration": {
+        "verify": 7
+      }
+    },
+    "slidev-cli-skilld": {
+      "documents": 9,
+      "flagged": 9,
+      "domains": {
+        "platform_tooling": 8,
+        "visualization_motion": 1
+      },
+      "migration": {
+        "verify": 9
+      }
+    },
+    "tanstack-ai-vue-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "remote_data": 3,
+        "vue_core": 1,
+        "ui_systems": 1
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "tanstack-vue-form-skilld": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "forms": 6
+      },
+      "migration": {
+        "verify": 6
+      }
+    },
+    "tanstack-vue-query-skilld": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "remote_data": 6
+      },
+      "migration": {
+        "verify": 6
+      }
+    },
+    "tanstack-vue-router-skilld": {
+      "documents": 9,
+      "flagged": 9,
+      "domains": {
+        "routing_auth_state": 9
+      },
+      "migration": {
+        "verify": 9
+      }
+    },
+    "tanstack-vue-store-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "routing_auth_state": 5
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "tanstack-vue-table-skilld": {
+      "documents": 4,
+      "flagged": 4,
+      "domains": {
+        "visualization_motion": 4
+      },
+      "migration": {
+        "verify": 4
+      }
+    },
+    "tanstack-vue-virtual-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "visualization_motion": 5
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "tresjs-core-skilld": {
+      "documents": 7,
+      "flagged": 7,
+      "domains": {
+        "visualization_motion": 7
+      },
+      "migration": {
+        "verify": 7
+      }
+    },
+    "unhead-vue-skilld": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "platform_tooling": 6
+      },
+      "migration": {
+        "verify": 6
+      }
+    },
+    "unovis-ts-skilld": {
+      "documents": 4,
+      "flagged": 4,
+      "domains": {
+        "visualization_motion": 4
+      },
+      "migration": {
+        "verify": 4
+      }
+    },
+    "unovis-vue-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "visualization_motion": 5
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "vee-validate-skilld": {
+      "documents": 7,
+      "flagged": 7,
+      "domains": {
+        "forms": 7
+      },
+      "migration": {
+        "verify": 7
+      }
+    },
+    "vitepress-skilld": {
+      "documents": 7,
+      "flagged": 7,
+      "domains": {
+        "platform_tooling": 7
+      },
+      "migration": {
+        "verify": 7
+      }
+    },
+    "vue-best-practices": {
+      "documents": 23,
+      "flagged": 10,
+      "domains": {
+        "vue_core": 16,
+        "visualization_motion": 5,
+        "ui_systems": 1,
+        "routing_auth_state": 1
+      },
+      "migration": {
+        "retain": 14,
+        "verify": 7,
+        "mixed": 2
+      }
+    },
+    "vue-data-ui-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "visualization_motion": 5
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "vue-debug-guides": {
+      "documents": 140,
+      "flagged": 48,
+      "domains": {
+        "vue_core": 120,
+        "visualization_motion": 7,
+        "forms": 6,
+        "platform_tooling": 3,
+        "routing_auth_state": 4
+      },
+      "migration": {
+        "verify": 40,
+        "retain": 99,
+        "mixed": 1
+      }
+    },
+    "vue-expert": {
+      "documents": 8,
+      "flagged": 6,
+      "domains": {
+        "vue_core": 4,
+        "mixed": 1,
+        "platform_tooling": 2,
+        "routing_auth_state": 1
+      },
+      "migration": {
+        "verify": 6,
+        "retain": 2
+      }
+    },
+    "vue-i18n-skilld": {
+      "documents": 9,
+      "flagged": 9,
+      "domains": {
+        "platform_tooling": 9
+      },
+      "migration": {
+        "verify": 8,
+        "rewrite": 1
+      }
+    },
+    "vue-jsx-best-practices": {
+      "documents": 2,
+      "flagged": 2,
+      "domains": {
+        "vue_core": 2
+      },
+      "migration": {
+        "verify": 2
+      }
+    },
+    "vue-options-api-best-practices": {
+      "documents": 11,
+      "flagged": 3,
+      "domains": {
+        "vue_core": 11
+      },
+      "migration": {
+        "verify": 3,
+        "retain": 8
+      }
+    },
+    "vue-patterns": {
+      "documents": 1,
+      "flagged": 1,
+      "domains": {
+        "vue_core": 1
+      },
+      "migration": {
+        "verify": 1
+      }
+    },
+    "vue-pinia-best-practices": {
+      "documents": 7,
+      "flagged": 5,
+      "domains": {
+        "routing_auth_state": 7
+      },
+      "migration": {
+        "verify": 5,
+        "retain": 2
+      }
+    },
+    "vue-router-best-practices": {
+      "documents": 9,
+      "flagged": 4,
+      "domains": {
+        "routing_auth_state": 9
+      },
+      "migration": {
+        "verify": 4,
+        "retain": 5
+      }
+    },
+    "vue-router-skilld": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "routing_auth_state": 6
+      },
+      "migration": {
+        "verify": 6
+      }
+    },
+    "vue-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "vue_core": 5
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "vue-test-utils-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "platform_tooling": 5
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "vue-testing-best-practices": {
+      "documents": 12,
+      "flagged": 11,
+      "domains": {
+        "platform_tooling": 12
+      },
+      "migration": {
+        "verify": 11,
+        "retain": 1
+      }
+    },
+    "vuetify-4": {
+      "documents": 23,
+      "flagged": 23,
+      "domains": {
+        "ui_systems": 19,
+        "forms": 3,
+        "visualization_motion": 1
+      },
+      "migration": {
+        "verify": 23
+      }
+    },
+    "vuetify-skilld": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "ui_systems": 6
+      },
+      "migration": {
+        "verify": 6
+      }
+    },
+    "vueuse-components-skilld": {
+      "documents": 4,
+      "flagged": 4,
+      "domains": {
+        "vue_core": 4
+      },
+      "migration": {
+        "verify": 4
+      }
+    },
+    "vueuse-core-skilld": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "vue_core": 6
+      },
+      "migration": {
+        "verify": 6
+      }
+    },
+    "vueuse-integrations-skilld": {
+      "documents": 4,
+      "flagged": 4,
+      "domains": {
+        "vue_core": 3,
+        "mixed": 1
+      },
+      "migration": {
+        "verify": 4
+      }
+    },
+    "vueuse-math-skilld": {
+      "documents": 3,
+      "flagged": 3,
+      "domains": {
+        "vue_core": 2,
+        "platform_tooling": 1
+      },
+      "migration": {
+        "verify": 3
+      }
+    },
+    "vueuse-motion-skilld": {
+      "documents": 5,
+      "flagged": 5,
+      "domains": {
+        "visualization_motion": 5
+      },
+      "migration": {
+        "verify": 5
+      }
+    },
+    "vueuse-shared-skilld": {
+      "documents": 8,
+      "flagged": 8,
+      "domains": {
+        "vue_core": 7,
+        "routing_auth_state": 1
+      },
+      "migration": {
+        "verify": 8
+      }
+    },
+    "web-ui-vuetify": {
+      "documents": 6,
+      "flagged": 6,
+      "domains": {
+        "ui_systems": 4,
+        "forms": 1,
+        "visualization_motion": 1
+      },
+      "migration": {
+        "mixed": 1,
+        "rewrite": 1,
+        "verify": 4
+      }
+    }
+  },
+  "files": [
+    {
+      "path": ".agents/skills/clerk-vue-patterns/SKILL.md",
+      "sha256": "626fca491d4f46c8b8849015e70fe25b89d0f80b55b762c76696c2f0a916699c",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/clerk-vue-patterns/references/composables.md",
+      "sha256": "24944ff2dcfae16dbf6e6be25b035a20c483ea54efbf80917b4341b511a735ba",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/clerk-vue-patterns/references/pinia-integration.md",
+      "sha256": "45f8f0d629df671e329f7b70584c48bdffa98777a6a31b84c933ef48acb25b20",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/clerk-vue-patterns/references/vue-router-guards.md",
+      "sha256": "eefab96fcd45daf8ffa669f26c91094bfa12c35f50ec0ce7ebdccc9cb5647b8c",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/create-adaptable-composable/SKILL.md",
+      "sha256": "9d6c8822577020dd62594e7fca4c11feb2be1af36f62d3f190984fe5aae1f6d1",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/floating-ui-vue-skilld/SKILL.md",
+      "sha256": "6ee3e46adc6541f808aa5f46b1992d1d2357b8068aedd3b4aa11c6361f093f4c",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/floating-ui-vue-skilld/references/api.md",
+      "sha256": "55dcec6c1568530ad642d21cf6392b2149289b5314d11c559bd23e3f790de3c8",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/floating-ui-vue-skilld/references/migration.md",
+      "sha256": "4990b3d0d1976d79bdc3ba0012970583810bfc74043cecea14171fabafbf9b17",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/SKILL.md",
+      "sha256": "0203925655479d42d40de57121d75f0fbabacb27a4c294ef7fe61624ec2533db",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/references/api-changes.md",
+      "sha256": "94a7135942e6f74846a6988937296d60c46638dc06dddace5314e929c517981a",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/references/config-props-plugins.md",
+      "sha256": "2236985143e082d192461c7eda040df3f9321cae560cae9aba6f7d5694c70d98",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/references/events-hooks.md",
+      "sha256": "d414f24a99b3be5cbdcdd01f96b223ca05f9cf4182037b2364dd3a76478c7ab1",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/references/node-api.md",
+      "sha256": "776cf19c5f2fe2695aad038c14c0c51d22667a6859079a9852157943bd0aa3fd",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/references/registry-helpers.md",
+      "sha256": "10801bcf3d742499b5a532c45bb150f815a2cfc2cce4434d95486bbd2d62a706",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/references/schema-compiler.md",
+      "sha256": "5d251308c83725359b0569fd518b54e3a2cefbe1c7ca14da6b6a56a4f9189f1b",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/formkit-core-skilld/references/store-ledger.md",
+      "sha256": "146a5eb1b93609e0d938cb82692feff70b246e0034fd5a2f339f9d5d660e7efa",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/motion-v-skilld/SKILL.md",
+      "sha256": "e9c9fb3d61b82a0e464bc0b1f6c5df6278ca57f516361990e11737728c4e1577",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/motion-v-skilld/references/api-surface.md",
+      "sha256": "eb98a3cbb0a058c440ff9fdcb32dd60f228b1611b6e2b8ee1d7d6f2480888a79",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/motion-v-skilld/references/migration.md",
+      "sha256": "d9b0c785ddb02573f55fb02c227bfd1e923c4e62258afdac002bb89c75f76243",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/motion-v-skilld/references/recipes.md",
+      "sha256": "5b67445861f4b95c0b29ed1ae0c022c2c963a38521963b1815d4675d6426a91d",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/peccable/NOTICE.md",
+      "sha256": "7c615d3a2d5db9ba93fd526521b0c38226c2533b218a4e66136763e365a839f3",
+      "domain": "other",
+      "migration": "unrelated",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/SKILL.md",
+      "sha256": "ec61f7c69855ae0a1c145a52eb75136380ced5fa83887a165ad8ee733d863705",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/peccable/references/color.md",
+      "sha256": "420f5e5174e2bdc24acf61a60b73b63ea02d5a5290943f377a9df695a706fe88",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/references/content.md",
+      "sha256": "41318c9952e66a896f03c295b4e110a55a5316883f951b0fed265b2fbd9136fd",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/peccable/references/interaction.md",
+      "sha256": "fcdd19586e470fceca9f9e5879328572ba02529656ffbc452b0b7d4fb417efb7",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/references/layout.md",
+      "sha256": "f4e8c9b5ddd7d9de587e446b1e8019c42198f0f794a7f6d34d4f9e7fcb795fe0",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/references/motion.md",
+      "sha256": "bc1c889065a66b9fda3a7a02bc8a02358dcb12203fc5a92be2491943748a0d2c",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/references/performance.md",
+      "sha256": "27476c50d8d95d97620d1dc060e21860e16fcc976d34c756a7fdf28ee6f0c294",
+      "domain": "platform_tooling",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/peccable/references/platforms.md",
+      "sha256": "3ee9567bc8d0bf0062dcedb2cb2b7bf82d464693ee797565ea1a5b04babe3665",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/references/quality.md",
+      "sha256": "619d11f4772e361e52dccb579eabded39b1f16148811e2f17ac56916de464fe3",
+      "domain": "platform_tooling",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/peccable/references/systems.md",
+      "sha256": "6a9eb16d1b797e3d4ed224f69b9f04e28e833d6396c4a73ce7ba8a820f6282bc",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/references/typography.md",
+      "sha256": "2caf670429e5eab81270982d1b3e2a3eca7c7a4ef9ffd4906a55c7f09d46ac46",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/peccable/references/workflow.md",
+      "sha256": "e8d6c0fb2c8e9c86dc19d161311a58d4a455ad6c6cc82e732ddf98c21763e7f1",
+      "domain": "other",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/SKILL.md",
+      "sha256": "41c765bbbde7bb168f71bd0bdd2a160a94440e7527bbde2c8c8babef632789ab",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/references/infinite-queries.md",
+      "sha256": "ed96c4f8f1ffe8120edc8ba2f70df9552d2cfa63bf52c893b11a6633709c9d4e",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/references/migration.md",
+      "sha256": "14b176c942eb4671e606f09a1140e0b505ccd284b6701037234ad7965ca7fa73",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/references/mutations.md",
+      "sha256": "797e2538335d6ce669610e9cd8a485a74c1dc82389ee44851ea4ca7c3b6b2105",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/references/plugins.md",
+      "sha256": "2005a50ee378f3f7a7096104cecd13223e0a2a859638b011b6a28877338b6050",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/references/queries.md",
+      "sha256": "018c294a8a1e25d9beb3a33b494869d5f7421be61acd93cad7addea295191980",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/references/query-cache.md",
+      "sha256": "2b8aee1219098d85eed606bb4095f1a42cbc225144658cd1f87e6df0bcc5cd04",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-colada-skilld/references/ssr.md",
+      "sha256": "039b21e26910411aa0c0d7038820391bb705ec99c035959cdf437e1283aec017",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/SKILL.md",
+      "sha256": "35494b68ee6eda7eeafe21790084fda515cc721dfcef26361919bcbb6d867d85",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/api.md",
+      "sha256": "80bd29662bcc09eb5ad949edab8cdacb070c4a3a2ede3774b7acd0bbbbb4bc1c",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/diagnostics.md",
+      "sha256": "9da45ff33d75183630349fbfffd5d92991321cc9af5bbb22efedf452f681cc53",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/options-api.md",
+      "sha256": "29de22b8dc0428e4d0ed7e7a1059aa3656cd18ac26c9d62c818799e52b556746",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/plugins.md",
+      "sha256": "3e9622d52761c0e1db6b3fb0d4a1ff57b9d31a20714e6e8fd4b48482f5bda4bd",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/ssr.md",
+      "sha256": "9b69405e9a4a2e6743e4a83a694fffe334ad4a33f712ba77b07cb245b07bb604",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/stores.md",
+      "sha256": "e63155d7ac4ec6b8c292eb30f4bd4730a2fecd28972ca4a31a2a9cc52e668046",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/subscriptions.md",
+      "sha256": "221f21f5fb5283609ac8a38a52d4f20e89d17223117fe220249e470203b450e7",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/pinia-skilld/references/testing.md",
+      "sha256": "efe6dc063415929611979765a5aedba522271df9f00a0febe7aa006ff9e090c5",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/primevue-skilld/SKILL.md",
+      "sha256": "887a149eecdeea519a19ef89103423892f83049d3bb327f5cfe359125d47b23f",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/primevue-skilld/references/components.md",
+      "sha256": "ab160cee8ab5dbef0407bf485ab898bb2b6e4a120ad3faf2136c7c5c936a9d25",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/primevue-skilld/references/setup.md",
+      "sha256": "885811e463bdea97f477d30828922f7c8a619b319ae947828874f6c1b71fac92",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/primevue-skilld/references/v5-changes.md",
+      "sha256": "28236feca658b8f86e3023391a0ed92c699b3705fd71c3e6d0345a691a6a9891",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/SKILL.md",
+      "sha256": "2b8f214e72b3133a5d0c7cc271b10406158561bc90623e9c7530db4141902338",
+      "domain": "ui_systems",
+      "migration": "rewrite",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/api-surface.md",
+      "sha256": "4a5c2493ebac6c49fd2d2b0b02a00be9355a020eadb1b9c51dffb8e69e8bcf80",
+      "domain": "ui_systems",
+      "migration": "rewrite",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/best-practices.md",
+      "sha256": "95054b7f1ab7c65bb6d9acaf0b79afec90e0a26378167c98fe4fcdcfd76f534d",
+      "domain": "ui_systems",
+      "migration": "rewrite",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/installation.md",
+      "sha256": "abd8d4857bd36da8004906eac35fcd88d7dfec2f6e29a95bb2d106691c05113c",
+      "domain": "platform_tooling",
+      "migration": "rewrite",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/offline-docs.md",
+      "sha256": "6c1f57f052c6b29164b1a1fbf706a6e55ab4138ded67835b3fdf7e98d2e5a884",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/security.md",
+      "sha256": "8001062e9b63ff88a8500ea839e199a90f14e58f55df8f2a9c17bb4460a07c9e",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/whats-new.md",
+      "sha256": "edd32828744b21cb4a7ae176d805bec0fa6cb616af8f5d84d3770a2cb6dbf52d",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/reka-ui-skilld/SKILL.md",
+      "sha256": "7d3ce8fce4b67234a43023c7ab0cb6f2543a72b55cd551d38e96907d997e26ba",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/reka-ui-skilld/references/api-surface.md",
+      "sha256": "fea161f30b8a74b5e4921a7fa22438e63682a7e39eaac03cf7d273da41fa77a8",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/reka-ui-skilld/references/components-new.md",
+      "sha256": "4f5c07aa3e0eead17ee021e16ef21b059e4a40d3b1f2ee4c6f3c6b9380fd2f84",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/reka-ui-skilld/references/composition.md",
+      "sha256": "98c79e8572cdb0e4aeaadae37024819da343ecb65da0a55730f35c8d3608f2a4",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/reka-ui-skilld/references/integrations.md",
+      "sha256": "f2de68742168784585ef90641c61698374032b86ff3d956776c8e0802b3cd807",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/reka-ui-skilld/references/styling-animation.md",
+      "sha256": "0a6ea4844864b7efd5cdf7c6dba4354606c60b4e52626f560bdb5052b8dd3fc2",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/shadcn-vue-skilld/SKILL.md",
+      "sha256": "bea58b61eeea530a68f8650ee9ed0946fa6763b07f3c3a3a9b33780d2e840830",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/shadcn-vue-skilld/references/changes-2.7-2.8.md",
+      "sha256": "f6744576b530a7dde830220fb50bbd4a221f08ba8689c92da17293c6ed5e23ce",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/shadcn-vue-skilld/references/cli.md",
+      "sha256": "bc381b23ba5a4ffd4689f9739137f4894f5d764ad01606b4d5d4106a467fe6a3",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/shadcn-vue-skilld/references/components-json.md",
+      "sha256": "8404cc624ef8ab96369370d4d33febec845327736f77d1474b7f2a37c97f9167",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/shadcn-vue-skilld/references/mcp.md",
+      "sha256": "36085005b945fb877175e9493abbef91d502c9dc7990e6b703f17e3f79ded408",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/shadcn-vue-skilld/references/registries.md",
+      "sha256": "24e9f2bea3660fb9c014d0af29c93fcb6018ab04f127a28e4d810b72c2406658",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/shadcn-vue-skilld/references/styles-and-presets.md",
+      "sha256": "3241c7e91bd320510af1fc5a99ea37dd8036c773bda58b8c862710b1458bf0a0",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/SKILL.md",
+      "sha256": "701e6699cdf015c04d13f768c09ceb043f1cd74d2234947ad3c817565b801ced",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/animations.md",
+      "sha256": "8f225653c1a6245f88328d59b09a166cdf2e90909122160e1395ac6adadceb3d",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/cli.md",
+      "sha256": "cdcb43483d895e260d59dde0d2594218c1bfaa1e313f2cb27a0a4e97158d3655",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/code-blocks.md",
+      "sha256": "bc2d141fcf81edf8eb61c28f310f067015c95af383d152f669b600f9789d014e",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/components-layouts.md",
+      "sha256": "5de7b6d079b604ec3f8bac3623df5b84d8b35e4cdcb2e8599b81c86ad49d74dc",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/config.md",
+      "sha256": "38eccfbe916c3ec3ab574de31c9da8b602ce1a99947814ac50e5c6443a8ccd8f",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/exporting.md",
+      "sha256": "c0cfcbe252ffcfdff5f990951ed86f9087c36ac66f0651cdbec129f838b9c6f1",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/mcp.md",
+      "sha256": "033d8de20af70fe152e77aa1487da791f4ff30fb0f35ce19f8b2a11da4ff6125",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/slidev-cli-skilld/references/syntax.md",
+      "sha256": "a6833f009686990958657c5963445d81f8f7caf8977aee31599b534ec5303a21",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-ai-vue-skilld/SKILL.md",
+      "sha256": "03467660288a70b2f591b34984a2a12a0cdad1022c60d70277262f3ca57283f9",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-ai-vue-skilld/references/byok-and-webmcp.md",
+      "sha256": "d8d9a8f6999359be4380ef9a54fa407a45730f228fc276610d1ce9183731a54f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-ai-vue-skilld/references/chat-ui.md",
+      "sha256": "0d5f30944b796ce0cbde03ebe2d4e1f080e4f6697b57bf756e008b16d51d8f1c",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-ai-vue-skilld/references/generation-composables.md",
+      "sha256": "defde16b038d2f73512026347b42f2de4fc421f4b50d43d511d097593fdb524b",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-ai-vue-skilld/references/use-chat.md",
+      "sha256": "4fae26ae45d572016765fd60141560625ca0264fc10a02a2ca4bbdb085941bec",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-form-skilld/SKILL.md",
+      "sha256": "8978b8b1a1573fdb1c49cbfff39ed28eee7e232d06fb32bc8eb0c24ce5c92c25",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-form-skilld/references/api-surface.md",
+      "sha256": "4b234200ec165fe73929bf252279eb128740b43a80e6635ffb80a0f98a93482f",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-form-skilld/references/array-fields.md",
+      "sha256": "4e48d50cacd32c077d713b634448404439178983ba9cbefcf12299e06db996e0",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-form-skilld/references/form-groups.md",
+      "sha256": "3f2dc010aba79be21e962299dd174d821fcbfcf98e2b201cdfb8fa8fab1b080b",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-form-skilld/references/reactivity.md",
+      "sha256": "6bf7bc3f38e018da8b90ed26e1a7539464954cec935813681f0de1bd5a56be98",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-form-skilld/references/validation.md",
+      "sha256": "2dc3195cc6e1681383df466203e0efdb77180c1aabbc1a508ec76ec6726153b4",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-query-skilld/SKILL.md",
+      "sha256": "0d5b5736e43f648167156bb435956c6226a4222b0d47c917536e78b0109d9ec3",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-query-skilld/references/api.md",
+      "sha256": "ea4786d89defd91b60f89ef93c0346b01f6e127e443b6716cf4f171fed8a60b8",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-query-skilld/references/migration.md",
+      "sha256": "e45694dd481cd47d46b4ff277a79babf0c6d05a4c184002b61bbc9299659d62b",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-query-skilld/references/mutations.md",
+      "sha256": "7d1e6698df2c567b1fd60e9abca8275cfe9ead4c2762e6a14d2adac2ae3d8def",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-query-skilld/references/query-client.md",
+      "sha256": "438312e5e5b6b89c817e06b73f1d7418bad6482a8fd43729b4dde6a7fa4e053d",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-query-skilld/references/reactivity.md",
+      "sha256": "3d476a2e35ec04c7eeea8f5aaa12826ef989de3c71ca371f8d7d8bf41d7e4512",
+      "domain": "remote_data",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/SKILL.md",
+      "sha256": "3242de94517be3362baef9ad5433cd186c685018648e6693cb6b98841fc65732",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/api-surface.md",
+      "sha256": "091f9d3afaeb6a051e04278aa0219587373542edbf70fd92aa75db5e23d94d04",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/composables.md",
+      "sha256": "5aebf3a03982c6b6891c5ffc1cc4937375200caa8b87f20b8cc4252ab61ac18f",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/data-loading.md",
+      "sha256": "2b18bf9a69e3205d7729a0c4131c51511396424c0a8a12ff8a3eddfc0fee2c0a",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/file-based-routing.md",
+      "sha256": "6cf28ae3619454d9bff9fe8eec2df8180f5263fd35184a033e1de69d98669695",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/navigation-links.md",
+      "sha256": "8b4481699a625e3d71d7c1238a16dab7337af62812448f05ebeb6cd766e426bd",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/routes.md",
+      "sha256": "3c69d084056dc69819f151cbb7ad8d005e29e36c5181bdab1adf6d1c92fd2a2c",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/search-params.md",
+      "sha256": "572c987a918f585e93899c9243c861fa8c2fac6af70a4d84e86529b8355749ed",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-router-skilld/references/ssr.md",
+      "sha256": "7c18623c63e559cac9f98a0cb1954115a9584f5ae9acfc1a68bae9ad954ce02d",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-store-skilld/SKILL.md",
+      "sha256": "c63246695b3ff594c851fe1801136b7842bf33fcd82fbda3fe8a26834618e55e",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-store-skilld/references/core-api.md",
+      "sha256": "b74bb0c0e0cd0655848a2ed141fad443b6faef37490811542e56f40542496610",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-store-skilld/references/migration.md",
+      "sha256": "5eca223cfbaf2b945695f62421266919004d59c2d7b5b98420c2d7e0dfbc37e9",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-store-skilld/references/patterns.md",
+      "sha256": "d1cce4e7c5a316b2f217a9efb080bd6630f18c489f5f8cf180035fd17b7dd8f9",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-store-skilld/references/vue-hooks.md",
+      "sha256": "b6bcb8c030ee8edbfa3404f0aee092c1cb34f0974ae207513fdab24a3f9a3104",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-table-skilld/SKILL.md",
+      "sha256": "7325632e430696eafca28236162d2356cdba26effa798758963c853fa08e5add",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-table-skilld/references/api.md",
+      "sha256": "7e4a35392bb2ef0340af0665ed27d6833f018ac917baa09f64756f9a1f0fd255",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-table-skilld/references/integrations.md",
+      "sha256": "1fde2be6698c70736b342869e5fe0ef292b7f305541af1079c087a112c26f4ad",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-table-skilld/references/migration-v8-to-v9.md",
+      "sha256": "1d9839d8dbd4ecd72b48ee52771b613ef483e0a4bbf9c3df4fb93d89824f0dbd",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-virtual-skilld/SKILL.md",
+      "sha256": "2d24bed0dd47fbc5aeda7dc62bb36b35aa1c97cbebabf5a76588f5f783fb7486",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-virtual-skilld/references/chat-end-anchoring.md",
+      "sha256": "1dbcc544f3218d2808bc8d0ab9991d45b463086b74bf890a2e63ae636ede9a4b",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-virtual-skilld/references/patterns.md",
+      "sha256": "7490c6bd14222120338dc89048f130da2e2930908990f9f2a7930e830273c672",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-virtual-skilld/references/virtualizer-api.md",
+      "sha256": "21cb0ad5dad7d407f701322d37303467b689d40d0610e253e90bbc994b39afff",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tanstack-vue-virtual-skilld/references/vue-adapter.md",
+      "sha256": "52b7f8b672143bbd4a4013aac00bada4f063a9285925b4a5e2cc12ed5993d3f2",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tresjs-core-skilld/SKILL.md",
+      "sha256": "c241f9ded57a26708019db19e5a8d039a695db331b4aa3e29f3a67754e2ca778",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tresjs-core-skilld/references/components.md",
+      "sha256": "f9495ed5fc1a0b2e2ea96791375d2707e1507bbf0d0f08af8befe068afc78900",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tresjs-core-skilld/references/composables.md",
+      "sha256": "3a9ee96e1d5845bfe16186f15e4da9939b7980f635e79e1b55a614a002a74771",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tresjs-core-skilld/references/migration-v4-v5.md",
+      "sha256": "659f803fee3a39613a4246308fc7d4251a45431cdf3c855707102d5de9cafaf3",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tresjs-core-skilld/references/performance.md",
+      "sha256": "ed2808220079819496c12afcc4a4a6e78b7e40db976f621ea4c2cae780ba975c",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tresjs-core-skilld/references/pointer-events.md",
+      "sha256": "0bcfb87a6f002dea9bae6f5d25f5631e1b6322b01f23d0b49537c30bb327889c",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/tresjs-core-skilld/references/webgpu.md",
+      "sha256": "440446a55edc61828a32ff42a8a084d2108eced65e61de7e57d7749ff995a1aa",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unhead-vue-skilld/SKILL.md",
+      "sha256": "8a135df3dee7f23e46de661853416502b49728c1f231168e6bbdb08b4dbe2b6d",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unhead-vue-skilld/references/api-surface.md",
+      "sha256": "e39b32df0fa2fe77d7336fc9efea64ba80f8d90d84960befeb74cae658875496",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unhead-vue-skilld/references/build-plugins.md",
+      "sha256": "1a26b0046b82be761a90dbdbfe7c61f4fd79ecb97baa9eba4bf07a115589ba7e",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unhead-vue-skilld/references/composables.md",
+      "sha256": "97467ab869f7a8abdb931f5f543dae4d88ac84e4d8355e99c235faf4e914af12",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unhead-vue-skilld/references/migration.md",
+      "sha256": "68396ed1aefb84e52b81311ba9449a89c3a554d355e0fe72f54b03a93097ae2f",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unhead-vue-skilld/references/setup.md",
+      "sha256": "08596064a919f8d89622ff0bd5fb08ba2e106d674004a5038a8d4f75915d46ea",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-ts-skilld/SKILL.md",
+      "sha256": "9f59b6f98243fe17a1e9abfa687897db2d936df4f59c073848c022844d69fad1",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-ts-skilld/references/api-surface.md",
+      "sha256": "7f612a7f602a2a4fbdf4eb1084ec5f9f8a6a6f7f01ba407dcd04f5c075b52ac1",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-ts-skilld/references/components.md",
+      "sha256": "3ac56c8d4bef363a004bc64d92a930908760bfd576b909a7cbdf8cf5551028b6",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-ts-skilld/references/styling.md",
+      "sha256": "b2e0f4b123cbd368fd943f5642ff98287c6a322074c59900b825182117ea13ae",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-vue-skilld/SKILL.md",
+      "sha256": "17601d12401b874a8b41befe4aaa72341f9c1b0a864dd8c82278d7d746455018",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-vue-skilld/references/color-patterns.md",
+      "sha256": "944c9ec1caff7decb53d985e5d2e5c744898816afa549d5c29cf64f3236ecafb",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-vue-skilld/references/components.md",
+      "sha256": "309110637cfebb26a743bf5072fc40b2f7ce9b4cfa4856155b68340bbda9cb72",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-vue-skilld/references/events-tooltips.md",
+      "sha256": "25b13a5463b7b7878809192edec47af2da15551e76b3553f032b0e3d484f0377",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/unovis-vue-skilld/references/migration-v1.7.md",
+      "sha256": "11ad85c5c8eaa8239be4c3f7d227339c2ad3892a174b7f216ccd588f21aaa0f9",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vee-validate-skilld/SKILL.md",
+      "sha256": "df6757670239e76dca6078b9c964173bcd3a992e08330c83d3a202806a17ab08",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vee-validate-skilld/references/api-surface.md",
+      "sha256": "d58182146287c3148842aae1804ae3568bf066f188a35cf2bbb1b120a10a5c8d",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vee-validate-skilld/references/components.md",
+      "sha256": "a541f0e53e82620451f8a3d9546d88e7a0c8f81ee46fea79ab4e68baa68e2266",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vee-validate-skilld/references/composition-api.md",
+      "sha256": "bd5af023409bb6073e47d32acfd1c4a186e9736e92cba40bd31498736fd0c731",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vee-validate-skilld/references/pitfalls.md",
+      "sha256": "c5b60f1aff27060517088def3f7fd2fba6fa53eeb405d62bd6539dc43712b861",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vee-validate-skilld/references/validation.md",
+      "sha256": "248bdae1ea813c206d4b5552c346a9e78711519e8c1c4df3700fcc3b55bdbfa4",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vee-validate-skilld/references/version-changes.md",
+      "sha256": "a14dfb78b8925ac5586ba82c8f356c1c18fbc1f7f395b76ac65c109c10bfad51",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vitepress-skilld/SKILL.md",
+      "sha256": "d0c4998f2853828c1a3b6c5f54c4311e514502932a0a67de258bec1b7656abf3",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vitepress-skilld/references/api.md",
+      "sha256": "d354da7e9beba211ee41f70d4636d6d84cacb1b041753dc355173fc64f8e06a6",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vitepress-skilld/references/cli.md",
+      "sha256": "a7d642dc948087be4ae215c9400dcf8e081c31a9362a8d289880dd5f1ebb869a",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vitepress-skilld/references/default-theme.md",
+      "sha256": "6e6b332953bfa978d5439f811a827e991c4181b7f3d42f34ba60c89d02735784",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vitepress-skilld/references/markdown.md",
+      "sha256": "d5254a27684a1cbb9f88a65be124f2fceca65f36e1ef7d1619935febddc135cf",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vitepress-skilld/references/migration.md",
+      "sha256": "9c45ac3e716e7cd9aeb5544e0e9fe6e92b7aafcd2e267206e9be295a27154d9a",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vitepress-skilld/references/site-config.md",
+      "sha256": "51cfef2ee18fcd2d78032d7d328695b709159c44ae421571c96818060fca2a7c",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/SKILL.md",
+      "sha256": "10c84647aff7ebcf7230b5482b0cea6281844a49377903f37384e4780674bb4f",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/animation-class-based-technique.md",
+      "sha256": "3d59a496337d412870464c502a3b60c590c60b7047254abddb141b62ae7bd42e",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/animation-state-driven-technique.md",
+      "sha256": "d780b876e5bb18b52b7646660b2e5fff1cd672a07a1c40b5809227d6893eb90e",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-async.md",
+      "sha256": "e20036c6622a1647d9e1c23f1fe871b2465cf4bab434422e17eb05710c8878f3",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-data-flow.md",
+      "sha256": "ce31aafce44a5e455f0c0a4e32833ef2c3d74730c110aa108b179f27b597e537",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-fallthrough-attrs.md",
+      "sha256": "62d291508df9997d3b6c5adfde251d6c722926ecf5f7168dea0272564f119919",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-keep-alive.md",
+      "sha256": "8738608665ad42baa6d2d7548d46b3ecd318a85f4ec3a0afac5f728948ade3ca",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-slots.md",
+      "sha256": "726fdac036fcdb6071e669f1ed90af5b3bdc5fc150ad82ff41afa0af5e39f481",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-suspense.md",
+      "sha256": "6a5a98dcc6a2093f038f877eb6fefeedb199aba058a5dea71b139017c557bdd1",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-teleport.md",
+      "sha256": "4e48748842262df50c293ab23857c22c107e3e8360c87da482d23f0eb88b2c3f",
+      "domain": "ui_systems",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-transition-group.md",
+      "sha256": "4b05ae5474ea9e298016202d791c96e6b149d0395bb36427cd77ca9cdc52fd75",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/component-transition.md",
+      "sha256": "bc59a19f2e8eed7a228bdb6383d423a57c6dd75704ae11c9596018c9fb1cac42",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/composables.md",
+      "sha256": "4ae8492ca6ad62ba48281923da115e660c91ab3b4e2e1905cfafdb45928f9b7a",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/directives.md",
+      "sha256": "70d4c68ea15a961eec6471c42b4c44d37adfeb094f694b6811fb718eab7b2cf7",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/perf-avoid-component-abstraction-in-lists.md",
+      "sha256": "8f14401852672527918a4d9e21fed49826e0fe78e0b5584907f689ca648cac71",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/perf-v-once-v-memo-directives.md",
+      "sha256": "a9454d0b0b121c3e40bae8f626ab361465665ec10e0dea3d1690af1756c3f821",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/perf-virtualize-large-lists.md",
+      "sha256": "51e6870226284398db9f6762179e730d2ac424d939869e3386a2d66732c5bda3",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/plugins.md",
+      "sha256": "b1583522aca059c4295708517ba987530dd6a13134f6046aed9fd7327fb9c936",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/reactivity.md",
+      "sha256": "9794443cd6018408fd16b03a7ba7a6918d8d054404a19b72478e3b84c6648573",
+      "domain": "vue_core",
+      "migration": "mixed",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/render-functions.md",
+      "sha256": "01b35e671f7890939fa5acda52c5cf0a50b398e153d80cc9fc9f74c19e460357",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/sfc.md",
+      "sha256": "dfe09f28869a2bc44e618068c3b6269f55d925d096714df25e253d2bbb58c28f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/state-management.md",
+      "sha256": "9e98a1c6d9009c0c8ef7228b6b3bcf10d30be6b713ffcef448ab7db3b419a851",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/updated-hook-performance.md",
+      "sha256": "ded08ce93f9b23082538846f84e8d159d84af757c27b2c6b43a9283df803a32b",
+      "domain": "vue_core",
+      "migration": "mixed",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-data-ui-skilld/SKILL.md",
+      "sha256": "083e93d8a74b04646ad989db7ce21503c2ac2e1088626a6536c623fb52ca13e4",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-data-ui-skilld/references/api-surface.md",
+      "sha256": "13a1e0629bc5bc41b575b71cefcb848d244b55db5120bf489254b6620bb61082",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-data-ui-skilld/references/components.md",
+      "sha256": "45595fe29c0c69b0ed5be0990340b2050d2cd74e4f34e92761156d2fff35042e",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-data-ui-skilld/references/customization.md",
+      "sha256": "21f00b14446e8b5f05af404428ae14ee39a3c236ca0fbfc5e698f0eb73de3eb7",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-data-ui-skilld/references/migration-v3.19-v3.25.md",
+      "sha256": "61a869a728a2d2906d408e418f2a7342ee7c41948c462c1609ce5e6d0fcd9460",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/SKILL.md",
+      "sha256": "7e16c92d2a221fbd99c44456ada0c32cc4606b1f49a352b10e0ebdc046d50f8f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/animation-key-for-rerender.md",
+      "sha256": "618f2f5d84fbb13ca53322c6bad48cdf3c745ae2ffad80fee6f51679b92d1ebf",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/animation-transitiongroup-performance.md",
+      "sha256": "4cb112003b8ade2edf4cdb62d5e03f7981e9a5aad6703f7f82c12288503caece",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/async-component-error-handling.md",
+      "sha256": "6e209485fdd82c77e72faadb1e310388e0e577714f23789a33365e5d1429b66e",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/async-component-keepalive-ref-issue.md",
+      "sha256": "48b988e0e0daac9cee85950dcfcf1d56901b2dac9b6f491c6d95b0380de66238",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/async-component-suspense-control.md",
+      "sha256": "f9c76e8746da300ac2ada30ef6e2e6a9cd99e62892c5fc035e71bcffa14a5061",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/async-component-vue-router.md",
+      "sha256": "59afd935dfc0ce56b1a3138131805c25082cac5eacc84e5a85f0a87776d7888f",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/attrs-event-listener-merging.md",
+      "sha256": "556365b5023c022f8f7ac267bd9a8d04736dbfc89962cedf45ff2b2f2397dfa4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/checkbox-true-false-value-form-submission.md",
+      "sha256": "7c7131ffd24d5f35e895f0a37f58d66bed0d45d44a92fdfaa6ee786ac69c5bb0",
+      "domain": "forms",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/cleanup-side-effects.md",
+      "sha256": "f12f859899e2ff5c5d64c4cdbf165ba3c81ad0c8b3f74cc4ec3ca3ed27d7e770",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/click-events-on-components.md",
+      "sha256": "df028e8a21dca46abf6f2aa86588ba17bb605a6a5cf50c65b95f5a5e6c27d495",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/component-naming-conflicts.md",
+      "sha256": "3d05232a10a9ce907820fea21863df76ebd3c5211b51f4554768749e19773cc4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/component-ref-requires-defineexpose.md",
+      "sha256": "63c099d6796cb8b474666845f24cefb841b70b36ccd85a5817701489f323053b",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/composable-avoid-hidden-side-effects.md",
+      "sha256": "59efc692a91797d44b02eded5ed2bdf8cd39e9ac61283077be88b824b9e38d38",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/composable-call-location-restrictions.md",
+      "sha256": "6281eb3b5fd852d89ed8eaaa49d997e8116bd7ffe9ff14ea9a60c2053ee7a9ac",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/composable-naming-return-pattern.md",
+      "sha256": "6dafc2a17b8631024fe4bcf20db38a82620e4820f6b51ef5f33121a307f2eff9",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/composable-tovalue-inside-watcheffect.md",
+      "sha256": "8facc0b13d779bfe234b61b342e4e59f954422f8a0e474d7bcd99b7faaf087f5",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/composition-api-not-functional-programming.md",
+      "sha256": "92e4c8e3daf00e14deb55ba51eeff89b97dd774329e45aac8ac68b4f48462ba9",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/composition-api-script-setup-async-context.md",
+      "sha256": "1e855e447d595631f3293f6272b84d25b37f543602c0490abe987c4dc0633a98",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/composition-api-vs-react-hooks-differences.md",
+      "sha256": "3883aa11a7ae16321950f2908e271e5cbc8164a5ded50e244bcb2a8b078f12d8",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/computed-array-mutation.md",
+      "sha256": "e7bbbaa119ab4b3e7964f413b56b91bddf83982a06ba760f40326c742bc816fa",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/computed-conditional-dependencies.md",
+      "sha256": "9e12a96270036498cd3f9dc8f87fd47339ce03afbdeb9c6002d27aa413520eaa",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/computed-no-parameters.md",
+      "sha256": "8b9f1c34548a910125750a0b4d445c90eea7e82c0a2b82ab329c237a689e4eed",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/computed-no-side-effects.md",
+      "sha256": "7920c5d2aa16e176a813c1752f9867ec0805ae09ee6bf3bfe9e8690224dd35f3",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/computed-return-value-readonly.md",
+      "sha256": "c3ee396b0f23cd00e63ea4bcef6985d84af3c18294e2170c7932d73a8dae1559",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/configure-app-before-mount.md",
+      "sha256": "fb0004c4bf024a27d4947f28f0e069c3c6093cd5c3a96a8ef06ab95b72e8e68e",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/declare-emits-for-documentation.md",
+      "sha256": "0390efba28ff6c8c78efe9f8c92d189a5741b26f8296365a65589b3d785ca7cc",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/define-expose-before-await.md",
+      "sha256": "47eca68f329382ad804e48a02e9fde38d685d9ae3966c9d82504c79221d9f37b",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/define-model-default-value-sync.md",
+      "sha256": "4d99e494b389a66a19da9d655dc30f8f9619628636d1a9b587b4bccc7b3a6f32",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/defineEmits-must-be-top-level.md",
+      "sha256": "624025907b4a8f2503a73b1b3d351bba9d49fe7032fc85670f13b1d98a51e5d1",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/defineEmits-no-runtime-and-type-mixed.md",
+      "sha256": "8ce8f0f6761830aeab7b2543a264a62d9a0427bf7718e8c8b8bab0d77ad53e1c",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/definemodel-object-mutation-no-emit.md",
+      "sha256": "e9adeb8d7c90831ddd08c74c9c9635f28f823316c4518c4e60cfaa77d708fd2f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/dom-update-timing-nexttick.md",
+      "sha256": "3bf533ddead523a33990c527ee9c3a9c6e50dd0e66b7c562e83b56f84d74302e",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/dynamic-argument-constraints.md",
+      "sha256": "b1fe1a4de06d57e1ce5d83cad3d9791cca888827a6f4819fb1250962ce43d090",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/dynamic-component-registration-vite.md",
+      "sha256": "2965e1f4eb40b8903f3cd9110424cc8a13794f8055a0a74bed3900a8da416c5a",
+      "domain": "platform_tooling",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/event-modifier-order-matters.md",
+      "sha256": "5f367037a4ba1b121618f63a52ee71b1b51cc462ab66ed0e7fe9169c4cd95e07",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/exact-modifier-for-precise-shortcuts.md",
+      "sha256": "99d27601c05fa87260f63527bd7bd65cd9678eab3bda7532dca87e124bcaf39e",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/fallthrough-attrs-overwrite-vue3.md",
+      "sha256": "8d21dfc8636dd4145f5de021662ed35edb50186be867faa40295408874097fb1",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/in-dom-template-parsing-caveats.md",
+      "sha256": "1c38ef47babef2bc5711a30dc2e049564d125f63e157e276fd66fe284f7c4f72",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/inheritattrs-false-for-wrapper-components.md",
+      "sha256": "fe92c21f9ed31d6266c50ae433520e71bf213cab5e2a018f39f49440b4246d5c",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/keepalive-router-nested-double-mount.md",
+      "sha256": "bf22a3d2a60aeab46470fb8aa171eda935a8fa0b6b8f6d707565724e61f1d498",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/keepalive-transition-memory-leak.md",
+      "sha256": "139c5cccfc6b802d6e24502a95a5ce2763119f95ccb3d3031a9fb7538bb2945f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/keyup-modifier-timing.md",
+      "sha256": "0a561477174c7b0e6b476160cff7b9d94137d0d05f3706becba1431f8f894e6d",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/lifecycle-dom-access-timing.md",
+      "sha256": "c75066bca8a42c2109f64dfc8de08b6f998a3672d262011bf4e203cb6d365c2b",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/lifecycle-hooks-synchronous-registration.md",
+      "sha256": "0da713487023ca0efd7477cec699e9c30257264af8f03bd66be8d77828c5a264",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/lifecycle-ssr-awareness.md",
+      "sha256": "e4f4c6addb9bdb6daf58f15c2339820388e7454aba821f2c0603b4b289ac7021",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/local-components-not-in-descendants.md",
+      "sha256": "d97125911a7489593b69c6d54eeafc9593aa11f195c662077c65d1a6c5ddf1f5",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/mount-return-value.md",
+      "sha256": "197b96a76adb7f94be8f07be7702d77c22f9f4ba89aca8c28fb4157410a8369d",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/multi-root-component-class-attrs.md",
+      "sha256": "e709de35a399d9600edc34ac1eddc1bf4fd5cb4b459e66536165222b84aa311c",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/native-event-collision-with-emits.md",
+      "sha256": "297dd173d7cc0cb361dca6e863d0226d7dc00d224803da297177492b26cf05d3",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/no-passive-with-prevent.md",
+      "sha256": "6e6772921bbd332c47fabccd94a0ea166bcc0f76cfeae3dbfbd76d564a789743",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/no-v-if-with-v-for.md",
+      "sha256": "464b9486e64d87ec84c55e7b39d3c4b1fc547d028ce5e165dba2c62169bc1628",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/perf-computed-object-stability.md",
+      "sha256": "426b556740972b5a5dd39f795a6da6a445ffafdee4d3dcfea2d96ce65bd8dd29",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/perf-props-stability-update-optimization.md",
+      "sha256": "56dff621f64d4a475cd777b455e67253c316fbb039a9db0533c523200d81526b",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/plugin-global-properties-sparingly.md",
+      "sha256": "e557cfb1e9e5a78a1fd6662ecaaba10208b384af3bfdc0a2143e7f1e0cb778b5",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/plugin-install-before-mount.md",
+      "sha256": "e74b13e2b158a475ed7b7cd19a2881c3741a1097a6004202b317f61e6dae6fe2",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/plugin-prefer-provide-inject-over-global-properties.md",
+      "sha256": "0ef397ad5b462d29b768c67ed30b60e484b790015c36a8b846b30ea256b03dad",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/plugin-typescript-type-augmentation.md",
+      "sha256": "89729069f4f87b363a1ddde115147251ea597e959d426394cbf222818da53831",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/prop-defineprops-scope-limitation.md",
+      "sha256": "e0459f5afa14137ef19e70296eff1e4f6fe84150fcb99188151ef2db7ddbd0ae",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/provide-inject-debugging-challenges.md",
+      "sha256": "18f5ee050f9cfee0929e2485ae3a866574e9432c6f03c8167dbbab52f51e4a3e",
+      "domain": "platform_tooling",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/provide-inject-default-value-factory.md",
+      "sha256": "6293b6b7b1a40e9755b87c58f36184e7375628e2c159c721bdc68d365095a08b",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/provide-inject-reactivity-not-automatic.md",
+      "sha256": "126a918b3c67b7aa139ed75d5be2325b9fb8ceeefa209615da42a6e6d156e2ce",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/provide-inject-synchronous-setup.md",
+      "sha256": "deeabc21bdbc7bbbb7cb492366853b43e693130b6ecaeab5384db23923892d22",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/reactive-destructuring.md",
+      "sha256": "58de7b721c69bdf80b5a272d4e0211290defb06cec1da10a38c4c63409403ade",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/reactivity-debugging-hooks.md",
+      "sha256": "9bd2991786bc470ae00e655a7712d67393a6e904152a942b680c7a9d2f987644",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/reactivity-markraw-for-non-reactive.md",
+      "sha256": "e8d6410002563bf66f9dd6921f37c58055080564e8f8933e22996e28b28bad54",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/reactivity-proxy-identity-hazard.md",
+      "sha256": "70e6fb56a9adf53b1043df1bc5a122fe7a4cb4dfb89b22db51ef8e7dcb29b747",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/reactivity-same-tick-batching.md",
+      "sha256": "10dd674dd92fb10cf026fb8f8061a51b2af0d63813ab0edebc26c51e9bc7d74f",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ref-value-access.md",
+      "sha256": "e797ceee03f65cd0946a2dadfca57c11ed98879f9c30b0e49d41db2e31feddb5",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/refs-in-collections-need-value.md",
+      "sha256": "f6966e60ee948135c44c83d871d3bd0c7cbef2ac58a50f822ae1455616564591",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/render-function-avoid-internal-vnode-properties.md",
+      "sha256": "94626e6391c000b8a9abcfb85bc79757f4fcb962a0cf0739b57b859cb551e90e",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/render-function-vnodes-must-be-unique.md",
+      "sha256": "e1869786235d4a75d9cf125b95361e4aef70f29019fe2d171298ab4db244d1f9",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/rendering-render-function-h-import-vue3.md",
+      "sha256": "bab6c4d78d3b28cce889fac1e3bbca7670b9cca0efe8ad1a1606e061f65bbbc9",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/rendering-render-function-return-from-setup.md",
+      "sha256": "4c510bd41e6387b71326a94fe9ebe039baeabbbdf879bed742f1f98c92bddadb",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/rendering-render-function-slots-as-functions.md",
+      "sha256": "1ad31a7bf16b184e251a73dbedc3918d1c3b60b84e24103857d4d318f50be330",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/rendering-resolve-component-for-string-names.md",
+      "sha256": "a00994f1b667c1ae5cace6170dd0d3b1c32d7b3bebd87af14a1b2d310b6712ea",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/select-initial-value-ios-bug.md",
+      "sha256": "8ba9bd488e3b53bd5c89036d84020a6d408c816ad0e4e783b43f044de8d41420",
+      "domain": "forms",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/self-referencing-component-name.md",
+      "sha256": "45b7f0e9e376d2427e613424be3d26d60968d6eb87abf0754399ede2383bfad2",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/sfc-named-exports-forbidden.md",
+      "sha256": "6a68b60aac268a6efb586dc226f3390bbe42d206b8ec16feb850a6f7edfabfb1",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/sfc-scoped-css-child-component-styling.md",
+      "sha256": "d59893ee52b94fba4cdd676eb36993127955aff8431f0770af0d092f0c2156bb",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/sfc-scoped-css-dynamic-content.md",
+      "sha256": "07b88cf1aba023f90814eb028fdd81510995670abf3cef01ae1ce150dd839eed",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/sfc-scoped-css-slot-content.md",
+      "sha256": "f4b2054f5246c5825952a98fbe8b209f32b532db7d161c7d90fac16a4f2621cc",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/sfc-script-setup-reactivity.md",
+      "sha256": "7bb5039b3139e84aa2f1f35a266b9ab46b3fd6252f4ea2e7501a94e796e80b2d",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/slot-forwarding-to-child-components.md",
+      "sha256": "96ea34eb0e145ae8f9e26b69f08520c99b3f560d0cce88b729a392810ba71820",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/slot-implicit-default-content.md",
+      "sha256": "b2eeec4e5ab98bc69dbe025d2013a444014e42c9815ab41a297bc1f46ac83346",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/slot-name-reserved-prop.md",
+      "sha256": "5faf7e6e61657509c395a4a45e66d4cf8f384ae316a9fccdf47caae85dc9453f",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/slot-named-scoped-explicit-default.md",
+      "sha256": "ced29ade4d9610d355e2e48fe021b9a3f38ca3460cf8cb92f7d1ac40a0d08f26",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/slot-render-scope-parent-only.md",
+      "sha256": "d426b3eec223f7aceb4b798ff168597c081045d1215b67e53a0775b9693d05fd",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/slot-v-slot-on-components-or-templates-only.md",
+      "sha256": "0e10a9e3d2d0801bfe3225fb454c9acaf570496ac4ab06b55e6dd594f01af6b1",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ssr-hydration-mismatch-causes.md",
+      "sha256": "ae0322718cace89a3cfded35e0b8f9c65856b7694790419fc180cfd8ba9e4547",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ssr-platform-specific-apis.md",
+      "sha256": "870a1e2dfe22e8d7279537292fc338c50e2174fdb06a7248bafc1fb24e86fff5",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/state-ssr-cross-request-pollution.md",
+      "sha256": "94353322c23d995a51dcddb160e150fc975e7021ded8e9d9db0cfc06467f5e23",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/suspense-no-builtin-error-handling.md",
+      "sha256": "b6e3738eac5db3aca760a42c4523ab9cff947dab1fbed99f0ca628fb7f887bd4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/suspense-ssr-hydration-issues.md",
+      "sha256": "0a46d5cda4c4f258db58e41ee3ccc2c04db9713c5a193548c10e8706f26d07a2",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/tailwind-dynamic-class-generation.md",
+      "sha256": "a50ec8ec0e93b7fbd99ff059741b335b86a5d2abeee4723f3123f7b1de18f331",
+      "domain": "platform_tooling",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/teleport-scoped-styles-limitation.md",
+      "sha256": "2f320612fda2b97d058f2701f027e6f33da5068281d04d413a0e22d60159c815",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/teleport-ssr-hydration.md",
+      "sha256": "f528decf04c21d761beec668c69040fc6bdf069b1fa506718f935acc571c95af",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/teleport-target-must-exist.md",
+      "sha256": "e392c732bf2282fdd445a7e5c7b18f0251fa0f94bae11617c013927574126ba2",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/template-expressions-restrictions.md",
+      "sha256": "f8f02ef594da925cf822e8e5628a563849ce57464b9c904f81cf255bfed508a1",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/template-functions-no-side-effects.md",
+      "sha256": "1bf0c1726d040afbe26490a5c206671a22dc73795903e22c5a999cfe63c11cf2",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/template-ref-null-with-v-if.md",
+      "sha256": "e76dc8d556fed6546697191a2d4bd5c40804be676d98a9a5edb1f32b99c3c89f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/template-ref-unwrapping-top-level.md",
+      "sha256": "56d0975c474438466f9dc6507aa800e042df81d8e9aee61ab2268f3054fbfaa4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/template-ref-v-for-order.md",
+      "sha256": "8c27b04507ac42dfc90aa5cced3eca207b2f0bbd34a9ef08ba917212368c322f",
+      "domain": "vue_core",
+      "migration": "mixed",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/textarea-no-interpolation.md",
+      "sha256": "e390e9f3153e572c6470adc81ca74b9efc2ee5227efa169e16fad86761835474",
+      "domain": "forms",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-group-flip-inline-elements.md",
+      "sha256": "a43c259c374cf74d138ddc7d68a81a4c1a1a098058215e0170460c285825c49c",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-group-move-animation-position-absolute.md",
+      "sha256": "bd43a5cefe668b0d21aba7431d0aa8b0d88f4c5825534c19b23b3b8cdb1a410d",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-group-no-default-wrapper-vue3.md",
+      "sha256": "0dce50e40120a44c26db667d750b973faef38d6603e18fbc8d67ef980bd34976",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-js-hooks-done-callback.md",
+      "sha256": "9f6337ee4c59280fcf3d98a13bf47398c0313b83765f37344af7d6cb5cfade79",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-nested-duration.md",
+      "sha256": "c82bb7d2d968590d38cf213d6a340b5d16db7f73322078a562c77804419e4a33",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-reusable-scoped-style.md",
+      "sha256": "52c7ba990301b670fbdc1051760bba28b3eff7b3f4263988cd87d49411793a69",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-router-view-appear.md",
+      "sha256": "7c179c2deab7766d64fe1456479d17ea34d2939bf23569418d8ab4bfceb04a45",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-type-when-mixed.md",
+      "sha256": "bea7d5ff4c123c720d81e699336167f70ab3e344507fbf3720f57c34b09b93fe",
+      "domain": "visualization_motion",
+      "migration": "retain",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/transition-unmount-hook-timing.md",
+      "sha256": "2fdaf4ce508332f9a95e90bd2e709595111bc2b9a6e030700a7461821506daaa",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-defineprops-boolean-default-false.md",
+      "sha256": "0154e3b2c39c7eb5870f4ea98d6c12e4890eb6907661c33b79be281ad9845266",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-defineprops-imported-types-limitations.md",
+      "sha256": "cb8542e248f87ccec71dd364f4370911a7e6db192e37349337be175c205d4994",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-event-handler-explicit-typing.md",
+      "sha256": "6748abec2efe99d7c137ab092ba748b6924288c6c2600464697ae0406fba3869",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-reactive-no-generic-argument.md",
+      "sha256": "5cf136dddd50019346e50766ab3e2a88085cdedd9433caf520602b6a9236fbc4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-shallowref-for-dynamic-components.md",
+      "sha256": "24b347bdc72b4681a50fd729c3fb4869e3bbaa2f846f2b7bd42c63b53f71772a",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-template-ref-null-handling.md",
+      "sha256": "884f8f5d77cc63d274db5df669f98aaad98f54c6cdaa24c560a937d13ec42ef3",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-template-type-casting.md",
+      "sha256": "7837dbad160de8f96a038a450956ccf9b8cf072c27e57790bed60199e25a267f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/ts-withdefaults-mutable-factory-function.md",
+      "sha256": "809397791f3e5ba2b9e33274d3386aa01dccb8d12ab06075d0644a834fdd8dd6",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/undeclared-emits-double-firing.md",
+      "sha256": "7e71509bf6adc64b4bcf92a39b63d2538d3787f59042ee917f863fcd53ecdd14",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/use-template-ref-vue35.md",
+      "sha256": "51ab6e4fab932cb0c2666f73e55bb04e2c5c64d6b1a84b861ff1559e72977bc3",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-else-must-follow-v-if.md",
+      "sha256": "9dc62a6ce390fe1c10f1bac6be05643dfad8240ca810ec668354a6fdd4a0f6b4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-for-component-props.md",
+      "sha256": "941e4091add376c48ae6a088bd09c165e1fe097dd9b5aa89a550a9156716de02",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-for-computed-reverse-sort.md",
+      "sha256": "5e9f08e64e503163321ba95ca3654d21fadbe50562f294c0116693d17ad182b6",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-for-key-attribute.md",
+      "sha256": "39dfa93bdc995eb8fb7377e9fafab18581e894fd9b37f0e1c9ae47f04438fc05",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-for-range-starts-at-one.md",
+      "sha256": "7e6f272c094e4102b229ae02ee70cd9867f435b9140448a374a119465cb3cbbd",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-if-null-check-order.md",
+      "sha256": "2922e07c6580341f92fe693a532cab687dbedd0cef64de1c6767ece1af5ec227",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-model-ignores-html-attributes.md",
+      "sha256": "6965fafaacbc7243661ee5ae8be662147a61c591c0e7497ca65fb4216b81ef4f",
+      "domain": "forms",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-model-ime-composition.md",
+      "sha256": "97cd9eaf598fbbf401b91d6b9999b026e0250dfd32de6f72cdf5b408e207ef9d",
+      "domain": "forms",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-model-number-modifier-behavior.md",
+      "sha256": "80a88891116515f97fe24f5c75e986d239d0119ed8bddab6d119e5f41860e6a1",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/v-show-template-limitation.md",
+      "sha256": "fedbe3dc15a8e5e12deb171e63b0e8dbd58227d3ff648b6e0a355bd8fd3f5e3b",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/watch-async-cleanup.md",
+      "sha256": "81991bb3e4fa4e44f17d5db5abe50c480af990d623b71070886798e7bc41c999",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/watch-async-creation-memory-leak.md",
+      "sha256": "4e9f0cc37df946c6491a7dbcf3fe80e7fa8d70a5a58b27dfea3127a47710555d",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/watch-deep-same-object-reference.md",
+      "sha256": "62fdf0564dba3793de4e35349e17cd91486cc6b7d5c688caf38a935325f04adc",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/watch-flush-timing.md",
+      "sha256": "6a7663365d7c20bd476e991721e340835b08598d64b1a9b1acdfd78e40c5f6a6",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/watch-reactive-property-getter.md",
+      "sha256": "da6098a4fae1fc58fd8e27c32f62fbb3e684e00fdebcd9bbad808d18cbda73d4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/watcheffect-async-dependency-tracking.md",
+      "sha256": "a4756c98bd6f54b414f079304561bf3c4c8cd7f59000c40fa01b3919cf3bb082",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/watcheffect-flush-post-for-refs.md",
+      "sha256": "12613421a7e8f32de5844de83eeb3bbdf3e75144add86356ad9cc166348e4ec3",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-expert/SKILL.md",
+      "sha256": "d95e3b1ee42f2d6a0f7a435536d147a35e31b1b3046dfe7937364d834e238136",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-expert/references/build-tooling.md",
+      "sha256": "2ed1ea8bd073a0e35ae6115d9daf817d79794b86876f6793b9cd677e82ea30ab",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-expert/references/components.md",
+      "sha256": "91388a4bccdf4ecefa09ad2e26db08334ddd95e102b07172bbb0b80a4d94ed61",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-expert/references/composition-api.md",
+      "sha256": "16acb852252e81ad3bc02d8aa02a4b7827ac166cdcd8c59682d7d0bfeca759af",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-expert/references/mobile-hybrid.md",
+      "sha256": "086f468531c596656e12ca26786fd2b7a4d7d136453954aba99e5873516a3637",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-expert/references/nuxt.md",
+      "sha256": "1207f3960c9c5e2bea336db8c470b154a28c32c97a802a166f31c4505f0a8964",
+      "domain": "mixed",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-expert/references/state-management.md",
+      "sha256": "2995dde34b8ffe877fa50e02fbab73cf70bb2c080ca44281df657423b0e521fb",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-expert/references/typescript.md",
+      "sha256": "b179e0c40b05287fd8c8e5794a9044a00c652d4ce4bbd59dacf1f356b98bf42a",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/SKILL.md",
+      "sha256": "69ae9e651b21fd91e467ce41ef1055e92d54cc2bd6d6c3e930a08f6738ace5ce",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/components.md",
+      "sha256": "daffd050bba17b85a809b7c1f8cff231f29bf996a446521e5713cbb473714e79",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/composition-api.md",
+      "sha256": "d74a5cb1145c0504f9984aaac67bd41534303d05d9163ad89d9e0c4eedd3b2eb",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/formats.md",
+      "sha256": "1091de6a043bcebeecd8c40b588a35433d1e6039ecd945eb464acc5d18b72b92",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/legacy-api.md",
+      "sha256": "09ee5b87bbde56365b3842035663fc2c1c063b17a856486b35dcb0cb5be3ce28",
+      "domain": "platform_tooling",
+      "migration": "rewrite",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/message-syntax.md",
+      "sha256": "e0c423bc1317eab6919c4a48382e5db4c926a8f93588178e7f6f01e544c61fe2",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/migration.md",
+      "sha256": "bf34cd97293222901ffe25f56ec46a912fb0ccf279340ae02aaf235a57bd21b3",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/optimization.md",
+      "sha256": "e803ebe83f3ef4dcb039e842a22150407d2b3a921b4fc72865361741dfb79a6d",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/typescript.md",
+      "sha256": "eceb3ba0d30b516448eb1742e5d063839f6a03310d769c10060add456259f4aa",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-jsx-best-practices/SKILL.md",
+      "sha256": "bd3487c0d6217ecdd0604fee84454f51d4b8db0c333921378eccd495be8a0fcc",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-jsx-best-practices/reference/render-function-jsx-vue-vs-react.md",
+      "sha256": "da8c635b448b23360bf1c53eea02b004bb755a712a0325c8851f9c33a072c834",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/SKILL.md",
+      "sha256": "fd0a8c9e698a5d0413290f5c8e934f8ddd8c3db68ea5c2bd352a749b85744ea8",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/no-arrow-functions-in-lifecycle-hooks.md",
+      "sha256": "09976ddecb206b254e3df0e605bd8e0fe2b5d097a326ec7093546cb8ed3320e7",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/no-arrow-functions-in-methods.md",
+      "sha256": "6e47800df48a714983d5c9456e409d0985b2e1ad41e6b93043bcbe24d06ad2ed",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/stateful-methods-lifecycle.md",
+      "sha256": "ce572e7e1f206d76065f5df5a9ff361239bc758e644474f7da026ac945e010ad",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/ts-options-api-arrow-functions-validators.md",
+      "sha256": "0c5a6525ccf71c9fa709b2039534d9c204c2bfa9e5a8d50be161db295340edfd",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/ts-options-api-computed-return-types.md",
+      "sha256": "1f7069179859fc7dbb881fa88539c2259ed408eb8d88024ad710cc2d3742b271",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/ts-options-api-proptype-complex-types.md",
+      "sha256": "3c6b97836b0b0525e1be0467086b6c82759ff1eb349342f4ef07bdd98c786489",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/ts-options-api-provide-inject-limitations.md",
+      "sha256": "fbca83e55f8444212a48d63ba73f7b017f507a1e281c0f9ac1d68a9ab152e7e4",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/ts-options-api-type-event-handlers.md",
+      "sha256": "7f0ee1f5c093c09ca743323e9a4999fc89b0c23c364d6143aa508a36862ef358",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/ts-options-api-use-definecomponent.md",
+      "sha256": "7430211d979c775b3b4578438447a1d4c4b02c3ec925908041ae4f808eb7d788",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-options-api-best-practices/reference/ts-strict-mode-options-api.md",
+      "sha256": "ce786575eeb5b4a9db2b3d9890dd9691a6a09316797f4010a728d140d528464b",
+      "domain": "vue_core",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-patterns/SKILL.md",
+      "sha256": "65e322383510de25bd5fc6fce4b0980d99d38b341f09bea662bd9a410e20c016",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-pinia-best-practices/SKILL.md",
+      "sha256": "70c5fae1e97d1df1d7a1207ad1df606d0c7375855f0c1cb0c9c94351931ab862",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-pinia-best-practices/reference/pinia-no-active-pinia-error.md",
+      "sha256": "fa4d1c2f6d76301532f93607be12ebbb8bee0617df28048897a0024f1045aeaf",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-pinia-best-practices/reference/pinia-setup-store-return-all-state.md",
+      "sha256": "95d5864bc01a56a40a12017dad428ea57f23b882e0a02d628643edffb8647424",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-pinia-best-practices/reference/pinia-store-destructuring-breaks-reactivity.md",
+      "sha256": "7f00a924204a3648e2654379b4c7d71259bb0ec3dc5f68f3a11034b6f56e08cf",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-pinia-best-practices/reference/state-url-for-ephemeral-filters.md",
+      "sha256": "577f7b629c84b82775de6b3dd7b114fac419f91b648e86c0c6b2966d1ad74ffd",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-pinia-best-practices/reference/state-use-pinia-for-large-apps.md",
+      "sha256": "6fe95588bbc4d9eb3051e6d8898cfbf3d074c34aae20aadeea08f73e8bfccefd",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-pinia-best-practices/reference/store-method-binding-parentheses.md",
+      "sha256": "5275681aaa16ed6fb506a3899c72c545c26f1873296878324d5317573215f3a0",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/SKILL.md",
+      "sha256": "33889faf631e80bf112a096dfe3e76029447f05f99d6d5c0aea2daddff186d7c",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-beforeenter-no-param-trigger.md",
+      "sha256": "8cf2bd4e3f40cf24b14962ea0b33b31d736d56db891aafdd721e4ca68d82c6ad",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-beforerouteenter-no-this.md",
+      "sha256": "c525231bb699cacb2764e804312df2c601ba9f23d7b81936bbaf418b015d1ced",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-guard-async-await-pattern.md",
+      "sha256": "97521c582a7495e5540c93975737562c41d0eb3aa99c2fb3a6acaa2411ecd69e",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-navigation-guard-infinite-loop.md",
+      "sha256": "38749bac69bc717cb99539f61fa4994c9294acbb795b5b93c80e1775b0c5b2cf",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-navigation-guard-next-deprecated.md",
+      "sha256": "81dee3b480c31f72456fc4a81a67a717c1f96b798fcafb938ac18b92bb7bf8c0",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-param-change-no-lifecycle.md",
+      "sha256": "8813b065391b5467e878935d196eb014d5dd27ee599a128b5194a0dc0da1b557",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-simple-routing-cleanup.md",
+      "sha256": "3ff3b3d102f0312fe53da77d3c54c0a1e938e511ec2588bcc53bc02f35b99374",
+      "domain": "routing_auth_state",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-router-best-practices/reference/router-use-vue-router-for-production.md",
+      "sha256": "4212de1b50d1f53d5f831ca6945d53994e8e2cfbfb11b0a0c232bc53c032c8a1",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-skilld/SKILL.md",
+      "sha256": "0406456e3818610f382cd29b66fc6e6e2ac8622afcaf6b971761dbaf98705132",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-skilld/references/core-api.md",
+      "sha256": "12c701cdfacdcfefc2631d1d394486e80e8bc9b7f248d388bc03a6892cd3fe46",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-skilld/references/data-loaders.md",
+      "sha256": "7e2ee0a22b8c470bfe3c5394d0e42f0431aebe9912454ae5e668164a9b77d359",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-skilld/references/file-based-routing.md",
+      "sha256": "c7cc1caaaff6d77d4657f22110fd6a9284376a044262b6ec65bb5254051fc9f3",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-skilld/references/migration.md",
+      "sha256": "705e4089dadfcc6dfbf15f55d0b9ac5439a2bfa0fd63451959133795b3f59174",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-router-skilld/references/typed-routes.md",
+      "sha256": "8454253f926991ebd1e8db857865ed974b7b17001c96fa3925cdcaf55e1e0146",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-skilld/SKILL.md",
+      "sha256": "a4811f37a9b9b4043538e0b33a0349d9dd9dd38794d82cefe6c815a39b9b7af1",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-skilld/references/api-changes.md",
+      "sha256": "8d64415dae01ad57788919ffd68f643f006280fea61a25e429f799f689112abe",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-skilld/references/api-surface.md",
+      "sha256": "028d37780b0dc221edb1ee5cc7fd4f84b7a8e7edc56dfd44d3675842d476b3ea",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-skilld/references/best-practices.md",
+      "sha256": "da58ad96f9c4998df47d6ceaab2021b0303811f98922660e0922d6138e83b060",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-skilld/references/vapor-mode.md",
+      "sha256": "5d3f147b131ba4a52b8506bd697ceb4005551c9efeb5ae1378bb9b62e0da912c",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-test-utils-skilld/SKILL.md",
+      "sha256": "1565512267bd6c42447c967e05c20497abafb013e85b9b3d032e0d2a9f120454",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-test-utils-skilld/references/migration-v2.md",
+      "sha256": "22643d93a172aae9d050de9010a535c8703515a03c595b33bb90b1009bc62738",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-test-utils-skilld/references/mounting-options.md",
+      "sha256": "e962e1da282ce4fe33f3e36679db8cd239eb1a3817f97e8ca8167333286e1af1",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-test-utils-skilld/references/recipes.md",
+      "sha256": "1c5d100c917949a83394b335ddc41a3da56f7fb41cf1f220127f65cb0de86a44",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-test-utils-skilld/references/wrapper-api.md",
+      "sha256": "bafbc3164a3d6d34e42c73008fe4d19b18f425853998f06d3bb34b79e9c2b33d",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/SKILL.md",
+      "sha256": "376fd21d6adfd37f7d102fa17ca099abddef16943389f37588405b013cef23b8",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/async-component-testing.md",
+      "sha256": "75b1c7b3949a5f0211824c525fd7b3f8a6b2cdd4933592ada65f37ecaa4146d3",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/teleport-testing-complexity.md",
+      "sha256": "5a42ce8eb5497b5165b09cd758b647ddf4bb537be9cf808a84bee7ae8c3aca39",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-async-await-flushpromises.md",
+      "sha256": "2dd5099b32cf2626d19aab2ef4b365cc26102cfb5a0aedc5667efc06d2070cab",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-browser-vs-node-runners.md",
+      "sha256": "ffc13da105aadfca0bded6d955f79f9c02c5548ee699f274ff5976cb7484ac98",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-component-blackbox-approach.md",
+      "sha256": "16ac94d67addf1cb60177a81a5c5c01318daa310216261ffb2d60b396112f86d",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-composables-helper-wrapper.md",
+      "sha256": "57af3ae779cf0770ed53034575d783463d2b9e790c29fbc9bb80f166be3255bd",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-e2e-playwright-recommended.md",
+      "sha256": "d415a403c6851cb57666b9143cb3acec6eba53af269cf765918c108dd0c96355",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-no-snapshot-only.md",
+      "sha256": "d541b490b8c9c0f822a2ca0d8184d7325b07918e76124d717fb480bc7a488995",
+      "domain": "platform_tooling",
+      "migration": "retain",
+      "flagged": false
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-pinia-store-setup.md",
+      "sha256": "005a375c587bd33d1eb3a1b7fe1c89e42daf4c115014e49cf327ab5af5d0ed4e",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-suspense-async-components.md",
+      "sha256": "12307929380fcf0e8bcbd6be23a6bc1710904c9462cec945f80ce4b5aa0b7f12",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vue-testing-best-practices/reference/testing-vitest-recommended-for-vue.md",
+      "sha256": "acfa0b3986e092f43d4cd8090864860cff07ffa3aaa62a10c5a622770ccaeb6b",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/SKILL.md",
+      "sha256": "1377a4c971d8dbe44eb3dccb28dfb1023433d471afba97da9f92d6b997a61b49",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/alerts.md",
+      "sha256": "9ca9aed792c6a0b56b73949d70a67f992086abb46e8c0969390d0bce059ecf04",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/buttons.md",
+      "sha256": "e7726e24131426a10f3bc104d15e242de90544c41b4277b3126db5fd02627dc5",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/cards.md",
+      "sha256": "300ff8cb552c2cb57c99d4c7faed7f8356d5ce412a1eb83ff4bb6c6f06afc343",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/chips.md",
+      "sha256": "349c985b35687edf75f93ba3ba0625c0051c2cbc88ecd4b2945403b41cca3623",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/data-table.md",
+      "sha256": "779bb1efea297ec94cbb7c11b7693b3a09cd2b67c8ef79d3eb67fe6d00caed0a",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/dialogs.md",
+      "sha256": "48085ea47faee6fea235bd739c1be62b615ca61bc7c01e2e97fa95602e8a0a63",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/forms.md",
+      "sha256": "60bfbe7673fbdc2778913271e3a1107811fd89b92194be7da9e93ed4fc401dfb",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/lists.md",
+      "sha256": "a3a1498f26398d9f4fbfcaba5631850a41112e38826a9e50d824a6b07bd32727",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/navigation.md",
+      "sha256": "0a836d686949dfd440880c0fe7c511caff5a39976855aeb4a5bbbadad9838565",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/snackbar.md",
+      "sha256": "898ff27c74c36a3d86bd1e385c4be2f260dedda60cc79c8cc03ea4b88369c5a4",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/components/tabs.md",
+      "sha256": "8e8e4b276863a6ddbf470381096f6d4d832bca46b94711349fb32c7aa1ba173c",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/css-layers.md",
+      "sha256": "73363ce4bd4416ef0892f1f2a3437bad12bdae133ee456248f654e7d6bcd4214",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/layout.md",
+      "sha256": "e2050da8d3d65f49d7f30f7412d82a3aeed72ef9bebe2226607975ca2e468446",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/patterns/card-grid.md",
+      "sha256": "3ad75117025c0e1279eb8b5813a97c77b01306a0a466db8bcb8fe441015c478a",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/patterns/crud-with-dialog.md",
+      "sha256": "b98a333587ea93f9d5121514ddbec1cf4cea46e6aff68e8d6d7a4acdfedda892",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/patterns/dashboard.md",
+      "sha256": "881873a2075038373edd9c091c9ea1e1c8b8f454c1a36bf4f3e5db819ef1a4e2",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/patterns/form-detail.md",
+      "sha256": "a5c53b188470f968a3fc51fa0601a65f430d12c3a0c1848f84fe03b2be0a0d2a",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/patterns/index.md",
+      "sha256": "4f513c43c84fc4f6ea4cd2d04731e9446abd934ae4fc6e4ed16aee7fa4f5bd51",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/patterns/list-page.md",
+      "sha256": "1752ff9325d25affbeac7f8a074d0be57ed0d9360023d266a6eed5d8cd2313e7",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/patterns/login.md",
+      "sha256": "d93359bcdb7aa48726cdff1b694d9bc2e5efe7e302f7ff65e721144e608c408f",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/theming.md",
+      "sha256": "f9537147a6376498aab96484b3f079f61ce2992955f757efd4a7f9de5170b058",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-4/references/utilities.md",
+      "sha256": "5f0c5fb461593593918cf490af2d9e18675236cd153673e57c75179893f3b934",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-skilld/SKILL.md",
+      "sha256": "a25ea858a34b478b3c07a96be723c6bcc8296daf091ebfdbe61016097fa4648e",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-skilld/references/composables.md",
+      "sha256": "46ce0f079a19199f72a1a3ce2cc1b55808bd6770bc8765323ca0693b5375cc26",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-skilld/references/configuration.md",
+      "sha256": "43781137d0adca190b21704f2882002deb345aa97d2a9f184e6d4ec6b18cebee",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-skilld/references/exports.md",
+      "sha256": "510b612ca2157e1af1c10ff37b2d3ee715336a4560ed0fd3d51e52a8400a8655",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-skilld/references/migration-v4.md",
+      "sha256": "f6ded88608d0f3e3d592d5a9fcaf6a165cddda62127dfd3a8d1a392328eb06f2",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vuetify-skilld/references/styling.md",
+      "sha256": "1e7d60eac3760b75c4266163f69421db47426580848022267c8c0487ba3fe8ba",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-components-skilld/SKILL.md",
+      "sha256": "d48eaea5561bc3231b2cdeb84b3d359301ef67b38024742d99505209e0b32af6",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-components-skilld/references/components.md",
+      "sha256": "5958e5b697f9b6582809b9c151d0a3e20f42d16a90a440cdd77dafd69ac5a432",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-components-skilld/references/directives.md",
+      "sha256": "4038ec50750c32aec68ce460de30a5767daf8833737749d76af44fa9265e966b",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-components-skilld/references/migration.md",
+      "sha256": "d781e1ea1ac4dffae869ff653dfec0b13af9b167db2b44d72b943e85e89a91e2",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-core-skilld/SKILL.md",
+      "sha256": "41e4a05026a6790f9f45198310a170d2b811121547d32e650d1141071d646ad1",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-core-skilld/references/api-surface.md",
+      "sha256": "b11b4f74b5f139a604eda197fddc4ddc5f9a1d9ba15d4f492426699eaa61f15e",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-core-skilld/references/best-practice.md",
+      "sha256": "1b4bb01b1bcec5ce9eb6f56685a37fca7f2cf47fc63261592d68b42fdd395a9f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-core-skilld/references/migration-v15.md",
+      "sha256": "9ccdd803752fea2030f278e24aef97df0642fa0fea1dd7879c1380613918359c",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-core-skilld/references/new-functions-v15.md",
+      "sha256": "341cf796a7b4afd725c3eefafa2d8ef69b27440841c879ce3f41286c95e9dfbc",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-core-skilld/references/shared-api.md",
+      "sha256": "2ad302ced50bb732710acbda90aef12a3fce8cbc629fb4e3ffa86208bf6f2d14",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-integrations-skilld/SKILL.md",
+      "sha256": "6f815f1b93d735674ebe5f6b85f99c8edea3d67901796f415f1b5d967cf9d41f",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-integrations-skilld/references/api.md",
+      "sha256": "56f72f842c8091a49883b9ea784ee8f857c7b39a6de8671ce6e9e4038d8c3938",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-integrations-skilld/references/migration-v14-to-v15.md",
+      "sha256": "8991dd3bb0db35774f3916344ccdf50a95a96013395dca26fd5370562c93c4a7",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-integrations-skilld/references/usage-patterns.md",
+      "sha256": "155db8f6b23e4b98d14ed5bbcae2973285f8e7d4eabb699d1df751efba5d7291",
+      "domain": "mixed",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-math-skilld/SKILL.md",
+      "sha256": "fdcd15193d6d213e25a1f9d48502c9dc82343648083edf197039fa5d1c512238",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-math-skilld/references/api.md",
+      "sha256": "3b07cc272581a6e9cd99a0e3f87a38b1fc6d8ea56f718fa9f2ee45073b8541f0",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-math-skilld/references/migrations.md",
+      "sha256": "2ca855857bc05db8231483034c2c5cfcd315075f420a2f90116d6fa2bcb0824e",
+      "domain": "platform_tooling",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-motion-skilld/SKILL.md",
+      "sha256": "64d592763749549f60d77f306b26bb580aaa6d4172121b721e428a5b233ff53e",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-motion-skilld/references/api.md",
+      "sha256": "3aae1400fc96e85303873b228b710514020c5c4e4537c59f9ddab40d64f6faa3",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-motion-skilld/references/migration.md",
+      "sha256": "7086a8fee0078e0472319b43d7f4de262f3d55969104f6cf4348010aeb1124e4",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-motion-skilld/references/nuxt-ssr.md",
+      "sha256": "b80c3c434c8ee00f21da487312be4877093ca0efd203d8627715998417219a19",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-motion-skilld/references/variants-transitions.md",
+      "sha256": "c77bfc79ce0a90bdb7081a589ce4e71f9677e6739b9154b9294933f23b1d552d",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/SKILL.md",
+      "sha256": "1373ed7c4fe99d1f65cd15ff31aa4dc15766ce20017a4a192a45c2db6315b8aa",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/references/api-surface.md",
+      "sha256": "74e1cf538140674d75a116d25581353ea1bc7551751a624cf6c6e6cf09dd953a",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/references/debounce-throttle.md",
+      "sha256": "d5e1ddac9ad36c2e269e436774fd573d9f890996d9eced7f9d8e8f515cc4fb75",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/references/migration-v15.md",
+      "sha256": "40ba6dcfd5892dd527b852c3c94192b5eb13b01aeca067114ffbb60260c1440e",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/references/reactivity-utilities.md",
+      "sha256": "232d49e7ecb49f44c2722615758d164d49ada52a86574c81fa7371a78ff08b74",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/references/state-sharing.md",
+      "sha256": "45d12e6285df9ac43bda2e5d1287b964ee4fef5174a67f579027d02d7ac80557",
+      "domain": "routing_auth_state",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/references/timers-and-utils.md",
+      "sha256": "4017479102c553af9db78e388ab926c4a98b79ac8de92972695e7f277a7e0927",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/vueuse-shared-skilld/references/watch-utilities.md",
+      "sha256": "eb8005788126e6b1eb66c72f2f6a833a10f835f937d7809d60ca02d8ab853664",
+      "domain": "vue_core",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/web-ui-vuetify/SKILL.md",
+      "sha256": "0a061869f77e366a0891b7dca8090e6a5fde2301a5ec9a415a160b7932f73633",
+      "domain": "ui_systems",
+      "migration": "rewrite",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/web-ui-vuetify/examples/core.md",
+      "sha256": "5b399b13fd489a146b21a880a407f8b2098ad3aa87df6485a15c270da82449b5",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/web-ui-vuetify/examples/data-tables.md",
+      "sha256": "87f470afdbc7574753f955770f206fcd318f61e1ec6ca1c7853dc5e78e66b98f",
+      "domain": "visualization_motion",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/web-ui-vuetify/examples/forms.md",
+      "sha256": "46cc207ebb6cfb6036c15d10ba7d76fc5e3630aaadcb7573b34cc81074816525",
+      "domain": "forms",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/web-ui-vuetify/examples/layout.md",
+      "sha256": "080528a9b691567ce84fed92757d66c3d202271e431157d69e35a87087eef686",
+      "domain": "ui_systems",
+      "migration": "verify",
+      "flagged": true
+    },
+    {
+      "path": ".agents/skills/web-ui-vuetify/reference.md",
+      "sha256": "4f027fb06c4f9dc8a84512f3e673b595a815f5d9ed05f0de8391ee40e2789a17",
+      "domain": "ui_systems",
+      "migration": "mixed",
+      "flagged": true
+    }
+  ],
+  "critical_source_resolutions": [
+    {
+      "path": ".agents/skills/web-ui-vuetify/SKILL.md",
+      "caveat_ids": [
+        "vuetify-v4-baseline"
+      ]
+    },
+    {
+      "path": ".agents/skills/web-ui-vuetify/reference.md",
+      "caveat_ids": [
+        "vuetify-v4-baseline"
+      ]
+    },
+    {
+      "path": ".agents/skills/vue-i18n-skilld/references/legacy-api.md",
+      "caveat_ids": [
+        "i18n-legacy-status"
+      ]
+    },
+    {
+      "path": ".agents/skills/vue-debug-guides/reference/template-ref-v-for-order.md",
+      "caveat_ids": [
+        "vue-v-for-template-refs"
+      ]
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/reactivity.md",
+      "caveat_ids": [
+        "vue-reactivity-default"
+      ]
+    },
+    {
+      "path": ".agents/skills/vue-best-practices/references/updated-hook-performance.md",
+      "caveat_ids": [
+        "vue-updated-hook"
+      ]
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/api-surface.md",
+      "caveat_ids": [
+        "quasar-auto-installed-facilities"
+      ]
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/best-practices.md",
+      "caveat_ids": [
+        "quasar-platform-contract"
+      ]
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/SKILL.md",
+      "caveat_ids": [
+        "quasar-client-env"
+      ]
+    },
+    {
+      "path": ".agents/skills/quasar-skilld/references/installation.md",
+      "caveat_ids": [
+        "quasar-toolchain-matrix"
+      ]
+    }
+  ],
+  "source_caveats": [
+    {
+      "id": "vue-reactivity-default",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-best-practices/references/reactivity.md"
+      ],
+      "packages": {
+        "vue": "3.5.44"
+      },
+      "correction": "Reject blanket shallowRef-for-primitives performance advice. ref is a valid default; shallowRef is for explicit root-replacement/opaque external state or a demonstrated large immutable-data need. No universal speed or frame-rate guarantee.",
+      "primary_urls": [
+        "https://vuejs.org/api/reactivity-core.html#ref",
+        "https://vuejs.org/api/reactivity-advanced.html#shallowref",
+        "https://vuejs.org/guide/best-practices/performance.html#reduce-reactivity-overhead-for-large-immutable-structures"
+      ],
+      "references": [
+        "references/core-vue.md",
+        "references/composables.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Foundation; Architecture"
+    },
+    {
+      "id": "vue-updated-hook",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-best-practices/references/updated-hook-performance.md"
+      ],
+      "packages": {
+        "vue": "3.5.44"
+      },
+      "correction": "The source GOOD example writes lastSyncedContent inside updated, contradicting the lifecycle warning. Use targeted watch/nextTick coordination rather than writing component state in onUpdated; updates are batched, not one hook per mutation.",
+      "primary_urls": [
+        "https://vuejs.org/api/composition-api-lifecycle.html#onupdated"
+      ],
+      "references": [
+        "references/core-vue.md",
+        "references/components.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Foundation"
+    },
+    {
+      "id": "vue-v-for-template-refs",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-debug-guides/reference/template-ref-v-for-order.md"
+      ],
+      "packages": {
+        "vue": "3.5.44"
+      },
+      "correction": "Vue 3.5 supports useTemplateRef with refs inside v-for. Preserve the real warning that ref-array order is not guaranteed to follow source-data order; correlate by stable identity, not index.",
+      "primary_urls": [
+        "https://vuejs.org/guide/essentials/template-refs#refs-inside-v-for"
+      ],
+      "references": [
+        "references/debugging-ssr.md",
+        "references/components.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Testing"
+    },
+    {
+      "id": "vuetify-v4-baseline",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/web-ui-vuetify/SKILL.md",
+        ".agents/skills/web-ui-vuetify/reference.md"
+      ],
+      "packages": {
+        "vuetify": "4.3.0",
+        "vue": "3.5.44"
+      },
+      "correction": "The historical current-major v3 claim is stale. In v4.3.0 md starts at 840 rather than 960; VRow dense/alignment/order props are deprecated, not removed. theme.global.name.value assignment emits a deprecation; use theme.change/theme.toggle. Explicit vuetify/styles remains required; manual named imports can tree-shake. Stable component exports must be read from the exact release rather than inherited Labs lists. VSelect/Autocomplete/Combobox still use the item slot; its payload distinguishes raw item and internalItem, rather than renaming the slot itself. Default shipped elevation CSS uses levels 0–5, but the prop validator accepts nonnegative values for legacy/custom scales.",
+      "primary_urls": [
+        "https://registry.npmjs.org/vuetify/4.3.0",
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/theme.ts",
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/display.ts",
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VGrid/VRow.ts",
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VSelect/VSelect.tsx",
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/elevation.ts"
+      ],
+      "references": [
+        "references/vuetify-setup.md",
+        "references/vuetify-components.md",
+        "references/vuetify-theme.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Vuetify"
+    },
+    {
+      "id": "vuetify-css-layers",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vuetify-4/references/css-layers.md"
+      ],
+      "packages": {
+        "vuetify": "4.3.0"
+      },
+      "correction": "Sass settings and mixins remain build-time facilities; CSS layers govern cascade rather than replacing Sass. Later normal-declaration layers override earlier layers. Theme CSS tokens use RGB channels consumed by rgb(var(...)), not arbitrary hex replacements. Old dark prop/class advice is not the v4 theme API.",
+      "primary_urls": [
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/styles/generic/_layers.scss",
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/theme.ts"
+      ],
+      "references": [
+        "references/vuetify-theme.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Vuetify"
+    },
+    {
+      "id": "vuetify-form-and-rules",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/web-ui-vuetify/examples/forms.md"
+      ],
+      "packages": {
+        "vuetify": "4.3.0",
+        "vue": "3.5.44"
+      },
+      "correction": "VForm component refs are not HTMLFormElement refs; type with InstanceType<typeof VForm> and await the documented validation result. Public useRules is imported from vuetify and needs createRulesPlugin; do not inherit a stale Labs import. An official rules-page createVue typo is not a Vue export; use createApp. VForm starts validation before emitting its thenable SubmitEventPromise; awaiting the event avoids duplicate validation. lazy skips initial validation but blur may validate before first submit. Input reset sets model null rather than restoring an application saved baseline.",
+      "primary_urls": [
+        "https://github.com/vuetifyjs/vuetify/tree/v4.3.0/packages/vuetify/src/components/VForm",
+        "https://github.com/vuetifyjs/vuetify/tree/v4.3.0/packages/vuetify/src/composables",
+        "https://registry.npmjs.org/vue/3.5.44",
+        "https://unpkg.com/vuetify@4.3.0/lib/components/VForm/VForm.js",
+        "https://unpkg.com/vuetify@4.3.0/lib/composables/form.js",
+        "https://unpkg.com/vuetify@4.3.0/lib/composables/validation.js"
+      ],
+      "references": [
+        "references/forms.md",
+        "references/vuetify-components.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Forms; Vuetify"
+    },
+    {
+      "id": "i18n-legacy-status",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-i18n-skilld/references/legacy-api.md"
+      ],
+      "packages": {
+        "vue-i18n": "11.4.16"
+      },
+      "correction": "this.$t does not imply Legacy mode: Composition globalInjection also exposes translation globals. Default new work to legacy:false/useI18n. Legacy and v-t are deprecated in 11.4.16 with a future v12-removal annotation, not already removed. $tc is absent; remove the contradictory removed-but-exported inventory.",
+      "primary_urls": [
+        "https://unpkg.com/vue-i18n@11.4.16/dist/vue-i18n.d.ts",
+        "https://unpkg.com/vue-i18n@11.4.16/package.json",
+        "https://vue-i18n.intlify.dev/guide/advanced/composition.html"
+      ],
+      "references": [
+        "references/i18n-head.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Platform"
+    },
+    {
+      "id": "quasar-client-env",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/quasar-skilld/SKILL.md"
+      ],
+      "packages": {
+        "quasar": "2.35.2",
+        "@quasar/app-vite": "3.10.3"
+      },
+      "correction": "QCLI_ is the automatic dotenv/terminal exposure filter, not the only possible client exposure path: explicit build.defineEnv/build.define can expose unprefixed values. Never treat a prefix as permission to expose secrets. Removing script/iframe alone is not HTML sanitization; keep HTML rendering flags off or use maintained allowlist sanitization covering attributes and URL schemes.",
+      "primary_urls": [
+        "https://quasar.dev/quasar-cli-vite/handling-import-meta-env/",
+        "https://vuejs.org/guide/best-practices/security.html"
+      ],
+      "references": [
+        "references/alternative-ui.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "UIAlternatives"
+    },
+    {
+      "id": "quasar-toolchain-matrix",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/quasar-skilld/references/installation.md"
+      ],
+      "packages": {
+        "quasar": "2.35.2",
+        "@quasar/vite-plugin": "2.0.2",
+        "@quasar/app-vite": "3.10.3"
+      },
+      "correction": "Keep Vite-plugin and Quasar-CLI projects distinct. vite-plugin 2.0.2 requires plugin-vue ^6.0.5 and Vite ^8.0.0, Node ^20.19.0 || >=22.12.0; quasar itself requires Node >=22. app-vite 3.10.3 requires Node ^30 || ^28 || ^26 || ^24 || ^22.22.0 and vue-router >=5. Do not combine that new CLI with the Vue Router 4 fixture. Current CLI wrappers use defineConfig/defineBoot from #q-app, not old #q-app/wrappers boot/configure.",
+      "primary_urls": [
+        "https://registry.npmjs.org/@quasar%2fvite-plugin/2.0.2",
+        "https://registry.npmjs.org/@quasar%2fapp-vite/3.10.3",
+        "https://registry.npmjs.org/quasar/2.35.2",
+        "https://quasar.dev/quasar-cli-vite/boot-files/"
+      ],
+      "references": [
+        "references/alternative-ui.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "UIAlternatives"
+    },
+    {
+      "id": "quasar-auto-installed-facilities",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/quasar-skilld/references/api-surface.md"
+      ],
+      "packages": {
+        "quasar": "2.35.2"
+      },
+      "correction": "Not all facilities must be installed through plugins: Platform, Dark, Screen, Lang and IconSet are auto-installed. Keep opt-in Notify/Dialog and directive registration distinct.",
+      "primary_urls": [
+        "https://unpkg.com/quasar@2.35.2/src/install-quasar.js"
+      ],
+      "references": [
+        "references/alternative-ui.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "UIAlternatives"
+    },
+    {
+      "id": "quasar-platform-contract",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/quasar-skilld/references/best-practices.md"
+      ],
+      "packages": {
+        "quasar": "2.35.2"
+      },
+      "correction": "Reject the unconditional never-falsiness rule for Platform booleans; official examples use mobile truthiness. SSR platform detection must be per request via $q.platform or Platform.parseSSR(ssrContext), not a shared global user agent. Tree virtualization limits rendered DOM, not necessarily total filtering/data work; reject a blanket constant-total-cost claim.",
+      "primary_urls": [
+        "https://quasar.dev/options/platform-detection/",
+        "https://quasar.dev/vue-components/tree/"
+      ],
+      "references": [
+        "references/alternative-ui.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "UIAlternatives"
+    },
+    {
+      "id": "vee-validate-schema-peers",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vee-validate-skilld/SKILL.md",
+        ".agents/skills/vee-validate-skilld/references/validation.md"
+      ],
+      "packages": {
+        "vee-validate": "4.15.1",
+        "@vee-validate/zod": "4.15.1",
+        "vee-validate-beta": "5.0.0-beta.0"
+      },
+      "correction": "v4 supports raw Yup; toTypedSchema adds typed input/output rather than being universally mandatory. @vee-validate/zod 4.15.1 declares zod ^3.24.0, not Zod 4 support. v5 Standard Schema is a separately labeled beta migration, with schema-default initialization and required metadata changes.",
+      "primary_urls": [
+        "https://vee-validate.logaretm.com/v4/guide/composition-api/typed-schema/",
+        "https://registry.npmjs.org/@vee-validate%2Fzod/4.15.1",
+        "https://raw.githubusercontent.com/logaretm/vee-validate/main/docs/src/pages/guide/migration.mdx"
+      ],
+      "references": [
+        "references/vee-validate.md",
+        "references/forms.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Forms"
+    },
+    {
+      "id": "query-defaults-and-reactivity",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/tanstack-vue-query-skilld/references/mutations.md",
+        ".agents/skills/tanstack-vue-query-skilld/references/reactivity.md"
+      ],
+      "packages": {
+        "@tanstack/vue-query": "5.104.5",
+        "@tanstack/query-core": "5.104.5"
+      },
+      "correction": "Default mutation network mode is online, not offlineFirst; mutation retry defaults to 0. Reactive refs are supported for every query option; whole-options getters are not the only way to reactively change staleTime/retry. queryKey/enabled are the options with getter-value resolution. Mutation onMutate runs before retryer.start, so a scope queue alone does not serialize optimistic snapshots; an identity-guard rollback does not make overlapping snapshots compose.",
+      "primary_urls": [
+        "https://unpkg.com/@tanstack/query-core@5.104.5/src/retryer.ts",
+        "https://unpkg.com/@tanstack/query-core@5.104.5/src/mutation.ts",
+        "https://tanstack.com/query/latest/docs/framework/vue/reactivity"
+      ],
+      "references": [
+        "references/tanstack-query.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "RemoteData"
+    },
+    {
+      "id": "colada-key-and-ssr",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/pinia-colada-skilld/references/queries.md"
+      ],
+      "packages": {
+        "@pinia/colada": "1.4.8"
+      },
+      "correction": "Include every response-changing representation input, including withComments, in query keys. Identical useQuery keys already share canonical cache entries; defineQuery shares additional setup refs rather than being required to avoid per-component cache duplication. Use defineQueryOptions for independent parameters. SSR state is per request; serializeQueryCache includes data/error/meta for all entries, so public hydration needs a deliberate success/meta.ssr allowlist. Use fresh Pinia, SSRNoGc and cleanup, actual serializeQueryCache/hydrateQueryCache contracts and named devalue stringify/parse, not an assumed default import or incomplete plugin options.",
+      "primary_urls": [
+        "https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts",
+        "https://registry.npmjs.org/@pinia/colada/1.4.8",
+        "https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs",
+        "https://unpkg.com/devalue@6.0.3/types/index.d.ts"
+      ],
+      "references": [
+        "references/pinia-colada.md",
+        "references/architecture-data.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "RemoteData"
+    },
+    {
+      "id": "ssr-state-and-url-ownership",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-debug-guides/reference/state-ssr-cross-request-pollution.md",
+        ".agents/skills/vue-pinia-best-practices/reference/state-url-for-ephemeral-filters.md"
+      ],
+      "packages": {
+        "vue": "3.5.44"
+      },
+      "correction": "A provider name does not automatically ensure isolation: instantiate app, Pinia and query state per SSR request; hydrate with createSSRApp and safe serialization. URL state is only normalized, shareable, nonsensitive view state; do not mirror a second store owner or put drafts/secrets in URLs.",
+      "primary_urls": [
+        "https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution",
+        "https://vuejs.org/guide/scaling-up/ssr.html#client-hydration"
+      ],
+      "references": [
+        "references/architecture-data.md",
+        "references/debugging-ssr.md",
+        "references/state.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Architecture"
+    },
+    {
+      "id": "teleport-and-async-test-boundaries",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [],
+      "packages": {
+        "vue": "3.5.44",
+        "@vue/test-utils": "2.5.1"
+      },
+      "correction": "flushPromises does not resolve pending timers or network responses. SSR Teleports require deliberate ssrContext.teleports injection into dedicated targets rather than blanket ClientOnly/suppression advice. Scoped attributes remain on owned teleported elements; DOM ancestry selectors and inherited styles can change.",
+      "primary_urls": [
+        "https://test-utils.vuejs.org/guide/advanced/async-suspense.html",
+        "https://vuejs.org/guide/scaling-up/ssr#teleports",
+        "https://vuejs.org/api/sfc-css-features#scoped-css"
+      ],
+      "references": [
+        "references/testing.md",
+        "references/debugging-ssr.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Testing"
+    },
+    {
+      "id": "motion-vue-contracts",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/motion-v-skilld/references/recipes.md"
+      ],
+      "packages": {
+        "motion-v": "2.8.0",
+        "@vueuse/motion": "3.0.3"
+      },
+      "correction": "Use Vue Motion whilePress/inViewOptions rather than React whileTap/viewport. Replace deprecated staggerChildren with delayChildren: stagger(...). VueUse Motion timing is milliseconds despite copied seconds comments. Runtime captures unref(variants); replacing the variants ref/computed is not a guaranteed live update. Use retained reactive keys or explicit stop/set/apply. VueUse Motion 3.0.3 directive has created/mounted/getSSRProps, not updated/unmounted; do not assume reactive rebinding or directive leave cleanup. Actual module component exports are MotionComponent/MotionGroupComponent; Motion/MotionGroup are plugin global names. Use stop(), not obsolete stopTransitions. Prefer Vue lifecycle/watch onCleanup over React-like snippets found on rolling Motion pages.",
+      "primary_urls": [
+        "https://unpkg.com/motion-v@2.8.0/dist/es/index.d.ts",
+        "https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/props.d.ts",
+        "https://unpkg.com/@vueuse/motion@3.0.3/dist/index.mjs",
+        "https://motion.vueuse.org/api/use-motion/"
+      ],
+      "references": [
+        "references/motion.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Motion"
+    },
+    {
+      "id": "visualization-and-table-contracts",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-data-ui-skilld/SKILL.md",
+        ".agents/skills/unovis-vue-skilld/SKILL.md"
+      ],
+      "packages": {
+        "vue-data-ui": "3.28.1",
+        "@unovis/vue": "1.7.1",
+        "@unovis/ts": "1.7.1",
+        "@tanstack/vue-table": "9.3.1",
+        "@tresjs/core": "5.9.3"
+      },
+      "correction": "VueUiDonut datasets use values:number[], not value:number. vue-data-ui 3.28.1 exposes ./ssr/* mapped to shared dist/ssr.js, not a working bare vue-data-ui/ssr entry; import SSR factories through chart subpaths and do not infer per-chart tree shaking from those aliases. Unovis Crosshair template is not Tooltip selector-trigger mapping. Table stable v9 is not a v8 adapter; Subscribe is deprecated in 9.3.1 in favor of native tracked Vue atoms. Tres loop payload uses elapsed, not elapsedTime from stale upgrade prose. In Tres 5.9.3 useLoader watches the path and disposes its loaded scene on unmount; blanket manual disposal can double-dispose loader-owned resources. Generic programmatic primitives retain explicit ownership; no automatic request-cancellation/cache guarantee is inferred. Model-loader examples must honor actual asset extensions; the referenced Tres blender cube needs Draco, whereas the Khronos Box example does not require that decoder.",
+      "primary_urls": [
+        "https://registry.npmjs.org/vue-data-ui/3.28.1",
+        "https://registry.npmjs.org/@unovis%2Fvue/1.7.1",
+        "https://unpkg.com/@tanstack/vue-table@9.3.1/dist/useTable.d.ts",
+        "https://github.com/TanStack/table/blob/main/docs/framework/vue/guide/migrating.md",
+        "https://registry.npmjs.org/@tresjs%2Fcore/5.9.3",
+        "https://unpkg.com/@tresjs/core@5.9.3/dist/tres.js",
+        "https://unpkg.com/vue-data-ui@3.28.1/package.json",
+        "https://unpkg.com/vue-data-ui@3.28.1/dist/types/ssr.d.ts"
+      ],
+      "references": [
+        "references/visualization.md",
+        "references/data-tables.md",
+        "references/tresjs.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "DataPresentation"
+    },
+    {
+      "id": "ui-cli-and-major-upgrades",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/shadcn-vue-skilld/SKILL.md"
+      ],
+      "packages": {
+        "shadcn-vue": "2.8.2",
+        "primevue": "5.0.3"
+      },
+      "correction": "shadcn-vue add parses but explicitly rejects --dry-run/--diff/--view with exit(1); use the standalone view command and a disposable checkout for change inspection. PrimeVue v5 removal tables override a blanket no-breaking-public-changes introduction: inventory Calendar/Dropdown and old Accordion activeIndex contracts before upgrading.",
+      "primary_urls": [
+        "https://unpkg.com/shadcn-vue@2.8.2/dist/index.js",
+        "https://primevue.dev/migration/v5/"
+      ],
+      "references": [
+        "references/headless-ui.md",
+        "references/alternative-ui.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "UIAlternatives"
+    },
+    {
+      "id": "vite8-toolchain-and-nuxt",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-expert/references/build-tooling.md",
+        ".agents/skills/vue-expert/references/typescript.md"
+      ],
+      "packages": {
+        "vite": "8.3.4",
+        "@vitejs/plugin-vue": "6.0.10",
+        "vue": "3.5.44"
+      },
+      "correction": "Vite 8 uses Rolldown and Oxc; old esbuild/Rollup tuning assumptions and essential auto-import/devtools claims are not defaults. Vue TypeScript overview still mentioning esbuild does not override Vite 8 transform docs; retain its separate vue-tsc/transpile-only boundary. Distinguish SPA from Nuxt-only defineNuxtPlugin/useNuxtApp. Vue exposes its matching compiler through vue/compiler-sfc; a direct compiler-sfc install is not universally required. Rolling create-vue Node requirements can be stricter than pinned Vite engines.",
+      "primary_urls": [
+        "https://vite.dev/guide/",
+        "https://vite.dev/guide/features",
+        "https://registry.npmjs.org/vite/8.3.4",
+        "https://vuejs.org/guide/quick-start.html",
+        "https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-sfc/README.md"
+      ],
+      "references": [
+        "references/setup-tooling.md",
+        "references/migration.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "MasterTooling"
+    },
+    {
+      "id": "accessibility-and-dialog-precision",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [],
+      "packages": {
+        "vue": "3.5.44",
+        "vuetify": "4.3.0"
+      },
+      "correction": "WCAG 2.2 AA target minimum SC2.5.8 is 24x24 CSS px or its spacing/exceptions, not universal 44px. Focus appearance 2.4.13 and animation-from-interactions 2.3.3 are AAA. Vuetify dialog captureFocus and retainFocus are distinct defaults; bind activator props to retain restoration rather than describing retainFocus alone as the focus trap.",
+      "primary_urls": [
+        "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html",
+        "https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html",
+        "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VDialog/VDialog.tsx"
+      ],
+      "references": [
+        "references/accessibility.md",
+        "references/design-system.md",
+        "references/vuetify-components.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Design; ExampleUI"
+    },
+    {
+      "id": "headless-controlled-state-and-lifetime",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/reka-ui-skilld/references/composition.md",
+        ".agents/skills/reka-ui-skilld/SKILL.md",
+        ".agents/skills/floating-ui-vue-skilld/SKILL.md"
+      ],
+      "packages": {
+        "reka-ui": "2.11.0",
+        "@floating-ui/vue": "2.0.1"
+      },
+      "correction": "A supplied open prop remains controlled even without an update listener; use default-open for uncontrolled state and v-model:open for controlled state. Direct scoped classes on owned teleported nodes still work; physical descendant selectors differ. Floating UI autoUpdate under v-show continues while mounted-hidden but has scope disposal, so call it continued work rather than a guaranteed leak; use v-if or explicit lifecycle control.",
+      "primary_urls": [
+        "https://unpkg.com/reka-ui@2.11.0/dist/Dialog/DialogRoot.js",
+        "https://floating-ui.com/docs/vue",
+        "https://unpkg.com/@floating-ui/vue@2.0.1/dist/floating-ui.vue.mjs",
+        "https://vuejs.org/api/sfc-css-features#scoped-css"
+      ],
+      "references": [
+        "references/headless-ui.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "UIAlternatives"
+    },
+    {
+      "id": "vueuse-fetch-and-integrations",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vueuse-core-skilld/references/best-practice.md",
+        ".agents/skills/vueuse-integrations-skilld/references/usage-patterns.md",
+        ".agents/skills/vueuse-integrations-skilld/SKILL.md",
+        ".agents/skills/vueuse-integrations-skilld/references/api.md"
+      ],
+      "packages": {
+        "@vueuse/core": "15.0.0",
+        "@vueuse/shared": "15.0.0",
+        "@vueuse/components": "15.0.0",
+        "@vueuse/math": "15.0.0",
+        "@vueuse/integrations": "15.0.0",
+        "change-case": "5.4.4"
+      },
+      "correction": "createFetch has top-level fetchOptions, not options.fetchOptions. SSR-width support for useMediaQuery/useBreakpoints is not a blanket useElementSize contract. change-case v5 exports kebabCase rather than paramCase. useJwt only decodes, including expired tokens; it does not validate expiry/signatures. useDrauu onCommitted receives the node directly. useSortable start re-queries a string selector. v15 useAxios custom options replace defaults; set immediate/shallow explicitly, and do not promise latest-result-wins data/error safety from the loading counter. useIDBKeyval isSupported denotes BroadcastChannel, not IndexedDB availability; set handles write errors through onError, so awaiting it alone is not proof of success. Writable useClamp can mutate its original on read; prefer simple computed when adequate.",
+      "primary_urls": [
+        "https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useFetch/index.ts",
+        "https://cdn.jsdelivr.net/npm/change-case@5.4.4/dist/index.d.ts",
+        "https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useJwt/index.ts",
+        "https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAxios.js",
+        "https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useIDBKeyval/index.ts"
+      ],
+      "references": [
+        "references/vueuse.md",
+        "references/vueuse-integrations.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "VueUse"
+    },
+    {
+      "id": "state-auth-export-and-lifecycle",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/clerk-vue-patterns/SKILL.md"
+      ],
+      "packages": {
+        "pinia": "4.1.0",
+        "@pinia/testing": "2.0.2",
+        "@tanstack/vue-store": "0.11.2",
+        "@tanstack/store": "0.11.2",
+        "@clerk/vue": "2.5.13"
+      },
+      "correction": "Published Clerk Vue composable exports do not include useOrganizationList; use supported useOrganization/OrganizationSwitcher. Acquire Clerk composables in setup-owned lifecycle and distinguish loaded state from absent identity; installing the plugin does not make arbitrary module-level composables valid. Clerk useAuth exposes computed function refs, so script invokes getToken.value()/signOut.value(); resources can be undefined while loading. Pinia actions are bound, so a hand-rolled store binding warning is not a Pinia rule. Vue 3 proxies track newly added keys, but undeclared Pinia state shape remains unsupported for its typing/reset/hydration contracts; do not describe it as universally nonreactive. Scoped typed Vue state remains valid; app size alone does not require Pinia. TanStack Store useSelector returns a readonly ref, defaults to ===, supports compare and scope disposal; there is no createStoreContext export in the inspected adapter. Core 0.11.2 still exports the Store class/constructors, even when factory APIs are preferred.",
+      "primary_urls": [
+        "https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/index.d.ts",
+        "https://pinia.vuejs.org/core-concepts/index.html#destructuring-from-a-store",
+        "https://cdn.jsdelivr.net/npm/@tanstack/vue-store@0.11.2/src/index.ts",
+        "https://registry.npmjs.org/@pinia/testing/2.0.2",
+        "https://cdn.jsdelivr.net/npm/@tanstack/store@0.11.2/src/store.ts",
+        "https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts"
+      ],
+      "references": [
+        "references/state.md",
+        "references/auth.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "StateAuth"
+    },
+    {
+      "id": "ai-template-and-transport-contracts",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/tanstack-ai-vue-skilld/SKILL.md",
+        ".agents/skills/tanstack-ai-vue-skilld/references/use-chat.md",
+        ".agents/skills/tanstack-ai-vue-skilld/references/byok-and-webmcp.md"
+      ],
+      "packages": {
+        "@tanstack/ai-vue": "0.27.0",
+        "@tanstack/ai": "0.70.0",
+        "@tanstack/ai-client": "0.40.0"
+      },
+      "correction": "Destructured top-level Vue refs auto-unwrap in templates; use .value in script, or on nested refs retained in a plain chat return object. The fetch streaming adapter owns a resumable protocol rather than relying on native browser Last-Event-ID. Persistence needs an explicit server delivery log/hydration contract. Transport types require exactly one connection/fetcher. Current tools support reactive refs/getters. BYOK uses root useByok plus /byok defineByok/memoryStorage helpers; headers expose the user key to the relay, and do not guarantee logs/proxies forget it. useWebMCPTools is a deprecated alias scheduled for 1.0 removal; use useRegisterWebMCPTools and usePageWebMCPTools for registration and reactive discovery in 0.27.0.",
+      "primary_urls": [
+        "https://unpkg.com/@tanstack/ai-vue@0.27.0/package.json",
+        "https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/index.d.ts",
+        "https://tanstack.com/ai/latest/docs/api/ai-vue",
+        "https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/connection-adapters.d.ts",
+        "https://tanstack.com/ai/latest/docs/advanced/byok",
+        "https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-web-mcp-tools.d.ts"
+      ],
+      "references": [
+        "references/ai-streaming.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "AIStreaming"
+    },
+    {
+      "id": "router-version-and-ssr-contracts",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-router-best-practices/reference/router-navigation-guard-next-deprecated.md",
+        ".agents/skills/vue-router-skilld/references/core-api.md",
+        ".agents/skills/tanstack-vue-router-skilld/references/ssr.md",
+        ".agents/skills/tanstack-vue-router-skilld/references/data-loading.md",
+        ".agents/skills/tanstack-vue-router-skilld/references/search-params.md",
+        ".agents/skills/tanstack-vue-router-skilld/references/file-based-routing.md"
+      ],
+      "packages": {
+        "vue-router": "5.4.0",
+        "vue-router-fixture": "4.6.4",
+        "@tanstack/vue-router": "1.170.41",
+        "@tanstack/router-core": "1.171.38",
+        "@tanstack/router-plugin": "1.168.47"
+      },
+      "correction": "Vue Router v4.6.4 supports the optional next callback; do not call it deprecated in v4. The runtime deprecation boundary is v5.0.3. Leave guards precede global beforeEach; update guards precede beforeEnter. TanStack Vue renderRouterToString receives an options object with router/responseHeaders/App and returns Promise<Response>, not a positional router-to-string helper. RouterClient is a Vue component, not a constructor. The generic Router overview currently lists React/Solid; published Vue adapter exports do not alone establish stable parity, and its inspected README has no beta label. Core options are defaultGcTime (300000), defaultPreloadStaleTime (30000), defaultPreloadGcTime (300000), defaultStaleTime (0), not defaultGsTime/defaultPreloadMaxAge. JSON-first search already supports arrays/objects; SSR serialization adapters are not search validators. Router plugin default split groups cover component/pending/error/notFound; loader splitting is optional rather than default. Vue Router 5.4 experimental resolver is explicitly not production-ready, does not auto-register RouterLink/RouterView and represents query values as arrays. Keep exact published stable/experimental/status boundaries distinct from invented release labels and from the Router 4 fixture.",
+      "primary_urls": [
+        "https://registry.npmjs.org/vue-router/5.4.0",
+        "https://raw.githubusercontent.com/vuejs/router/v4.6.4/packages/docs/guide/advanced/navigation-guards.md",
+        "https://unpkg.com/@tanstack/vue-router@1.170.41/dist/esm/ssr/renderRouterToString.d.ts",
+        "https://unpkg.com/@tanstack/vue-router@1.170.41/dist/esm/ssr/RouterClient.d.ts",
+        "https://tanstack.com/router/latest",
+        "https://unpkg.com/@tanstack/router-core@1.171.38/dist/esm/router.d.ts",
+        "https://unpkg.com/@tanstack/router-plugin@1.168.47/dist/esm/core/config.d.ts",
+        "https://router.vuejs.org/experimental/router-resolver.md"
+      ],
+      "references": [
+        "references/routing.md",
+        "references/routing-tanstack.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Routing"
+    },
+    {
+      "id": "platform-tool-version-and-safe-head",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/unhead-vue-skilld/SKILL.md"
+      ],
+      "packages": {
+        "@unhead/vue": "3.4.3",
+        "vitepress": "1.6.4",
+        "vitepress-next": "2.0.0-alpha.20",
+        "@slidev/cli": "53.0.0"
+      },
+      "correction": "VitePress stable latest is 1.6.4; v2 is an explicitly separate alpha next tag. VitePress 1.6.4 depends on Vite ^5.4.14 while Slidev 53.0.0 depends on Vite ^8.3.0 and Vue ^3.5.42 with Node >=22.12.0: preserve separate tool lifecycles rather than forcing one application Vite major. Unhead Vue 3.4.3 requires Vue >=3.5.18. useHeadSafe rejects executable JavaScript but permits supported non-executable JSON script forms, so saying it strips all scripts is too broad.",
+      "primary_urls": [
+        "https://unpkg.com/@slidev/cli@53.0.0/package.json",
+        "https://unpkg.com/vitepress@1.6.4/package.json",
+        "https://unpkg.com/@unhead/vue@3.4.3/package.json",
+        "https://registry.npmjs.org/vitepress",
+        "https://unhead.unjs.io/docs/head/api/composables/use-head-safe"
+      ],
+      "references": [
+        "references/docs-slides.md",
+        "references/i18n-head.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Platform"
+    },
+    {
+      "id": "vue35-versus-future-and-injection",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/vue-skilld/SKILL.md",
+        ".agents/skills/vue-skilld/references/api-surface.md",
+        ".agents/skills/vue-skilld/references/api-changes.md",
+        ".agents/skills/vue-skilld/references/vapor-mode.md",
+        ".agents/skills/vue-skilld/references/best-practices.md"
+      ],
+      "packages": {
+        "vue": "3.5.44"
+      },
+      "correction": "This root mixes future Vue 3.6 beta/RC guidance with the Vue 3.5 target. Vue 3.5.44 declarations export runtime-dom, not runtime-vapor. Composition inject preserves supplied refs; removed unwrapInjectedRef configuration is not a reason to claim all inject calls unwrap. useTemplateRef takes a string key fixed per call, not a MaybeRefOrGetter dynamic-key API. Function directive shorthand runs on mounted and updated, not mount only. Lazy hydration is an SSR boundary; its use, async delay/timeout and performance choices are recommendations, not universal framework rules or measured guarantees. Suspense remains experimental. Reactivity Transform was removed from core in Vue 3.4; use explicit ref/computed rather than vue/macros. Options API remains supported; the old TypeScript-before-4.7 validator/default arrow caveat is historical, not a universal modern rule. Follow API docs for Teleport to and defineCustomElement rather than typos in a release-blog example.",
+      "primary_urls": [
+        "https://unpkg.com/vue@3.5.44/dist/vue.d.ts",
+        "https://vuejs.org/guide/components/provide-inject.html#inject",
+        "https://vuejs.org/api/composition-api-helpers.html#usetemplateref",
+        "https://vuejs.org/guide/reusability/custom-directives.html#function-shorthand",
+        "https://vuejs.org/guide/components/async.html",
+        "https://vuejs.org/guide/built-ins/suspense.html",
+        "https://blog.vuejs.org/posts/vue-3-4#other-removed-features",
+        "https://vuejs.org/guide/typescript/options-api.html",
+        "https://vuejs.org/guide/built-ins/teleport.html#deferred-teleport",
+        "https://vuejs.org/guide/extras/web-components.html"
+      ],
+      "references": [
+        "references/core-vue.md",
+        "references/components.md",
+        "references/composables.md",
+        "references/migration.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result.",
+      "reported_by": "Foundation"
+    },
+    {
+      "id": "formkit-graph-and-plugin-lifetime",
+      "status": "resolved_in_authored_guidance",
+      "source_paths": [
+        ".agents/skills/tanstack-vue-form-skilld/references/reactivity.md"
+      ],
+      "source_roots": [
+        "formkit-core-skilld",
+        "tanstack-vue-form-skilld"
+      ],
+      "packages": {
+        "@formkit/core": "2.1.2",
+        "@formkit/vue": "2.1.2",
+        "@tanstack/vue-form": "1.33.5",
+        "@tanstack/form-core": "1.33.5"
+      },
+      "correction": "FormKit node.destroy clears that node, not recursively all manually owned children; standalone graph owners must destroy their owned children then root. A plugin returning false is not recorded in node.plugins and stops child inheritance, so a universal once-per-node statement has an exception. compile.provide accepts a requirements-array-to-token-getter-map callback; an example returning a function conflicts with its actual signature/runtime and is not followed. TanStack Vue Form Subscribe requires a bound function :selector, not a literal selector string containing function text. The adapter creates its form and calls update(opts) once during setup; do not promise auto-updating plain useForm options from reactive/computed defaults. Make data-loading, reset and explicit-update policy deliberate.",
+      "primary_urls": [
+        "https://unpkg.com/@formkit/core@2.1.2/dist/index.mjs",
+        "https://unpkg.com/@formkit/core@2.1.2/dist/index.d.ts",
+        "https://registry.npmjs.org/@formkit%2Fcore/2.1.2",
+        "https://registry.npmjs.org/@tanstack%2Fvue-form/1.33.5",
+        "https://unpkg.com/@tanstack/vue-form@1.33.5/src/useForm.tsx"
+      ],
+      "references": [
+        "references/formkit.md",
+        "references/tanstack-form.md"
+      ],
+      "evidence_scope": "Author-reported primary-documentation/declaration/source research; not a runtime test result. Root-level provenance is used where the author did not report a specific original path.",
+      "reported_by": "Forms"
+    }
+  ],
+  "provenance": {
+    "kind": "Authored synthesis and primary-evidence corrections; historical source metadata is recorded without duplicating source text.",
+    "snapshot_inputs": [
+      {
+        "name": "vue-kit-source-metadata.json",
+        "sha256": "fc3245e67ad88bacd788315a9b4aa8aaf31949b1a5604bca57716ebbaa525a0e"
+      },
+      {
+        "name": "vue-kit-source-audit.json",
+        "sha256": "373b3f1ad6cd02690a575c76226437a2285470adfc390f8853120191e0ffc161"
+      },
+      {
+        "name": "vue-kit-work-plan.json",
+        "sha256": "cd3438363d0f61e75c50044e582546e8c4bfd1863061879241462fd326fb2a39"
+      }
+    ],
+    "record_identity": "files[].path is a historical repository-relative source-document identifier; files[].sha256 is the supplied SHA-256 of the original document. Neither is a runtime file dependency.",
+    "transformation": "Per-file path/hash/domain/migration/flagged and per-root counts are copied from supplied metadata. Domain/migration summaries are aggregated mechanically. No manual bulk source classification or unflagged-corpus scan was performed for these assets.",
+    "flag_interpretation": "Flagged means version-sensitive, rewrite/mixed, low-confidence domain classification or uncertain coverage per the rubric. 335 flagged records are not 335 confirmed defects. Judgment probabilities are triage hypotheses, not primary API evidence.",
+    "migration_interpretation": "Original migration labels are preserved after authoring corrections. Retain is not independent validation; verify is not a confirmed defect; rewrite/mixed critical paths are resolved by the listed caveats and replacement guidance.",
+    "routing": "source-manifest.json routes all 49 roots to substantive replacement references, including separately authored architectural synthesis where the source responsibility contributes. Replacements do not require original sources.",
+    "licensing": "Historical provenance, upstream package license metadata and authored synthesis are distinct. These records grant no license and assert no uniform license across original skill prose.",
+    "limitations": [
+      "Source hashes establish snapshot identity only if the original inputs are separately available; they do not reconstruct documents or establish licensing.",
+      "Per-file record fields are the provided audit summary, not a re-execution of its probabilistic judgment.",
+      "Author-reported exact-version evidence resolves material claims but does not certify every original sentence or every optional integration.",
+      "Rolling official pages and main-branch URLs can change; exact-version registry/declarations/tagged source take precedence.",
+      "The fixture intentionally pins Pinia 3.0.4 and Vue Router 4.6.4; library references retain current-major Pinia 4.x and Vue Router 5.x guidance rather than treating fixture pins as an ecosystem-wide limit."
+    ]
+  },
+  "verification": {
+    "source_audit_observation": {
+      "documents": 467,
+      "roots": 49,
+      "flagged": 335,
+      "errors": 0,
+      "truncations": 0,
+      "scope": "Supplied source-judgment processing metadata only."
+    },
+    "authoring_research": "Primary documentation, exact registry records and author-reported published declarations/source research. This is not a build/type/runtime verification result.",
+    "not_claimed": [
+      "Structural validator pass",
+      "Reference-quality judgment pass",
+      "Source-to-replacement coverage judgment pass",
+      "Type-check pass",
+      "Production build pass",
+      "Unit/component test pass",
+      "Browser or accessibility pass",
+      "SSR integration pass",
+      "Final certification"
+    ],
+    "gate_owner": "Integration owner runs and reports delivery gates separately; no checks were run by this provenance author."
+  }
+}

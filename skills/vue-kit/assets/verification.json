@@ -1,0 +1,1338 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "vue": "3.5.44",
+    "vuetify": "4.3.0"
+  },
+  "recorded_at": "2026-10-21T10:21:55Z",
+  "environment": {
+    "os": "Linux",
+    "kernel": "7.0.0-38-generic",
+    "architecture": "x86_64",
+    "bun": "1.4.3 (c6da4a4d3)",
+    "node": "24.15.0",
+    "python": "3.14.4",
+    "vite": "8.3.4",
+    "typescript": "5.9.3",
+    "vue_tsc": "3.3.13"
+  },
+  "resolution_scope": "unresolved tracks owned Vue Kit deliverable gaps. Known external implementation defects remain explicit in known_upstream_issues and limits; an empty owned list is not ecosystem-wide certification.",
+  "checks": [
+    {
+      "id": "bun-lock-migration",
+      "scope": "Bundled example only: authoritative text bun.lock imported from prior npm lock without dependency upgrades; original source corpus and native audit judgments unchanged.",
+      "result": "passed",
+      "command": "bun install",
+      "details": {
+        "bun": "1.4.3 (c6da4a4d3)",
+        "command": "bun install",
+        "source_lockfile": "package-lock.json",
+        "source_lockfileVersion": 3,
+        "source_sha256": "4ccb43c92252777fde4be90f6a07f343f1768cab29c0eb0dacee9dc4ea7f277c",
+        "destination_lockfile": "bun.lock",
+        "destination_lockfileVersion": 2,
+        "destination_sha256": "df11fc483015619236c4e7897914519dfbc61a1628eafee08790e28b80e62211",
+        "source_package_records": 88,
+        "destination_package_records": 88,
+        "comparison": "Bun.JSON5.parse of generated bun.lock; sorted package name@version plus integrity tuples compared against npm lock; missing=[], added=[], dependencies and devDependencies identical",
+        "install_output": "migrated lockfile from package-lock.json; Saved lockfile; 65 packages installed [878.00ms]",
+        "trust_observation": "bun pm untrusted: Found 0 untrusted dependencies with scripts; no trustedDependencies field added; no trust-all, force or ignore-scripts flags used",
+        "original_script_package": {
+          "name": "fsevents",
+          "version": "2.3.3",
+          "hasInstallScript": true,
+          "os": [
+            "darwin"
+          ],
+          "optional": true
+        },
+        "verification_not_run": [
+          "frozen install",
+          "typecheck",
+          "build",
+          "browser smoke",
+          "validator",
+          "lint",
+          "tests",
+          "formatters"
+        ]
+      }
+    },
+    {
+      "id": "bun-frozen-workbench",
+      "scope": "Current authoritative Bun lock and pinned packageManager, strictTemplates=true example typecheck and production build.",
+      "result": "passed",
+      "command": "bun install --frozen-lockfile && bun run typecheck && bun run build",
+      "details": {
+        "install_observation": "Checked 65 installs across 89 packages (no changes)",
+        "modules_transformed": 626,
+        "production_assets": [
+          "index-DEPDIp_q.css",
+          "index-7UYc7zpo.js"
+        ],
+        "same_hashed_asset_names_as_previous_build": true,
+        "direct_pins_unchanged": 9,
+        "unchanged_app_input_sha256": {
+          "assets/example-app/index.html": "319db4614cf84739ed57b557a7bfa5d6298123967e9d43e9c28bb839a29eae39",
+          "assets/example-app/src/AboutPage.vue": "f2fcf7b36ecc50578ccd3b083bc5d52b8344080cd8c67550b52b27be5c04114f",
+          "assets/example-app/src/App.vue": "84fd3cc13809d4267c996a3703a5cea89bfdd9b5edb7cfa336c15318b8e02a27",
+          "assets/example-app/src/TaskPage.vue": "aa7790bc6cb3555434a8aaccfb7b828f0ca674a5df60d939f789d730eadcaad6",
+          "assets/example-app/src/main.ts": "9a7f8231ead8039b49991730ec878fd52edc7f1b3dff93382df3d4bd2d491766",
+          "assets/example-app/src/task-store.ts": "c91480e8954f2fb511161cb96dd02cdb9dcc08be72b600c802ae97261f2cc4d3",
+          "assets/example-app/tsconfig.json": "ec8e92019f896b9308343f8a7f57e8f875049890cd65ad44a7ad8b6c48943222",
+          "assets/example-app/vite.config.ts": "0646e0ff42ef72dab57bc185b5532332fda14aec21625357b8ce272028a2cffe"
+        }
+      }
+    },
+    {
+      "id": "bun-local-node-tooling",
+      "scope": "Local Bun executable selection without package download or forced Bun runtime; dependency lifecycle-script trust observation on Linux.",
+      "result": "passed",
+      "command": "bunx --no-install vite --version && bun pm untrusted",
+      "details": {
+        "vite_output": "vite/8.3.4 linux-x64 node-v24.15.0",
+        "untrusted_dependency_scripts": 0,
+        "trust_all_or_ignore_scripts_overrides": false
+      }
+    },
+    {
+      "id": "bun-live-dev-flags",
+      "scope": "Actually launched Vite through Bun with direct script flags, observed readiness at requested port and fetched the live HTML entry. No new browser-interaction sweep is claimed.",
+      "result": "passed",
+      "command": "bun run dev --host 127.0.0.1 --port 4187 --strictPort",
+      "details": {
+        "observed_invocation": "vite --host \"127.0.0.1\" --port \"4187\" --strictPort",
+        "local_url": "http://127.0.0.1:4187/",
+        "html_title": "Vue Kit Workbench",
+        "ready": true
+      }
+    },
+    {
+      "id": "current-quote-rebase",
+      "scope": "All current explicit source/reference quotes following Bun-preference prose changes; historical model labels and integration dispositions retained.",
+      "result": "passed",
+      "details": {
+        "sources": 467,
+        "references": 38,
+        "explicit_source_dispositions": 450,
+        "native_only_covered": 17,
+        "current_quotes": 488,
+        "stale_quotes": 0,
+        "native_maps_unchanged": true,
+        "command_quotes_rebased": [
+          {
+            "source": ".agents/skills/vitepress-skilld/references/cli.md",
+            "reference": "references/docs-slides.md",
+            "previous_evidence": "`npm run docs:dev -- --port 5174 --strictPort --open` forwards real dev flags",
+            "current_evidence": "`bun run docs:dev --port 5174 --strictPort --open` forwards real dev flags",
+            "reason": "Requested Bun preference and direct Bun argument forwarding; no new VitePress runtime certification implied."
+          }
+        ]
+      }
+    },
+    {
+      "id": "bun-contract-boundaries",
+      "scope": "Copied standalone skill without old source corpus or installed SDK dependencies: valid baseline plus nine manager/lock failures. Each semantic mutation refreshes snapshots before validation so stale-byte checks cannot mask the intended guard.",
+      "result": "passed",
+      "details": {
+        "passed": 10,
+        "scenarios": [
+          {
+            "case": "isolated complete Bun skill",
+            "valid": true
+          },
+          {
+            "case": "missing packageManager",
+            "valid": false
+          },
+          {
+            "case": "wrong packageManager",
+            "valid": false
+          },
+          {
+            "case": "missing authoritative lock",
+            "valid": false
+          },
+          {
+            "case": "empty authoritative lock",
+            "valid": false
+          },
+          {
+            "case": "competing package-lock.json",
+            "valid": false
+          },
+          {
+            "case": "competing npm-shrinkwrap.json",
+            "valid": false
+          },
+          {
+            "case": "competing pnpm-lock.yaml",
+            "valid": false
+          },
+          {
+            "case": "competing yarn.lock",
+            "valid": false
+          },
+          {
+            "case": "competing bun.lockb",
+            "valid": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "current-offline-and-official-format",
+      "scope": "Current Bun-ready master/reference navigation, source coverage, native hypothesis fingerprints, current evidence quotes and complete packaged SHA256 footprint; official Agent Skills format.",
+      "result": "passed",
+      "command": "python3 skills/vue-kit/scripts/validate.py skills/vue-kit --json && skills-ref validate skills/vue-kit",
+      "details": {
+        "valid": true,
+        "errors": [],
+        "reference_documents": 38,
+        "current_packaged_snapshots": 55,
+        "current_quotes": 488
+      }
+    }
+  ],
+  "historical_runs": [
+    {
+      "reason": "Pre-Bun-preference observations retained with their exact prior packaged-file snapshots. Not retroactively claimed as fresh execution of changed documentation.",
+      "record": {
+        "schema_version": 1,
+        "baseline": {
+          "vue": "3.5.44",
+          "vuetify": "4.3.0"
+        },
+        "recorded_at": "2026-10-21T09:51:30Z",
+        "environment": {
+          "os": "Linux",
+          "kernel": "7.0.0-38-generic",
+          "architecture": "x86_64",
+          "python": "3.14.4",
+          "node": "24.15.0",
+          "npm": "12.2.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "browser": "Chrome/156.0.8078.47"
+        },
+        "resolution_scope": "unresolved tracks owned Vue Kit deliverable gaps. Known external implementation defects remain explicit in known_upstream_issues and limits; an empty owned list is not ecosystem-wide certification.",
+        "checks": [
+          {
+            "id": "guide-syntax",
+            "scope": "All 38 delivered reference documents; Vue/TypeScript/TSX/JavaScript/JSON code fences, including contextual syntax wrappers.",
+            "result": "passed",
+            "command": "node compile-docs.cjs skills/vue-kit contracts (disposable verification harness)",
+            "details": {
+              "reference_documents": 38,
+              "fences_seen": 299,
+              "code_units": 260,
+              "by_language": {
+                "vue": 110,
+                "typescript": 141,
+                "json": 7,
+                "tsx": 1,
+                "javascript": 1
+              },
+              "dependency_resolution_gaps": 0,
+              "failures": 0
+            }
+          },
+          {
+            "id": "guide-isolated-types",
+            "scope": "35 isolated strict TypeScript profiles over current guide examples, complete SFCs, companion modules and installed public exports. Standard Vue template checking; not a claim that every guide uses strictTemplates=true.",
+            "result": "passed",
+            "command": "node check-profiles.cjs skills/vue-kit contracts (disposable verification harness)",
+            "details": {
+              "profiles": 35,
+              "passed": 35,
+              "failed": 0,
+              "external_imports": 461,
+              "complete_sfc_units": 103,
+              "named_module_units": 34,
+              "schema_profiles": {
+                "tanstack-form": "zod4@4.6.7",
+                "vee-validate": "zod@3.25.76"
+              },
+              "framework_host_exclusions": [
+                {
+                  "unit": "docs-slides.md:498",
+                  "host": "Slidev53 real host",
+                  "reason": "Slidev route meta and compile-time feature globals are framework-owned."
+                },
+                {
+                  "unit": "migration.md:315",
+                  "host": "Nuxt4.6.2 real host",
+                  "reason": "Documented auto-import page must use generated Nuxt types."
+                },
+                {
+                  "unit": "motion.md:84",
+                  "host": "Contextual template/CSS fragment",
+                  "reason": "Reference explicitly assigns rows to the host; syntax compiled separately."
+                },
+                {
+                  "unit": "routing-tanstack.md:394",
+                  "host": "TanStack plugin-generated real host",
+                  "reason": "FileRoutesByPath must be generated by the declared plugin."
+                }
+              ]
+            }
+          },
+          {
+            "id": "workbench-strict-production",
+            "scope": "Permanent assets/example-app, including typed native attributes, canonical dialog-root naming, semantic color pairs and disabled nonessential ripple/theme/dialog effects.",
+            "result": "passed",
+            "command": "npm run typecheck && npm run build (assets/example-app)",
+            "details": {
+              "strictTemplates": true,
+              "modules_transformed": 626,
+              "production_script": "/assets/index-7UYc7zpo.js",
+              "build_exit_code": 0
+            }
+          },
+          {
+            "id": "workbench-browser",
+            "scope": "Actual production preview in Chromium: validation boundaries, task state, focus, dialog semantics, routing, session-only reload behavior, theme changes and selected responsive/accessibility surfaces.",
+            "result": "passed",
+            "details": {
+              "whitespace": {
+                "rows": 2,
+                "value": "   ",
+                "invalid": "true"
+              },
+              "removal": {
+                "rows": 2,
+                "focus": "task-2"
+              },
+              "dialog": {
+                "name": "Reset tasks?",
+                "description": "reset-dialog-description",
+                "focus": "Cancel",
+                "spatialAnimations": 0
+              },
+              "escape": {
+                "checked": true,
+                "draft": "Retain this draft",
+                "focus": "Reset tasks"
+              },
+              "confirmedReset": {
+                "rows": 2,
+                "firstChecked": false,
+                "draft": "Retain this draft",
+                "focus": "Reset tasks"
+              },
+              "empty": {
+                "rows": 0,
+                "focus": "task-title"
+              },
+              "rejected81": {
+                "rows": 2,
+                "length": 81,
+                "invalid": "true",
+                "description": "Use 80 characters or fewer.81 / 80"
+              },
+              "accepted80": {
+                "rows": 3,
+                "input": "",
+                "invalid": null
+              },
+              "keyboard": {
+                "checked": true,
+                "focus": {
+                  "id": "task-1",
+                  "visible": true,
+                  "width": "3px",
+                  "color": "rgb(0, 0, 0)"
+                }
+              },
+              "clientAbout": {
+                "title": "About this example · Vue Kit Workbench",
+                "focus": "main-content"
+              },
+              "clientReturn": {
+                "rows": 3,
+                "dark": true,
+                "title": "Tasks · Vue Kit Workbench",
+                "focus": "main-content"
+              },
+              "directAbout": {
+                "url": "http://127.0.0.1:4179/about",
+                "title": "About this example · Vue Kit Workbench"
+              },
+              "reloadBaseline": {
+                "rows": 2,
+                "focus": "main-content"
+              },
+              "skipFocus": "main-content",
+              "contrastLight": [
+                {
+                  "id": "add-task",
+                  "foreground": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "background": [
+                    24,
+                    103,
+                    192
+                  ],
+                  "ratio": 5.61483603407459,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "14px",
+                  "opacity": 1
+                },
+                {
+                  "id": "visible-title-label",
+                  "foreground": [
+                    176,
+                    0,
+                    32
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 7.325040949140119,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 1
+                },
+                {
+                  "id": "input-hint",
+                  "foreground": [
+                    176,
+                    0,
+                    32
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 7.325040949140119,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 1
+                },
+                {
+                  "id": "form-heading",
+                  "foreground": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 21,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "16px",
+                  "opacity": 1
+                },
+                {
+                  "id": "footer",
+                  "foreground": [
+                    63.75,
+                    63.75,
+                    63.75
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 10.408809649857735,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 0.75
+                },
+                {
+                  "id": "active-navigation",
+                  "foreground": [
+                    24,
+                    103,
+                    192
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 5.61483603407459,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "14px",
+                  "opacity": 1
+                },
+                {
+                  "id": "input-boundary",
+                  "foreground": [
+                    176,
+                    0,
+                    32
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 7.325040949140119,
+                  "minimum": 3,
+                  "passes": true,
+                  "fontSize": "16px",
+                  "opacity": 1
+                }
+              ],
+              "contrastDark": [
+                {
+                  "id": "add-task",
+                  "foreground": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "background": [
+                    33,
+                    150,
+                    243
+                  ],
+                  "ratio": 6.721418090054317,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "14px",
+                  "opacity": 1
+                },
+                {
+                  "id": "visible-title-label",
+                  "foreground": [
+                    255,
+                    180,
+                    171
+                  ],
+                  "background": [
+                    33,
+                    33,
+                    33
+                  ],
+                  "ratio": 9.483852109666065,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 1
+                },
+                {
+                  "id": "input-hint",
+                  "foreground": [
+                    255,
+                    180,
+                    171
+                  ],
+                  "background": [
+                    33,
+                    33,
+                    33
+                  ],
+                  "ratio": 9.483852109666065,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 1
+                },
+                {
+                  "id": "form-heading",
+                  "foreground": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "background": [
+                    33,
+                    33,
+                    33
+                  ],
+                  "ratio": 16.102191704447957,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "16px",
+                  "opacity": 1
+                },
+                {
+                  "id": "footer",
+                  "foreground": [
+                    195.75,
+                    195.75,
+                    195.75
+                  ],
+                  "background": [
+                    18,
+                    18,
+                    18
+                  ],
+                  "ratio": 10.712724872653085,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 0.75
+                },
+                {
+                  "id": "active-navigation",
+                  "foreground": [
+                    33,
+                    150,
+                    243
+                  ],
+                  "background": [
+                    33,
+                    33,
+                    33
+                  ],
+                  "ratio": 5.153788695799955,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "14px",
+                  "opacity": 1
+                },
+                {
+                  "id": "input-boundary",
+                  "foreground": [
+                    255,
+                    180,
+                    171
+                  ],
+                  "background": [
+                    33,
+                    33,
+                    33
+                  ],
+                  "ratio": 9.483852109666065,
+                  "minimum": 3,
+                  "passes": true,
+                  "fontSize": "16px",
+                  "opacity": 1
+                }
+              ],
+              "contrastLightAfterSwitch": [
+                {
+                  "id": "add-task",
+                  "foreground": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "background": [
+                    24,
+                    103,
+                    192
+                  ],
+                  "ratio": 5.61483603407459,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "14px",
+                  "opacity": 1
+                },
+                {
+                  "id": "visible-title-label",
+                  "foreground": [
+                    176,
+                    0,
+                    32
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 7.325040949140119,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 1
+                },
+                {
+                  "id": "input-hint",
+                  "foreground": [
+                    176,
+                    0,
+                    32
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 7.325040949140119,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 1
+                },
+                {
+                  "id": "form-heading",
+                  "foreground": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 21,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "16px",
+                  "opacity": 1
+                },
+                {
+                  "id": "footer",
+                  "foreground": [
+                    63.75,
+                    63.75,
+                    63.75
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 10.408809649857735,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "12px",
+                  "opacity": 0.75
+                },
+                {
+                  "id": "active-navigation",
+                  "foreground": [
+                    24,
+                    103,
+                    192
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 5.61483603407459,
+                  "minimum": 4.5,
+                  "passes": true,
+                  "fontSize": "14px",
+                  "opacity": 1
+                },
+                {
+                  "id": "input-boundary",
+                  "foreground": [
+                    176,
+                    0,
+                    32
+                  ],
+                  "background": [
+                    255,
+                    255,
+                    255
+                  ],
+                  "ratio": 7.325040949140119,
+                  "minimum": 3,
+                  "passes": true,
+                  "fontSize": "16px",
+                  "opacity": 1
+                }
+              ],
+              "motion": {
+                "policy": "No task-essential CSS or dialog transitions in either preference; animation/scroll preference rules remain live.",
+                "states": [
+                  {
+                    "reduced": false,
+                    "transition": "none",
+                    "animationDuration": "0s"
+                  },
+                  {
+                    "reduced": true,
+                    "transition": "none",
+                    "animationDuration": "1e-05s"
+                  }
+                ]
+              },
+              "responsive": {
+                "wide": {
+                  "width": 1440,
+                  "clientWidth": 1440,
+                  "scrollWidth": 1440,
+                  "horizontalOverflow": false
+                },
+                "narrow": [
+                  {
+                    "width": 390,
+                    "clientWidth": 375,
+                    "scrollWidth": 375,
+                    "horizontalOverflow": false
+                  },
+                  {
+                    "width": 320,
+                    "clientWidth": 305,
+                    "scrollWidth": 305,
+                    "horizontalOverflow": false
+                  }
+                ],
+                "textResize": {
+                  "before": "14px",
+                  "rootFont": "32px",
+                  "paragraphFont": "28px",
+                  "horizontalOverflow": false,
+                  "scope": "root font-size200% at1280 CSS pixels, not browser zoom"
+                }
+              },
+              "ripple": {
+                "rippleOverlays": 0,
+                "rows": 3
+              },
+              "runtime": {
+                "browser": "Chrome/156.0.8078.47",
+                "loadedScript": "/assets/index-7UYc7zpo.js"
+              },
+              "diagnostics": {
+                "errors": {
+                  "entries": [],
+                  "nextSeq": 3,
+                  "dropped": 0
+                },
+                "console": {
+                  "entries": [],
+                  "nextSeq": 3,
+                  "dropped": 0
+                }
+              }
+            }
+          },
+          {
+            "id": "real-doc-components",
+            "scope": "Actual guide SFCs mounted in a real browser host with installed Vue, Colada, TanStack Form/Zod4 and Virtualizer; no mocked component implementations.",
+            "result": "passed",
+            "details": {
+              "virtualJump": {
+                "scrollTop": 863454,
+                "renderedIndices": [
+                  8994,
+                  8995,
+                  8996,
+                  8997,
+                  8998,
+                  8999,
+                  9000,
+                  9001,
+                  9002,
+                  9003,
+                  9004,
+                  9005,
+                  9006,
+                  9007,
+                  9008,
+                  9009
+                ],
+                "requestedText": "Record 9000. Variable-length content. Variable-length content. Variable-length content. Variable-length content."
+              },
+              "virtualEmpty": {
+                "goEnabled": false,
+                "text": "Documented local component proof\nVirtual recordsColada tasksGrouped form\nFilter records \n\n0 matching records\n\nRow number Go to row\n\nNo matching records."
+              },
+              "coladaMutation": "Read query keys! Append exclamation mark locally",
+              "coladaTenant": {
+                "tenant": "B",
+                "row": "Review tenant isolation Append exclamation mark locally",
+                "nextEnabled": false
+              },
+              "coladaPage": {
+                "text": "Review cancellation Append exclamation mark locally",
+                "previousEnabled": true
+              },
+              "coladaFilter": {
+                "filter": "open",
+                "row": "Read query keys! Append exclamation mark locally",
+                "previousEnabled": false,
+                "nextEnabled": false
+              },
+              "formInvalidContact": {
+                "input": "",
+                "invalid": "true",
+                "status": "Correct this step before continuing."
+              },
+              "formInvalidProfile": {
+                "value": "17",
+                "invalid": "true",
+                "status": "Correct this step before continuing."
+              },
+              "formRetainedEmail": "ada@example.test",
+              "formAccepted": {
+                "email": "ada@example.test",
+                "age": "18",
+                "status": "Applied for this session; not persisted.",
+                "errors": {
+                  "entries": [],
+                  "nextSeq": 3,
+                  "dropped": 0
+                },
+                "console": {
+                  "entries": [],
+                  "nextSeq": 3,
+                  "dropped": 0
+                }
+              }
+            }
+          },
+          {
+            "id": "nuxt-framework-host",
+            "scope": "Nuxt 4.6.2 generated context, build, actual local catalog endpoints, SSR pages, browser hydration, Refresh request and second record page.",
+            "result": "passed",
+            "command": "npm run prepare && npm run typecheck && npm run build (disposable Nuxt host)",
+            "details": {
+              "nuxtInitial": {
+                "title": "Component contracts",
+                "heading": "Component contracts"
+              },
+              "nuxtRefresh": {
+                "status": 200,
+                "body": {
+                  "id": "1",
+                  "title": "Component contracts"
+                }
+              },
+              "nuxtSecond": {
+                "title": "Effect ownership",
+                "heading": "Effect ownership",
+                "errors": {
+                  "entries": [],
+                  "nextSeq": 2,
+                  "dropped": 0
+                },
+                "console": {
+                  "entries": [],
+                  "nextSeq": 2,
+                  "dropped": 0
+                }
+              }
+            }
+          },
+          {
+            "id": "tanstack-generated-router-host",
+            "scope": "Real Vue route-plugin generated route tree, build, semantic typecheck and browser-rendered lazy route.",
+            "result": "passed",
+            "command": "npm run build && npm run typecheck (disposable generated-router host)",
+            "details": {
+              "url": "http://127.0.0.1:4321/",
+              "heading": "Generated Vue route",
+              "errors": {
+                "entries": [],
+                "nextSeq": 2,
+                "dropped": 0
+              },
+              "console": {
+                "entries": [],
+                "nextSeq": 2,
+                "dropped": 0
+              }
+            }
+          },
+          {
+            "id": "slidev-framework-host",
+            "scope": "Real Slidev 53 deck build and rendered Counter/ActiveSeconds components. Mixed runtime observation: upstream caught tooltip patch error retained, not suppressed or described as clean.",
+            "result": "observed",
+            "command": "npm run build (disposable Slidev53 host)",
+            "details": {
+              "slidev": {
+                "title": "Vue Kit Workshop - Slidev",
+                "before": 104,
+                "after": 105,
+                "firstDomHeading": "Vue Kit Workshop",
+                "visibleHeadings": [
+                  "Try the example"
+                ]
+              },
+              "slidevPatchDiagnostic": {
+                "messages": [
+                  [
+                    "Failed to patch FloatingVue",
+                    {
+                      "name": "TypeError",
+                      "message": "Cannot read properties of undefined (reading 'Popper')",
+                      "stack": "TypeError: Cannot read properties of undefined (reading 'Popper')\n    at e.component (http://127.0.0.1:4325/assets/modules/shiki-Bq-puRM0.js:10:71580)\n    at Object.Dv [as install] (http://127.0.0.1:4325/assets/modules/shiki-Bq-puRM0.js:10:70863)\n    at Object.use (http://127.0.0.1:4325/assets/modules/shiki-Bq-puRM0.js:3:16691)\n    at Object.install (http://127.0.0.1:4325/assets/modules/shiki-Bq-puRM0.js:10:71821)\n    at Object.use (http://127.0.0.1:4325/assets/modules/shiki-Bq-puRM0.js:3:16691)\n    at Rs (http://127.0.0.1:4325/assets/index-HK4xBxu4.js:68:58234)\n    at zs (http://127.0.0.1:4325/assets/index-HK4xBxu4.js:68:58365)\n    at http://127.0.0.1:4325/assets/index-HK4xBxu4.js:68:58387"
+                    }
+                  ]
+                ],
+                "title": "Vue Kit Workshop - Slidev"
+              },
+              "slidevCounterDiagnostic": {
+                "initial": [
+                  {
+                    "text": "Workshop count: 0",
+                    "visible": true,
+                    "rect": {
+                      "x": 508.4541015625,
+                      "y": 480.5994873046875,
+                      "width": 242.08160400390625,
+                      "height": 38.778076171875
+                    },
+                    "disabled": false,
+                    "inertAncestors": []
+                  }
+                ],
+                "after": {
+                  "counter": "Workshop count: 1",
+                  "url": "http://127.0.0.1:4325/3"
+                }
+              }
+            }
+          },
+          {
+            "id": "source-corpus-identity",
+            "scope": "All 467 original source documents recorded by source-audit.json; read-only checksum comparison after implementation.",
+            "result": "passed",
+            "details": {
+              "documents": 467,
+              "missing": [],
+              "changed_hashes": [],
+              "old_skill_deletions": 0
+            }
+          },
+          {
+            "id": "native-audit-and-integration",
+            "scope": "Frozen native source/reference judgments plus explicit current integration dispositions, without relabeling native partial/missing/mixed results to force a green audit.",
+            "result": "passed",
+            "details": {
+              "counts": {
+                "sources": 467,
+                "roots": 49,
+                "references": 38,
+                "explicit_source_reviews": 450,
+                "native_only_sources": 17,
+                "source_resolution_choices": {
+                  "corrected": 372,
+                  "out_of_scope": 2,
+                  "covered": 76
+                },
+                "native_source_choices": {
+                  "partial": 127,
+                  "covered": 338,
+                  "missing": 1,
+                  "out_of_scope": 1
+                },
+                "native_reference_readiness": {
+                  "ready": 37,
+                  "mixed": 1
+                },
+                "reference_resolution_choices": {
+                  "overturned": 14,
+                  "confirmed_fixed": 24
+                }
+              },
+              "accepted_processing": {
+                "sources": {
+                  "processed": 467,
+                  "errors": 0,
+                  "truncated": 0
+                },
+                "references": {
+                  "processed": 38,
+                  "errors": 0,
+                  "truncated": 0
+                }
+              },
+              "historical_flagged_source_units": 335,
+              "native_only_units": 17,
+              "native_only_semantics": "All 17 native-only labels are covered; no individual override is claimed. Mandatory skill loads are not evidence of a separate per-document adjudication.",
+              "all_explicit_current_quotes": 488,
+              "stale_current_quotes": 0
+            }
+          },
+          {
+            "id": "official-skills-spec",
+            "scope": "Official skills-ref validation and parsed skill properties for the complete vue-kit folder.",
+            "result": "passed",
+            "command": "skills-ref validate skills/vue-kit && skills-ref read-properties skills/vue-kit",
+            "details": {
+              "valid": true,
+              "name": "vue-kit",
+              "metadata_baselines": {
+                "vue": "3.5.44",
+                "vuetify": "4.3.0"
+              }
+            }
+          },
+          {
+            "id": "validator-structure-boundaries",
+            "scope": "15 isolated structural/link/schema/dependency boundary scenarios against the current complete skill. Snapshots refreshed for deliberate semantic mutations so a stale hash cannot mask the intended validator branch.",
+            "result": "passed",
+            "command": "python3 validate-boundaries.py skills/vue-kit (disposable harness)",
+            "details": {
+              "passed": 15,
+              "negative_cases": 14,
+              "positive_case": "Illustrative fenced links are ignored; ordinary missing links and anchors are rejected."
+            }
+          },
+          {
+            "id": "validator-evidence-boundaries",
+            "scope": "38 isolated negative source/reference/schema/snapshot/path scenarios against a valid complete baseline. Semantic cases refresh snapshot hashes, so unrelated stale-byte failures cannot mask the intended evidence check.",
+            "result": "passed",
+            "command": "python3 evidence-boundaries.py skills/vue-kit (disposable harness)",
+            "details": {
+              "passed": 38,
+              "valid_baseline": true,
+              "invariants": [
+                "Complete and unique source/reference identity, historical SHA and owning-reference map.",
+                "Original flagged coverage still requires explicit resolution even when its native label is covered and aggregate counts are recomputed.",
+                "Current quote, enclosing section/anchor and aggregate counts.",
+                "Frozen native hypotheses, processing errors and unresolved evidence.",
+                "Check identity/scope/result/details, limits and UTC recording.",
+                "Complete current byte footprint; stale/missing/extra/self/ignored/unsafe snapshots.",
+                "Malformed/duplicate JSON, out-of-root file symlink even with matching declared SHA, cyclic directory symlink."
+              ],
+              "native_mutation_diagnostic": "sources: native verdicts differ from the frozen accepted hypotheses"
+            }
+          },
+          {
+            "id": "actual-visual-inspection",
+            "scope": "Actual final production captures after the ripple-free rebuild, manually viewed as raster images rather than inferred from DOM geometry. Captures were disposable verification artifacts, not packaged UI assets.",
+            "result": "passed",
+            "details": {
+              "captures": [
+                {
+                  "viewport": "1440px light",
+                  "sha256": "3d7deb24dad0d3b923b110b29ddc35e707579d78438a2a87b954efc8ad5ad10a"
+                },
+                {
+                  "viewport": "390px dark",
+                  "sha256": "c3abd18129a8ad29c4b018cc558ab4aa8207897c09ba72e91dfe43b435500ee3"
+                }
+              ],
+              "raster_palette_crosscheck": {
+                "light_error_rgb": [
+                  176,
+                  0,
+                  32
+                ],
+                "dark_error_rgb": [
+                  255,
+                  180,
+                  171
+                ]
+              },
+              "retained_capture_files": false
+            }
+          },
+          {
+            "id": "standalone-offline-copy",
+            "scope": "Unmodified complete skill copied alone to a temporary directory; ran its copied validator from that isolated working directory after node_modules/dist removal. No old .agents corpus, repo-relative cwd or SDK dependencies supplied.",
+            "result": "passed",
+            "command": "python3 <isolated>/vue-kit/scripts/validate.py <isolated>/vue-kit --json",
+            "details": {
+              "checks": [
+                "nonempty packaged files",
+                "balanced Markdown fences",
+                "local Markdown links and anchors",
+                "direct master reference index",
+                "master frontmatter and line limit",
+                "source manifest schema, coverage, and audit snapshot consistency",
+                "example package pinned dependencies and runnable scripts",
+                "standalone coverage crosswalk and preserved native verdicts",
+                "current resolution quotes, canonical headings, and dispositions",
+                "scoped recorded verification metadata",
+                "complete content-addressed packaged file footprint (not runtime certification)"
+              ],
+              "errors": [],
+              "valid": true
+            }
+          },
+          {
+            "id": "repository-context-graph",
+            "scope": "Deterministic Trail context graph refreshed after permanent code changes and removal of owned smoke scaffolds. Local cache ignored; no API key or remote sync.",
+            "result": "passed",
+            "command": "trail build",
+            "details": {
+              "files_parsed": 7,
+              "nodes": 55,
+              "edges": 161,
+              "cards": 7,
+              "languages": [
+                "python",
+                "typescript",
+                "vue"
+              ],
+              "smoke_services_stopped": 7,
+              "owned_browser_tab_closed": true,
+              "throwaway_harnesses_removed": true,
+              "generated_app_node_modules_dist_removed": true
+            }
+          }
+        ],
+        "known_upstream_issues": [
+          {
+            "bead": "vue-kit-skills-ciu",
+            "status": "blocked",
+            "component": "Slidev 53 / @shikijs/vitepress-twoslash 4.5.0 / FloatingVue 5.4.0",
+            "observation": "Caught TypeError: Cannot read properties of undefined (reading 'Popper'); the upstream patch assumes components.Popper.extends on a registered VMenu that exposes no components object.",
+            "boundary": "Documented in references/docs-slides.md and references/sources.md; no fake private-field shim, error suppression or unsupported downgrade. Registry-compatible upstream repair was unavailable during verification."
+          }
+        ],
+        "limits": [
+          "Compiler/type evidence is scoped: 35 isolated strict TypeScript profiles use standard Vue template checking. Only the bundled workbench is claimed strictTemplates=true. Contextual fragments and generated framework globals use the explicit wrappers/hosts recorded above.",
+          "No live Clerk identity, paid AI/provider request, credentialed backend authorization, production multi-tenant security certification or external mutation was exercised.",
+          "No exhaustive SSR/hydration matrix, cross-browser/device matrix, WebGL/GPU execution, screen-reader audit or end-to-end proof of every optional integration is claimed.",
+          "Slidev 53 builds and the visible documented controls were exercised, but its caught upstream FloatingVue private-patch incompatibility remains. This is an observed mixed runtime, tracked by blocked bead vue-kit-skills-ciu, not a clean runtime pass.",
+          "Standalone full-deck semantic vue-tsc for Slidev was not established; the supported real deck build was used. PDF/PPTX export and presenter/security behavior were not tested.",
+          "Contrast measurements cover selected resolved text/background/alpha and input-boundary pairs in light/dark normal/error states and both switch directions, not every rasterized interaction state or theme palette. Visual inspection used actual 1440px light and 390px dark captures. No blanket WCAG certification is implied.",
+          "Reflow was observed at 1440, 390 and 320 CSS-pixel viewports with an 80-character unbroken task title. Text-resize proof sets the root font to 200% at 1280 CSS pixels and verifies a 14px paragraph becomes 28px; this is not browser zoom or proof that every pixel-sized label doubles.",
+          "The packaged snapshot proves which bytes these observations accompany; it is not cryptographic authorship, licensing, upstream correctness or a claim that peer ranges alone establish compatibility."
+        ],
+        "snapshots": {
+          "algorithm": "sha256",
+          "files": {
+            "CHANGELOG.md": "c923e37a887c7b8150e9b4728c4fdaa855ac12aefd85ea287a320899f5853557",
+            "SKILL.md": "a39d45940cbc1313e252875615d3cd9c5eb7dc7c6263b463b1ef1acba89745cc",
+            "assets/coverage-audit.json": "2a63139d33dc77f16533bbaea8395a08854ea585210972d45190208fb8626031",
+            "assets/example-app/.gitignore": "790e3169bc19b046fe55ba1da6d13b976c28363c8c00462a2195fe5faf260910",
+            "assets/example-app/index.html": "319db4614cf84739ed57b557a7bfa5d6298123967e9d43e9c28bb839a29eae39",
+            "assets/example-app/package-lock.json": "4ccb43c92252777fde4be90f6a07f343f1768cab29c0eb0dacee9dc4ea7f277c",
+            "assets/example-app/package.json": "aec6ffa1b2e4e68cae6a9ab3117c7ba06c9d030c9019aca8263030ac127c719d",
+            "assets/example-app/src/AboutPage.vue": "f2fcf7b36ecc50578ccd3b083bc5d52b8344080cd8c67550b52b27be5c04114f",
+            "assets/example-app/src/App.vue": "84fd3cc13809d4267c996a3703a5cea89bfdd9b5edb7cfa336c15318b8e02a27",
+            "assets/example-app/src/TaskPage.vue": "aa7790bc6cb3555434a8aaccfb7b828f0ca674a5df60d939f789d730eadcaad6",
+            "assets/example-app/src/main.ts": "9a7f8231ead8039b49991730ec878fd52edc7f1b3dff93382df3d4bd2d491766",
+            "assets/example-app/src/task-store.ts": "c91480e8954f2fb511161cb96dd02cdb9dcc08be72b600c802ae97261f2cc4d3",
+            "assets/example-app/tsconfig.json": "ec8e92019f896b9308343f8a7f57e8f875049890cd65ad44a7ad8b6c48943222",
+            "assets/example-app/vite.config.ts": "0646e0ff42ef72dab57bc185b5532332fda14aec21625357b8ce272028a2cffe",
+            "assets/source-audit.json": "3211aa9c552ad93bcbb01d5da31c929390f7812b254c61419b23513f5df76a34",
+            "assets/source-manifest.json": "0e8149cdf0f6bc74f5e7acbc9a0028a37016a74e62b4a8a1b4ad18d3358ce8e5",
+            "references/accessibility.md": "141dde47928f8ef0a0f14592f401be58ed8227c4864d3e3510a745c9c75eb0b0",
+            "references/ai-streaming.md": "445fdac8ab8d03de73ba607abc66fb82460ce5271beeb1eab4d069b4d40bb9b3",
+            "references/alternative-ui.md": "6f074bf6f6fa7ba3b6ce717115157c5475cbf0b215b3d2504a250787a74c2cc9",
+            "references/architecture-data.md": "e482d94d04875804af2c0bf745020c42f475c3846132363f156a702481125ab4",
+            "references/architecture-ui.md": "531543d06c23bb724db1a75032c939acd774e3b08318f7f38601cb4e60389c67",
+            "references/architecture.md": "8684f42576de7eddc224dfe3319f976f4fcdc5efb5f4cd628d7a518402df09ca",
+            "references/auth.md": "869e460b7c15bd0f1779906ec1547899fd38875258797fd11ec1c29fef55fca7",
+            "references/components.md": "b2f94014c77acd055b5d892e2774b80f81d56f15a4d86814a17ab09db0b7cc58",
+            "references/composables.md": "cfe539b584219f2d419a7faee02ad8b1d16c189cc4f8f7a2bfb63f3d7494499b",
+            "references/core-vue.md": "06438168ba3a36c11edb4fb62e18deed066b68881b403050201368256b6224ac",
+            "references/data-tables.md": "17ea2109ab4a1737393c97c386829fb07c51a5eeed07e844ceeda8a61e3675d0",
+            "references/debugging-ssr.md": "0fafb83a759600894493495f02332ab0520ce1fb8b0b7ccb50fd05c69f4d073c",
+            "references/design-system.md": "83ae527acafb6a7b8d93e808b6fb810867a1158f3c0fbc5f75315f8e8576689d",
+            "references/docs-slides.md": "377c465ce7e9d25b858faa4489015f9517d1bdc88831a6ce26774c19f260da2d",
+            "references/formkit.md": "26bc8567f672510e09709230ec3c1c8c0478c5a3973926c3ed5a40a0b07eeec7",
+            "references/forms.md": "0cd52de6e6ea2360b3ceb0682d848361608946c49aac9562277c59c66271de2b",
+            "references/headless-ui.md": "1fde128d1154d36c3ea940a5e1ed7734204aa13dd4cd22be39149ad7d4cba0f4",
+            "references/i18n-head.md": "42d483e60f4713fdc88228e0103076c43d97fabadd2f848b954bfb8a6218078e",
+            "references/migration.md": "007ed413a6db9dd5521f55f7a6ad825f76b5aeabbed99c5b69d9ca30ef4ada13",
+            "references/motion.md": "a6c71cbb1c9903acd4ab71b6a780e5d8ab59c19487d8f06114a636b06c1897b4",
+            "references/pinia-colada.md": "7893ad32df1ba6c6d4780138898fef3d56c925537b8cdb268fd9246a0408d768",
+            "references/routing-tanstack.md": "4a17f5b4f6bf0f6aee840ca9b22e5a0a34ae447fa81b5ce680aead7086f3df1e",
+            "references/routing.md": "7051d9ac826808b298639ab8a9ca19e32a752ea7433f79acd6b258205f4cd768",
+            "references/setup-tooling.md": "3c470557126e980cd863ec15a19342b20ce679e898faa5d947aa18081e39ab20",
+            "references/sources.md": "2e4762b539000cf22f9b93c7a8fdd13e26f555006f253a3bb06839dc423ebcba",
+            "references/state.md": "66adaec75558428a6d9f16a400c216764372b6d625dc06701366b1c7d6d713a2",
+            "references/tanstack-form.md": "ea74c43883366d0bd211afd008bda4e5e99854177a09a778637071822ab8b5f1",
+            "references/tanstack-query.md": "83cdeac936a081fbfc52b5fb849772625dc95c53f092dbcf31337e0fee0cbb08",
+            "references/testing.md": "566a6619e3d7f99481d0581cc41940f08defc14e4b48ab012f560b7a50a21991",
+            "references/tresjs.md": "e568cf5dd87ec54022d52a4b7cb43963a66cfcdf485b4b52f8f4c6a388117a83",
+            "references/vee-validate.md": "1046106f6fa0f8a573fbc22c616d26786145893a04e96f8474b4f1b29b2de1ec",
+            "references/virtualization.md": "e68582fe7a4f2312415abeedbe0ef6061f59c4dd95a8c21d35e5455e31af715e",
+            "references/visualization.md": "d9836cde233a1e189a92482d4dab58068af5abedaecc28f0f7ff20ee9aa67133",
+            "references/vuetify-components.md": "3cdcc10ac342bfb853cb97ed23df05b0d1fa7cc1d340596312f47d7f9d001084",
+            "references/vuetify-setup.md": "da1aadcafe6d9f66085fc19177bd49119b3597c95f8f82c376f227a76e4434d7",
+            "references/vuetify-theme.md": "22e5d08f43ef538d175c661c462ea4d7182a245634951b57b5a7807f6dc61ab1",
+            "references/vueuse-integrations.md": "766c45b51feb10034e6442f81d2aef856e69d3ff2dd9cc31fde71a29a34f880a",
+            "references/vueuse.md": "5fbe60fdf5be6e347c200c1704bd1cb923bb1439d8d6def52f23c6499e12f275",
+            "scripts/validate.py": "eedbf6de5d026332a76f3eb7c8b422e7516975adf1ebfff96a361122713403c7"
+          }
+        },
+        "unresolved": []
+      }
+    }
+  ],
+  "known_upstream_issues": [
+    {
+      "bead": "vue-kit-skills-ciu",
+      "status": "blocked",
+      "component": "Slidev 53 / @shikijs/vitepress-twoslash 4.5.0 / FloatingVue 5.4.0",
+      "observation": "Caught TypeError: Cannot read properties of undefined (reading 'Popper'); the upstream patch assumes components.Popper.extends on a registered VMenu that exposes no components object.",
+      "boundary": "Documented in references/docs-slides.md and references/sources.md; no fake private-field shim, error suppression or unsupported downgrade. Registry-compatible upstream repair was unavailable during verification."
+    }
+  ],
+  "limits": [
+    "Current checks cover the requested Bun preference/lock migration and bundled toolchain. Historical compiler, 35 isolated strict TypeScript profiles, 53 validator scenarios, framework-host builds and browser observations remain in historical_runs with original snapshots; those whole suites were not re-executed solely for command preference changes.",
+    "Application Vue/TypeScript/HTML/tsconfig inputs match the earlier recorded SHA256 values and the Bun production build emits the same hashed asset filenames. This is source/build identity evidence, not a newly performed full browser interaction or accessibility audit.",
+    "Bun package management preserves Node-shebang CLI execution here; no --bun runtime substitution was made. Frozen installation uses an existing committed bun.lock; the flag alone is not a missing-lock guard.",
+    "Linux lifecycle observation is platform-scoped. Zero untrusted dependency scripts is not an audit of arbitrary package scripts or macOS-specific optional fsevents behavior. No blanket trust-all or ignore-scripts override was introduced.",
+    "Native historical model hypotheses, accepted processing metadata and invalidated attempt history remain unchanged. Only one explicit current command quote was rebased; current dispositions are not native-model reclassification.",
+    "The known Slidev 53/Twoslash/FloatingVue caught tooltip patch error remains an explicitly documented upstream boundary. No fresh clean-runtime or compatible-upstream-release claim is made.",
+    "No live identity/AI/provider credentials, exhaustive SSR/export/browser matrix, production backend authorization or blanket accessibility certification is claimed. See historical_runs for exact previously observed scopes and limits."
+  ],
+  "snapshots": {
+    "algorithm": "sha256",
+    "files": {
+      "CHANGELOG.md": "9b0a539aa17e64f23f081aaafef030c570cbdc28fa48cb1aa93c8809e02ccef2",
+      "SKILL.md": "9174e73f69e0f4806f663748c90790fd57fa311a6aa56efc32830297fe7570d5",
+      "assets/coverage-audit.json": "1654ae093b15b7f6ada3977412a784e72329bc80e7cd1c6ba389b2c109caf5c9",
+      "assets/example-app/.gitignore": "790e3169bc19b046fe55ba1da6d13b976c28363c8c00462a2195fe5faf260910",
+      "assets/example-app/bun.lock": "df11fc483015619236c4e7897914519dfbc61a1628eafee08790e28b80e62211",
+      "assets/example-app/index.html": "319db4614cf84739ed57b557a7bfa5d6298123967e9d43e9c28bb839a29eae39",
+      "assets/example-app/package.json": "12e3e734f9ed1a26d6380ad0b6ffc24939f8f309d696557d69801e85512fd71b",
+      "assets/example-app/src/AboutPage.vue": "f2fcf7b36ecc50578ccd3b083bc5d52b8344080cd8c67550b52b27be5c04114f",
+      "assets/example-app/src/App.vue": "84fd3cc13809d4267c996a3703a5cea89bfdd9b5edb7cfa336c15318b8e02a27",
+      "assets/example-app/src/TaskPage.vue": "aa7790bc6cb3555434a8aaccfb7b828f0ca674a5df60d939f789d730eadcaad6",
+      "assets/example-app/src/main.ts": "9a7f8231ead8039b49991730ec878fd52edc7f1b3dff93382df3d4bd2d491766",
+      "assets/example-app/src/task-store.ts": "c91480e8954f2fb511161cb96dd02cdb9dcc08be72b600c802ae97261f2cc4d3",
+      "assets/example-app/tsconfig.json": "ec8e92019f896b9308343f8a7f57e8f875049890cd65ad44a7ad8b6c48943222",
+      "assets/example-app/vite.config.ts": "0646e0ff42ef72dab57bc185b5532332fda14aec21625357b8ce272028a2cffe",
+      "assets/source-audit.json": "3211aa9c552ad93bcbb01d5da31c929390f7812b254c61419b23513f5df76a34",
+      "assets/source-manifest.json": "0e8149cdf0f6bc74f5e7acbc9a0028a37016a74e62b4a8a1b4ad18d3358ce8e5",
+      "references/accessibility.md": "141dde47928f8ef0a0f14592f401be58ed8227c4864d3e3510a745c9c75eb0b0",
+      "references/ai-streaming.md": "445fdac8ab8d03de73ba607abc66fb82460ce5271beeb1eab4d069b4d40bb9b3",
+      "references/alternative-ui.md": "8b334b38f89965b0c514313a2449403a1696ac813f5197d6d48bc0c3a37d3fff",
+      "references/architecture-data.md": "e482d94d04875804af2c0bf745020c42f475c3846132363f156a702481125ab4",
+      "references/architecture-ui.md": "531543d06c23bb724db1a75032c939acd774e3b08318f7f38601cb4e60389c67",
+      "references/architecture.md": "8684f42576de7eddc224dfe3319f976f4fcdc5efb5f4cd628d7a518402df09ca",
+      "references/auth.md": "9ceaf6de5ad29130bcce16c48b269188232fbbf2692e7ea987a6398bdf18244e",
+      "references/components.md": "b2f94014c77acd055b5d892e2774b80f81d56f15a4d86814a17ab09db0b7cc58",
+      "references/composables.md": "cfe539b584219f2d419a7faee02ad8b1d16c189cc4f8f7a2bfb63f3d7494499b",
+      "references/core-vue.md": "06438168ba3a36c11edb4fb62e18deed066b68881b403050201368256b6224ac",
+      "references/data-tables.md": "17ea2109ab4a1737393c97c386829fb07c51a5eeed07e844ceeda8a61e3675d0",
+      "references/debugging-ssr.md": "4e420885e894bc1857df1d64a8af312422a488126e2beabc8e5ddcf7fed21e28",
+      "references/design-system.md": "83ae527acafb6a7b8d93e808b6fb810867a1158f3c0fbc5f75315f8e8576689d",
+      "references/docs-slides.md": "2612b73d78ed80368cccee527b9f759b8cff1e00e8a1f12100a67bf97db28109",
+      "references/formkit.md": "26bc8567f672510e09709230ec3c1c8c0478c5a3973926c3ed5a40a0b07eeec7",
+      "references/forms.md": "0cd52de6e6ea2360b3ceb0682d848361608946c49aac9562277c59c66271de2b",
+      "references/headless-ui.md": "eba9bffd0453317e5b13a29adffea8394f484f96df4e2bd844b19078f07a925c",
+      "references/i18n-head.md": "42d483e60f4713fdc88228e0103076c43d97fabadd2f848b954bfb8a6218078e",
+      "references/migration.md": "007ed413a6db9dd5521f55f7a6ad825f76b5aeabbed99c5b69d9ca30ef4ada13",
+      "references/motion.md": "69f61051ff871d4be5bd85d82e9e85c6bc64f430d60651af87b0c892ed88f38d",
+      "references/pinia-colada.md": "7893ad32df1ba6c6d4780138898fef3d56c925537b8cdb268fd9246a0408d768",
+      "references/routing-tanstack.md": "4bc22b1773665d5fa73d28fba93756926d08129ce867a63f0eab940685cb9580",
+      "references/routing.md": "af9c255962772b6fcaee5a5df666e5911de1642a56ec018a59e6b693215c6fc1",
+      "references/setup-tooling.md": "a318f13822157a3f6f3b3c8402fd7fdafea22f5db15e6cc2b834cce0625edbf3",
+      "references/sources.md": "fbb0e74ac671cfc08da368aef276441deea832ca476645b6ffc1a75c06d2d397",
+      "references/state.md": "e417f1a0136136930d0fbdb4ab317c072558c15731911621a272102b9b289d00",
+      "references/tanstack-form.md": "ea74c43883366d0bd211afd008bda4e5e99854177a09a778637071822ab8b5f1",
+      "references/tanstack-query.md": "83cdeac936a081fbfc52b5fb849772625dc95c53f092dbcf31337e0fee0cbb08",
+      "references/testing.md": "f0b8ea360b5c669580b842ca6b8bb0abe875d9e4ca7079b86ca69323e82778b5",
+      "references/tresjs.md": "e568cf5dd87ec54022d52a4b7cb43963a66cfcdf485b4b52f8f4c6a388117a83",
+      "references/vee-validate.md": "1046106f6fa0f8a573fbc22c616d26786145893a04e96f8474b4f1b29b2de1ec",
+      "references/virtualization.md": "e68582fe7a4f2312415abeedbe0ef6061f59c4dd95a8c21d35e5455e31af715e",
+      "references/visualization.md": "bd7b1a1eaa6962d8462d25dfb70ed6e03cb97662ad2c0323501a053161716552",
+      "references/vuetify-components.md": "3cdcc10ac342bfb853cb97ed23df05b0d1fa7cc1d340596312f47d7f9d001084",
+      "references/vuetify-setup.md": "18b50ef44fa597c46aadf9733e18ded53c95c8c30eb09d50164408184559d674",
+      "references/vuetify-theme.md": "22e5d08f43ef538d175c661c462ea4d7182a245634951b57b5a7807f6dc61ab1",
+      "references/vueuse-integrations.md": "58084cfd0a843a4dc8633d19527267f985e497b77b26628dda18aabe44fbe00c",
+      "references/vueuse.md": "15a7fe3182f1977f393db472b3671c5a8b5cba5d6f8c1bea5622e4ce65bd4854",
+      "scripts/validate.py": "24ef409dc588d3638085a477f23e231ed3797211cc2c1047b0909d66dcb84392"
+    }
+  },
+  "unresolved": []
+}

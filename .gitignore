@@ -1,0 +1,9 @@
+# Ignore 3rd Party Repo Workspace Skills
+.agents/skills/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+*.gate.lock*

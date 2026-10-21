@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "vue_kit_skills",
+  "project_id": "00696eb5-0644-4b82-9f73-c9e591a2efc6"
+}

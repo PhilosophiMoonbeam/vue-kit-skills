@@ -281,7 +281,7 @@ Size the canvas's **parent** explicitly; window-sized mode is a different layout
 
 ## Experimental WebGPU and custom rendering
 
-For **core 5.9.3 / Three 0.186.1**, the `renderer` prop is a synchronous factory `(ctx: TresRendererSetupContext) => TresRenderer`, not a ready-made instance or Promise. Tres owns initialization of the returned renderer. This complete alternative `SceneCanvas.vue` is meant for the earlier client host (do not also mount the WebGL cube scene):
+For **core 5.9.3 / Three 0.186.1**, the `renderer` prop is a synchronous factory `(ctx: TresRendererSetupContext) => TresRenderer`, not a ready-made instance or Promise. Tres owns initialization of the returned renderer. This complete alternative `SceneCanvas.vue` reuses the earlier client host's async import, error listeners, preparation text, and DOM description (do not also mount the WebGL cube scene). **For this variant only**, replace that host's WebGL 2 probing `onMounted` callback with `onMounted(() => { ready.value = true })`: the selected renderer, not a mandatory WebGL probe, must decide WebGPU/backend availability. Keep `onErrorCaptured` for synchronous constructor failures and the forwarded `@error` for rejected renderer initialization. [Pinned backend selection](https://unpkg.com/three@0.186.1/src/renderers/webgpu/WebGPURenderer.js), [Tres construction and initialization](https://unpkg.com/@tresjs/core@5.9.3/dist/tres.js).
 
 ```vue
 <script setup lang="ts">

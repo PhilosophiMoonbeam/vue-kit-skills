@@ -85,6 +85,15 @@ Hashes allow comparison against the original snapshot **if those historical inpu
 
 The archived [second-pass replacement audit](../assets/second-pass-audit.json) classified 39 Markdown units (master plus 38 references): 36 correctness hypotheses and 3 mixed hypotheses, all low confidence, with 17 deterministic exclusions, no truncations and no processing errors. Its original 39 units, 40 author handoff maps, snapshots, results and input/output hashes remain historical; those hashes do not identify the current shipped output. The [removal ledger](../assets/removals.json) supersedes its integration-adoption conclusions for the excluded capability. These are escalation counts, not confirmed defects, completed dispositions or evidence that current acceptance passed. Keep them separate from the 467-document historical source snapshot and current exercised verification.
 
+### Current third pass
+
+The [third-pass audit](../assets/third-pass-audit.json) keeps two independent batches separate:
+
+- **39 packaged Markdown units: 38 references plus CHANGELOG**, not master plus references. Native labels were **34 ready, 3 technical and 2 incomplete**. All 39 escalated for uncertainty/version risk; authors read all 12 cap-truncated units completely. Processing had **0 errors** and **19 deterministic exclusions**. The excluded master routing contract was separately reviewed directly; the root README is an external shared contract, also reviewed separately.
+- **467 source-to-replacement mapping rows:** **445 covered, 11 excluded and 11 gap** native labels, with **26 escalated**, **0 processing errors, 0 truncations and 0 prefilter exclusions**. Mapping-row exclusions are labels, not processing exclusions. Native gap labels are hypotheses, not confirmed missing replacement content; these counts do not replace the historical source judgments above.
+
+Author evidence records concrete corrections and overturned or clarified hypotheses without turning native labels into final defect/disposition totals. The master review retained conditional companions, broad-architecture versus narrow-task routing and the pinned Vue/Vuetify baseline; exact metadata and release notes support that baseline, not universal optional-package compatibility. Use [current scoped verification](../assets/verification.json) for exercised checks and their snapshots. Third-pass review alone is not runtime, SSR, accessibility or production certification; archived second-pass observations remain historical.
+
 ## Removed integrations
 
 ### Slidev, Twoslash, and FloatingVue

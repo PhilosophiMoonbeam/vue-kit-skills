@@ -42,6 +42,7 @@ const nameInput = useTemplateRef<HTMLInputElement>('nameInput')
 const busy = ref(false)
 const failure = ref('')
 const status = ref('')
+let focusName = false
 
 const form = useForm({
   defaultValues: { name: '' },
@@ -54,18 +55,16 @@ const form = useForm({
           ...previous,
           errorMap: { ...previous.errorMap, onServer: result.fields.name },
         }))
-        await nextTick()
-        nameInput.value?.focus()
+        focusName = true
       }
       return
     }
     formApi.reset(result.value)
     status.value = 'Changes accepted.'
   },
-  onSubmitInvalid: async () => {
+  onSubmitInvalid: () => {
     failure.value = 'Correct the marked field.'
-    await nextTick()
-    nameInput.value?.focus()
+    focusName = true
   },
 })
 const validating = form.useSelector(state => state.isValidating)
@@ -88,6 +87,7 @@ async function submit() {
     return
   }
   busy.value = true
+  focusName = false
   failure.value = ''
   status.value = ''
   try {
@@ -96,6 +96,11 @@ async function submit() {
     failure.value = cause instanceof Error ? cause.message : 'Could not save changes.'
   } finally {
     busy.value = false
+    if (focusName) {
+      focusName = false
+      await nextTick()
+      nameInput.value?.focus()
+    }
   }
 }
 
@@ -157,6 +162,8 @@ function discard() {
 ```
 
 A local-only consumer can implement the same contracts with an explicitly session-owned collection; that is not a server availability check. For production, preserve transport failures as failures, apply authorization on the server, and map only known field names. Since expected save rejection above returns normally, `isSubmitSuccessful` alone is not the application's proof of a successful write; use the actual `ok` result/status.
+
+Validation and save callbacks request focus; the wrapper releases `busy`, waits for the enabled DOM with `nextTick()`, then focuses. A disabled fieldset prevents focusing descendants, so awaiting a tick inside `onSubmit` is still too early. `onSubmitInvalid` is not awaited by the pinned core; keep this callback synchronous rather than launching an unowned focus promise. [Disabled controls](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled), [Vue DOM flush](https://vuejs.org/api/general.html#nexttick), [pinned submit lifecycle](https://unpkg.com/@tanstack/form-core@1.33.5/src/FormApi.ts).
 
 ## Async execution and error contracts
 
@@ -387,7 +394,41 @@ In **1.33.5**, `Field` and `FormGroup` spread fallthrough attrs directly into th
 
 ## Vuetify boundary
 
-Inside `form.Field`, replace the native input with `VTextField` imported from `vuetify/components`: bind `:model-value="state.value"`, handle `@update:model-value="field.handleChange($event ?? '')"`, `@blur="field.handleBlur"`, and bind string errors to `:error-messages="state.meta.errors"`. Keep the native outer `<form>` and leave Vuetify `rules` unset. A clearable component may emit `null`; normalize according to the actual field type rather than casting.
+Contextual replacements for the main SFC, not a standalone component. Keep its Vue import, add the imports/helpers below to the same `<script setup>`, and replace only the existing `nameInput` declaration with the declaration below. Then replace the entire native `<label>`, `<input>`, and `<p id="public-name-errors">` block with the second fence. Retain the surrounding `form.Field` (including its validators and slot), pending message, native outer `<form>`, and submission wrapper unchanged. Leave Vuetify `rules` unset.
+
+```ts
+import type { InputHTMLAttributes } from 'vue'
+import { VTextField } from 'vuetify/components'
+
+const nameInput = useTemplateRef<InstanceType<typeof VTextField>>('nameInput')
+
+function nameInputAttrs(onBlur: () => void, isInvalid: boolean): Pick<
+  InputHTMLAttributes, 'autocomplete' | 'required' | 'onBlur' | 'aria-invalid' | 'class' | 'style'
+> {
+  return { autocomplete: 'nickname', required: true, onBlur, 'aria-invalid': isInvalid }
+}
+
+function stringErrors(errors: readonly (string | undefined)[]): string[] {
+  return errors.filter((error): error is string => typeof error === 'string')
+}
+```
+
+```vue
+<VTextField
+  ref="nameInput"
+  :model-value="state.value"
+  label="Public name"
+  :name="field.name"
+  v-bind="nameInputAttrs(field.handleBlur, state.meta.isTouched && !state.meta.isValid)"
+  :disabled="busy"
+  :error-messages="state.meta.isTouched ? stringErrors(state.meta.errors) : []"
+  @update:model-value="field.handleChange($event ?? '')"
+/>
+```
+
+The component ref preserves the wrapper's focus-after-unlock behavior; 4.3.0 forwards the native input's focus method. A clearable component may emit `null` even through global defaults; normalize it to `''` for this string field, not by casting or introducing a second model. TanStack's inferred error array still includes `undefined` from successful validators; `stringErrors` narrows each item before passing Vuetify's `readonly string[]` contract. This string-only helper is not a Standard Schema issue renderer.
+
+Native `blur`, `autocomplete`, `required`, and `aria-invalid` travel in a narrow Vue-checked attribute bag, following the [strict-template fallthrough recipe](vuetify-setup.md#strict-template-checking-and-native-fallthrough). Optional `class`/`style` keys keep its type compatible with the component's shared surface without adding runtime attributes; no component-wide augmentation or unchecked dictionary is used. `VTextField` routes these attributes/listeners to its real input. The explicit `aria-invalid` mirrors TanStack's touched/error validity, including `onServer` errors: it stays false before touch and becomes true for a touched rejected field even when a nonempty value passes native `required` validity. Visible error messages and native constraint validity alone do not expose that application rejection as an accessible invalid state. Vuetify renders the supplied errors and associations; TanStack remains the sole value/rule owner. These are exact assembly instructions, not a claim that the contextual fences were independently typechecked. [Pinned VTextField forwarding](https://unpkg.com/vuetify@4.3.0/lib/components/VTextField/VTextField.js), [native-attribute routing](https://unpkg.com/vuetify@4.3.0/lib/util/helpers.js), [4.3.0 error-message declaration](https://unpkg.com/vuetify@4.3.0/lib/components/VTextField/VTextField.d.ts), [TanStack derived field validity](https://unpkg.com/@tanstack/form-core@1.33.5/src/FormApi.ts).
 
 ## Verification boundary and sources
 

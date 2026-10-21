@@ -84,13 +84,17 @@ separate app, configuration, and test globals.
    examples for a project choosing these versions, not instructions to downgrade
    an incumbent app. Commit manifest and lock changes together.
 3. For locked reproduction, first require a nonempty committed `bun.lock`, then
-   use `bun install --frozen-lockfile` with the pinned Bun version. It disallows
-   lock changes and refuses a manifest/lock resolution mismatch, but **a missing
-   lockfile alone does not make the frozen flag fail**: without a lock Bun can
-   resolve dependencies without saving one. Do not describe that as reproduction.
-   Unlike `npm ci`, this command does not promise to remove `node_modules`; use
-   a fresh checkout/copy when a clean dependency tree is required. In an incumbent
-   npm project, keep its matching `package-lock.json` and `npm ci` workflow.
+   use `bun install --frozen-lockfile` with the pinned Bun version. For this
+   committed text-lock workflow it refuses a manifest/lock resolution mismatch.
+   **A missing lockfile alone does not make the frozen flag fail**: without a
+   lock Bun can resolve dependencies without saving one. In **Bun 1.4.3**, an
+   imported npm/Yarn/pnpm or binary Bun lock can even cause a migrated `bun.lock`
+   to be written under this flag; it is not a migration guard. Do not call either
+   case locked reproduction. [Exact 1.4.3 checks and migration exception](https://github.com/oven-sh/bun/blob/bun-v1.4.3/src/install/PackageManager/install_with_manager.rs#L2164-L2195)
+   take precedence over later rolling documentation. Unlike `npm ci`, this
+   command does not promise to remove `node_modules`; use a fresh checkout/copy
+   when a clean dependency tree is required. In an incumbent npm project, keep
+   its matching `package-lock.json` and `npm ci` workflow.
 4. An explicitly requested migration may use Bun's automatic existing-lock import.
    Preserve the old lock until resolved package versions/integrities and direct
    pins have been compared, then retain one authoritative lock. The bundled

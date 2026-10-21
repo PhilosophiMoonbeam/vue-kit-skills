@@ -244,13 +244,17 @@ Contextual consumption in a sign-in route: import `safeReturnTo`, compute `safeR
 // src/authenticated-transport.ts
 export type GetSessionToken = () => Promise<string | null>
 
-export function authenticatedFetch(getToken: GetSessionToken, apiOrigin: string) {
+export function authenticatedFetch(
+  getToken: GetSessionToken, apiOrigin: string, getGeneration: () => number,
+) {
   const trustedOrigin = new URL(apiOrigin).origin
   return async (path: string, init: RequestInit = {}): Promise<Response> => {
     const url = new URL(path, trustedOrigin)
     if (url.origin !== trustedOrigin) throw new Error('Untrusted API origin.')
+    const generation = getGeneration()
     const token = await getToken()
     if (!token) throw new Error('An active session is required.')
+    if (getGeneration() !== generation) throw new Error('The identity changed before dispatch.')
     const headers = new Headers(init.headers)
     headers.set('Authorization', `Bearer ${token}`)
     return fetch(url, { ...init, headers, redirect: 'error' })
@@ -258,7 +262,7 @@ export function authenticatedFetch(getToken: GetSessionToken, apiOrigin: string)
 }
 ```
 
-In setup, inject the SDK getter as `() => getToken.value()` and a configured trusted HTTPS API origin. The wrapper forbids cross-origin token forwarding and redirects; the caller still owns cancellation, response status handling, payload validation, and identity-generation checks. Do not accept `apiOrigin` from a route/user input. Same-origin cookie-based APIs have their own cookie/CSRF policy; do not add bearer transport indiscriminately.
+In setup, pass the SDK getter, a configured trusted HTTPS API origin, and the synchronous generation reader from the identity boundary below: `authenticatedFetch(() => getToken.value(), apiOrigin, () => generation.value)`. The wrapper captures that generation **before** awaiting the token and rejects a changed generation **before** dispatch; checking only after awaiting the whole transport would be too late to prevent a request under the wrong identity, including A → B → A. It also forbids cross-origin token forwarding and redirects. The caller still owns cancellation, response status handling, payload validation, and generation checks before publishing data/errors/completion. Do not accept `apiOrigin` from a route/user input. Same-origin cookie-based APIs have their own cookie/CSRF policy; do not add bearer transport indiscriminately.
 
 Server requirements, independent of frontend framework:
 

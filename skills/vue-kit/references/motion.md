@@ -146,7 +146,7 @@ const rowVariants = { present: { opacity: 1 }, removed: { opacity: 0 } }
 </script>
 
 <template>
-  <MotionConfig reducedMotion="user" :skipAnimations="reduced">
+  <MotionConfig reducedMotion="user">
     <motion.button type="button"
       :whileHover="{ scale: reduced ? 1 : 1.02 }"
       :whilePress="{ scale: reduced ? 1 : 0.98 }"
@@ -157,12 +157,15 @@ const rowVariants = { present: { opacity: 1 }, removed: { opacity: 0 } }
       @click="rows = rows.slice(0, -1)">Remove last step</button>
     <button type="button" @click="rows = [...initialRows]">Restore steps</button>
     <p role="status">{{ rows.length }} steps in this local list.</p>
-    <ul class="steps">
+    <ul v-if="reduced" class="steps">
+      <li v-for="row in rows" :key="row.id">{{ row.title }}</li>
+    </ul>
+    <ul v-else class="steps">
       <AnimatePresence :initial="false" mode="popLayout">
         <motion.li v-for="row in rows" :key="row.id"
           :initial="false" :variants="rowVariants"
           animate="present" exit="removed"
-          :layout="reduced ? false : 'position'" :transition="transition">
+          layout="position" :transition="transition">
           {{ row.title }}
         </motion.li>
       </AnimatePresence>
@@ -176,7 +179,7 @@ button:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
 </style>
 ```
 
-`MotionConfig` defaults to **`reducedMotion="never"`**. Set `"user"`; it disables transform/layout animation but **does not disable opacity/color animation**. The example additionally uses zero duration/`skipAnimations` for reduced preference. For manual long-running effects, stop active controls when preference changes rather than assuming configuration retroactively cancels every animation. [MotionConfig](https://motion.dev/docs/vue-motion-config), [configuration types](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion-config/types.d.ts).
+`MotionConfig` defaults to **`reducedMotion="never"`**. Set `"user"` for transform/layout reduction; opacity/color remain enabled. In **2.8.0**, the published component/directive bridge passes `reducedMotionConfig` but does **not** forward the engine's `skipAnimations` constructor option; the public config type alone does not establish that behavior. `useAnimate` separately reads `skipAnimations` when creating scoped animations. Do not rely on either setting to retroactively stop running effects. This list swaps only its noninteractive animated subtree for static rows on a live preference change; the controls and application state remain mounted. Stop manual controls explicitly as below. [MotionConfig](https://motion.dev/docs/vue-motion-config), [configuration types](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion-config/types.d.ts), [published state bridge](https://unpkg.com/motion-v@2.8.0/dist/es/state/motion-state.mjs), [engine configuration](https://unpkg.com/motion-dom@14.3.0/dist/es/render/VisualElement.mjs), [scoped animation](https://unpkg.com/motion-v@2.8.0/dist/es/animation/hooks/use-animate.mjs).
 
 For shared layout, namespace `layoutId` per repeated widget, or use a scoped `LayoutGroup id`. Give scrollable measured ancestors `layoutScroll`, fixed ancestors `layoutRoot`, and set `borderRadius`/`boxShadow` inline for scale correction. `layout="position"` avoids stretching text/images during size changes; SVG layout animation is not supported. [Layout documentation](https://motion.dev/docs/vue-layout-animations).
 
@@ -188,7 +191,7 @@ For optional staggered **decoration**, use `delayChildren: stagger(0.04)` (impor
 
 For an incumbent custom component, create `motion.create(Component)` **once**, outside render/computed callbacks. Its root must forward the element ref, styles, attributes, and relevant listeners to the actual measured DOM node; fragments or swallowed attributes break measurement/gestures. Use `forwardMotionProps` only when that component intentionally consumes motion options. `asChild` similarly requires a deliberate single-child forwarding contract, not an arbitrary Vuetify component. Keep component-library overlays on their own transition API. [Component options](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/utils.d.ts).
 
-The **motion-v** directive is a genuine alternative to wrapper components. Complete `DirectiveAccent.vue`; its `vMotion` local binding registers `v-motion` without a global plugin. A live preference change retargets the decorative opacity immediately.
+The **motion-v** directive is a genuine alternative to wrapper components. Complete `DirectiveAccent.vue`; its `vMotion` local binding registers `v-motion` without a global plugin. A live reduced preference replaces only the decorative node with a static counterpart, disposing the old directive without remounting the control. Changing only `transition.duration` does not retarget an unchanged animation target. [Engine target comparison](https://unpkg.com/motion-dom@14.3.0/dist/es/render/utils/animation-state.mjs).
 
 ```vue
 <script setup lang="ts">
@@ -203,9 +206,10 @@ const reduced = useReducedMotion()
 <template>
   <button type="button" :aria-pressed="emphasized"
     @click="emphasized = !emphasized">Emphasize delivery information</button>
-  <span v-motion :initial="{ opacity: 1 }"
+  <span v-if="reduced" :style="{ opacity: emphasized ? 1 : 0.5 }" aria-hidden="true">—</span>
+  <span v-else v-motion :initial="false"
     :animate="{ opacity: emphasized ? 1 : 0.5 }"
-    :transition="{ duration: reduced ? 0 : 0.16 }" aria-hidden="true">—</span>
+    :transition="{ duration: 0.16 }" aria-hidden="true">—</span>
   <p>Delivery information remains readable.</p>
 </template>
 ```
@@ -218,17 +222,32 @@ For component-based splitting, use `LazyMotion` with `m`, not full `motion`; `fe
 
 For bounded dragging, bind an ancestor template ref as `:dragConstraints="frame"` and give it a real measured box; numeric constraints are offsets such as `{ left: 0, right: 120 }`. Set `drag="x"`/`"y"`, `dragElastic`, and `:dragMomentum="false"` deliberately. A separate handle uses `const controls = useDragControls()`, `@pointerdown="controls.start($event)"`, and a target with `:dragListener="false" :dragControls="controls"`. Give the handle appropriate `touch-action` (`none` for free dragging, `pan-y` for horizontal dragging alongside vertical scrolling), and retain keyboard/button equivalents. Call `controls.cancel()` for interrupted gestures; `controls.stop()` stops an active gesture. These are pointer mechanics, not persisted order or authorization. [Exact controls](https://unpkg.com/motion-v@2.8.0/dist/es/features/gestures/drag/use-drag-controls.d.ts).
 
-Complete `ReorderSteps.vue`: primitive values and stable keys keep the pointer and button paths on the same local order. The buttons stay mounted during moves; focus is not moved as an animation side effect.
+Complete `ReorderSteps.vue`: primitive values and stable keys keep the pointer and button paths on the same local order. The selector and move buttons stay mounted outside the visual list. A live reduced preference cancels dragging before replacing that drag/layout subtree with static rows, without stranding keyboard focus in replaced controls.
 
 ```vue
 <script setup lang="ts">
-import { ref } from 'vue'
-import { MotionConfig, Reorder, useReducedMotion } from 'motion-v'
+import { computed, onBeforeUnmount, ref, watch, type HTMLAttributes } from 'vue'
+import { Reorder, useDragControls, useReducedMotion } from 'motion-v'
+
+const listAttrs = { 'aria-label': 'Steps' } satisfies Pick<HTMLAttributes, 'aria-label'>
 
 const items = ref(['Review', 'Confirm', 'Submit'])
+const selected = ref('Review')
+const selectedIndex = computed(() => items.value.indexOf(selected.value))
 const reduced = useReducedMotion()
-function move(item: string, delta: number) {
-  const from = items.value.indexOf(item)
+const dragControls = useDragControls()
+watch(reduced, (reduce) => {
+  if (reduce) dragControls.cancel()
+}, { flush: 'sync' })
+onBeforeUnmount(() => dragControls.cancel())
+
+function updateFromDrag(next: string[]) {
+  if (!reduced.value) items.value = next
+}
+
+function move(delta: number) {
+  const item = selected.value
+  const from = selectedIndex.value
   const to = from + delta
   if (from < 0 || to < 0 || to >= items.value.length) return
   const next = [...items.value]
@@ -239,21 +258,30 @@ function move(item: string, delta: number) {
 </script>
 
 <template>
-  <MotionConfig reducedMotion="user" :skipAnimations="reduced">
-    <Reorder.Group v-model:values="items" axis="y" as="ol">
-      <Reorder.Item v-for="(item, index) in items" :key="item" :value="item"
-        as="li" :drag="reduced ? false : 'y'" :dragMomentum="false"
-        :style="{ position: 'relative' }">
-        {{ item }}
-        <button type="button" :disabled="index === 0"
-          :aria-label="`Move ${item} earlier`" @click="move(item, -1)">Earlier</button>
-        <button type="button" :disabled="index === items.length - 1"
-          :aria-label="`Move ${item} later`" @click="move(item, 1)">Later</button>
-      </Reorder.Item>
-    </Reorder.Group>
-  </MotionConfig>
+  <label>Step to move
+    <select v-model="selected">
+      <option v-for="item in items" :key="item" :value="item">{{ item }}</option>
+    </select>
+  </label>
+  <button type="button" :disabled="selectedIndex <= 0"
+    :aria-label="`Move ${selected} earlier`" @click="move(-1)">Earlier</button>
+  <button type="button" :disabled="selectedIndex >= items.length - 1"
+    :aria-label="`Move ${selected} later`" @click="move(1)">Later</button>
+  <ol v-if="reduced" v-bind="listAttrs">
+    <li v-for="item in items" :key="item">{{ item }}</li>
+  </ol>
+  <Reorder.Group v-else :values="items" @update:values="updateFromDrag"
+    axis="y" as="ol" v-bind="listAttrs">
+    <Reorder.Item v-for="item in items" :key="item" :value="item"
+      as="li" drag="y" :dragControls="dragControls" :dragMomentum="false"
+      :style="{ position: 'relative' }">
+      {{ item }}
+    </Reorder.Item>
+  </Reorder.Group>
 </template>
 ```
+
+In **2.8.0**, `Reorder.Group` declares `as: AsTag` and motion/reorder props, but does **not** intersect the selected tag's native HTML attributes into its public props; `as="ol"` alone does not make a direct `aria-label` type-check under `strictTemplates`. The narrow `listAttrs` object is checked against Vue's `HTMLAttributes` with `satisfies Pick<…>` and bound to **both** branches. At runtime, Group explicitly merges `useAttrs()` into its `Motion` child; Motion preserves those attributes when rendering the selected native tag. This is a checked native-attribute fallthrough boundary, not a new Group prop, a cast, or permission to forward arbitrary attributes through custom components. Keep `values`/`update:values` and each Item's `value`, `as`, `drag`, `dragControls`, `dragMomentum`, and motion `style` on their declared contracts. [Group declaration](https://unpkg.com/motion-v@2.8.0/dist/es/components/reorder/index.d.ts), [AsTag](https://unpkg.com/motion-v@2.8.0/dist/es/types/common.d.ts), [Group forwarding](https://unpkg.com/motion-v@2.8.0/dist/es/components/reorder/Group.vue_vue_type_script_setup_true_lang.mjs), [Motion attribute handling](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/use-motion-state.mjs), [native rendering](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/utils.mjs), [Vue HTML/ARIA declarations](https://unpkg.com/@vue/runtime-dom@3.5.44/dist/runtime-dom.d.ts).
 
 `values` must contain the same values supplied to `Item :value`; recreating object values independently breaks identity. `axis="xy"` is supported in 2.8.0, not just historical one-dimensional lists. Add `layoutScroll` to scrollable measured containers and `position: relative` to items for their drag stacking order. Reorder is not a multi-container/virtualized drag-and-drop policy engine: use explicit application operations for such requirements rather than treating visual crossing as committed server state. [Reorder types](https://unpkg.com/motion-v@2.8.0/dist/es/components/reorder/index.d.ts), [guide](https://motion.dev/docs/vue-reorder).
 

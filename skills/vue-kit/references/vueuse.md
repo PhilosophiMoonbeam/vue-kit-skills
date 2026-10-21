@@ -81,7 +81,7 @@ For layout alone, prefer CSS media queries. `ssrWidth` supplies a deterministic 
 
 `useFetch(url, requestInit?, options?)` accepts a URL ref/getter. It runs immediately by default; `refetch` defaults to false. Changing a reactive URL does not itself reissue a request unless `refetch: true`. A ref payload can also be watched with refetch enabled; do not assume every nested option/getter has the same watching behavior.
 
-Choose `.get().json<T>()`, `.text()`, or another body parser when constructing the request, before it starts. The JSON generic is a static type assertion, not runtime schema validation. `execute()` starts/refetches, aborting the previous request where supported; `abort()` requests cancellation. `canAbort`, `aborted`, `isFetching`, `isFinished`, `statusCode`, `response`, `data`, and `error` describe the local request. HTTP non-success responses are treated as errors. `execute()` captures failures by default; `execute(true)` rejects, so callers must catch it. Do not `await` an idle `immediate: false` shell before ever executing it: its thenable waits for completion.
+Choose `.get().json<T>()`, `.text()`, or another body parser when constructing the request, before it starts. The JSON generic is a static type assertion, not runtime schema validation. `execute()` starts/refetches, aborting the previous request where supported; `abort()` requests cancellation. `canAbort`, `aborted`, `isFetching`, `isFinished`, `statusCode`, `response`, `data`, and `error` describe the local request. HTTP non-success responses are treated as errors. Fetch/response-processing failures are captured by default; `execute(true)` rejects them, so callers must catch it. Preparation failures can still reject even with the default flag, as explained below. Do not `await` an idle `immediate: false` shell before ever executing it: its thenable waits for completion.
 
 **v15 suppresses stale commits to response/data/error/loading after a newer execute starts.** That is not deduplication, a stale-time cache, or suppression of all side effects: response/error hooks and callbacks can still run for superseded requests. Keep irreversible actions out of those hooks, or apply application-specific identity checks there. No automatic scope-abort is installed in the v15 implementation; register it when the request must end with the owner. [Tagged implementation](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useFetch/index.ts).
 
@@ -117,6 +117,8 @@ onScopeDispose(abort)
 
 Use `createFetch({ baseUrl, fetchOptions, options })` to share request policy. **`fetchOptions` is top-level**, beside `options`, not inside it. `beforeFetch` may alter request context or call `cancel`; `afterFetch` transforms parsed data; `onFetchError` transforms error context. These hooks return context patches. `updateDataOnError` is false by default. Construct authenticated factories per app/request, or read current credentials at execution: never close over one SSR user's credentials in a process-global factory. An absolute caller URL bypasses `baseUrl`; do not attach private authorization to arbitrary caller-controlled destinations.
 
+Keep request preparation and hooks non-throwing or handle their actual rejection boundary. In published v15, payload serialization and awaited `beforeFetch` run before the fetch promise's catch/finally chain; a failure there rejects `execute()` and can leave `isFetching` true. Use the hook's `cancel()` for an intentional skip rather than throwing. Failures from `afterFetch` enter the fetch error path, but a throwing `onFetchError` rejects instead of finishing normal error publication. Do not mistake the default flag for a catch-all failure guarantee. [Pinned preparation and promise chain](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useFetch/index.ts).
+
 Nuxt's auto-imported `useFetch` has a different contract, SSR payload integration, and request behavior. Import explicitly from `@vueuse/core` only when deliberately choosing the VueUse API; see [data architecture](architecture-data.md).
 
 ## `useAsyncState`: promise state versus cancellation
@@ -125,41 +127,45 @@ Use a function for repeatable executions. Passing an already-created promise sta
 
 The v15 execution counter protects the latest state/error/loading commits. It does not cancel earlier work, prevent stale `onSuccess`/`onError` callbacks, or dispose a transport. A non-abortable operation still runs after the owner ends. [Exact implementation](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useAsyncState/index.ts).
 
+Supply an **async task function**, not a plain function that can throw before returning its promise. Published v15 invokes the task before entering its internal `try`: a synchronous throw bypasses its error/finally updates and can leave `isLoading` true. Also supply a non-throwing `onError` when the owner must handle/report failure locally; its default is `globalThis.reportError` when available, otherwise a no-op. `throwError: false` alone does not suppress that reporting.
+
 When cancellation must also prohibit publication after input invalidation or owner disposal, an AbortController around `useAsyncState` alone is insufficient: its execution counter changes only when another execute starts. A canceled task can still resolve, and stopping the scope does not invalidate that counter. Use the existing query owner for shared resources; for a local URL-bound read, an ordinary scoped watcher provides the required publication boundary without a catch-all task wrapper.
 
-Complete SFC against an application-supplied public text URL (`null` means no request). It renders escaped text, not HTML. Every URL change clears the previous identity's display, cancels the previous transport, and invalidates its success/error/finally commits; unmount does the same even if the transport ignores abort:
+Complete **client-mounted** SFC against an application-supplied public text URL (`null` means no request). It renders escaped text, not HTML. Every URL change after mount clears the previous identity's display, cancels the previous transport, and invalidates its success/error/finally commits; unmount does the same even if the transport ignores abort:
 
 ```vue
 <script setup lang="ts">
-import { ref, shallowRef, watch } from 'vue'
+import { onMounted, ref, shallowRef, watch } from 'vue'
 
 const props = defineProps<{ url: string | null }>()
 const text = shallowRef<string>()
 const error = shallowRef<unknown>()
 const pending = ref(false)
 
-watch(() => props.url, async (url, _previous, onCleanup) => {
-  let current = true
-  const controller = new AbortController()
-  onCleanup(() => {
-    current = false
-    controller.abort()
-  })
-  text.value = undefined
-  error.value = undefined
-  pending.value = url !== null
-  if (url === null) return
-  try {
-    const response = await fetch(url, { signal: controller.signal })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const body = await response.text()
-    if (current) text.value = body
-  } catch (cause) {
-    if (current) error.value = cause
-  } finally {
-    if (current) pending.value = false
-  }
-}, { immediate: true, flush: 'sync' })
+onMounted(() => {
+  watch(() => props.url, async (url, _previous, onCleanup) => {
+    let current = true
+    const controller = new AbortController()
+    onCleanup(() => {
+      current = false
+      controller.abort()
+    })
+    text.value = undefined
+    error.value = undefined
+    pending.value = url !== null
+    if (url === null) return
+    try {
+      const response = await fetch(url, { signal: controller.signal })
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      const body = await response.text()
+      if (current) text.value = body
+    } catch (cause) {
+      if (current) error.value = cause
+    } finally {
+      if (current) pending.value = false
+    }
+  }, { immediate: true, flush: 'sync' })
+})
 </script>
 
 <template>
@@ -169,7 +175,7 @@ watch(() => props.url, async (url, _previous, onCleanup) => {
 </template>
 ```
 
-The synchronous flush invalidates the old request as soon as the URL changes, before queued promise continuations can publish. The watcher is created during setup and disposed with that component; it is not a keyed cache or SSR prefetch integration. Do not attach private headers to arbitrary caller-controlled URLs. [Vue watcher cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [v15 execution counter](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useAsyncState/index.ts).
+The synchronous flush invalidates the old request as soon as the URL changes, before queued promise continuations can publish. The synchronous mounted hook creates a component-owned watcher; it does not run during SSR, so server and initial hydration render empty state without starting a server request. An immediate setup-time watcher would run during SSR even with `flush: 'sync'`. This is not a keyed cache or SSR prefetch integration. Do not attach private headers to arbitrary caller-controlled URLs. [Vue watcher cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [SSR watcher implementation](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiWatch.ts), [v15 execution counter](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useAsyncState/index.ts).
 
 ## Storage and serialization
 
@@ -427,7 +433,7 @@ Call `createMetrics()` inside setup or the request-owned state factory; exportin
 - Aggregates accept an array/getter/ref or numeric rest inputs. `useAverage([])` yields `NaN`; empty min/max yield positive/negative infinity. Decide the domain's empty-state meaning before rendering.
 - `useAbs`, `useCeil`, `useFloor`, `useRound`, `useTrunc`, and `useMath` mirror numeric operations, not input validation. `NaN`, infinities, and floating-point behavior still matter. Use a callable Math key, not a constant such as `PI`.
 - Projection extrapolates; it does not clamp. Guard a zero-width input domain. `createProjection` reuses reactive numeric domains; `createGenericProjection` requires a custom projector for non-number domains.
-- `usePrecision` returns a number and supports `math: 'round' | 'ceil' | 'floor'`; it is not arbitrary-precision money arithmetic or localized display formatting.
+- `usePrecision` returns a numeric computed ref and supports `math: 'round' | 'ceil' | 'floor'`; its value is not arbitrary-precision money arithmetic or localized display formatting.
 - Use `logicAnd`/`logicOr`/`logicNot` rather than deprecated `and`/`or`/`not`, but a simple Vue computed boolean expression is often clearer.
 
 ## v15 migration and specialized browser APIs

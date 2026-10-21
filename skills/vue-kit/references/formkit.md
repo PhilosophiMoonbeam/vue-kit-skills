@@ -114,7 +114,9 @@ Hook payloads differ: `input`/`commit` carry values; `init` carries the node; `p
 
 ## Vue installation boundary
 
-Install `@formkit/vue@2.1.2` in a Vue app. The following is an **entry-point integration fragment**: `app` is the existing Vue app before `.mount()`, not a second app to create inside a component.
+Declare `@formkit/vue@2.1.2`, `@formkit/core@2.1.2`, and `@formkit/inputs@2.1.2` as direct dependencies of the consuming Vue app. Both complete SFCs below import types directly from `@formkit/core` and `@formkit/inputs`; those imports need explicit package prerequisites even though the Vue adapter also depends on them. Do not rely on hoisted transitive visibility, including for type-only imports. Keep this package family aligned at the pinned **2.1.2** release. [Vue package manifest](https://unpkg.com/@formkit/vue@2.1.2/package.json), [core package manifest](https://unpkg.com/@formkit/core@2.1.2/package.json), [inputs package manifest](https://unpkg.com/@formkit/inputs@2.1.2/package.json).
+
+The following is an **entry-point integration fragment**: `app` is the existing Vue app before `.mount()`, not a second app to create inside a component.
 
 ```ts
 import { plugin, defaultConfig } from '@formkit/vue'
@@ -130,9 +132,10 @@ Complete embeddable SFC after the installation above. Required callbacks are exp
 
 ```vue
 <script setup lang="ts">
-import { nextTick, ref, shallowRef, useTemplateRef } from 'vue'
+import { nextTick, ref, shallowRef, useTemplateRef, type InputHTMLAttributes } from 'vue'
 import { FormKit, reset } from '@formkit/vue'
-import type { FormKitNode } from '@formkit/core'
+import type { FormKitNode, FormKitSectionsSchema } from '@formkit/core'
+import type { FormKitInputs } from '@formkit/inputs'
 
 interface Draft { email: string }
 type SaveResult =
@@ -142,6 +145,9 @@ const props = defineProps<{
   isEmailAvailable: (email: string) => Promise<boolean>
   save: (draft: Draft) => Promise<SaveResult>
 }>()
+const errorSemantics: FormKitSectionsSchema = {
+  input: { attrs: { 'aria-invalid': '$state.invalid || $state.errors || undefined' } },
+}
 const region = useTemplateRef<HTMLElement>('region')
 const emailNode = shallowRef<FormKitNode | null>(null)
 const saving = ref(false)
@@ -174,6 +180,7 @@ async function submit(data: Draft, node: FormKitNode) {
   if (saving.value) return
   saving.value = true
   status.value = ''
+  let focusRejectedEmail = false
   node.clearErrors(true)
   try {
     const result = await props.save({ email: data.email })
@@ -182,7 +189,7 @@ async function submit(data: Draft, node: FormKitNode) {
         [result.message],
         result.fields.email ? { email: result.fields.email } : {},
       )
-      if (result.fields.email) await focusEmail()
+      focusRejectedEmail = Boolean(result.fields.email)
       return
     }
     reset(node, result.value)
@@ -193,25 +200,36 @@ async function submit(data: Draft, node: FormKitNode) {
     ])
   } finally {
     saving.value = false
+    if (focusRejectedEmail) await focusEmail()
   }
+}
+
+type FormBindings = Extract<FormKitInputs<{ type: 'form' }>, { type: 'form' }>
+  & { submitLabel?: string }
+const formBindings = {
+  type: 'form',
+  submitLabel: 'Save',
+  onSubmit: submit,
+  onSubmitInvalid: focusEmail,
+} satisfies FormBindings
+const emailAttrs: Pick<InputHTMLAttributes, 'autocomplete' | 'class' | 'style'> = {
+  autocomplete: 'email',
 }
 </script>
 
 <template>
   <section ref="region" aria-label="Profile editor">
     <FormKit
-      type="form"
+      v-bind="formBindings"
       :value="initialValues"
       :disabled="saving"
-      submit-label="Save"
-      @submit="submit"
-      @submit-invalid="focusEmail"
     >
       <FormKit
         type="email"
+        :sections-schema="errorSemantics"
         name="email"
         label="Email"
-        autocomplete="email"
+        v-bind="emailAttrs"
         validation="required|email|(300)email_available"
         :validation-rules="validationRules"
         :validation-messages="validationMessages"
@@ -224,6 +242,12 @@ async function submit(data: Draft, node: FormKitNode) {
 </template>
 ```
 
+The complete SFC uses narrow checked bindings for the **2.1.2 declaration boundary**, rather than weakening `strictTemplates`. The adapter exports a callable generic intersected with a runtime component whose props are a union; a literal `type="form"` does not reliably narrow direct form event bindings in strict template tooling. `FormBindings` selects the published `form` member, checking its `onSubmit`/`onSubmitInvalid` props while retaining the application's exact callback signatures. Its sole local extension, `submitLabel?: string`, describes a real runtime pseudo-prop: the pinned form definition registers `submitLabel` and renders it as the built-in submit button's label, but omits it from `FormKitInputProps['form']`. This is a local checked binding, not a global module augmentation or a claim that the package declares that property.
+
+`autocomplete` is likewise a real native input attribute absent from that props union. `emailAttrs` checks it against Vue's native attribute type; optional shared `class`/`style` keys avoid an all-native weak-type mismatch without creating runtime values. Keep the form and input bags on their respective components exactly as shown; do not put callbacks in the native bag or replace the collected node value with a second model. [Published Vue component types](https://unpkg.com/@formkit/vue@2.1.2/dist/index.d.mts), [input/form/event declarations](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.d.mts), [registered form pseudo-props and submit schema](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs), [Vue attribute routing](https://unpkg.com/@formkit/vue@2.1.2/dist/index.mjs).
+
+The 2.1.2 default input exposes required state and error descriptions but does not set native `aria-invalid`. The typed section extension projects existing visible-validation or explicit-error state onto that attribute; it adds no validator or submit gate and leaves pristine inputs unmarked. [Pinned Vue state bindings](https://unpkg.com/@formkit/vue@2.1.2/dist/index.mjs), [section overrides](https://formkit.com/essentials/inputs#sections-schema).
+
 Custom rules return **boolean or Promise<boolean>**, not vee-validate's message-string convention. `required|email` runs before the debounced remote rule; rules normally bail and skip empty values. The generic remote-rule message deliberately does not mislabel a network outage as “email taken.” If the product needs distinct outage/unavailable messages, represent that distinction explicitly in application state and messages.
 
 The form waits for committed input values **and its validating ledger**, marks fields submitted, rejects blocking failures, then calls `@submit` with an unbound copy of collected data plus the core node. Do not submit an independently bound `v-model` snapshot instead. Returning the save promise keeps loading active; an `async` handler is suitable. Default form behavior auto-disables during a returned promise only when no explicit disabled policy overrides it; this example explicitly owns `:disabled="saving"` and a synchronous write guard. `submitBehavior="live"` is an explicit opt-out of the default auto-disable policy, not a persistence guarantee. [2.1.2 form feature](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs).
@@ -233,6 +257,8 @@ The form waits for committed input values **and its validating ledger**, marks f
 The 2.1.2 validation engine records a run token and ignores a stale promise result when a newer validation run supersedes it. It does **not** give a custom rule an AbortSignal or cancel an arbitrary request for you. Keep async rules free of side effects; return their result, do not manually set errors after awaiting an obsolete request. Debounce reduces calls but does not cancel one already sent. If cancellation is required, own controllers per field/node and dispose them with that node's lifecycle. Always catch expected request rejection: the validation engine consumes promise fulfillment, so an uncaught rejection can leave validation unresolved. [Pinned validation engine](https://unpkg.com/@formkit/validation@2.1.2/dist/index.mjs).
 
 An availability result can become stale before save. Expected authoritative save rejection uses `node.setErrors(formErrors, childErrors)` with allowlisted child paths. By default manually assigned input errors clear when that input changes; `preserve-errors`/inherited `preserveErrors` changes that policy. `node.clearErrors(true)` clears descendants too. Do not erase a failed draft or reset on a rejected save. `reset(node, canonicalValue)` makes that accepted value the new initial/reset state; `reset(node)` restores the current initial state, not necessarily empty strings.
+
+Returned field errors request focus only after `finally` clears `saving` and `focusEmail()` awaits the DOM flush. Calling it inside the save branch would focus a still-disabled input. The invalid-submit callback has no application save lock to release; it can use the helper directly. This sequencing assumes the explicit `:disabled="saving"` policy shown above, not an additional disabled owner. [Disabled control focus](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled), [Vue `nextTick`](https://vuejs.org/api/general.html#nexttick).
 
 ## Messages and ledgers in core
 
@@ -308,27 +334,41 @@ Complete SFC after Vue plugin installation. It renders fields from a typed, loca
 <script setup lang="ts">
 import { shallowRef } from 'vue'
 import { FormKit, FormKitSchema } from '@formkit/vue'
-import type { FormKitSchemaDefinition } from '@formkit/core'
+import type { FormKitSchemaDefinition, FormKitSectionsSchema } from '@formkit/core'
+import type { FormKitInputs } from '@formkit/inputs'
 
 const applied = shallowRef<{ email: string } | null>(null)
+const errorSemantics: FormKitSectionsSchema = {
+  input: { attrs: { 'aria-invalid': '$state.invalid || $state.errors || undefined' } },
+}
 const schema: FormKitSchemaDefinition = [
   {
     $formkit: 'email', name: 'email', label: 'Email',
+    __raw__sectionsSchema: errorSemantics,
     validation: 'required|email', autocomplete: 'email',
   },
 ]
 function applyForSession(data: { email: string }) {
   applied.value = { email: data.email }
 }
+type FormBindings = Extract<FormKitInputs<{ type: 'form' }>, { type: 'form' }>
+  & { submitLabel?: string }
+const formBindings = {
+  type: 'form',
+  submitLabel: 'Apply for this session',
+  onSubmit: applyForSession,
+} satisfies FormBindings
 </script>
 
 <template>
-  <FormKit type="form" submit-label="Apply for this session" @submit="applyForSession">
+  <FormKit v-bind="formBindings">
     <FormKitSchema :schema="schema" />
   </FormKit>
   <p role="status">Session-only email: {{ applied?.email ?? 'None applied' }}</p>
 </template>
 ```
+
+Use `__raw__sectionsSchema` here: the outer renderer must pass the section object unparsed so its `$state` expressions run in the email input's context, not the outer schema's data scope. The prefix is removed before passing `sectionsSchema` to `FormKit`. [Raw schema values](https://formkit.com/essentials/schema#raw-values).
 
 Expressions begin with `$` (or `$:` when the first token is not a reference) and use FormKit's limited expression language, not arbitrary JavaScript. Supply data/functions deliberately. Complete compiler example:
 
@@ -362,7 +402,7 @@ The [2.1.0 release](https://github.com/formkit/formkit/releases/tag/v2.1.0) fixe
 
 ## Verification boundary and sources
 
-No execution/typecheck/browser verification is claimed. The graph function and compiler/message fences are core-only; the two SFCs require installed Vue adapter configuration; the async SFC has explicit required application callbacks; installation is contextual. Exercise rapid edit/submit before debounce, out-of-order checks, rejected check promises, authoritative save errors, reset baseline, list detach/reorder, repeated plugin registration, and teardown/unmount in the consuming app.
+No execution/typecheck/browser verification is claimed. The graph function and compiler/message fences are core-only; the two SFCs require installed Vue adapter configuration; the async SFC has explicit required application callbacks; installation is contextual. Both complete SFCs include the locally checked form bindings described above; their suitability for strict template checking is based on the inspected declarations/runtime, not an executed pass. Assemble each complete `vue` fence verbatim as its own SFC, with no omitted bags or direct `submit-label`/submit-event substitutions. Exercise rapid edit/submit before debounce, out-of-order checks, rejected check promises, authoritative save errors, reset baseline, list detach/reorder, repeated plugin registration, and teardown/unmount in the consuming app.
 
 - [Architecture, nodes, settlement, configuration](https://formkit.com/essentials/architecture).
 - [Form submission, errors, reset](https://formkit.com/inputs/form).

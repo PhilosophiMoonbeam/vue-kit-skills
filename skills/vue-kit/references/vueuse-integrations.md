@@ -169,7 +169,7 @@ onScopeDispose(() => {
 
 Create credential-bearing Axios instances per SSR request/app as appropriate. Do not mutate a server-global Axios default Authorization header with a user's token. Interceptor attachment and ejection belong to the instance owner, not every rendering consumer. Use [Query](tanstack-query.md) or [Colada](pinia-colada.md) when the actual requirement is resource caching/invalidation rather than imperative transport state.
 
-Callbacks `onSuccess`, `onError`, and `onFinish` are notification hooks, not the returned promise's rejection handler or a keyed latest-result boundary. `onFinish` runs for each underlying completion, including a superseded execution; do not perform irreversible follow-up work there merely because isLoading became false. An application-owned Axios instance can retain its adapters/interceptors, but the wrapper supplies its own AbortController signal for execution. Keep explicit controller lifetime with the request owner.
+Callbacks `onSuccess`, `onError`, and `onFinish` are notification hooks, not the returned promise's rejection handler or a keyed latest-result boundary. Keep them non-throwing: in published v15, a thrown `onFinish` skips the following loading/finished update and can leave the shared thenable pending. `onFinish` runs for each underlying completion, including a superseded execution; do not perform irreversible follow-up work there merely because isLoading became false. An application-owned Axios instance can retain its adapters/interceptors, but the wrapper supplies its own AbortController signal for execution. Keep explicit controller lifetime with the request owner.
 
 ## `useCookies`: reactive reads and request isolation
 

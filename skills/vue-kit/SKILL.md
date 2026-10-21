@@ -155,6 +155,10 @@ to load every linked document. Combine owners only when the task crosses domains
 - [Source manifest](assets/source-manifest.json) and
   [source audit](assets/source-audit.json): coverage/provenance records, not
   additional runtime dependencies or instructions to reinstall source skills.
+- [Third-pass audit](assets/third-pass-audit.json): current document and source-mapping
+  hypotheses, author evidence and scoped dispositions. Read
+  [scoped verification](assets/verification.json) for exercised checks; neither
+  audit counts nor historical passes certify current runtime behavior.
 
 When verification is authorized, select the repository's own typecheck, tests,
 production build, and browser checks that exercise the change. For UI behavior,

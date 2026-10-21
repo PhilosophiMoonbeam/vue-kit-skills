@@ -225,13 +225,20 @@ Complete `src/App.vue`; all feedback describes an in-memory preview, not server 
 
 ```vue
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { shallowRef, type InputHTMLAttributes } from 'vue'
 import { QBtn, QForm, QInput, useQuasar } from 'quasar'
 
 const $q = useQuasar()
 const title = shallowRef('')
 const preview = shallowRef('')
 const rules = [(value: string) => Boolean(value.trim()) || 'Enter a title.']
+const titleAttrs: Pick<InputHTMLAttributes, 'aria-required' | 'class' | 'style'> = {
+  'aria-required': true,
+}
+
+function updateTitle(value: string | number | null) {
+  title.value = value === null ? '' : String(value)
+}
 
 function updatePreview() {
   preview.value = title.value.trim()
@@ -243,7 +250,11 @@ function updatePreview() {
   <main class="preview-page">
     <h1>Local title preview</h1>
     <QForm @submit="updatePreview">
-      <QInput v-model="title" label="Title" :rules="rules" lazy-rules maxlength="80" />
+      <QInput
+        :model-value="title" @update:model-value="updateTitle"
+        label="Title (required)" v-bind="titleAttrs"
+        :rules="rules" lazy-rules maxlength="80"
+      />
       <QBtn type="submit" color="primary" label="Update preview" />
     </QForm>
     <p role="status">{{ preview ? `Preview: ${preview}` : 'No preview yet.' }}</p>
@@ -259,7 +270,7 @@ function updatePreview() {
 </style>
 ```
 
-`QForm` validates its participating Quasar children before emitting `submit`; it is not Vuetify's `{ valid }` contract. Its imperative `validate()` returns **`Promise<boolean>`**. External validation/error props do not automatically enroll arbitrary controls in that internal validation contract; use `useFormChild` only when implementing a real participating control. [QForm](https://quasar.dev/vue-components/form/).
+`QForm` validates its participating Quasar children before emitting `submit`; it is not Vuetify's `{ valid }` contract. Its imperative `validate()` returns **`Promise<boolean>`**. The example keeps this internal rule engine: `aria-required="true"` and the visible label communicate the prerequisite, but ARIA does not validate input. Its arbitrary `rules` callback cannot itself identify required state to assistive technology. `titleAttrs` checks that native attribute against Vue's `InputHTMLAttributes`; optional shared `class`/`style` keys avoid a weak-type mismatch without adding runtime values. QInput forwards it to its native control even though it is absent from the component's declared props. The published `update:modelValue` payload is `string | number | null`; `updateTitle` accepts that complete contract and normalizes to the sole string owner (`null` becomes `''`). Keep `rules`/`lazy-rules` and the existing `@submit` handler, without native `required` or a second validator; QForm invokes this handler rather than its no-listener native-submit fallback. External validation/error props do not automatically enroll arbitrary controls in that internal validation contract; use `useFormChild` only when implementing a real participating control. [QForm](https://quasar.dev/vue-components/form/), [exact submit branching](https://unpkg.com/quasar@2.35.2/src/components/form/QForm.js), [exact model declaration](https://unpkg.com/quasar@2.35.2/dist/types/index.d.ts), [exact native-attribute forwarding](https://unpkg.com/quasar@2.35.2/src/components/input/QInput.js), [required-state technique and limits](https://www.w3.org/WAI/WCAG22/Techniques/aria/ARIA2).
 
 The Vite plugin transforms assets/imports and integrates Sass; it is not `app.use(Quasar)`. Components are imports/template auto-imports, directives are registered directives, and `Notify` is an opt-in Quasar plugin. `Platform`, `Dark`, `Screen`, `Lang`, and `IconSet` are installed with Quasar automatically; do not treat every exported plugin as an additional required installation. Optional icon fonts must match the configured icon set; use SVG icons or extras intentionally, not a missing external font dependency.
 

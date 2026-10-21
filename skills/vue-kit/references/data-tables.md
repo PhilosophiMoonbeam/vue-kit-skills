@@ -18,6 +18,8 @@ In **Vuetify 4.3.0**, selection is the unnamed `v-model`: with `item-value="id"`
 
 Control server options through `v-model:page`, `v-model:items-per-page`, and `v-model:sort-by`; selection remains a separate `v-model`. `update:options` carries `{ page, itemsPerPage, sortBy, groupBy, search }` and fires immediately as well as on changes: use one fetch trigger, not that event plus a duplicate mounted fetch. Translate the one-based page at the service boundary, provide the filtered total as `items-length`, and define whether `itemsPerPage: -1` is supported before offering “all”. The component does not remotely sort/filter/fetch by itself. Keep transport errors visible and apply the cancellation/stale-response contract below. [Pinned options emission](https://unpkg.com/vuetify@4.3.0/lib/components/VDataTable/composables/options.js), [server implementation](https://unpkg.com/vuetify@4.3.0/lib/components/VDataTable/VDataTableServer.js).
 
+Vuetify sort entries are `{ key, order: 'asc' | 'desc' }`; TanStack entries are `{ id, desc: boolean }`. Map allowed column keys and direction explicitly at the service boundary, rather than forwarding either library's state as the other's schema. Vuetify's runtime also accepts `order: false` to skip a sort entry; omit that entry from a backend sort request. [Pinned Vuetify sorting](https://unpkg.com/vuetify@4.3.0/lib/components/VDataTable/composables/sort.js).
+
 ## TanStack Vue Table: exact release boundary
 
 The verified stable npm release is **`@tanstack/vue-table@9.3.1`**, with exact dependency **`@tanstack/table-core@9.3.1`**, Vue peer `>=3.2`, Node `>=20`, and modern ESM output. This is not a prerelease. Existing applications may still pin v8: inspect the lockfile rather than assuming the website's `latest` matches it. All examples below target **9.3.1**, Vue **3.5.44**, and the Vue adapter, never the React adapter. [Registry](https://registry.npmjs.org/@tanstack/vue-table/9.3.1), [Vue declarations](https://unpkg.com/@tanstack/vue-table@9.3.1/dist/useTable.d.ts).
@@ -261,7 +263,7 @@ export type LoadInvoicePage = (
 
 ### Selected-row scope is a product contract
 
-- `rowSelection` stores IDs, potentially from unloaded pages. `getSelectedRowIds()` reports selected IDs; false entries are not selected.
+- In **9.3.1**, `rowSelection` is `Record<string, true>`: remove a key to deselect, rather than retaining a v8-style `false` entry. `getSelectedRowIds()` returns the map's keys, including IDs from unloaded pages; it does not filter false values from malformed or legacy persisted state. Normalize that state before supplying it. [Pinned selection type](https://unpkg.com/@tanstack/table-core@9.3.1/dist/features/row-selection/rowSelectionFeature.types.d.ts), [ID implementation](https://unpkg.com/@tanstack/table-core@9.3.1/dist/features/row-selection/rowSelectionFeature.utils.js).
 - `getSelectedRowModel()` materializes selected rows from the current input data; it cannot fetch unloaded selected records. `getFilteredSelectedRowModel()` further restricts that materialized set to filtered rows.
 - `toggleAllPageRowsSelected` means the rendered page; `toggleAllRowsSelected` means selectable rows known to the engine, not an unknown server result set.
 - For **all matching remote results**, use an application-owned query-selection descriptor plus exclusions, confirmed by the server. An ID map of one loaded page cannot represent that promise.

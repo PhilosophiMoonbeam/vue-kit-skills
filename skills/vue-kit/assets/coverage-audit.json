@@ -124,6 +124,56 @@
       "unbound_author_quote_proposals": 9,
       "unbound_note": "The CoreVue model passage and the other eight proposed replacements are not existing explicit evidence quotes; no pointer changes were made for them."
     },
+    "third_pass_reconciliation": {
+      "scope": "Settled author corrections and 26 flagged source outcomes only. Current bound excerpts follow corrected prose; no source-corpus reclassification, new individual mapping disposition, native-only promotion, or runtime certification.",
+      "changed_current_quotes": [
+        {
+          "pointer": "/sources/192/resolution/evidence",
+          "source": ".agents/skills/vue-debug-guides/reference/async-component-suspense-control.md",
+          "reference": "references/components.md",
+          "previous_evidence": "- Async wrappers pass props/slots through. Under a parent Suspense, async components are suspensible by default: Suspense controls loading and their loading/error/delay/timeout options are ignored. Set `suspensible: false` only when the wrapper should own them.",
+          "current_evidence": "Under a parent Suspense, async components are suspensible by default: Suspense controls loading, bypassing the wrapper's `loadingComponent`, `delay`, and `timeout`. In **3.5.44**, the loader-rejection path still reports the error and renders a configured `errorComponent`; this is not a built-in Suspense error slot.",
+          "previous_section": "Async components and built-in boundaries",
+          "current_section": "Async components and built-in boundaries",
+          "previous_anchor": "async-components-and-built-in-boundaries",
+          "current_anchor": "async-components-and-built-in-boundaries",
+          "reason": "Follow the confirmed exact-version async-wrapper correction; retain the historical explicit disposition separately."
+        },
+        {
+          "pointer": "/sources/193/resolution/evidence",
+          "source": ".agents/skills/vue-debug-guides/reference/async-component-vue-router.md",
+          "reference": "references/debugging-ssr.md",
+          "previous_evidence": "A route loader `() => import(...)` is not the same API as an async component wrapper.",
+          "current_evidence": "A route loader `() => import(...)` is a different API.",
+          "previous_section": "D1. Who owns the work and the error?",
+          "current_section": "D1. Who owns the work and the error?",
+          "previous_anchor": "d1-who-owns-the-work-and-the-error",
+          "current_anchor": "d1-who-owns-the-work-and-the-error",
+          "reason": "Equivalent route-loader distinction was shortened alongside the confirmed wrapper correction."
+        }
+      ],
+      "changed_explicit_quotes": 2,
+      "canonical_reanchors": [],
+      "new_source_mapping_resolutions": 0,
+      "flagged_source_outcomes": {
+        "reviewed": 26,
+        "overturned": 21,
+        "clarified": 2,
+        "fixed": 3,
+        "record": "assets/third-pass-audit.json",
+        "note": "Three fixed shadcn source outcomes concern corrected surrounding guidance; their existing exact bound excerpts remain current. Native-only covered rows remain native-only."
+      },
+      "preserved_counts": {
+        "sources": 467,
+        "explicit_source_reviews": 450,
+        "native_only_sources": 17,
+        "native_reference_maps": 38,
+        "historical_roots": 49,
+        "active_roots": 48,
+        "excluded_slidev_source_units": 9
+      },
+      "preservation": "All source paths, original SHA256 values, native probability maps, explicit dispositions, counts, source-manifest records, second-pass reconciliation and removal history are unchanged. No original source or guide body is duplicated."
+    },
     "notes": [
       "Native labels are candidate judgments, not confirmed defects. Preserve them alongside explicit primary-evidence resolutions.",
       "450 source units have explicit agent-reviewed dispositions;17 retain native-only covered judgments. Every original335 flagged unit and final material partial/missing/contradiction candidate has an explicit disposition.",
@@ -7673,7 +7723,7 @@
         "disposition": "covered",
         "reference": "references/components.md",
         "section": "Async components and built-in boundaries",
-        "evidence": "- Async wrappers pass props/slots through. Under a parent Suspense, async components are suspensible by default: Suspense controls loading and their loading/error/delay/timeout options are ignored. Set `suspensible: false` only when the wrapper should own them.",
+        "evidence": "Under a parent Suspense, async components are suspensible by default: Suspense controls loading, bypassing the wrapper's `loadingComponent`, `delay`, and `timeout`. In **3.5.44**, the loader-rejection path still reports the error and renders a configured `errorComponent`; this is not a built-in Suspense error slot.",
         "explanation": "Read the entire flagged unit. The current owning section already states the documented parent-versus-wrapper loading ownership rule and the explicit suspensible:false opt-out. Its table labels Suspense experimental and says it has no built-in error slot; the next bullet directs errors to ancestor onErrorCaptured rather than claiming Suspense itself supplies error handling. It separately explains nested Suspense suspensible delegation, so that parent/child boundary control is not confused with an async wrapper's opt-out. The official Suspense guide documents these contracts, and the exact 3.5.44 async-wrapper artifact defaults suspensible to true and branches on the parent boundary. This is existing substantive coverage, not a new correction or a native contradiction reclassification. No guide or fence change is needed; no runtime checks were performed.",
         "primary_urls": [
           "https://vuejs.org/guide/built-ins/suspense.md",
@@ -7713,7 +7763,7 @@
         "disposition": "covered",
         "reference": "references/debugging-ssr.md",
         "section": "D1. Who owns the work and the error?",
-        "evidence": "A route loader `() => import(...)` is not the same API as an async component wrapper.",
+        "evidence": "A route loader `() => import(...)` is a different API.",
         "explanation": "Existing D1 separates route import factories from component-level lazy wrappers; routing companion remains the route-loading/guard owner. Loader pending/error ownership is retained and expanded in D1a.",
         "primary_urls": [
           "https://router.vuejs.org/guide/advanced/lazy-loading"

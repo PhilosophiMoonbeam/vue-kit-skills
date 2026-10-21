@@ -48,6 +48,26 @@ bun run dev
 
 The committed `bun.lock` is authoritative. Keep type checking separate from Vite bundling; a build alone does not prove types or behavior. See [setup and tooling](skills/vue-kit/references/setup-tooling.md) for prerequisites, lockfile migration and dependency lifecycle-script boundaries.
 
+## Inspect the retained WebGPU recipe
+
+The optional [browser verification lab](verification/webgpu/) runs extracted examples from [TresJS](skills/vue-kit/references/tresjs.md), outside the installed skill. Rendering uses the **viewing device's browser/GPU**; Node only serves static files. It defaults to **Normal · no injection**: native GPU/canvas methods remain unchanged. Other cases explicitly deny adapter, device or WebGL2 fallback access. Each start creates a fresh iframe; unmount preserves error observers. Source/hash links, direct canvas readback and browser-local JSON downloads let a second observer inspect the same experiment.
+
+```sh
+bun install --frozen-lockfile --cwd verification/webgpu
+bun run --cwd verification/webgpu build
+bun run --cwd verification/webgpu start
+```
+
+The backend listens only on `127.0.0.1:45875`. For optional access through an already configured tailnet, add an unused HTTPS Serve port without changing existing routes:
+
+```sh
+tailscale serve --bg --https=11453 --yes http://127.0.0.1:45875
+```
+
+Use the HTTPS URL printed by the command; it provides the secure context WebGPU requires. This is tailnet-only Serve, not public Funnel. Keep the backend running; remove only this route with `tailscale serve --https=11453 off`. Tailscale is an optional verification-host tool, not a dependency of the skill or recipe. No telemetry, uploads or account credentials are required by the lab.
+
+Normal rendering and deliberately failed initialization are separate observations. A headless software adapter does not certify native hardware; a blank screenshot or discarded-buffer readback alone does not establish a rendering failure. The recipe remains experimental and retained, with the bounded observations recorded below.
+
 ## Validate and inspect evidence
 
 From the repository root:
@@ -60,6 +80,6 @@ The standard-library validator checks skill structure, reference navigation, ret
 
 [Sources and verification policy](skills/vue-kit/references/sources.md) explain the revised provenance population: **47 retained historical roots, 459 documents and 327 original triage flags**, plus separately identified OpenVue and application-session contract extensions. One retained nine-document root remains an explicit presentation-integration exclusion; it is not supported guidance. [Coverage routing](skills/vue-kit/assets/coverage-audit.json) preserves the retained hashes and native hypotheses without pretending historical dispositions validate revised examples.
 
-Superseded audit bodies and runtime reports remain in repository history at commit `7bf433b98951918c694358e372d3b02cf6f982e5`, outside the installable skill. They were not edited into fresh results. The [current verification record](skills/vue-kit/assets/verification.json) lists only exercised cutover checks and their limits. No complete server authentication implementation, exhaustive SSR matrix or blanket accessibility certification is implied.
+Superseded audit bodies and runtime reports remain in repository history at commit `7bf433b98951918c694358e372d3b02cf6f982e5`, outside the installable skill. They were not edited into fresh results. The [current verification record](skills/vue-kit/assets/verification.json) distinguishes retained cutover checks from later generated-Nuxt, production-browser transport, local HTTP, router and graphics observations, including their source profiles and limits. No complete server authentication implementation, exhaustive SSR matrix or blanket accessibility certification is implied.
 
 **Removed presentation integration:** the earlier slide-authoring/tooltip integration remains excluded because its tested desktop compatibility patch failed at startup. See the [decision and reintroduction criteria](skills/vue-kit/references/sources.md#removed-integrations). [VitePress documentation](skills/vue-kit/references/docs-vitepress.md) and the unrelated Floating UI adapter remain supported.

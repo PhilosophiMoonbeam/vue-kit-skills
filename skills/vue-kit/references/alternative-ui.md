@@ -155,11 +155,106 @@ With `strictTemplates`, forward native root attributes through the declared `pt.
 
 **Browser acceptance plan, not an observed pass:** mount this shell at 320px and 1280px CSS width in both themes. Tab to the combobox and inspect its name: it must remain “Office” before and after selecting London/New York, not become the placeholder or city. Click its label to focus it; use Space/Arrow keys/Enter to select and Escape to dismiss. Open Preview office; inspect the dialog's name, initial focus, Tab/Shift+Tab containment, Escape dismissal and trigger-focus restoration. Confirm local-only feedback, visible focus and no clipped popup/dialog. Toggle the theme before opening overlays to check body-portal scope.
 
-### Nuxt availability is a separate integration
+### Official Nuxt module: complete separate application
 
-The official **`@openvue/nuxt-module@1.0.0` exists** and depends on `openvue@1.0.0`. Its published implementation declares Nuxt `>=3.0.0`; package development metadata uses Nuxt 3.15.4. These are source facts, **not** an exercised Nuxt 4 compatibility claim. For Nuxt, [Nuxt host guidance](nuxt.md) owns bootstrap/SSR; use the [official Nuxt setup](https://openvue.dev/nuxt), not this Vite `main.ts`.
+Use the **official `@openvue/nuxt-module@1.0.0`**, not the Vite bootstrap or a second manual plugin. The exact module declares Nuxt `>=3.0.0`; that range alone is not runtime evidence. This profile selects **Nuxt 4.6.2**, **Vue 3.5.44**, Node **24.15.0** and Bun **1.4.3**. Start in a dedicated empty directory, preserving an incumbent application's manager/lockfile:
 
-Do not invent an `openvue` Nuxt configuration key, renamed runtime composable or resolver export: some **1.0.0 public identifiers retain historical names**. Read the exact installed module/types and upstream setup before configuring it; this reference intentionally does not reproduce those identifiers. For an explicitly chosen Nuxt integration, install `openvue@1.0.0`, `@openvue/themes@1.0.0` and the development dependency `@openvue/nuxt-module@1.0.0`, then verify the actual application's server rendering, injected theme styles, hydration and portal theme scope. [Module metadata](https://registry.npmjs.org/@openvue%2fnuxt-module/1.0.0), [published implementation](https://unpkg.com/@openvue/nuxt-module@1.0.0/dist/module.mjs).
+```sh
+bun add --exact nuxt@4.6.2 vue@3.5.44 openvue@1.0.0 @openvue/themes@1.0.0
+bun add --dev --exact @openvue/nuxt-module@1.0.0 typescript@5.9.3 vue-tsc@3.3.2 @types/node@24.13.2
+```
+
+Complete `nuxt.config.ts`:
+
+```ts
+import { defineNuxtConfig } from 'nuxt/config'
+import OpenVueModule from '@openvue/nuxt-module'
+import Aura from '@openvue/themes/aura'
+
+export default defineNuxtConfig({
+  typescript: {
+    strict: true,
+    tsConfig: { vueCompilerOptions: { strictTemplates: true } },
+  },
+  modules: [[OpenVueModule, {
+    autoImport: false,
+    components: { include: ['Button', 'Select', 'Dialog'] },
+    directives: { include: [] },
+    composables: { include: [] },
+    options: {
+      theme: {
+        preset: Aura,
+        options: { darkModeSelector: '.app-dark', cssLayer: false },
+      },
+    },
+  }]],
+  nitro: { preset: 'node-server' },
+})
+```
+
+The supported Nuxt **module/options tuple** passes options directly to the real exported module; no invented configuration key, renamed composable, resolver alias or manual installer is needed. `autoImport: false` selects the module's explicit include-list registration; its generated plugin still owns installation and its Nitro hook still emits structural/theme styles into server HTML. Add every used component to `include` so its SSR styles are included. The explicit imports in the SFC below remain valid. Do not disable `loadStyles`, duplicate installation or replace the module's SSR stylesheet hook with client-only CSS. [Nuxt modules](https://nuxt.com/docs/4.x/guide/going-further/modules), [exact module implementation](https://unpkg.com/@openvue/nuxt-module@1.0.0/dist/module.mjs), [exact server style hook](https://unpkg.com/@openvue/nuxt-module@1.0.0/dist/runtime/plugin.server.js).
+
+Complete root `tsconfig.json`:
+
+```json
+{
+  "files": [],
+  "references": [
+    { "path": "./.nuxt/tsconfig.app.json" },
+    { "path": "./.nuxt/tsconfig.server.json" },
+    { "path": "./.nuxt/tsconfig.shared.json" },
+    { "path": "./.nuxt/tsconfig.node.json" }
+  ]
+}
+```
+
+Complete `app/app.vue`:
+
+```vue
+<template><NuxtPage /></template>
+```
+
+Complete `app/pages/index.vue` by copying the **entire** `src/App.vue` office-preview SFC above, with these two exact replacements. Replace `const dark = shallowRef(false)` with:
+
+```ts
+const theme = useCookie<'light' | 'dark'>('office-theme', { default: () => 'light' })
+const dark = computed(() => theme.value === 'dark')
+useHead({ htmlAttrs: { class: () => dark.value ? 'app-dark' : '' } })
+```
+
+Replace its entire `toggleTheme` function with:
+
+```ts
+function toggleTheme() {
+  theme.value = dark.value ? 'light' : 'dark'
+}
+```
+
+After the heading add `<NuxtLink to="/other">Other page</NuxtLink>`. Complete `app/pages/other.vue`:
+
+```vue
+<template>
+  <main>
+    <h1>Other page</h1>
+    <NuxtLink to="/">Office preview</NuxtLink>
+  </main>
+</template>
+```
+
+Nuxt supplies `useCookie`, `useHead`, `NuxtLink` and `NuxtPage`; no separate Vue/router/bootstrap file belongs here. The non-sensitive theme cookie supplies deterministic request-owned initial markup; `useHead` keeps the selector on `html`, including body portals. Preserve an incumbent theme owner rather than adding a second one. Never choose initial SSR markup from browser-only storage/media. No Vuetify/Pinia/cache integration is required for this standalone UI recipe.
+
+After all files exist:
+
+```sh
+bunx --no-install nuxt prepare
+bunx --no-install nuxt typecheck
+bunx --no-install nuxt build
+HOST=127.0.0.1 PORT=3000 node .output/server/index.mjs
+```
+
+Open `/`, navigate to `/other` and back, then refresh both routes. Inspect the server HTML for component and theme styles before JavaScript executes; inspect clean hydration, light/dark computed colors and body-portal scope, then run the Select/Dialog keyboard/focus checks above. A successful build alone does not certify this integration. [Official setup](https://openvue.dev/nuxt), [exact package metadata](https://registry.npmjs.org/@openvue%2fnuxt-module/1.0.0).
+
+**Observed 2026-10-21:** this exact module/options tuple passed generated strict Nuxt contexts (`strictTemplates: true`) and a production `node-server` build on the selected Nuxt/Vue versions. HTTP responses contained structural and Aura light/dark theme styles before hydration. Chromium at 320px and 1280px exercised named Select keyboard selection and Escape, named modal Dialog body portals, initial close-action focus, Tab/Shift+Tab containment and trigger restoration; both themes changed portal computed colors without clipping. Client navigation and document refresh worked with the theme cookie. This is a bounded local UI integration result, not blanket module/component/accessibility certification.
 
 ### Theming, services and cutover contracts
 

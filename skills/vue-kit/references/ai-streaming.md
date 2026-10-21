@@ -6,6 +6,8 @@ Read when adding TanStack AI chat, tools, or generation UI to an existing local/
 
 Verified baseline: Vue **3.5.44**, `@tanstack/ai-vue` **0.27.0**, `@tanstack/ai-client` **0.40.0**, `@tanstack/ai` **0.70.0**. The Vue package peers on Vue `>=3.5.0` and AI `^0.70.0`; its client dependency is `^0.40.0`. These are **pre-1.0 releases**, not npm prerelease-tag versions; pin the coordinated versions and review release changes before upgrades. Do not borrow React hooks, React state access, or another AI SDK's message/tool names. [Package metadata](https://unpkg.com/@tanstack/ai-vue@0.27.0/package.json), [published exports](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/index.d.ts).
 
+The complete chat pane uses `Array.prototype.findLastIndex`: include `ES2023` or newer in TypeScript's `lib` and target a runtime that implements it, or supply the application's supported polyfill. Compilation libraries do not polyfill the browser. Observed consumer checks used TypeScript **5.9.3**, vue-tsc **3.3.13**, `strict`/`strictTemplates`, and the established `skipLibCheck` boundary. A stronger `exactOptionalPropertyTypes`/full dependency-declaration check exposed an upstream adapter declaration conflict; TypeScript 7 was incompatible with this vue-tsc release. These are recorded toolchain limits, not permission to weaken an incumbent application's checks.
+
 | Need | Verified Vue API / decision |
 | --- | --- |
 | Chat | `useChat` from `@tanstack/ai-vue`; return values are readonly refs and action methods. |
@@ -53,6 +55,8 @@ The hook's `queue` option accepts a `WhenBusy` shorthand, `QueueConfig`, or `Que
 ## Complete browser pane with an explicit transport contract
 
 The following two SFCs form a Vue-side integration example, **not a standalone server demo**. The host must supply an already-authorized `ConnectionAdapter` implementing the TanStack event protocol over its existing local/self-hosted service. No backend, fake stream, or endpoint implementation is supplied here. Create that adapter in the application's authenticated transport layer; standard SSE construction is `fetchServerSentEvents(actualAuthorizedUrl, () => actualFetchOptions)` with its verified `credentials`/`headers`/`fetchClient` options. The URL/options must come from real application configuration. Custom adapters must forward the abort signal and run-context headers. Never retarget an adapter across accounts.
+
+For the text-only SSE contract, send JSON `data:` frames in order: `RUN_STARTED` (`threadId`, `runId`), `TEXT_MESSAGE_START` (`messageId`, `role: 'assistant'`), incremental `TEXT_MESSAGE_CONTENT` (`messageId`, `delta`), `TEXT_MESSAGE_END` (`messageId`), then `RUN_FINISHED` (`threadId`, `runId`, `finishReason: 'stop'`). Failure terminates with `RUN_ERROR` and a `message` instead. Close the response after the terminal event; do not use raw token strings or a `[DONE]` sentinel as this contract. Local stop can close the HTTP connection while server work still attempts later writes; those writes must not update a stopped or remounted pane. [Adapter event ordering](https://github.com/TanStack/ai/blob/main/packages/ai/docs/chat-architecture.md).
 
 `ChatHost.vue` defines the application-owned integration interface through props. Replace the whole context atomically on account, tenant, thread, or transport configuration change; `identityKey` must be unique to that complete identity, including a new login session. Set it to `null` immediately on logout. Do not wrap this pane in `KeepAlive` or share its instance across SSR requests.
 
@@ -349,6 +353,10 @@ function clearResult() {
 </template>
 ```
 
+The fetcher forwards `options.signal` to the actual HTTP request. For JSON, check HTTP status, parse and runtime-validate `{ summary: string }`, then return that object; do not cast an unchecked `response.json()` to `Result`. For an SSE `Response`, emit `RUN_STARTED`, optional `CUSTOM` `generation:progress` events, `CUSTOM` with `name: 'generation:result'` and `value: { summary: string }`, then `RUN_FINISHED`, or terminate with `RUN_ERROR`. This is generation protocol, not chat text deltas; the result payload must satisfy the same application contract.
+
+In client 0.40.0, ordinary generation failures settle `generate()` with `error`/`status: 'error'`; a resolved promise is not proof of success. A failed or locally stopped run retains the last successful result. `stop()` returns an active run to `idle`, not `success`; “Clear result” calls `reset()` to remove that retained output and error. Scope disposal aborts the transport and rejects stale result ownership, so an old completion cannot repaint the remounted identity. None of these actions proves server cancellation or deletes server history.
+
 ## Audio recording and multimodal submission
 
 `useAudioRecorder` returns `start`, `stop`, `cancel`, readonly `isRecording`/`recording` refs, and **boolean** `isSupported`. Disable recording on unsupported browsers; start only from a deliberate user action after explaining microphone use. A raw `await stop()` returns `AudioRecording`: its `.part` goes into `sendMessage({ content: [recording.part] })`, `.base64` is available for generation input. Recording is not consent to upload; let the user review/discard or explicitly send, and apply upload limits. `cancel()` discards capture/releases the mic; scope disposal also cleans up.
@@ -375,7 +383,7 @@ Use `useRegisterWebMCPTools(tools, options?)` for scoped registration; `useWebMC
 
 ## Verification boundary
 
-Pinned exports/declarations, adapter implementation and primary docs ground these integration examples. Chat SFCs require the declared application transport; custom generation requires the declared fetcher. No running inference backend, deployed transport or end-to-end authorization test is claimed; these examples do not require or configure a hosted-service account.
+Pinned exports/declarations, adapter implementation and primary docs ground these integration examples. The exact ChatHost/ChatPane and custom-generation SFCs were exercised in a production-built Chromium consumer against deterministic local HTTP/SSE endpoints: chat partial/complete/error/stop/regenerate, identity/thread remount and late-output isolation; generation JSON/SSE transformation/error/stop/reset/remount. See [verification evidence](../assets/verification.json) for the pinned profile and scoped results. This proves those browser transport/lifecycle paths, not inference, authentication, server authorization/cancellation, persistence/hydration/reconnection, tools/approvals/queue, UI registries, specialized media, recording, WebMCP, SSR, or assistive-technology behavior. No hosted-service account is required or configured.
 
 Application acceptance checks: initial/slow/empty stream; send guard; safe generic error before and after partial text; stop before/after first token; regenerate without duplicate user turns; disconnect/truncation/reconnect exhaustion; logout/account/thread switch during stream, tool execution, approval, and hydration; no stale repaint; server denial of forged IDs/tool results; resource/rate caps; credential redaction; keyboard-only cancel/recovery; screen-reader announcements without token floods; no HTML execution; backend retention/deletion/cancellation behavior independently confirmed.
 

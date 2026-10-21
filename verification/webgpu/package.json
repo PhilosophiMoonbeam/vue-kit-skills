@@ -1,0 +1,25 @@
+{
+  "name": "vue-kit-webgpu-verification",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.4.3",
+  "scripts": {
+    "extract": "node scripts/extract-source.mjs",
+    "typecheck": "vue-tsc --noEmit",
+    "build": "bun run extract && bun run typecheck && vite build && node scripts/stage-source.mjs",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@tresjs/core": "5.9.3",
+    "three": "0.186.1",
+    "vue": "3.5.44"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-vue": "6.0.10",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "vue-tsc": "3.3.13"
+  }
+}

@@ -1,0 +1,5 @@
+node_modules/
+dist/
+src/SceneHost.vue
+src/SceneCanvas.vue
+*.tsbuildinfo

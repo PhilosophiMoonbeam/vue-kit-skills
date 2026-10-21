@@ -4,8 +4,8 @@
     "vue": "3.5.44",
     "vuetify": "4.3.0"
   },
-  "recorded_at": "2026-10-21T18:50:27.952380Z",
-  "scope": "Service-independent OpenVue cutover; historical results are not copied into current acceptance.",
+  "recorded_at": "2026-10-21T20:00:21.425259Z",
+  "scope": "Targeted fourth-pass runtime acceptance. Retained cutover checks identify source90c3eb4 and are not relabeled as reruns. New generated-Nuxt, transport, HTTP, router and graphics observations have explicit profiles. Experimental graphics fault observations are not normal-path passes.",
   "environment": {
     "node": "24.15.0",
     "bun": "1.4.3",
@@ -18,7 +18,8 @@
     "typescript": "5.9.3",
     "vue_tsc": "3.3.13",
     "vite": "8.3.4",
-    "browser": "Chrome/156.0.8078.47"
+    "browser": "Chrome/156.0.8078.47",
+    "profile_scope": "Shared cutover baseline; per-check versions and runtime provenance override this summary."
   },
   "unresolved": [],
   "checks": [
@@ -36,7 +37,9 @@
         "json_fences": 8,
         "errors": 0,
         "boundary": "Bare template fragments were wrapped in a template; three explicitly contextual object-property fragments were wrapped in an object. Script parsing and Vue template compilation do not establish imported type or runtime correctness."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "strict-consumer-and-production-build",
@@ -56,7 +59,9 @@
         ],
         "initial_failure": "Native root attributes were absent from component prop declarations; the source examples now use declared pt.root. Fixture-only adapter typing and contextual parser errors were corrected without weakening source checks.",
         "boundary": "Streaming and reader SFCs are typechecked consumers, not exercised inference/backend flows. Private components were checked with equivalent aliases, not a fresh generated Nuxt context or SSR build."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "openvue-built-browser",
@@ -92,7 +97,9 @@
           "No autoplay or remote images"
         ],
         "boundary": "Bounded Chromium keyboard/DOM and visual checks, not screen-reader, exhaustive accessibility, Nuxt or SSR certification."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "session-utility-runtime",
@@ -115,7 +122,9 @@
         ],
         "expected_diagnostic": "Vue watcher warning during intentionally thrown cleanup; failure is caught by the smoke assertion, not suppressed.",
         "boundary": "Controlled token transport and local identity state, not a session server, credential issuance or authorization proof."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "private-cache-built-browser",
@@ -134,7 +143,9 @@
         ],
         "browser_uncaught_errors": 0,
         "boundary": "Real cache/component lifetimes with controlled identity snapshots/read results; no actual sign-in, credential verification, server authorization or authenticated SSR claim."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "bundled-workbench",
@@ -145,7 +156,9 @@
         "installed_packages": 65,
         "production_modules": 626,
         "boundary": "Exact authoritative lockfile used; source corpus and account credentials not needed. This cutover check does not replay earlier workbench browser results."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "selected-ui-license-metadata",
@@ -165,7 +178,9 @@
           "@openuxkit/utils": "1.0.1"
         },
         "boundary": "Published installed package declarations and local source revision, not a legal opinion or license grant. Preserve applicable notices."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "retained-provenance-and-excluded-content",
@@ -179,7 +194,9 @@
         "excluded_vendor_guidance_matches": 0,
         "successor_attribution_matches": 1,
         "boundary": "Only the permitted ancestry attribution names the superseded UI library. Historical research inputs outside skills/vue-kit remain untouched; they are not part of the installed skill."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "package-and-reference-format",
@@ -191,7 +208,9 @@
         "errors": 0,
         "official_format": "valid",
         "boundary": "Structure, path/link/reference ownership, schemas, frozen retained identities and content snapshots only; not runtime or semantic certification."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "validator-negative-boundaries",
@@ -211,7 +230,9 @@
           "unsafe-extension-path"
         ],
         "boundary": "Each diagnostic was checked independently of stale snapshots. These are actual CLI rejection checks, not a source-text assertion suite."
-      }
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
     },
     {
       "id": "actual-isolated-install",
@@ -224,22 +245,408 @@
         "structural_checks": 14,
         "official_format": "valid",
         "boundary": "Actual local repository install and exact payload comparison; no public remote update/install is claimed by this check. Only selected skill is installed, not research inputs or the upstream clone."
+      },
+      "source_commit": "90c3eb4",
+      "recorded_at": "2026-10-21T18:50:27.952380Z"
+    },
+    {
+      "id": "current-reference-syntax",
+      "result": "passed",
+      "scope": "Current master plus all40 references; parsing and Vue template compilation only.",
+      "command": "node reference-syntax.mjs (throwaway compiler smoke)",
+      "details": {
+        "documents": 41,
+        "fences": 326,
+        "vue_fences": 122,
+        "script_fences": 151,
+        "json_fences": 9,
+        "wrapped_template_fragments": 6,
+        "contextual_property_fragments": 3,
+        "errors": 0,
+        "compiler": {
+          "vue": "3.5.44",
+          "typescript": "5.9.3"
+        },
+        "boundary": "Six bare template fragments were enclosed in a template; three explicitly contextual property fragments were enclosed in an object. This does not establish imported types, library contracts or runtime behavior."
+      }
+    },
+    {
+      "id": "openvue-generated-nuxt-production",
+      "result": "passed",
+      "scope": "Official module tuple with explicit component allowlist, Aura theme, SSR cookie-owned dark selector and actual production hydration/navigation.",
+      "command": "Explicit Node24 nuxt typecheck && nuxt build; actual Nitro node-server; HTTP and Chromium interaction",
+      "details": {
+        "versions": {
+          "node": "24.15.0",
+          "nuxt": "4.6.2",
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "@openvue/nuxt-module": "1.0.0",
+          "@openvue/themes": "1.0.0",
+          "typescript": "5.9.3",
+          "vue-tsc": "3.3.2"
+        },
+        "generated_strict_contexts": true,
+        "strictTemplates": true,
+        "ssr_component_theme_style_ids": 11,
+        "root_document_styles_including_page_style": 12,
+        "matrix": [
+          {
+            "width": 320,
+            "dark": false,
+            "body_portals": true,
+            "focus_forward_reverse_restore": true
+          },
+          {
+            "width": 320,
+            "dark": true,
+            "body_portals": true,
+            "focus_forward_reverse_restore": true
+          },
+          {
+            "width": 1280,
+            "dark": false,
+            "body_portals": true,
+            "focus_forward_reverse_restore": true
+          },
+          {
+            "width": 1280,
+            "dark": true,
+            "body_portals": true,
+            "focus_forward_reverse_restore": true
+          }
+        ],
+        "parent_independent_observation": [
+          "Absolute Node24 server executable/version",
+          "Initial SSR theme/component styles",
+          "Unsigned401/private,no-store",
+          "Native dialog body portal/name/focus/Tab/Escape restoration",
+          "Client navigation and SSR refresh"
+        ],
+        "metadata_correction": "Earlier v26.3.0 was Bun1.4.3 collector process.version compatibility metadata, not the production server. Explicit absolute Node24 compilation/build/server and browser matrix were repeated.",
+        "boundary": "Selected OpenVue Nuxt profile, not every module/preset/SSR deployment or exhaustive accessibility. No flash-free-transition claim."
+      }
+    },
+    {
+      "id": "private-cache-generated-nuxt-runtime",
+      "result": "passed",
+      "scope": "Three unchanged private-cache SFCs in generated strict Nuxt contexts and actual SSR/browser lifetimes.",
+      "details": {
+        "versions": {
+          "pinia": "4.1.0",
+          "@pinia/nuxt": "1.0.3",
+          "@pinia/colada": "1.4.8",
+          "@pinia/colada-nuxt": "1.2.0"
+        },
+        "source_fences_sha256": {
+          "PrivateCacheBoundary.vue": "a1ac592965c5262c1b149690adaba2355c8981b571a82b662a037cef706b07d2",
+          "PrivateSession.vue": "646f0d17fad2814a23ec9aab38655b697ee51ec6fb01ce4e5b77444cc01709c0",
+          "PrivateAccount.vue": "d1a766e30dc483f87d0afda3b93434cbf1cf82b359f07a351964710e14475450"
+        },
+        "concurrent_isolated_http_requests": 24,
+        "all_isolated": true,
+        "initial_hydration_browser_api_requests": 0,
+        "behaviors": [
+          "Unsigned401 and private,no-store",
+          "Allowlisted fixture A/B responses remain request-isolated",
+          "A-to-B-to-A rejects retired delayed reads",
+          "Account/session/organization changes retire private scope",
+          "Public cache retained while private entries evicted",
+          "Retained private consumer remains fail-closed",
+          "Reader identity mismatch cannot populate cache"
+        ],
+        "boundary": "Application-owned allowlisted-cookie test fixture is not production authentication, credential verification or tenant authorization. No mutation implementation was exercised; late-mutation guards remain an application obligation."
+      }
+    },
+    {
+      "id": "transport-production-browser-runtime",
+      "result": "passed",
+      "scope": "Exact ChatHost, ChatPane, GenerationPane and application-owned Axios reader with real local HTTP/SSE transport.",
+      "command": "Strict typecheck + production build +12 browser cases; parent independently replayed all12",
+      "details": {
+        "versions": {
+          "vue": "3.5.44",
+          "@tanstack/ai": "0.70.0",
+          "@tanstack/ai-client": "0.40.0",
+          "@tanstack/ai-vue": "0.27.0",
+          "@vueuse/integrations": "15.0.0",
+          "axios": "1.20.0",
+          "typescript": "5.9.3",
+          "vue-tsc": "3.3.13",
+          "vite": "8.3.5"
+        },
+        "compiler": {
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": true,
+          "target": "ES2022",
+          "lib": "ES2023"
+        },
+        "source_fences_sha256": {
+          "ChatHost.vue": "217ca2dda42b8f2da0afaedac320aedf024c1d54cc5bc3fe98bb8d4bfc6b0c5d",
+          "ChatPane.vue": "1ce9a074661c240bd888f35bb25cd7092d82d20464727c1eff938802afb43d0f",
+          "GenerationPane.vue": "bd489c1f2c03559fcaa8535889ec084bc31605e053f25c30aa5e7fab98d0886b",
+          "RecordSummary.vue": "ec4c0f73527457d70751680e8d4d2c212c9ef8afb895b6f28146464a094c7748"
+        },
+        "production_browser_cases": 12,
+        "parent_business_http_requests": {
+          "chat": 6,
+          "generation": 9,
+          "reader": 6,
+          "total": 21
+        },
+        "behaviors": [
+          "Chat partial output/completion/regeneration/RUN_ERROR/stop",
+          "Late chat writes, remount and logout retirement",
+          "Generation real HTTP JSON and TanStack SSE CUSTOM generation:result",
+          "Generation transform/error/stop/reset/remount",
+          "Axios success503/cancel/recovery/unmount",
+          "Same-tick double click and settled-promise cancellation serialization"
+        ],
+        "compiler_limits": [
+          "With extra exactOptionalPropertyTypes/noUncheckedIndexedAccess and dependency checking, upstream BaseTextAdapter midConversationChannels declarations conflict.",
+          "TypeScript7.0.2 with vue-tsc3.3.13 failed ERR_PACKAGE_PATH_NOT_EXPORTED. Neither profile is claimed supported; no dependency patch or weakened application checks."
+        ],
+        "boundary": "Local protocol/backend fixtures, not model inference, authentication, tools, persistence, media or every API in these references. Observer polling is excluded from21 business requests."
+      }
+    },
+    {
+      "id": "bearer-real-http-runtime",
+      "result": "passed",
+      "scope": "Exact provider-neutral bearer helper against an actual loopback HTTP server.",
+      "command": "bun run http-smoke.ts (throwaway smoke)",
+      "details": {
+        "actual_server_requests": 2,
+        "redirected_requests": 0,
+        "behaviors": [
+          "Caller Authorization replaced with current bearer",
+          "Wrong origin rejected before token retrieval",
+          "Actual302 redirect not followed",
+          "Generation change during awaited token prevents dispatch",
+          "Pre-aborted request prevents credential retrieval/dispatch",
+          "Absent credential prevents dispatch"
+        ],
+        "boundary": "Real HTTP dispatch and retirement rules, not credential issuance/verification, login or server authorization."
+      }
+    },
+    {
+      "id": "router-injected-access-runtime",
+      "result": "passed",
+      "scope": "installAccessGuard application injection/composition runtime; not blanket Router certification",
+      "details": {
+        "versions": {
+          "vue": "3.5.44",
+          "vue-router": "5.4.0",
+          "vite": "8.3.5",
+          "@vitejs/plugin-vue": "6.0.10",
+          "typescript": "5.9.3",
+          "vue-tsc": "3.3.13",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47"
+        },
+        "source_fence_sha256": "43871b6c629cdbb4aa2469af6bb5c62798a8328910510655820896339aca0309",
+        "source_unchanged": true,
+        "actual_policy_http_requests": 5,
+        "unique_targets": 7,
+        "loops": 0,
+        "uncaught_errors": 0,
+        "behaviors": [
+          "Application provider installed before router, including direct initial protected navigation",
+          "Public bypass makes no policy request",
+          "Delayed allow changes route only after settlement",
+          "Delayed deny retains route, URL and rendered page; aborted failure4",
+          "HTTP503 reaches router.onError and caller rejection; subsequent navigation recovers",
+          "Disposer removes guard without removing app-owned provider"
+        ],
+        "boundary": "Client navigation policy, not server authorization. Guard disposal deliberately removes this client gate; it is not logout."
+      }
+    },
+    {
+      "id": "graphics-normal-software-rendering",
+      "result": "passed",
+      "scope": "Retained experimental source recipe, normal initialization and unmount in two explicit software-renderer browser profiles.",
+      "details": {
+        "versions": {
+          "vue": "3.5.44",
+          "@tresjs/core": "5.9.3",
+          "three": "0.186.1",
+          "browser": "Chrome/156.0.8078.47"
+        },
+        "webgl2": {
+          "normal_api_wrappers": 0,
+          "visible_cube": true,
+          "unhandled_rejections": 0,
+          "unmounted_cleanly": true
+        },
+        "webgpu": {
+          "runner": "Independent playwright-cli Chrome session",
+          "launch_args": [
+            "--enable-unsafe-webgpu",
+            "--use-angle=vulkan",
+            "--use-vulkan=swiftshader",
+            "--enable-features=Vulkan",
+            "--disable-vulkan-surface"
+          ],
+          "actual_backend": "webgpu",
+          "real_device_observed": true,
+          "adapter_observed_in_device-denial_case": {
+            "vendor": "google",
+            "architecture": "swiftshader",
+            "isFallbackAdapter": true
+          },
+          "normal_api_wrappers": 0,
+          "normal_runs": 2,
+          "unhandled_rejections": 0,
+          "downloaded_canvas_center_rgba": [
+            0,
+            105,
+            182,
+            255
+          ],
+          "unmounted_cleanly": true
+        },
+        "image_limits": [
+          "Earlier WebGPU page screenshot omitted cube pixels that direct canvas readback contained.",
+          "Visible WebGL2 cube later encoded a transparent direct readback; buffer persistence cannot be assumed."
+        ],
+        "boundary": "Actual WebGPU API through software rendering, not native Ryzen/Vega certification. Host render/video devices were inaccessible to this user and no display server was exposed; permissions were not changed."
+      }
+    },
+    {
+      "id": "graphics-controlled-initialization-observation",
+      "result": "observed",
+      "scope": "Explicitly injected adapter/device and WebGL2 fallback denials, separately from normal operation.",
+      "details": {
+        "source_recipe_retained": true,
+        "cases": [
+          {
+            "mode": "adapter-unavailable",
+            "backend": "webgl2",
+            "unhandled_rejections": 0,
+            "intervention_events": 4,
+            "component_errors": []
+          },
+          {
+            "mode": "device-rejected",
+            "backend": "webgl2",
+            "unhandled_rejections": 0,
+            "intervention_events": 4,
+            "component_errors": []
+          },
+          {
+            "mode": "both-unavailable",
+            "backend": "unavailable",
+            "unhandled_rejections": 1,
+            "intervention_events": 5,
+            "component_errors": [
+              "INITIALIZATION_FAILED"
+            ]
+          },
+          {
+            "mode": "device-and-fallback-unavailable",
+            "backend": "unavailable",
+            "unhandled_rejections": 1,
+            "intervention_events": 5,
+            "component_errors": [
+              "INITIALIZATION_FAILED"
+            ]
+          }
+        ],
+        "interpretation": "Single-path denial fell back to WebGL2 cleanly. Deliberately denying both initialization paths emitted INITIALIZATION_FAILED into the retained host alert, followed by an unsuppressed rejection. User-directed retention and independent inspection do not turn that observation into a blanket rendering/hardware failure or an all-path clean-recovery pass.",
+        "boundary": "Test-induced failures are not measurements of an unsupported physical GPU. WebGPU remains experimental; no cleanup shim, error suppression or dependency patch was added."
+      }
+    },
+    {
+      "id": "hosted-independent-webgpu-lab",
+      "result": "passed",
+      "scope": "Separate optional verification/webgpu app, outside installed skill; live tailnet-only HTTPS inspection.",
+      "command": "bun install --frozen-lockfile --cwd verification/webgpu && bun run --cwd verification/webgpu build; loopback Node server + additive Tailscale Serve",
+      "details": {
+        "pins": {
+          "vue": "3.5.44",
+          "@tresjs/core": "5.9.3",
+          "three": "0.186.1",
+          "vite": "8.3.4",
+          "typescript": "5.9.3",
+          "vue-tsc": "3.3.13"
+        },
+        "strict": true,
+        "strictTemplates": true,
+        "secure_context_observed": true,
+        "viewports": [
+          320,
+          1280
+        ],
+        "horizontal_overflow_at320": false,
+        "case_modes_exercised": 5,
+        "fresh_iframe_reset_confirmed": true,
+        "unmount_observers_retained": true,
+        "actual_downloads": {
+          "png": 2,
+          "json": 1,
+          "retained_runs_after_clear": 6
+        },
+        "deployed_source_hashes_verified": 5,
+        "source_recipe_sha256": {
+          "SceneHost.vue": "d565de6a7b1384bdfc777b560ca59e7fcc5233ad6b56e4643c7e9026a1cc9432",
+          "SceneCanvas.vue": "b64dae229540260da95c134dfcfa4e107c2391f8d6e1b03c949cfad83c077ee4"
+        },
+        "existing_tailnet_routes_preserved": true,
+        "static_review": "Two independent read-only reviews found no concrete source/security/transparency issue.",
+        "boundary": "No uploads/analytics/results API. Optional Tailscale hosting is not an installed skill dependency. Private access coordinates are intentionally omitted. Lab build retains the honest Three bundle-size warning."
+      }
+    },
+    {
+      "id": "public-bun-and-npm-installers",
+      "result": "passed",
+      "source_commit": "90c3eb4",
+      "scope": "Both public installer forms at the already-published cutover commit, before this runtime-evidence update.",
+      "command": "bunx skills add PhilosophiMoonbeam/vue-kit-skills --skill vue-kit --agent codex --copy --yes; npx --yes skills add PhilosophiMoonbeam/vue-kit-skills --skill vue-kit --agent codex --copy --yes",
+      "details": {
+        "independent_installs": 2,
+        "selected_skills_each": 1,
+        "byte_matching_files_each": 59,
+        "structural_checks_each": 14,
+        "official_format_each": "valid",
+        "boundary": "Public baseline installs do not certify an unpublished working tree. Final current-payload installation and validation are reported separately at delivery."
+      }
+    },
+    {
+      "id": "validator-additional-negative-boundaries",
+      "result": "passed",
+      "scope": "Six independent CLI copies with fresh snapshots, beyond the retained seven cutover negative cases.",
+      "command": "python3 validator-extra.py (throwaway smoke)",
+      "details": {
+        "negative_cases": 6,
+        "exit_code_each": 1,
+        "cases": [
+          "non-HTTPS primary evidence URL",
+          "wrong historical commit",
+          "source hash tampering",
+          "historical status tampering",
+          "owner mapping mismatch",
+          "duplicate extension identity"
+        ],
+        "boundary": "Expected diagnostics observed independently of stale snapshots; validator code unchanged. Structural checks do not authenticate execution or certify semantics."
       }
     }
   ],
   "limits": [
-    "No complete authentication server, real login/token verification or tenant authorization is supplied or certified. Client-only identity simulations are labeled as such.",
-    "OpenVue Nuxt module metadata/implementation were inspected, not runtime-certified; no fresh Nuxt4 SSR/module/hydration/deployment matrix was exercised.",
-    "AI and application-endpoint reader SFCs were strictly typechecked; no inference backend, hosted-provider account or new application API is implied.",
-    "Syntax/template compilation does not verify every imported type or run every optional ecosystem integration. Strict consumer scope is enumerated separately.",
-    "Browser checks cover selected built Select/Dialog/Carousel and private-cache behaviors at the named widths, not blanket accessibility, screen-reader or browser compatibility.",
-    "The structural validator checks schemas, native-hypothesis identity, navigation, exclusions and snapshots; it cannot authenticate execution or certify semantic completeness.",
-    "Earlier reports remain immutable in repository history at commit7bf433b98951918c694358e372d3b02cf6f982e5, outside the installed skill; they are not current passes."
+    "No complete authentication server, real login/token verification or tenant authorization is supplied or certified. Cookie/token fixtures are explicitly application-owned test contracts.",
+    "Generated Nuxt4 SSR/module/hydration observations cover the enumerated OpenVue profile and selected private-cache lifetimes, not every module/preset/deployment or an exhaustive SSR matrix.",
+    "Real HTTP/SSE exercised client protocol and lifetime behavior, not inference, hosted-provider accounts, persistence, tools, media or every optional ecosystem integration.",
+    "Reference parsing/template compilation does not verify every imported type. Strict compiler and runtime scopes, pinned versions and unsupported stronger compiler combinations are enumerated per check.",
+    "Browser checks are bounded Chromium keyboard/DOM/visual observations at named widths, not screen-reader, exhaustive accessibility or all-browser certification.",
+    "Experimental WebGPU is retained as requested. Normal software WebGL2/WebGPU rendering and unmount passed; explicitly denied initialization produced separately recorded errors/rejections. Native hardware, lost-device recovery, resource stress and all-path clean teardown are not certified.",
+    "Screenshots and current drawing-buffer readback can disagree. Inspect actual backend, live scene, raw errors and pixels rather than inferring unsupported hardware from an empty image.",
+    "The structural validator checks schemas, retained identities, navigation, exclusions and snapshots; it cannot authenticate execution or certify semantic completeness.",
+    "Retained checks identify their cutover source commit; older reports remain immutable in repository history at7bf433b98951918c694358e372d3b02cf6f982e5. Snapshot refresh is packaged integrity, not proof every earlier runtime check was repeated."
   ],
   "snapshots": {
     "algorithm": "sha256",
     "files": {
-      "CHANGELOG.md": "80f1c81ea630bd30f347fc453787d2d513a2138f320dcf9a8b3308d0f9198ff4",
+      "CHANGELOG.md": "fd0173d38c7d4212ef23920e942eeaed9b7dad20b06574928ef110e5dfee249a",
       "SKILL.md": "755c5d3b33157e42653ecd60d011887044433648c8a9b40bd3cec6f26837c1cd",
       "assets/coverage-audit.json": "65e86257fe5e80d379ca6c3d15f6583a9117384a808cb0edd45d5e0138003ba7",
       "assets/example-app/.gitignore": "790e3169bc19b046fe55ba1da6d13b976c28363c8c00462a2195fe5faf260910",
@@ -257,8 +664,8 @@
       "assets/source-audit.json": "6c3d0d32161cfe217387f4b6f754930f66669173a3f56beccabd867c642999bb",
       "assets/source-manifest.json": "dcea5076ac712c5146f0f09b6755506880952eacd43ac7663d858f72d0076e20",
       "references/accessibility.md": "0fb8bf2540413d245bf444bbc4b1972b6d25edd3b07982bcf876f27dd0f8a423",
-      "references/ai-streaming.md": "117cbab22017805736926a48944b8d664f3cf136f2735fa65cfb2eb92464e320",
-      "references/alternative-ui.md": "86b60df9d504105226b25016dedbc542ff55050dd417f9b520112fcd01876cd6",
+      "references/ai-streaming.md": "377fb644830fb34ba01c38c4270aca742df1a5bc319d9c0ae3b6922622194497",
+      "references/alternative-ui.md": "74cee974b989a9805eb3148a12496716283b9f0d57ad0b7cc3dfe6a3a2ba5ff6",
       "references/architecture-data.md": "82c4cf4f40e65f55326304c7fbb31ddb07f2aa4d1aa7d79efec370752bbfd9d6",
       "references/architecture-ui.md": "decdea16a12272e0df3a9d1e585aba2446fa6f89da89bb518512ce509198d223",
       "references/architecture.md": "ba8d826ef8e022085f3c1dcd81321a3768997f34d6c3bdc16f1ae77c267a053e",
@@ -276,25 +683,25 @@
       "references/i18n-head.md": "3cd9178d64eeef9253d7b49ef95616bcc38e808448fa649cdf85a2c0e7c0d2a1",
       "references/migration.md": "c5ba1bcb95d9b6cdc3dd1c7bd361c701a5823f3cc37288f1f2d227711a56d58f",
       "references/motion.md": "2e11a0b154610cf38f783d06fc6fe153a23d3bd4c13e8f4b5f02756759f9c59f",
-      "references/nuxt-integrations.md": "d97aa2be3779925e19a1ba0a66911527e756cb969b73f0c3b34d119e229e168f",
+      "references/nuxt-integrations.md": "531a640284312952fbdf13c75844e79cfdd909e3303adc41ac9e4c32b384b06e",
       "references/nuxt.md": "94378db8e4f03dd52d6fb3b1bc49419aadc3fcfd443da5d5f04679a035b95183",
       "references/pinia-colada.md": "2a8ae7720d8775c7ddaf2d94ee7fd7bcc26b43d99c02506a33d31a4eac02d460",
       "references/routing-tanstack.md": "bf18cbb52f5071e00973fbf2aa8e090e4287f5806a5100c859b966a27458c095",
       "references/routing.md": "10a37c620202808512761fb813a7f0d3988380ee25bf839b83e4d3ae85fda498",
-      "references/setup-tooling.md": "9243c6b28fb7114e27a282e212edfb2911ef68e8506cd92aab0b6ad57651fa4c",
+      "references/setup-tooling.md": "904d91e1888bbca59e36b6aeaad661d09de0f16318df85f7ee854faeb9970ac9",
       "references/sources.md": "1dc2fdc22034a4e4a7a0be65620eea947775a1543dbf2a253cd08e104c4324b6",
       "references/state.md": "4c1fc546c5d3b761948452e671f7961766d64393d247d3adb08c03236c33cf4e",
       "references/tanstack-form.md": "215b46757b60d2aa0e2f20272028d44d598481340b4769a0235c4630604f4eba",
       "references/tanstack-query.md": "843182f52765861b3b0a360ddc5157a64ccb07b4cf6846d837cc9c42eabe79d4",
       "references/testing.md": "73e37f24a4712de75ea5660842a5897f771a389934302a7be87ce7f87652600b",
-      "references/tresjs.md": "3f90c2a864f5d6d65457cf59f9220749b1010f4612e8e0ef68e4523bdb53cf02",
+      "references/tresjs.md": "aae5992db55c85117829d75a53d1960670a0d554ac9223e067f357ca5b21d818",
       "references/vee-validate.md": "cc4de9828c605e8121fa1d10dc2e8d1a2a095be41c41e5c2b0e410a8a3f241b3",
       "references/virtualization.md": "d7b317689c0505a96a868d7cc3ca74d6049d70d249c698ccf10dfc0bbf99e66e",
       "references/visualization.md": "b1e153686437b3d7297db8ce74318211de8c45329670972896743aa6f2de9eef",
       "references/vuetify-components.md": "bead225ee9fb7c7cc3be904a5572a8b7f3c6c46ab57d77b3a1acfdcadea14231",
       "references/vuetify-setup.md": "4579840ccfa0d0c87c96b1da236a80ec0f742c7e7937142fefbbcf7447d1358b",
       "references/vuetify-theme.md": "e3a49d143f7d77ebddd1138f70272835a6cdd6a42ae4be86c7064e7a94a3bb76",
-      "references/vueuse-integrations.md": "f07f83413e49c3585ca572d269b42449815657962dc47f4cb67f0394bebedb76",
+      "references/vueuse-integrations.md": "681722063d6bd1eb1bcb83382ce5e9a50a45d89963b58f4b8ccc777136c671d5",
       "references/vueuse.md": "bf7d5d60a4a9c550325a13707203af0dfe52f188a6d03b37f93fe7fd4fdfa412",
       "scripts/validate.py": "93d00e3f9ae03015892c7eb5b37b7e37e9c623ee36a00071faf7b10705fd0973"
     }

@@ -1,4 +1,4 @@
-This project, "vue-kit-skills" is to create the ultimate Vue ecosystem skills collection (a "kit") for modern TypeScript web apps.
+This project, "vue-kit" is to create the ultimate Vue ecosystem skills collection (a "kit") for modern TypeScript web apps.
 
 # Agent Instructions
 

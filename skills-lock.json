@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "skills": {
+    "clerk-vue-patterns": {
+      "source": "clerk/skills",
+      "sourceType": "github",
+      "skillPath": "skills/clerk-vue-patterns/SKILL.md",
+      "computedHash": "f6e57b2cc237d9c2e407800827b2f6984a4bbb9630c6e5c3bfa7657ac3081db6"
+    },
+    "create-adaptable-composable": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/create-adaptable-composable/SKILL.md",
+      "computedHash": "2f215126499d29a733be980ef9ce8f4ffb5f25a8831aec965d86c0cd21b2c5d2"
+    },
+    "floating-ui-vue-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/floating-ui-vue-skilld/SKILL.md",
+      "computedHash": "8d2107aa5c67612e4821d05db7bb1b6705e62b71d6c7958881fa3e2a3b937c04"
+    },
+    "formkit-core-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/formkit-core-skilld/SKILL.md",
+      "computedHash": "df8d7e7d1867c1b5ba359abe11607c272fd1c92856025695aab031a70e8ad5b7"
+    },
+    "motion-v-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/motion-v-skilld/SKILL.md",
+      "computedHash": "2b511f35433c2f3165a54f2cac54b01b0afae92068498e27a5ef94332b56db37"
+    },
+    "peccable": {
+      "source": "PhilosophiMoonbeam/Peccable",
+      "sourceType": "github",
+      "skillPath": "skills/peccable/SKILL.md",
+      "computedHash": "c825dbcb50cdae7559d4d56ed2fab2238d6c9b48973e61e478fdc0460b2d739e"
+    },
+    "pinia-colada-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/pinia-colada-skilld/SKILL.md",
+      "computedHash": "68489e139f4c73cdcf64d68a0f523298cce98c961b66f6042ab228c2d37cd8de"
+    },
+    "pinia-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/pinia-skilld/SKILL.md",
+      "computedHash": "2bfbbe3e00e40780c82aec7c0539ec869a7c16ec257948853ae0173e092533e5"
+    },
+    "primevue-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/primevue-skilld/SKILL.md",
+      "computedHash": "7f1d2e20b9a08b737dcb40d27e40182c621af88244ff0530676ec46caebe258d"
+    },
+    "quasar-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/quasar-skilld/SKILL.md",
+      "computedHash": "1dfd6e71832d2bcab3a19cbc15eacdb68b5ec24e59b48888e278cb87ecf05fb2"
+    },
+    "reka-ui-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/reka-ui-skilld/SKILL.md",
+      "computedHash": "8db2bdcc0b1d698f80432c0d2fef2e105fdd10ad34062113b59e8ef4d2ac6edb"
+    },
+    "shadcn-vue-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn-vue-skilld/SKILL.md",
+      "computedHash": "34f715cb97f9ca1d596b90f910335fef3c40f92667a15daab5bbed783e514474"
+    },
+    "slidev-cli-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/slidev-cli-skilld/SKILL.md",
+      "computedHash": "db6d4bf7d2595baff8d794ca742d3a63e5a0bbd2d251fe204681d6c0e2730fd1"
+    },
+    "tanstack-ai-vue-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-ai-vue-skilld/SKILL.md",
+      "computedHash": "3ac48e80226983f40558c32442def8ba00c6c783600a6ed30c69cffee8be9c8d"
+    },
+    "tanstack-vue-form-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-vue-form-skilld/SKILL.md",
+      "computedHash": "71af5a5a5af631d1ae6458e4f16d683124b4e5ee0c743977c7dcd3760d803e27"
+    },
+    "tanstack-vue-query-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-vue-query-skilld/SKILL.md",
+      "computedHash": "820b7ae8e5afa40ba974ba226fa29c26cd6dc64782fbabbeb9965912820dbf4b"
+    },
+    "tanstack-vue-router-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-vue-router-skilld/SKILL.md",
+      "computedHash": "f4f921c64a633c0c4ad1d1864ade9d0bcce5be6e2115bb06bd4ba329baeb3ba0"
+    },
+    "tanstack-vue-store-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-vue-store-skilld/SKILL.md",
+      "computedHash": "bd2df37f00cc7cca191b6cda6128ffa7a272399414434d660f6a7cdb2f6d18f2"
+    },
+    "tanstack-vue-table-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-vue-table-skilld/SKILL.md",
+      "computedHash": "1dc910a509f53564c737af8a20d54b74e13aae7fd4c45a3a8526107015c60d3b"
+    },
+    "tanstack-vue-virtual-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-vue-virtual-skilld/SKILL.md",
+      "computedHash": "10aa933c59546053e5cc16888151edb7a9dab85aabdd19f1ae7418168b40175f"
+    },
+    "tresjs-core-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tresjs-core-skilld/SKILL.md",
+      "computedHash": "34807f5e282d9ba3620388663e427cc5efbb8ba85d64b9f751911e55ff533c38"
+    },
+    "unhead-vue-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/unhead-vue-skilld/SKILL.md",
+      "computedHash": "c0ecfb4c35dfdf5f9b7d3c9e923dcf1eee8d9c5bd381c5d994d22e5ef2856f83"
+    },
+    "unovis-ts-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/unovis-ts-skilld/SKILL.md",
+      "computedHash": "f1c08c88e65d074a5fe7bd78b046ee6b96d4af1f00c058b2ac8c33b27cddaf9a"
+    },
+    "unovis-vue-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/unovis-vue-skilld/SKILL.md",
+      "computedHash": "9afb74ea3cd2045c68edb7178836d89cce0ef1cbcedfbefb6481da313843599f"
+    },
+    "vee-validate-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vee-validate-skilld/SKILL.md",
+      "computedHash": "e17534f8b1c69532d599682d86df1200555b1712fc998339bae528ee0e7ea481"
+    },
+    "vitepress-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitepress-skilld/SKILL.md",
+      "computedHash": "5aa705ca4dc857cd491dbfd8964e232bd9bb9164e235749c612eeaf45788bfc2"
+    },
+    "vue-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-best-practices/SKILL.md",
+      "computedHash": "70a50d6ee12edf24e0be9a79f59ea55a581961e8a38de2a20b96c7ae766ce3ef"
+    },
+    "vue-data-ui-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-data-ui-skilld/SKILL.md",
+      "computedHash": "98792ee187ec3f7e47e2d6aa2ccd2888a4bc5bf5284c0cb7679d6c9b9b133f88"
+    },
+    "vue-debug-guides": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-debug-guides/SKILL.md",
+      "computedHash": "29e3785d80245a64ead02602062d859f6e6553b506614ac75a1ead7f1e1529da"
+    },
+    "vue-expert": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-expert/SKILL.md",
+      "computedHash": "6e4af47ca055fa4c4b76d6cb201593dccc52a40d00b6df1b643e875a1296a44e"
+    },
+    "vue-i18n-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-i18n-skilld/SKILL.md",
+      "computedHash": "5984e3a3baabac79943c576074e6cf83f81243cf844ebd629967755a7f66ef35"
+    },
+    "vue-jsx-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-jsx-best-practices/SKILL.md",
+      "computedHash": "f78720a9904eb748af26cff651aaf8c0c8e6a72f9ee30e6f0626fc45e33cfd9a"
+    },
+    "vue-options-api-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-options-api-best-practices/SKILL.md",
+      "computedHash": "b35263a402e34a93e089cdf6d2e714d2dc1670a1f834ce67215552c4a70a864c"
+    },
+    "vue-patterns": {
+      "source": "affaan-m/ecc",
+      "sourceType": "github",
+      "skillPath": "skills/vue-patterns/SKILL.md",
+      "computedHash": "0fd03b3c1f40323f61b65f6033cdb6e332e8367cbccb11b2b02159f5a10679ba"
+    },
+    "vue-pinia-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-pinia-best-practices/SKILL.md",
+      "computedHash": "d4ba913bec21910b8e37b2115cd964df2dc43ad62346b981c7b88d4ddc8cf792"
+    },
+    "vue-router-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-router-best-practices/SKILL.md",
+      "computedHash": "f0745ed318c113e592ab4a9ded57ceadd0db2edab00cdb46b216c83f5ce0799e"
+    },
+    "vue-router-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-router-skilld/SKILL.md",
+      "computedHash": "fcd49f8640e42eb11faecb9571078d0758fbcea9d5121264b84247583a44c9fe"
+    },
+    "vue-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-skilld/SKILL.md",
+      "computedHash": "ab65f6d9942d2814330722a7d97dbc1a76c5f6bba9f65afd169b6d6f4394ada4"
+    },
+    "vue-test-utils-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-test-utils-skilld/SKILL.md",
+      "computedHash": "0074562cad1a875b1802c63502e390b72bf5068d5b943ffc10e8b432e4e4e3b1"
+    },
+    "vue-testing-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-testing-best-practices/SKILL.md",
+      "computedHash": "58d365899f54be9e5fa2c2e455093f9567620600578ae92aaa2f31d9b19a59ad"
+    },
+    "vuetify-4": {
+      "source": "cylixlee/skills",
+      "sourceType": "github",
+      "skillPath": ".deprecated/vuetify-4/SKILL.md",
+      "computedHash": "7f82e62a7d61eb844153fccce099c80b8a948afcbd4c857127b6306a681a87b8"
+    },
+    "vuetify-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vuetify-skilld/SKILL.md",
+      "computedHash": "652e5c51bcc03f17b28baf21af598f36a4b95c5bae33be90cfbdd5565d0a2685"
+    },
+    "vueuse-components-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vueuse-components-skilld/SKILL.md",
+      "computedHash": "b41842b256f96eb286542daa2e2f3e8012651b900e21588855c168a01ac91ea8"
+    },
+    "vueuse-core-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vueuse-core-skilld/SKILL.md",
+      "computedHash": "aad70e01537c4efb5fc2cc0f31faa2ea6ab5334a8382c518460695859f02e812"
+    },
+    "vueuse-integrations-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vueuse-integrations-skilld/SKILL.md",
+      "computedHash": "fe7a977a643474c4faf858238ae891707cee1c995e8e80dd31049a35bcfc06e4"
+    },
+    "vueuse-math-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vueuse-math-skilld/SKILL.md",
+      "computedHash": "d57083aaeacd8e74e7de51376d930a19ca8b873817d65aa697478faf97edbdb5"
+    },
+    "vueuse-motion-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vueuse-motion-skilld/SKILL.md",
+      "computedHash": "80cfad5d89af3bc5f21c894ad1d838e63c577f472bde69fc85856b11b2934ed5"
+    },
+    "vueuse-shared-skilld": {
+      "source": "skilld-dev/vue-ecosystem-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vueuse-shared-skilld/SKILL.md",
+      "computedHash": "2d14f137dca68ef9159a8244408ac71320bbb96bd501d35f8483f37ff24da2ec"
+    },
+    "web-ui-vuetify": {
+      "source": "agents-inc/skills",
+      "sourceType": "github",
+      "skillPath": "src/skills/web-ui-vuetify/SKILL.md",
+      "computedHash": "61ff3a6a27ae032d7f7f46a7c1aa07702b67fb8d7bd985c85bf39ff88f637a18"
+    }
+  }
+}

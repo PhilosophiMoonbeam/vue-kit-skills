@@ -175,10 +175,15 @@ to load every linked document. Combine owners only when the task crosses domains
 - [Source manifest](assets/source-manifest.json) and
   [source audit](assets/source-audit.json): coverage/provenance records, not
   additional runtime dependencies or instructions to reinstall source skills.
-- [Third-pass audit](assets/third-pass-audit.json): current document and source-mapping
-  hypotheses, author evidence and scoped dispositions. Read
-  [scoped verification](assets/verification.json) for exercised checks; neither
-  audit counts nor historical passes certify current runtime behavior.
+- [Fourth-pass audit](assets/fourth-pass-audit.json): 41 current native-reviewed
+  documents (master plus 40 references), 467 source rows and the adjudicated
+  39-document/46-source escalation populations. Native labels are hypotheses,
+  not defect totals. All 467 sources now have explicit resolutions; the 17
+  mapped-evidence promotions are not 17 added capabilities.
+  [Scoped verification](assets/verification.json) records exercised checks and
+  limits; [earlier audits](references/sources.md#preserved-third-pass-audit)
+  retain their historical populations and snapshots. Neither audit counts nor
+  historical passes certify current runtime behavior.
 
 When verification is authorized, select the repository's own typecheck, tests,
 production build, and browser checks that exercise the change. For UI behavior,

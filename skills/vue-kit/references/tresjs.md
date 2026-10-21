@@ -228,13 +228,22 @@ The complete child below loads a real, small, uncompressed Khronos glTF Box asse
 ```vue
 <!-- LoadedBox.vue -->
 <script setup lang="ts">
-import { watchEffect } from 'vue'
-import { useLoader } from '@tresjs/core'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { onBeforeUnmount, watchEffect } from 'vue'
+import { dispose, useLoader } from '@tresjs/core'
+import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js'
 
 const emit = defineEmits<{ status: [message: string] }>()
 const url = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Box/glTF-Binary/Box.glb'
-const { state: model, isLoading, error } = useLoader(GLTFLoader, url)
+let alive = true
+onBeforeUnmount(() => { alive = false })
+const { state: model, isLoading, error } = useLoader<GLTF>(GLTFLoader, url, {
+  asyncOptions: {
+    onSuccess: (asset: GLTF | null) => {
+      // useLoader only disposes state already resolved at unmount.
+      if (!alive && asset?.scene) dispose(asset.scene)
+    },
+  },
+})
 watchEffect(() => {
   if (error.value) {
     const cause = error.value
@@ -256,8 +265,8 @@ Decoder and asset rules:
 - Compressed glTF may require DRACO, Meshopt, or KTX2 helpers configured in `extensions`; install and serve the actual decoder files. A `.glb` extension alone does not imply uncompressed data. The often-cited Tres blender-cube asset **requires `KHR_draco_mesh_compression`**, unlike the Khronos Box used here.
 - Respect model scale, bounds, camera near/far range, light/material requirements, CORS, base URLs, texture color spaces, and asset licenses. Load errors are not repaired by a random camera offset.
 - A single Object3D has one parent: clone a scene for independent mounts. Cloning a hierarchy may still share geometry/material/texture resources; define a resource owner before disposing any copy. Skinned assets need an appropriate skeleton-aware clone.
-- **5.9.3 runtime detail:** `useLoader` disposes an already resolved `state.scene` when its reactive path changes and on unmount. Do not add a second blanket `dispose(model.scene)` handler to this loader-owned glTF example. `load(path)` follows its own execution path; do not assume it has identical replacement-disposal semantics to the watched path.
-- This loader is not a general request-cancellation, shared-cache, or out-of-order-result contract. The inspected implementation does not cancel an in-flight request on unmount; a result arriving after teardown needs explicit lifetime management in applications requiring cancellable/racing loads. Do not promise that scope disposal aborts network I/O. Use one stable asset per mounted loader or implement transport/late-result ownership deliberately.
+- **5.9.3 runtime detail:** `useLoader` disposes an already resolved `state.scene` when its reactive path changes and on unmount. Do not add a second blanket `dispose(model.scene)` handler to this loader-owned glTF example. Its success callback disposes **only a result arriving after teardown**, when the loader's unmount callback could not see it. `load(path)` follows its own execution path; do not assume it has identical replacement-disposal semantics to the watched path.
+- This loader is not a general request-cancellation, shared-cache, or out-of-order-result contract. The inspected implementation does not cancel an in-flight request on unmount; the example closes that late-result resource lifetime through `asyncOptions.onSuccess`, supported by its VueUse 15 dependency. It still does **not** abort network I/O. Keep one stable asset per mounted loader here; racing/repeated loads need separate result identity and disposal ownership, not this single-load guard. [Pinned success-callback semantics](https://unpkg.com/@vueuse/core@15.0.0/dist/index.js).
 
 [Loader API](https://docs.tresjs.org/api/composables/use-loader), [pinned loader implementation](https://unpkg.com/@tresjs/core@5.9.3/dist/tres.js), [Khronos Box source and license information](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Box).
 

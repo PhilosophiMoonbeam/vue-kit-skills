@@ -8,12 +8,12 @@
     "sources": 467,
     "roots": 49,
     "references": 38,
-    "explicit_source_reviews": 450,
-    "native_only_sources": 17,
+    "explicit_source_reviews": 467,
+    "native_only_sources": 0,
     "source_resolution_choices": {
       "corrected": 363,
       "out_of_scope": 11,
-      "covered": 76
+      "covered": 93
     },
     "native_source_choices": {
       "partial": 127,
@@ -99,7 +99,7 @@
     "native_judgments": "Frozen native judge_batch coverage/contradiction and readiness/risk/evidence/density rubrics produce historical candidate judgments, not confirmed defects. Full native result objects and original labels are preserved unchanged.",
     "explicit_resolutions": "Accepted individual primary-evidence dispositions are recorded separately with exact current replacement quotes and canonical enclosing headings/anchors. Explicit dispositions may overturn native hypotheses; a corrected disposition means replacement guidance was repaired or expanded, not that a historical source defect was confirmed.",
     "current_reference_extensions": "The references array retains the original 38 native-audited identities and immutable native verdicts; counts.references, processing.references and accepted batch metadata remain bounded to that historical population. Two explicitly declared current guides have separate author/primary-source reviews and links to scoped parent verification checks; they receive no invented native readiness vector. current_reference_counts describes the 40-guide active package.",
-    "native_only": "17 source units retain native covered judgments and null individual resolutions. No individual manual disposition is claimed for those units.",
+    "native_only": "All 17 previously native-only covered source units now have individual author-evidence dispositions. Their frozen native judgments remain unchanged; the missing primary-reference context was not counted as 17 confirmed capability gaps.",
     "source_provenance": "Source IDs, roots and original SHA256 values come from bundled original audit/manifest metadata. Current mappings reflect the explicit removal cutover and first-class Nuxt guide ownership; native judgments remain historical. Crosswalk assembly does not need the old corpus; targeted flagged-source reviews are recorded separately.",
     "quote_pointers": "Whitespace-normalized exact current quotes may occur in prose or fenced code; enclosing Markdown headings and their slugs are derived only outside fenced code. Differing author-supplied section labels are preserved as author_section.",
     "second_pass_reconciliation": {
@@ -182,7 +182,7 @@
     },
     "notes": [
       "Native labels are candidate judgments, not confirmed defects. Preserve them alongside explicit primary-evidence resolutions.",
-      "450 source units have explicit agent-reviewed dispositions;17 retain native-only covered judgments. Every original335 flagged unit and final material partial/missing/contradiction candidate has an explicit disposition.",
+      "All 467 source units now have explicit agent-reviewed dispositions. The fourth pass added current author evidence for the 17 previously native-only covered units; this does not relabel native judgments or imply their low-confidence escalations were confirmed defects.",
       "The historical vue-debug-guides/SKILL.md missing hypothesis was individually overturned after reading its full index and the replacement diagnostic trees.",
       "Reference quality counts and flags must remain historical native judgments; compiler/type/runtime proof is separately scoped.",
       "A final union-integrity check exposed10 historical flags absent from the earlier correction-artifact union; targeted primary-evidence reviews closed all10 without guide changes. This changes explicit review totals, not the frozen native labels or rubric.",
@@ -218,6 +218,1087 @@
       },
       "native_reference_identity": "The current docs-vitepress reference retains native_path references/docs-slides.md solely as the identity of its frozen native hypothesis. Fingerprint native reference maps under native_path when present; it is not a live compatibility alias.",
       "policy": "All nine excluded source dispositions point to the exact removal quote in references/sources.md. Remaining VitePress mappings and the renamed current reference review point only to retained VitePress contracts. Native source/reference objects, original source hashes and native counts are unchanged."
+    },
+    "fourth_pass_reconciliation": {
+      "scope": "Integrate all 46 frozen source escalations using the eleven author handoffs; add the 17 missing individual primary-reference dispositions and rebase only the one existing quotation changed by repairs. Native probabilities, original source hashes, existing source dispositions and source/removal identities remain historical and unchanged. No author-run verification or new runtime acceptance is claimed. Author disposition names describe fourth-pass candidate investigations, not replacement verdicts for the original native maps.",
+      "author_handoffs": [
+        {
+          "author": "CoreContracts",
+          "source_rows": 16
+        },
+        {
+          "author": "Architecture",
+          "source_rows": 0
+        },
+        {
+          "author": "Vuetify",
+          "source_rows": 4
+        },
+        {
+          "author": "InterfaceQuality",
+          "source_rows": 4
+        },
+        {
+          "author": "IdentityRouting",
+          "source_rows": 4
+        },
+        {
+          "author": "CachesUtilities",
+          "source_rows": 4
+        },
+        {
+          "author": "Forms",
+          "source_rows": 1
+        },
+        {
+          "author": "Presentation",
+          "source_rows": 1
+        },
+        {
+          "author": "PlatformTooling",
+          "source_rows": 9
+        },
+        {
+          "author": "MotionAiLocale",
+          "source_rows": 0
+        },
+        {
+          "author": "Nuxt",
+          "source_rows": 3
+        }
+      ],
+      "source_rows_reviewed": 46,
+      "new_source_mapping_resolutions": 17,
+      "previously_explicit_source_rows": 29,
+      "source_row_dispositions": [
+        {
+          "source": ".agents/skills/create-adaptable-composable/SKILL.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_other; covered_with_source_corrections_retained",
+          "reference": "references/composables.md",
+          "section": "Normalize only where reactivity is collected",
+          "anchor": "normalize-only-where-reactivity-is-collected",
+          "evidence": "`toValue()` does not create a reactive effect. Calling it once outside an effect captures a value. `toRef(value)` returns an existing ref unchanged, wraps a plain value, or creates a readonly getter ref; it does not make a plain caller variable writable by reference.",
+          "explanation": "Existing current guidance covers value/ref/getter normalization, function-valued input ambiguity, writable versus initial-value contracts, reactive DOM targets and SSR-safe side effects. It correctly refuses the source's implication that MaybeRef/plain values create two-way caller linkage; no extra counter/title helper is essential.",
+          "primary_urls": [
+            "https://vuejs.org/api/reactivity-utilities.html#tovalue",
+            "https://vuejs.org/guide/reusability/composables.html#side-effects"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/reactivity/dist/reactivity.cjs.js:1593-1598,1694-1706",
+            "https://vuejs.org/api/reactivity-utilities.html#tovalue",
+            "https://vuejs.org/guide/reusability/composables.html#side-effects"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/computed-no-side-effects.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/core-vue.md",
+          "section": "Choose state by its mutation contract",
+          "anchor": "choose-state-by-its-mutation-contract",
+          "evidence": "| Derived value | `computed()` | Pure synchronous getter; do not fetch, mutate source state, or emit inside it. |",
+          "explanation": "Computed purity and selection of watchers for side effects already appear in core and the directly mapped diagnostics reference. No need to reproduce the source's browser-global immediate title watcher or uncancelled fetch example.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free",
+            "https://vuejs.org/guide/essentials/watchers.html"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free",
+            "https://vuejs.org/guide/essentials/watchers.html"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/configure-app-before-mount.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered_with_source_overstatement_corrected",
+          "reference": "references/debugging-ssr.md",
+          "section": "Tree A — compilation, resolution or application setup fails",
+          "anchor": "tree-a--compilation-resolution-or-application-setup-fails",
+          "evidence": "Register plugins, provides, global components and error/warn handlers on the app before `app.mount`.",
+          "explanation": "Mapped current diagnostic guidance explicitly gives initialization order. It correctly does not repeat the source's false claim that every configuration operation after mount is silently ignored: installed runtime use/component/directive/config setters are not all disabled by isMounted.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/application.html#mounting-the-app"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:4312-4374",
+            "https://vuejs.org/guide/essentials/application.html#mounting-the-app"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/lifecycle-hooks-synchronous-registration.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered_with_compiler_exception_preserved",
+          "reference": "references/core-vue.md",
+          "section": "Lifecycle guarantees, not timing folklore",
+          "anchor": "lifecycle-guarantees-not-timing-folklore",
+          "evidence": "Synchronous registration can occur inside an ordinary helper called from setup; it need not be lexically in the SFC. Arbitrary async continuations lose that active instance/scope.",
+          "explanation": "Existing paragraph supplies synchronous call-chain ownership and the following sentence supplies the compiler-restored top-level script-setup await exception. The source's absolute after-await prohibition must not overwrite that 3.5 distinction.",
+          "primary_urls": [
+            "https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiLifecycle.ts",
+            "https://vuejs.org/api/composition-api-lifecycle.html"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:3187-3214",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:25483-25505"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/mount-return-value.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/debugging-ssr.md",
+          "section": "Tree A — compilation, resolution or application setup fails",
+          "anchor": "tree-a--compilation-resolution-or-application-setup-fails",
+          "evidence": "`mount()` returns the component public instance, not the app; keep the app variable if later access is needed.",
+          "explanation": "The exact supposedly missing mount return distinction is already stated in a mapped current document. Core/components need no duplicate bootstrap section.",
+          "primary_urls": [
+            "https://vuejs.org/api/application.html#app-mount"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:4376-4410",
+            "https://vuejs.org/api/application.html#app-mount"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/ref-value-access.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered_with_unwrapping_limits_retained",
+          "reference": "references/core-vue.md",
+          "section": "Choose state by its mutation contract",
+          "anchor": "choose-state-by-its-mutation-contract",
+          "evidence": "| Primitive or replaceable object with nested mutations | `ref()` | Script uses `.value`; object values become deeply reactive. |",
+          "explanation": "Core states script .value and demonstrates script versus template usage in complete SFCs. Its tracking/identity section correctly limits template unwrapping instead of repeating the source's absolute never-.value-in-template rule.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#ref",
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-when-unwrapping-in-templates"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/reactivity/dist/reactivity.cjs.js:1543-1579",
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#ref",
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-when-unwrapping-in-templates"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/refs-in-collections-need-value.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/core-vue.md",
+          "section": "Tracking and identity edge cases",
+          "anchor": "tracking-and-identity-edge-cases",
+          "evidence": "Reactive object properties unwrap refs; reactive array elements and `Map` entries do not. In script, use `.value` for those ref entries.",
+          "explanation": "The array/Map rule is explicit. No need to restore the source's misleading comment that ordinary collection items are not independently reactive.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-in-arrays-and-collections"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/reactivity/dist/reactivity.cjs.js:1066-1074",
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-in-arrays-and-collections"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/render-function-vnodes-must-be-unique.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/components.md",
+          "section": "Rendering, directives, plugins, and custom elements",
+          "anchor": "rendering-directives-plugins-and-custom-elements",
+          "evidence": "Create unique vnodes per tree position; pass component slots as functions.",
+          "explanation": "Current guidance explicitly covers the required vnode identity rule and returns a render function rather than a setup-time frozen render result. Multiple nearly identical factories from the source are unnecessary.",
+          "primary_urls": [
+            "https://vuejs.org/guide/extras/render-function.html#vnodes-must-be-unique",
+            "https://vuejs.org/guide/extras/render-function.html#declaring-render-functions"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/extras/render-function.html#vnodes-must-be-unique",
+            "https://vuejs.org/guide/extras/render-function.html#declaring-render-functions"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/slot-render-scope-parent-only.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/components.md",
+          "section": "Decide the smallest meaningful contract",
+          "anchor": "decide-the-smallest-meaningful-contract",
+          "evidence": "| Parent controls rendering/content | Named/scoped slots | Parent owns slot lexical scope; child explicitly supplies slot props. |",
+          "explanation": "Table states lexical ownership; generic-list and TitleInput/TitleEditor examples actually pass typed slot props across that boundary. No missing-context gap remains.",
+          "primary_urls": [
+            "https://vuejs.org/guide/components/slots.html#render-scope",
+            "https://vuejs.org/guide/components/slots.html#scoped-slots"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/components/slots.html#render-scope",
+            "https://vuejs.org/guide/components/slots.html#scoped-slots"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/suspense-no-builtin-error-handling.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered_with_error_reporting_ownership_retained",
+          "reference": "references/components.md",
+          "section": "Async components and built-in boundaries",
+          "anchor": "async-components-and-built-in-boundaries",
+          "evidence": "| `<Suspense>` — **experimental** | Coordinate async setup/async components in one subtree | Not a fetch cache or generic watcher loading indicator; has no built-in error slot. |",
+          "explanation": "Current guidance explicitly supplies ancestor error ownership and core says return false only when intentionally stopping reporting. The original automatic return-false recipe is not an obligation. Runtime-specific errorComponent handling under Suspense is independently correct in pinned 3.5.44.",
+          "primary_urls": [
+            "https://vuejs.org/guide/built-ins/suspense.html#error-handling",
+            "https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/built-ins/suspense.html#error-handling",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:2831-2848",
+            "https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/v-for-computed-reverse-sort.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/core-vue.md",
+          "section": "Tracking and identity edge cases",
+          "anchor": "tracking-and-identity-edge-cases",
+          "evidence": "`.sort()` and `.reverse()` mutate arrays. Copy first inside a computed getter when sorting a source array; derived results themselves are not a second source of truth.",
+          "explanation": "The precise mutating-array failure and copy-first repair are already explicit; unsupported-environment ES2023 methods need not be introduced.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/list.html#displaying-filtered-sorted-results",
+            "https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/essentials/list.html#displaying-filtered-sorted-results",
+            "https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/watch-reactive-property-getter.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/core-vue.md",
+          "section": "Select an effect, then its schedule",
+          "anchor": "select-an-effect-then-its-schedule",
+          "evidence": "| Side effect with explicit dependencies | `watch(refOrGetter, callback)` | `watch(state.count, ...)`, which passes a number. |",
+          "explanation": "Existing table gives correct source and concrete primitive-value failure; following prose separately covers arrays of sources, direct-reactive deep watching and getter comparison semantics.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/watchers.html#watch-source-types"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/reactivity/dist/reactivity.cjs.js:1846-1916",
+            "https://vuejs.org/guide/essentials/watchers.html#watch-source-types"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/watcheffect-async-dependency-tracking.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered",
+          "reference": "references/core-vue.md",
+          "section": "Select an effect, then its schedule",
+          "anchor": "select-an-effect-then-its-schedule",
+          "evidence": "| Side effect whose synchronous reads are its dependencies | `watchEffect()` | Assuming reads after the first `await` are tracked. |",
+          "explanation": "Exact synchronous dependency boundary is already stated, with explicit watch alternatives and getter normalization in linked composables. Existing cancellation-safe async module is stronger than the source's uncancelled response examples.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/watchers.html#watcheffect"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/reactivity/dist/reactivity.cjs.js:1891-1906",
+            "https://vuejs.org/guide/essentials/watchers.html#watcheffect"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-expert/references/typescript.md",
+          "author": "CoreContracts",
+          "author_disposition": "covered; stale_evidence_hypothesis_overturned",
+          "reference": "references/components.md",
+          "section": "Generic list without erasing the item type",
+          "anchor": "generic-list-without-erasing-the-item-type",
+          "evidence": "Type-only contracts do not validate incoming JSON.",
+          "explanation": "Existing source resolution remains exact. Generic props/emits/scoped slots retain T; macro limits/defaults, nullable DOM/component refs, typed injection and complete plugin modules remain. Core inference/writable-computed/null-union paragraph and mapped migration strict/PropType/event/augmentation guidance cover remaining plain-Vue source contracts. The source's repeated defineProps/defineEmits declarations, named setup exports and generic fetch-as-T backend fiction should not be restored. Framework/store-specific typing remains delegated to mapped Nuxt/state owners, not a new core contract.",
+          "primary_urls": [
+            "https://vuejs.org/guide/typescript/composition-api.html",
+            "https://vuejs.org/api/sfc-script-setup.html#generics",
+            "https://vuejs.org/guide/typescript/options-api.html"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/typescript/composition-api.html",
+            "https://vuejs.org/api/sfc-script-setup.html#generics",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.d.ts:190-197,289-294,1561-1564",
+            "https://vuejs.org/guide/typescript/options-api.html"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-options-api-best-practices/reference/no-arrow-functions-in-methods.md",
+          "author": "CoreContracts",
+          "author_disposition": "overturned_native_gap; covered_by_existing_mapped_owner",
+          "reference": "references/migration.md",
+          "section": "Incumbent Options API",
+          "anchor": "incumbent-options-api",
+          "evidence": "Methods/lifecycle hooks that use instance `this` must use regular method/function syntax, not arrow functions.",
+          "explanation": "Mapped migration reference already contains the exact methods-this rule; core/components explicitly route incumbent Options work there. No extra rewrite or duplicate section is justified.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#declaring-methods",
+            "https://vuejs.org/guide/typescript/options-api.html"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#declaring-methods",
+            "https://vuejs.org/guide/typescript/options-api.html"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-skilld/references/best-practices.md",
+          "author": "CoreContracts",
+          "author_disposition": "covered_with_source_version_corrections; stale_evidence_hypothesis_overturned",
+          "reference": "references/components.md",
+          "section": "SFC and TypeScript boundaries",
+          "anchor": "sfc-and-typescript-boundaries",
+          "evidence": "`withDefaults(defineProps<Props>(), { items: () => [] })` remains supported",
+          "explanation": "Existing evidence quotation remains unchanged. Current guidance retains getter inputs, cleanup, template refs, useId, optional SSR hydration, stable props/computed, shallow immutable boundaries and measured memoization. It correctly rejects source mandates (replace all withDefaults, universally prefer onWatcherCleanup or latest helper), the dynamic template-ref-key API implication and Vue-3.6/Vapor adoption in a Vue-3.5 target. Mapped migration explicitly excludes Vapor. No source-coverage gap found.",
+          "primary_urls": [
+            "https://vuejs.org/guide/typescript/composition-api.html#props-default-values",
+            "https://vuejs.org/guide/best-practices/performance.html"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/vue/package.json:1-3",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.d.ts:1561-1564",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:25055-25100",
+            "https://vuejs.org/guide/typescript/composition-api.html#props-default-values",
+            "https://vuejs.org/guide/best-practices/performance.html"
+          ]
+        },
+        {
+          "source": ".agents/skills/vuetify-4/references/components/alerts.md",
+          "author": "Vuetify",
+          "author_disposition": "overturned",
+          "reference": "references/vuetify-components.md",
+          "section": "Actions, cards, alerts, and chip selection",
+          "anchor": "actions-cards-alerts-and-chip-selection",
+          "evidence": "The default variant is `flat`, not elevated.",
+          "explanation": "Current guidance corrects the source's invented info default/elevated default and covers supported variants, titles/content, borders/icons, visibility, close events, and dismiss/reopen behavior. The frozen row already leaned covered; its remaining uncertainty is not a new omission.",
+          "primary_urls": [
+            "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VAlert/VAlert.tsx"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/components/VAlert/VAlert.js:33-87,151-180"
+          ]
+        },
+        {
+          "source": ".agents/skills/vuetify-4/references/components/buttons.md",
+          "author": "Vuetify",
+          "author_disposition": "overturned",
+          "reference": "references/vuetify-components.md",
+          "section": "Actions, cards, alerts, and chip selection",
+          "anchor": "actions-cards-alerts-and-chip-selection",
+          "evidence": "Buttons default to native `type=\"button\"`; set submit explicitly.",
+          "explanation": "Supported variants, sizes, density, block/rounded, icon names, truthful pending/disabled actions, and submit semantics are synthesized in the current table and real form examples. The bogus source circle prop is deliberately not retained. The setup companion explicitly distinguishes native fallthrough at runtime from strict declaration checking.",
+          "primary_urls": [
+            "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VBtn/VBtn.tsx"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/components/VBtn/VBtn.js:74-83,152-186"
+          ]
+        },
+        {
+          "source": ".agents/skills/vuetify-skilld/references/configuration.md",
+          "author": "Vuetify",
+          "author_disposition": "overturned",
+          "reference": "references/vuetify-theme.md",
+          "section": "Blueprints, aliases, and defaults-aware wrappers",
+          "anchor": "blueprints-aliases-and-defaults-aware-wrappers",
+          "evidence": "`createVuetify` merges explicit options over the blueprint.",
+          "explanation": "The current three-reference split already owns aliases, blueprint utilities, the returned defaults proxy, theme variations/CSP/scope, exact icon setup, locale/RTL/date adapters, SSR, and actual goTo consumption. The source's universal theme-prop wording is narrowed to supported current APIs, and its false implication that system is an ordinary custom theme entry is not needed to execute mode switching.",
+          "primary_urls": [
+            "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/framework.ts",
+            "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/defaults.ts",
+            "https://raw.githubusercontent.com/vuetifyjs/vuetify/v4.3.0/packages/docs/src/pages/en/features/blueprints.md"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/framework.js:15-47",
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/composables/defaults.js:66-87",
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/composables/theme.d.ts:10-19,54-71",
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/composables/goto.js:32-57,79-96"
+          ]
+        },
+        {
+          "source": ".agents/skills/vuetify-skilld/references/migration-v4.md",
+          "author": "Vuetify",
+          "author_disposition": "overturned",
+          "reference": "references/vuetify-theme.md",
+          "section": "Incumbent legacy-style restoration",
+          "anchor": "incumbent-legacy-style-restoration",
+          "evidence": "`VSnackbarQueue` now uses its `item` slot for per-message content and supports simultaneous messages;",
+          "explanation": "Current migration sections already cover reset, dual runtime/Sass breakpoint ownership, role-versus-size typography mapping, elevation, CSS gaps/legacy restoration, renamed Sass variables, fill-height, unwrapped form slots, raw select slot payloads, snackbar sizing, and exact 4.3 labs promotion boundaries. The older source's mistaken offset-class spelling and claim that the item slot itself was renamed are correctly not copied.",
+          "primary_urls": [
+            "https://raw.githubusercontent.com/vuetifyjs/vuetify/v4.3.0/packages/docs/src/pages/en/getting-started/upgrade-guide.md",
+            "https://raw.githubusercontent.com/vuetifyjs/vuetify/v4.3.0/packages/docs/src/pages/en/getting-started/typography-migration.md",
+            "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VSnackbarQueue/VSnackbarQueue.tsx"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/components/VSnackbarQueue/VSnackbarQueue.js:184-193",
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/components/VGrid/VGrid.sass:39-66",
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/labs/components.js:1-14",
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/components/VSelect/VSelect.js:566-572"
+          ]
+        },
+        {
+          "source": ".agents/skills/peccable/NOTICE.md",
+          "author": "InterfaceQuality",
+          "author_disposition": "overturned; retain out_of_scope behavior classification",
+          "reference": "references/design-system.md",
+          "section": "Media, composition references, and provenance",
+          "anchor": "media-composition-references-and-provenance",
+          "evidence": "Preserve original asset/license provenance and applicable third-party notices when reusing material; this guide grants no font, image or code rights.",
+          "explanation": "NOTICE is preserved attribution/license text, not a frontend API responsibility. Current guidance retains notice obligations without pretending to relicense original assets or copied material. No runtime or behavior gap is established by the low-confidence native exclusion. This is not legal clearance for redistributing the synthesized kit; parent retains shared licensing/ledger ownership.",
+          "primary_urls": [
+            "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            "https://raw.githubusercontent.com/ehmo/platform-design-skills/main/LICENSE"
+          ],
+          "primary_evidence": [
+            "https://www.apache.org/licenses/LICENSE-2.0.txt section 4(c)-(d) preserves relevant source attribution and NOTICE text in redistributed derivatives.",
+            "https://raw.githubusercontent.com/ehmo/platform-design-skills/main/LICENSE requires including copyright and permission notice in copies/substantial portions."
+          ]
+        },
+        {
+          "source": ".agents/skills/peccable/references/systems.md",
+          "author": "InterfaceQuality",
+          "author_disposition": "overturned; current guidance covers the responsibility",
+          "reference": "references/design-system.md",
+          "section": "7. Keep the system continuous",
+          "anchor": "7-keep-the-system-continuous",
+          "evidence": "Before changing a shared token/component, identify actual consumers and intentional variants, including dark theme, compact views, validation and pending states. Specify the needed contract, migrate every affected caller in the authorized cutover, and remove superseded styles, dead imports, duplicated components and obsolete examples. Do not leave two competing conventions or broaden a local change into unrelated cleanup.",
+          "explanation": "The original source's incumbent ownership/extraction/tokens/behavior/migration/documentation contracts are already synthesized in sections 1, 3 and 7; no missing-context-driven addition is warranted. Section 3 defines one authoritative role and behavior ownership, fields/dialogs/pending names, composition instead of boolean universals; section 4 covers long content/localization/reflow. No need to inspect or edit another slice's architecture document to repair this row.",
+          "primary_urls": [
+            "https://vuejs.org/api/composition-api-helpers.html#useid"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/composables/theme.js:213-259 supplies the actual semantic-role theme implementation rather than duplicate literal aliases.",
+            "skills/vue-kit/assets/example-app/node_modules/vuetify/lib/components/VDialog/VDialog.js:15-28,48-65 and lib/composables/focusTrap.js:24-77 establish interaction behavior separate from shared styling.",
+            "https://vuejs.org/api/composition-api-helpers.html#useid confirms shared field/dialog ID behavior and SSR stability."
+          ]
+        },
+        {
+          "source": ".agents/skills/quasar-skilld/references/best-practices.md",
+          "author": "InterfaceQuality",
+          "author_disposition": "overturned; existing corrected synthesis remains valid",
+          "reference": "references/alternative-ui.md",
+          "section": "Quasar utility, layout and upgrade contracts",
+          "anchor": "quasar-utility-layout-and-upgrade-contracts",
+          "evidence": "QRouteTab derives active state from its route: do not wire a second `v-model` to the individual route tab.",
+          "explanation": "Current reference already covers QTree/QSelect performance scope, ondemand rules, direct QPage child recommendation, moved-parent scroll target refresh, menu roles, LoadingBar, dialog-plugin event forwarding, setup cleanup, SSR dark and CLI helper version gates. Original constant-total-tree-work and never-use-falsiness assertions are not valid contracts and correctly remain rejected; current Node/router/helper gates supersede historical source.",
+          "primary_urls": [
+            "https://unpkg.com/quasar@2.35.2/src/components/tabs/QRouteTab.js",
+            "https://unpkg.com/quasar@2.35.2/dist/mcp/vue-components/pull-to-refresh.md",
+            "https://unpkg.com/quasar@2.35.2/src/components/item/QItem.js",
+            "https://unpkg.com/quasar@2.35.2/src/composables/use-dialog-plugin-component/use-dialog-plugin-component.js",
+            "https://unpkg.com/quasar@2.35.2/src/composables/use-interval/use-interval.js",
+            "https://unpkg.com/quasar@2.35.2/src/plugins/platform/Platform.js",
+            "https://unpkg.com/@quasar/app-vite@3.10.3/exports/wrappers.js"
+          ],
+          "primary_evidence": [
+            "https://unpkg.com/quasar@2.35.2/src/components/tabs/QRouteTab.js derives router data and uses verifyRouteModel; no independent modelValue prop.",
+            "https://unpkg.com/quasar@2.35.2/dist/mcp/vue-components/pull-to-refresh.md Tips recommends direct QPage child and updateScrollTarget after parent moves.",
+            "https://unpkg.com/quasar@2.35.2/src/components/item/QItem.js derives menuitem from injected menu role and actionability.",
+            "https://unpkg.com/quasar@2.35.2/src/composables/use-dialog-plugin-component/use-dialog-plugin-component.js forwards evt through getDismissReason and distinguishes cancel.",
+            "https://unpkg.com/quasar@2.35.2/src/composables/use-interval/use-interval.js supplies server no-ops and onDeactivated/onBeforeUnmount cleanup.",
+            "https://unpkg.com/quasar@2.35.2/src/plugins/platform/Platform.js initializes many flags false and uses ordinary truthiness internally; strict false-only is not universal.",
+            "https://unpkg.com/@quasar/app-vite@3.10.3/exports/wrappers.js exports defineConfig/defineBoot, not the historical helper names."
+          ]
+        },
+        {
+          "source": ".agents/skills/shadcn-vue-skilld/references/cli.md",
+          "author": "InterfaceQuality",
+          "author_disposition": "overturned; existing corrected synthesis remains valid",
+          "reference": "references/headless-ui.md",
+          "section": "shadcn maintenance, presets and registry tooling",
+          "anchor": "shadcn-maintenance-presets-and-registry-tooling",
+          "evidence": "Separate `view` is the supported preview, not rejected `add --view`.",
+          "explanation": "The mapped reference already retains init/create/templates/presets, read-only info/docs/search/view, diff, scoped migrate, registry build, MCP and mutation/trust boundaries. Original add --dry-run/--diff/--view promised behavior is contradicted by its own exact CLI implementation; preserving current explicit rejection is correct. Codex/opencode handling in current reference is more accurate than the older source client list. No CLI or runtime command was executed in this assignment.",
+          "primary_urls": [
+            "https://unpkg.com/shadcn-vue@2.8.2/dist/index.js:"
+          ],
+          "primary_evidence": [
+            "/tmp/bunx-1000-shadcn-vue@2.8.2/node_modules/shadcn-vue/dist/index.js:2014-2019; https://unpkg.com/shadcn-vue@2.8.2/dist/index.js: add guard rejects all three flags with process.exit(1).",
+            "/tmp/bunx-1000-shadcn-vue@2.8.2/node_modules/shadcn-vue/dist/index.js:2406-2423 build reads registry file and embeds files; 2446-2464 diff command; 3037-3056 search registry args/pagination; 3088-3109 view fetches source metadata without writes.",
+            "/tmp/bunx-1000-shadcn-vue@2.8.2/node_modules/shadcn-vue/dist/index.js:2721-2740 prints manual Codex config while dependency installation may still occur."
+          ]
+        },
+        {
+          "source": ".agents/skills/clerk-vue-patterns/references/composables.md",
+          "author": "IdentityRouting",
+          "author_disposition": "corrected",
+          "reference": "references/auth.md",
+          "section": "Composable contracts and failure states",
+          "anchor": "composable-contracts-and-failure-states",
+          "evidence": "In script, call `await getToken.value()` / `await signOut.value()`; templates unwrap refs.",
+          "explanation": "Existing auth reference covers auth/user/Clerk/org/custom-flow composables, correct nullable/loading states and function refs. It deliberately corrects the original unavailable useOrganizationList recipe, using actual paginated UserResource membership operations under Organization membership and switching. No added content or exclusion is needed.",
+          "primary_urls": [
+            "https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts",
+            "https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/index.d.ts",
+            "https://cdn.jsdelivr.net/npm/@clerk/shared@4.41.0/dist/types/user.d.ts",
+            "https://cdn.jsdelivr.net/npm/@clerk/shared@4.41.0/dist/types/pagination.d.ts"
+          ],
+          "primary_evidence": [
+            "https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts",
+            "https://cdn.jsdelivr.net/npm/@clerk/vue@2.5.13/dist/composables/index.d.ts",
+            "https://cdn.jsdelivr.net/npm/@clerk/shared@4.41.0/dist/types/user.d.ts",
+            "https://cdn.jsdelivr.net/npm/@clerk/shared@4.41.0/dist/types/pagination.d.ts"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-best-practices/references/state-management.md",
+          "author": "IdentityRouting",
+          "author_disposition": "covered",
+          "reference": "references/state.md",
+          "section": "Version and selection boundary",
+          "anchor": "version-and-selection-boundary",
+          "evidence": "A store definition can be module-scoped; a user-specific **instance** must not be a server module singleton.",
+          "explanation": "Existing lifetime selection table, scoped provider selection, explicit per-root factory, SSR section, and action/state contracts preserve the source's useful decisions without copying its unsafe global auth-token example or mandating Pinia solely by app size. The TanStack subscription section also explicitly separates browser intentional singleton sharing from per-request ownership.",
+          "primary_urls": [
+            "https://unpkg.com/pinia@4.1.0/dist/pinia.js",
+            "https://pinia.vuejs.org/ssr/",
+            "https://cdn.jsdelivr.net/npm/@tanstack/store@0.11.2/src/store.ts"
+          ],
+          "primary_evidence": [
+            "https://unpkg.com/pinia@4.1.0/dist/pinia.js",
+            "https://pinia.vuejs.org/ssr/",
+            "https://cdn.jsdelivr.net/npm/@tanstack/store@0.11.2/src/store.ts"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-pinia-best-practices/reference/pinia-store-destructuring-breaks-reactivity.md",
+          "author": "IdentityRouting",
+          "author_disposition": "covered",
+          "reference": "references/state.md",
+          "section": "Pinia: setup store and consuming component",
+          "anchor": "pinia-setup-store-and-consuming-component",
+          "evidence": "Destructure state/getters with `storeToRefs(store)`; plain `{ count } = store` captures a value. Actions are bound and may be destructured directly.",
+          "explanation": "The current complete notes SFC already applies storeToRefs to notes/count and direct destructuring to addNote. The exact explanatory sentence at line 122 covers the source's invariant and avoids its misleading assertion that event-handler references lose bound Pinia context. No content gap exists.",
+          "primary_urls": [
+            "https://unpkg.com/pinia@4.1.0/dist/pinia.js",
+            "https://pinia.vuejs.org/core-concepts/#destructuring-from-a-store"
+          ],
+          "primary_evidence": [
+            "https://unpkg.com/pinia@4.1.0/dist/pinia.js",
+            "https://pinia.vuejs.org/core-concepts/#destructuring-from-a-store"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-router-best-practices/reference/router-param-change-no-lifecycle.md",
+          "author": "IdentityRouting",
+          "author_disposition": "covered",
+          "reference": "references/routing.md",
+          "section": "URL normalization and reuse",
+          "anchor": "url-normalization-and-reuse",
+          "evidence": "`/users/1` → `/users/2` reuses the page instance: setup/mount do not rerun. `beforeEnter` does not run for changes to params, query, or hash on the same record. Use a narrow watcher for post-confirmation work; `onBeforeRouteUpdate` if work must approve/block navigation. Parent `beforeEnter` also does not rerun between its children.",
+          "explanation": "Existing mapped guidance explicitly covers reused lifecycle, narrow watchers, update-guard approval and deliberate keyed remount tradeoffs. Its adjacent async component also owns cancellation/current-result publication and separates identity generation from route ID. The loader fix elsewhere in this document does not alter this quotation.",
+          "primary_urls": [
+            "https://raw.githubusercontent.com/vuejs/router/v4.6.4/packages/docs/guide/essentials/dynamic-matching.md",
+            "https://raw.githubusercontent.com/vuejs/router/v4.6.4/packages/docs/guide/advanced/navigation-guards.md"
+          ],
+          "primary_evidence": [
+            "https://raw.githubusercontent.com/vuejs/router/v4.6.4/packages/docs/guide/essentials/dynamic-matching.md",
+            "https://raw.githubusercontent.com/vuejs/router/v4.6.4/packages/docs/guide/advanced/navigation-guards.md"
+          ]
+        },
+        {
+          "source": ".agents/skills/tanstack-vue-query-skilld/references/migration.md",
+          "author": "CachesUtilities",
+          "author_disposition": "overturned; existing correction remains covered",
+          "reference": "references/tanstack-query.md",
+          "section": "Incumbent v5 migration and debugging",
+          "anchor": "incumbent-v5-migration-and-debugging",
+          "evidence": "| Source mentions `initialData.updatedAt` removal | Do not remove the supported `initialDataUpdatedAt` option: it supplies the seed's real freshness timestamp. |",
+          "explanation": "The source's isError/throwOnError conflation and initialData.updatedAt wording are already corrected. Current single-object migration, useQueries ref, scopes, client imperative methods, restore/client selection and devtools guidance cover the source's usable responsibilities without restoring historical Vue2 guidance or duplicating release chronology.",
+          "primary_urls": [
+            "https://tanstack.com/query/latest/docs/framework/vue/guides/migrating-to-v5",
+            "https://unpkg.com/@tanstack/vue-query@5.104.5/src/queryOptions.ts",
+            "https://unpkg.com/@tanstack/vue-query@5.104.5/src/useQueries.ts"
+          ],
+          "primary_evidence": [
+            {
+              "url": "https://tanstack.com/query/latest/docs/framework/vue/guides/migrating-to-v5",
+              "fact": "Official rename is useErrorBoundary to throwOnError, not isError."
+            },
+            {
+              "url": "https://unpkg.com/@tanstack/vue-query@5.104.5/src/queryOptions.ts",
+              "lines": "76-153",
+              "fact": "Reactive refs/computed and initialData behavior are explicitly declared."
+            },
+            {
+              "url": "https://unpkg.com/@tanstack/vue-query@5.104.5/src/useQueries.ts",
+              "lines": "445-493",
+              "fact": "Returns readonly Ref and disposes observer subscription."
+            }
+          ]
+        },
+        {
+          "source": ".agents/skills/tanstack-vue-query-skilld/references/reactivity.md",
+          "author": "CachesUtilities",
+          "author_disposition": "overturned; existing correction remains covered",
+          "reference": "references/tanstack-query.md",
+          "section": "Coordinating queries and large results",
+          "anchor": "coordinating-queries-and-large-results",
+          "evidence": "  const options = queryOptions(() => {\n    const currentId = toValue(id)\n    return {\n      queryKey: ['accounts', currentId] as const,",
+          "explanation": "Current adaptable wrapper normalizes inside the tracked factory and captures request identity before asynchronous work; direct reactive option fields, skipToken, initialData/select/shallow and owned scope boundaries already cover the unit. The source's assertion that a whole-options getter is the only way to make other options reactive is false: refs/computed also work, and current guidance says so.",
+          "primary_urls": [
+            "https://unpkg.com/@tanstack/vue-query@5.104.5/src/queryOptions.ts",
+            "https://unpkg.com/@tanstack/vue-query@5.104.5/src/useBaseQuery.ts",
+            "https://unpkg.com/@tanstack/vue-query@5.104.5/src/utils.ts"
+          ],
+          "primary_evidence": [
+            {
+              "url": "https://unpkg.com/@tanstack/vue-query@5.104.5/src/queryOptions.ts",
+              "lines": "76-134",
+              "fact": "Other options stay reactive as ref/computed; only queryKey/enabled treat bare functions as getters."
+            },
+            {
+              "url": "https://unpkg.com/@tanstack/vue-query@5.104.5/src/useBaseQuery.ts",
+              "lines": "104-175",
+              "fact": "Options computed invokes whole getter then cloneDeepUnref; owned subscription cleanup follows."
+            },
+            {
+              "url": "https://unpkg.com/@tanstack/vue-query@5.104.5/src/utils.ts",
+              "lines": "118-149",
+              "fact": "queryKey property recursively resolves getters; other function-valued callbacks are preserved."
+            }
+          ]
+        },
+        {
+          "source": ".agents/skills/vueuse-components-skilld/references/migration.md",
+          "author": "CachesUtilities",
+          "author_disposition": "overturned; covered without changes",
+          "reference": "references/vueuse.md",
+          "section": "Specialized v15 APIs and pinned defects",
+          "anchor": "specialized-v15-apis-and-pinned-defects",
+          "evidence": "ESM replaced CJS in v13, Vue 3.5 became the peer floor in v14, and v15 raises Node to 22; these apply to math/components/shared as well.",
+          "explanation": "The source's migration responsibilities are already present across the version/import, wrapper/directive and migration sections: current options/@trigger contract, lowercase aliases, scheduler clocks, throttle edges and pointercancel fixes. No historical APIs should be reintroduced.",
+          "primary_urls": [
+            "https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/package.json",
+            "https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/dist/index.js",
+            "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/useThrottleFn/index.ts"
+          ],
+          "primary_evidence": [
+            {
+              "url": "https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/package.json",
+              "fact": "Published package is ESM, Node >=22, Vue ^3.5.0."
+            },
+            {
+              "url": "https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/dist/index.js",
+              "lines": "1-76; 888-910; 1145-1190",
+              "fact": "Published On* options/trigger, deprecated uppercase aliases and scheduler-only clock props match current guidance."
+            },
+            {
+              "url": "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/useThrottleFn/index.ts",
+              "lines": "23-36",
+              "fact": "Both throttle edges default true."
+            }
+          ]
+        },
+        {
+          "source": ".agents/skills/vueuse-shared-skilld/references/state-sharing.md",
+          "author": "CachesUtilities",
+          "author_disposition": "overturned; existing correction remains covered",
+          "reference": "references/vueuse.md",
+          "section": "Shared utilities and SSR ownership",
+          "anchor": "shared-utilities-and-ssr-ownership",
+          "evidence": "`createGlobalState` creates one lazy state in a detached scope **per factory closure**, not per Vue app or SSR request.",
+          "explanation": "Current guidance corrects the source's app-lifetime oversimplification: global factories can span apps/requests; shared factories are subscriber-counted on clients and plain composables on SSR, not automatically request-shared. Injection tuple, optional key/default, required-provider guard, same-scope local lookup and disposal helpers are already retained.",
+          "primary_urls": [
+            "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/createGlobalState/index.ts",
+            "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/createSharedComposable/index.ts",
+            "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/createInjectionState/index.ts",
+            "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/provideLocal/index.ts",
+            "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/injectLocal/index.ts"
+          ],
+          "primary_evidence": [
+            {
+              "url": "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/createGlobalState/index.ts",
+              "lines": "15-29",
+              "fact": "One lazy state and detached effectScope are captured per factory closure."
+            },
+            {
+              "url": "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/createSharedComposable/index.ts",
+              "lines": "16-42",
+              "fact": "Returns original composable when not client; client subscriber count disposes detached scope and resets state."
+            },
+            {
+              "url": "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/createInjectionState/index.ts",
+              "lines": "21-63",
+              "fact": "InjectionKey/defaultValue and provider/consumer tuple are declared and implemented."
+            },
+            {
+              "url": "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/provideLocal/index.ts",
+              "lines": "17-31",
+              "fact": "Owner is component proxy or current scope; ordinary provide still runs, so a bare scope is not component ancestry."
+            },
+            {
+              "url": "https://raw.githubusercontent.com/vueuse/vueuse/v15.0.0/packages/shared/injectLocal/index.ts",
+              "lines": "18-33",
+              "fact": "Local owner map is checked before standard inject fallback."
+            }
+          ]
+        },
+        {
+          "source": ".agents/skills/tanstack-vue-form-skilld/references/array-fields.md",
+          "author": "Forms",
+          "author_disposition": "covered; low-confidence gap/staleness hypotheses overturned",
+          "reference": "references/tanstack-form.md",
+          "section": "Arrays and nested paths",
+          "anchor": "arrays-and-nested-paths",
+          "evidence": "Use dot paths for objects (`details.email`) and bracket indices for arrays (`people[0].name`). A numeric path is not a domain ID. `mode=\"array\"` subscribes the wrapping field to structural array changes, not every child edit. Mutate with `pushValue`, `removeValue`, `insertValue`, `replaceValue`, `swapValues`, `moveValue`, or `clearValues`.\n\nComplete standalone session-only SFC for array editing/submission. IDs are stable render keys; remove/reorder addresses still use current indices. The submitted projection excludes those UI-only IDs.",
+          "explanation": "Current array guidance preserves nested dot/bracket paths, array-mode structural subscriptions, typed field operations, stable UI keys versus current mutation indices, and a complete session-only submit flow. Programmatic validation supplies the required validation cause omitted by the source shorthand; no gap or stale evidence was confirmed.",
+          "primary_urls": [
+            "https://unpkg.com/@tanstack/vue-form@1.33.5/src/useField.tsx",
+            "https://unpkg.com/@tanstack/form-core@1.33.5/src/FieldApi.ts",
+            "https://unpkg.com/@tanstack/form-core@1.33.5/src/FormApi.ts",
+            "https://tanstack.com/form/latest/docs/framework/vue/guides/arrays"
+          ],
+          "primary_evidence": [
+            {
+              "url": "https://unpkg.com/@tanstack/vue-form@1.33.5/src/useField.tsx",
+              "lines": "258-267,299-325",
+              "fact": "array mode subscribes to _arrayVersion and reads the actual field value."
+            },
+            {
+              "url": "https://unpkg.com/@tanstack/form-core@1.33.5/src/FieldApi.ts",
+              "lines": "1111-1226",
+              "fact": "Every listed field array operation delegates to the corresponding typed FormApi array operation; no second array owner is introduced."
+            },
+            {
+              "url": "https://unpkg.com/@tanstack/form-core@1.33.5/src/FormApi.ts",
+              "lines": "1862-1924,2805-2838",
+              "fact": "validateAllFields requires a cause; removeFieldValue shifts metadata, deletes the obsolete trailing registration, and revalidates the array and shifted paths with cause 'change'."
+            },
+            {
+              "url": "https://tanstack.com/form/latest/docs/framework/vue/guides/arrays",
+              "fact": "Official array guide linked by both source and current reference; pinned source decides exact 1.33.5 behavior."
+            }
+          ]
+        },
+        {
+          "source": ".agents/skills/unovis-ts-skilld/references/styling.md",
+          "author": "Presentation",
+          "author_disposition": "overturned",
+          "reference": "references/visualization.md",
+          "section": "Linked interaction, styling, and incumbent upgrades",
+          "anchor": "linked-interaction-styling-and-incumbent-upgrades",
+          "evidence": "`theme-patterns` enables the automatic pattern palette, customizable through `--vis-pattern-fill{i}`, `--vis-pattern-marker{i}`, and `--vis-pattern-dasharray{i}`.",
+          "explanation": "The native covered verdict is retained and the low-confidence partial/gap hypothesis is overturned. Current mapped guidance already covers usable scoped CSS/dark/font/large sizing, color precedence and stable keys, patterns, CSP-before-import, stable diagnostic attributes, legend visibility ownership and owner cleanup. Source shorthand claiming styleLargeSize is a numeric font-size constant is correctly superseded by the existing current description of exported CSS class helpers.",
+          "primary_urls": [
+            "https://unpkg.com/@unovis/ts@1.7.1/styles/index.js",
+            "https://unpkg.com/@unovis/ts@1.7.1/styles/sizes.js",
+            "https://unpkg.com/@unovis/ts@1.7.1/utils/color.js",
+            "https://unovis.dev/docs/guides/theming"
+          ],
+          "primary_evidence": [
+            {
+              "url": "https://unpkg.com/@unovis/ts@1.7.1/styles/index.js",
+              "evidence": "injectGlobal defines --vis-color, --vis-dark-color, pattern fill/marker/dasharray variables and body.theme-patterns rules; global text defaults are read at module evaluation."
+            },
+            {
+              "url": "https://unpkg.com/@unovis/ts@1.7.1/styles/sizes.js",
+              "evidence": "styleLargeSize/styleExtraLargeSize are css tagged-template class helpers containing component CSS variable overrides, not numbers."
+            },
+            {
+              "url": "https://unpkg.com/@unovis/ts@1.7.1/utils/color.js",
+              "evidence": "getColor returns explicit per-datum color first, then shared key/index color function, matching current precedence guidance."
+            },
+            {
+              "url": "https://unovis.dev/docs/guides/theming",
+              "evidence": "Official guide calls large-size exports CSS classes added to a container, dark theme body.theme-dark, and documents key-based color synchronization and pre-import global palette setup."
+            }
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/async-component-vue-router.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered; escalation overturned",
+          "reference": "references/debugging-ssr.md",
+          "section": "D1. Who owns the work and the error?",
+          "anchor": "d1-who-owns-the-work-and-the-error",
+          "evidence": "A route loader `() => import(...)` is a different API.",
+          "explanation": "Current D1 distinguishes route factories from component wrappers; C3 links routing ownership. Official Router explicitly requires route import functions and reserves async wrappers for components within a page. The source's unowned loading-guard registrations should not be restored.",
+          "primary_urls": [
+            "https://router.vuejs.org/guide/advanced/lazy-loading.html#relationship-to-async-components"
+          ],
+          "primary_evidence": [
+            "https://router.vuejs.org/guide/advanced/lazy-loading.html#relationship-to-async-components"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/keepalive-router-nested-double-mount.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered with intentional correction of source overclaim; escalation overturned",
+          "reference": "references/debugging-ssr.md",
+          "section": "C3a. Separate a cache from a leak",
+          "anchor": "c3a-separate-a-cache-from-a-leak",
+          "evidence": "Record instance identity, route depth/key and mounted/activated/deactivated/unmounted events for an affected navigation. Retaining cached instances is expected; activations are not mounts. KeepAlive caches the rendered component from the RouterView slot, not RouterView infrastructure.",
+          "explanation": "This preserves causal nested-route/cache diagnostics without a universal current double-mount bug or unsafe flatten/skip-initialization prescription. A per-instance counter cannot detect two distinct instances, so that original diagnostic is correctly not retained.",
+          "primary_urls": [
+            "https://router.vuejs.org/guide/advanced/router-view-slot.html#keepalive-transition",
+            "https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance"
+          ],
+          "primary_evidence": [
+            "https://router.vuejs.org/guide/advanced/router-view-slot.html#keepalive-transition",
+            "https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/sfc-scoped-css-slot-content.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered; escalation overturned",
+          "reference": "references/debugging-ssr.md",
+          "section": "C2. Separate identity, DOM availability and style ancestry",
+          "anchor": "c2-separate-identity-dom-availability-and-style-ancestry",
+          "evidence": "Inspect exact selectors before disabling scoping: `.frame :deep(.child-part)` targets child internals; `.frame :deep(.rich-text)` can target trusted/sanitized `v-html` descendants; `:slotted(.item)` targets consumer slot content.",
+          "explanation": "Current guidance distinguishes the slot owner and deep descendant selector rather than adding unscoped global rules. Source assertions about impossible complex slotted selectors are not grounds to reverse version-matched compiler behavior.",
+          "primary_urls": [
+            "https://vuejs.org/api/sfc-css-features.html#slotted-selectors",
+            "https://raw.githubusercontent.com/vuejs/core/v3.5.44/packages/compiler-sfc/src/style/pluginScoped.ts:"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/api/sfc-css-features.html#slotted-selectors",
+            "https://raw.githubusercontent.com/vuejs/core/v3.5.44/packages/compiler-sfc/src/style/pluginScoped.ts: :slotted recursively rewrites the selector with the -s scope attribute; :deep has separate ancestry behavior."
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/suspense-ssr-hydration-issues.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered with intentional source corrections; escalation overturned",
+          "reference": "references/debugging-ssr.md",
+          "section": "E2. Compare three things, not only two",
+          "anchor": "e2-compare-three-things-not-only-two",
+          "evidence": "Align transferred data and chunks. Suspense is not a universal hydration repair; adding more boundaries does not guarantee correctness.",
+          "explanation": "D1/D1a, D2 and E1/E2 already cover actual loader/error/SSR ownership and reject warning suppression as an error boundary. The old Safari-speed, blanket ClientOnly, arbitrary stale-time and hydration-message-catching workarounds are not verified general solutions.",
+          "primary_urls": [
+            "https://vuejs.org/guide/scaling-up/ssr.html#hydration-mismatch",
+            "https://vuejs.org/guide/built-ins/suspense.html#error-handling"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/scaling-up/ssr.html#hydration-mismatch",
+            "https://vuejs.org/guide/built-ins/suspense.html#error-handling",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:2839-2846,3211-3232"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/teleport-ssr-hydration.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered with intentional source corrections; escalation overturned",
+          "reference": "references/debugging-ssr.md",
+          "section": "Teleport and lazy hydration boundaries",
+          "anchor": "teleport-and-lazy-hydration-boundaries",
+          "evidence": "For standalone SSR Teleport, `renderToString(app, context)` places teleported HTML in `context.teleports`, not the main app HTML. An explicit server shell must insert each approved target's markup at the correct dedicated container; use request-local context and do not infer target contents from the client.",
+          "explanation": "E2 already rejects body target integration/suppression shortcuts, and this section preserves the SSR-capable solution plus intentional post-mount alternative and accessibility/time-to-content cost. No blanket ClientOnly is required.",
+          "primary_urls": [
+            "https://vuejs.org/guide/scaling-up/ssr.html#teleports"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/scaling-up/ssr.html#teleports",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/server-renderer/dist/server-renderer.cjs.js:663-691,738-750"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/template-ref-v-for-order.md",
+          "author": "PlatformTooling",
+          "author_disposition": "intentional correction of obsolete/false source claim; native contradiction is not a current defect",
+          "reference": "references/debugging-ssr.md",
+          "section": "C2. Separate identity, DOM availability and style ancestry",
+          "anchor": "c2-separate-identity-dom-availability-and-style-ancestry",
+          "evidence": "Vue **supports `useTemplateRef` inside `v-for` in 3.5+**, but its ref array **does not guarantee source-array order**. Neither stable keys nor a `nextTick` establishes index equivalence. Associate elements by domain ID using function refs or explicit data attributes; delete entries when the callback receives null.",
+          "explanation": "The source's assertion that useTemplateRef returns null for all v-for refs is false. Preserve current corrective guidance and its complete identity-focus fixture; no source-compatible regression should be introduced.",
+          "primary_urls": [
+            "https://vuejs.org/guide/essentials/template-refs.html#refs-inside-v-for"
+          ],
+          "primary_evidence": [
+            "https://vuejs.org/guide/essentials/template-refs.html#refs-inside-v-for",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:1773-1796,1883-1902: template-ref accessor receives the renderer's array and existing entries append without source-order guarantee."
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-debug-guides/reference/ts-defineprops-boolean-default-false.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered with intentional source correction; escalation overturned",
+          "reference": "references/debugging-ssr.md",
+          "section": "Tree A — compilation, resolution or application setup fails",
+          "anchor": "tree-a--compilation-resolution-or-application-setup-fails",
+          "evidence": "An absent Boolean prop is normally cast to `false`; use an explicit `default: undefined` when absence must remain distinguishable.",
+          "explanation": "The runtime false branch requires isAbsent and no default; an explicitly provided undefined is not the same as absence. Current wording correctly avoids the source's never-undefined/type-system-is-wrong claim and preserves the three-state default solution without changing the public type to strings/null unnecessarily.",
+          "primary_urls": [
+            "https://vuejs.org/guide/components/props.html#boolean-casting"
+          ],
+          "primary_evidence": [
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:5156-5189",
+            "https://vuejs.org/guide/components/props.html#boolean-casting"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-skilld/references/api-changes.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered for stable migration contracts; prerelease/Vapor segment intentionally excluded; low-confidence whole-row exclusion overturned",
+          "reference": "references/migration.md",
+          "section": "Reactive props destructure is not the removed Reactivity Transform",
+          "anchor": "reactive-props-destructure-is-not-the-removed-reactivity-transform",
+          "evidence": "`app.config.unwrapInjectedRef` was removed; it is **not** evidence that Composition `inject()` unwraps supplied refs. Composition inject preserves those refs; Options instance access has separate unwrapping behavior.",
+          "explanation": "Current API status matrix preserves stable 3.3/3.4/3.5 features and removals, names unsupported 3.6/Vapor imports explicitly, and retains incumbent Options/JSX. It correctly rejects the source's reactive-key useTemplateRef and universal inject-unwrapping assertions. Only unstable out-of-target material is excluded, not the whole source.",
+          "primary_urls": [
+            "https://blog.vuejs.org/posts/vue-3-4",
+            "https://vuejs.org/about/releases.md"
+          ],
+          "primary_evidence": [
+            "https://blog.vuejs.org/posts/vue-3-4",
+            "https://vuejs.org/about/releases.md",
+            "skills/vue-kit/assets/example-app/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:823-830: inject returns the supplied value unchanged.",
+            "skills/vue-kit/assets/example-app/node_modules/vue/package.json:19-69,97-102"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-test-utils-skilld/references/wrapper-api.md",
+          "author": "PlatformTooling",
+          "author_disposition": "covered; escalation overturned",
+          "reference": "references/testing.md",
+          "section": "Mounting and wrapper API contracts for incumbent suites",
+          "anchor": "mounting-and-wrapper-api-contracts-for-incumbent-suites",
+          "evidence": "`get`/`getComponent` throw on absence; `find`/`findComponent` return an error wrapper with `exists() === false`. `findAll` returns a plain array.",
+          "explanation": "Existing table plus adjacent decisions preserve public queries/assertions/actions, functional/ref selection caveats, props/emitted, html raw, root-only setProps, model feedback and teardown. Private instance access is intentionally not the behavioral boundary. The source's queue-draining description of flushPromises is already corrected by the dedicated synchronization section.",
+          "primary_urls": [
+            "https://unpkg.com/@vue/test-utils@2.5.1/dist/vue-test-utils.esm-bundler.mjs:7287-7297",
+            "https://test-utils.vuejs.org/api/",
+            "https://test-utils.vuejs.org/migration/"
+          ],
+          "primary_evidence": [
+            "https://unpkg.com/@vue/test-utils@2.5.1/dist/vue-test-utils.esm-bundler.mjs:7287-7297 getComponent; 7796-7807 root setProps and model emission; 8520-8524 flushPromises scheduler.",
+            "https://test-utils.vuejs.org/api/",
+            "https://test-utils.vuejs.org/migration/"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-expert/SKILL.md",
+          "author": "Nuxt",
+          "author_disposition": "preserve existing corrected mapping; native covered verdict supported for the Nuxt owning slice; no new gap confirmed",
+          "reference": "references/nuxt.md",
+          "section": "Request context and state",
+          "anchor": "request-context-and-state",
+          "evidence": "Call Nuxt composables in component setup, Nuxt plugins, route middleware or a composable invoked synchronously from those contexts.",
+          "explanation": "The first-class Nuxt guide owns request context/state and a complete host example instead of routing ordinary Nuxt work only through migration. Other original Vue/component/composable/mobile mappings remain under their existing owners; they were not independently hand-scanned here.",
+          "primary_urls": [
+            "https://nuxt.com/docs/4.x/guide/concepts/auto-imports",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/state.js"
+          ],
+          "primary_evidence": [
+            "https://nuxt.com/docs/4.x/guide/concepts/auto-imports",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/state.js"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-expert/references/nuxt.md",
+          "author": "Nuxt",
+          "author_disposition": "preserve corrected coverage mapping; native covered verdict supported; no source-derived missing-context addition",
+          "reference": "references/nuxt.md",
+          "section": "Data, payload and cancellation",
+          "anchor": "data-payload-and-cancellation",
+          "evidence": "Make URLs/keys reactive and encode every dependency that changes the result.",
+          "explanation": "Current Nuxt4 app/server directories, page metadata placement, reactive awaited reads, mutation/read ownership, portable server imports, runtime config and supported lazy hydration replace the original stale Nuxt3 snapshot examples. No Fastify bootstrap was copied into Nuxt. Existing migration/non-Nuxt SSR routing remains untouched.",
+          "primary_urls": [
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/fetch.js",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/asyncData.js",
+            "https://unpkg.com/nuxt@4.6.2/dist/server/index.d.ts",
+            "https://unpkg.com/@nuxt/schema@4.6.2/dist/index.mjs"
+          ],
+          "primary_evidence": [
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/fetch.js",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/asyncData.js",
+            "https://unpkg.com/nuxt@4.6.2/dist/server/index.d.ts",
+            "https://unpkg.com/@nuxt/schema@4.6.2/dist/index.mjs"
+          ]
+        },
+        {
+          "source": ".agents/skills/vue-patterns/SKILL.md",
+          "author": "Nuxt",
+          "author_disposition": "preserve corrected mapping; native covered verdict supported for the Nuxt owning slice",
+          "reference": "references/nuxt.md",
+          "section": "Data, payload and cancellation",
+          "anchor": "data-payload-and-cancellation",
+          "evidence": "Use Nuxt `useFetch` for URL reads, `useAsyncData` for a custom async read, and `$fetch` for an event-triggered mutation.",
+          "explanation": "Existing current guidance replaces the original static user key and separates app state, remote state and event mutations. Broader Vue architectural mappings remain with their assigned owners, rather than duplicating their references in the Nuxt guide.",
+          "primary_urls": [
+            "https://nuxt.com/docs/4.x/getting-started/data-fetching",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/fetch.js",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/asyncData.js"
+          ],
+          "primary_evidence": [
+            "https://nuxt.com/docs/4.x/getting-started/data-fetching",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/fetch.js",
+            "https://unpkg.com/nuxt@4.6.2/dist/app/composables/asyncData.js"
+          ]
+        }
+      ],
+      "changed_current_quotes": [
+        {
+          "pointer": "/sources/102/resolution/evidence",
+          "source": ".agents/skills/tanstack-vue-router-skilld/references/composables.md",
+          "reference": "references/routing-tanstack.md",
+          "previous_evidence": "In generic hooks, `strict: false` relaxes route-specific **typing**; it does not search for a requested parent or make an inactive route active.",
+          "current_evidence": "In hooks that expose `strict`, `strict: false` relaxes route-specific **typing** and forbids `from` in the exact shared-core type; it does not search for a requested parent or make an inactive route active.",
+          "previous_section": "Scope, matching, and return-type traps",
+          "current_section": "Scope, matching, and return-type traps",
+          "previous_anchor": "scope-matching-and-return-type-traps",
+          "current_anchor": "scope-matching-and-return-type-traps",
+          "reason": "Follow the exact shared-core strict/from type correction; preserve the existing corrected disposition and source provenance."
+        }
+      ],
+      "changed_explicit_quotes": 1,
+      "canonical_reanchors": [],
+      "unbound_author_quote_proposals": {
+        "author": "Forms",
+        "count": 3,
+        "note": "The three corrected FormKit passages are not bound existing crosswalk evidence; no existing quotation was replaced for those proposals."
+      },
+      "previously_native_only": {
+        "source_units": 17,
+        "current_disposition": "covered",
+        "source_paths": [
+          ".agents/skills/create-adaptable-composable/SKILL.md",
+          ".agents/skills/vue-debug-guides/reference/computed-no-side-effects.md",
+          ".agents/skills/vue-debug-guides/reference/configure-app-before-mount.md",
+          ".agents/skills/vue-debug-guides/reference/lifecycle-hooks-synchronous-registration.md",
+          ".agents/skills/vue-debug-guides/reference/mount-return-value.md",
+          ".agents/skills/vue-debug-guides/reference/ref-value-access.md",
+          ".agents/skills/vue-debug-guides/reference/refs-in-collections-need-value.md",
+          ".agents/skills/vue-debug-guides/reference/render-function-vnodes-must-be-unique.md",
+          ".agents/skills/vue-debug-guides/reference/slot-render-scope-parent-only.md",
+          ".agents/skills/vue-debug-guides/reference/suspense-no-builtin-error-handling.md",
+          ".agents/skills/vue-debug-guides/reference/v-for-computed-reverse-sort.md",
+          ".agents/skills/vue-debug-guides/reference/watch-reactive-property-getter.md",
+          ".agents/skills/vue-debug-guides/reference/watcheffect-async-dependency-tracking.md",
+          ".agents/skills/vue-options-api-best-practices/reference/no-arrow-functions-in-methods.md",
+          ".agents/skills/peccable/references/systems.md",
+          ".agents/skills/vue-pinia-best-practices/reference/pinia-store-destructuring-breaks-reactivity.md",
+          ".agents/skills/vue-router-best-practices/reference/router-param-change-no-lifecycle.md"
+        ],
+        "explanation": "Author evidence now supplies the missing mapped-reference context. Do not reinterpret fourth-pass low-confidence gap/other escalation candidates as confirmed omissions or change the original covered native judgments/probability maps."
+      },
+      "preserved_counts": {
+        "sources": 467,
+        "native_source_maps": 467,
+        "native_reference_maps": 38,
+        "historical_roots": 49,
+        "active_roots": 48,
+        "current_extensions": 2,
+        "excluded_slidev_source_units": 9
+      },
+      "acceptance_reconciliation": {
+        "verification_check_ids": {
+          "references/nuxt.md": [
+            "fourth-pass-nuxt-core-type-build",
+            "fourth-pass-nuxt-cancellation-browser",
+            "fourth-pass-nuxt-http-hydration"
+          ],
+          "references/nuxt-integrations.md": [
+            "fourth-pass-nuxt-selected-type-build",
+            "fourth-pass-nuxt-private-epoch-smoke",
+            "fourth-pass-nuxt-http-hydration"
+          ]
+        },
+        "status": "Resolved against current parent-observed checks: core and selected public consumers passed type/build and HTTP/hydration smoke; actual Nuxt cancellation and controlled private-cache epoch/teardown scenarios were exercised. SDK-ref and transport injection do not establish real Clerk sessions, signed-token verification or server authorization; those require genuine application credentials."
+      },
+      "preservation": "All original source paths, roots, SHA256 values, 467 native source maps, 38 native reference identities/maps, current source/root mappings, two extension identities and exclusion/removal policy remain unchanged. Prior pass records remain historical; their then-current 450/17 counts are not rewritten."
     }
   },
   "sources": [
@@ -400,7 +1481,18 @@
           "bool": 0.25
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/composables.md",
+        "section": "Normalize only where reactivity is collected",
+        "evidence": "`toValue()` does not create a reactive effect. Calling it once outside an effect captures a value. `toRef(value)` returns an existing ref unchanged, wraps a plain value, or creates a readonly getter ref; it does not make a plain caller variable writable by reference.",
+        "explanation": "Existing current guidance covers value/ref/getter normalization, function-valued input ambiguity, writable versus initial-value contracts, reactive DOM targets and SSR-safe side effects. It correctly refuses the source's implication that MaybeRef/plain values create two-way caller linkage; no extra counter/title helper is essential.",
+        "primary_urls": [
+          "https://vuejs.org/api/reactivity-utilities.html#tovalue",
+          "https://vuejs.org/guide/reusability/composables.html#side-effects"
+        ],
+        "anchor": "normalize-only-where-reactivity-is-collected"
+      }
     },
     {
       "source": ".agents/skills/floating-ui-vue-skilld/SKILL.md",
@@ -1053,7 +2145,7 @@
         "reference": "references/design-system.md",
         "section": "1. Establish the task and authority",
         "evidence": "Planning delivers a scoped brief, and read-only review delivers prioritized findings with location, evidence, impact and remedy; neither authorizes unsolicited implementation or persisted sidecars.",
-        "explanation": "Retains autonomous evidence-led continuation, consequential-question boundary, refine/extend/replace authority, product truth and smallest causal intervention. Sections 2\u20135 retain product-specific composition, role vocabulary, complete states and actual working outcomes. Added advanced craft/interop responsibilities through Palette ramps, Typography and layout diagnostics, Media, Task topology, Motion ownership, Performance investigation and Platform adaptation. Sections 7\u20138 retain consumer cutover, useful learning, evidence provenance, correction/convergence and honest blocked handoff. Accessibility owns semantics, targets, focus and equivalent operation. No runtime was exercised by this repair.",
+        "explanation": "Retains autonomous evidence-led continuation, consequential-question boundary, refine/extend/replace authority, product truth and smallest causal intervention. Sections 2–5 retain product-specific composition, role vocabulary, complete states and actual working outcomes. Added advanced craft/interop responsibilities through Palette ramps, Typography and layout diagnostics, Media, Task topology, Motion ownership, Performance investigation and Platform adaptation. Sections 7–8 retain consumer cutover, useful learning, evidence provenance, correction/convergence and honest blocked handoff. Accessibility owns semantics, targets, focus and equivalent operation. No runtime was exercised by this repair.",
         "primary_urls": [
           "https://vuejs.org/guide/best-practices/accessibility.html",
           "https://www.w3.org/TR/WCAG22/",
@@ -1093,7 +2185,7 @@
         "reference": "references/design-system.md",
         "section": "Palette ramps, materials, and data",
         "evidence": "For sequential scales make ordering readable, for diverging scales identify the meaningful midpoint, and for categorical scales provide distinguishable labels/markers rather than adding endless hues.",
-        "explanation": "Existing role mapping, identity preservation, action hierarchy, theme pairs and accessibility contrast calculations already cover the core. Added missing ramp/gamut and CSS-only OKLCH boundary, material light-direction/depth, solid translucency fallback, weakest text-over-image region, state/theme inspection and supplemental color-vision/grayscale checks. Authored palette judgment is distinguished from CSS Color 4 definitions and WCAG luminance; arbitrary CSS color functions are not promised as Vuetify parser inputs. Accessibility sections 2\u20134 retain exact threshold scope/exceptions and focus/selected contrast rather than copying oversimplified source rules.",
+        "explanation": "Existing role mapping, identity preservation, action hierarchy, theme pairs and accessibility contrast calculations already cover the core. Added missing ramp/gamut and CSS-only OKLCH boundary, material light-direction/depth, solid translucency fallback, weakest text-over-image region, state/theme inspection and supplemental color-vision/grayscale checks. Authored palette judgment is distinguished from CSS Color 4 definitions and WCAG luminance; arbitrary CSS color functions are not promised as Vuetify parser inputs. Accessibility sections 2–4 retain exact threshold scope/exceptions and focus/selected contrast rather than copying oversimplified source rules.",
         "primary_urls": [
           "https://www.w3.org/TR/css-color-4/",
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/theme.ts",
@@ -1134,7 +2226,7 @@
         "reference": "references/design-system.md",
         "section": "Media, composition references, and provenance",
         "evidence": "Optional sketches/composition prompts should specify authorized content in reading order, the primary action, one dominant idea, and the intended viewport/output scale.",
-        "explanation": "Core copy, truthful claims, state-specific recovery, full localization messages and real data ranges were already present in sections 1, 4 and 5. Added optional composition/media workflow (live text/control separation, intended scale, accepted-comp reuse) and contextual onboarding/permission/practice boundaries, rather than requiring image generation. Task topology adds pre-submit eligibility/units/consequences, retained uploaded work and primary-message/internal-diagnostic separation. Accessibility sections 1, 5\u20137 own persistent labels/name alignment, linked errors and announcements, truncation/full value, RTL isolation and media/chart alternatives; the existing i18n companion remains the implementation owner. No fictional product facts or backend capabilities were introduced.",
+        "explanation": "Core copy, truthful claims, state-specific recovery, full localization messages and real data ranges were already present in sections 1, 4 and 5. Added optional composition/media workflow (live text/control separation, intended scale, accepted-comp reuse) and contextual onboarding/permission/practice boundaries, rather than requiring image generation. Task topology adds pre-submit eligibility/units/consequences, retained uploaded work and primary-message/internal-diagnostic separation. Accessibility sections 1, 5–7 own persistent labels/name alignment, linked errors and announcements, truncation/full value, RTL isolation and media/chart alternatives; the existing i18n companion remains the implementation owner. No fictional product facts or backend capabilities were introduced.",
         "primary_urls": [
           "https://web.dev/learn/images/descriptive",
           "https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html",
@@ -1339,7 +2431,7 @@
         "disposition": "corrected",
         "reference": "references/design-system.md",
         "section": "Platform adaptation and alternate outputs",
-        "evidence": "Apple's current HIG lists **44 \u00d7 44 pt default** and **28 \u00d7 28 pt minimum** controls for iOS/iPadOS, not a universal 44pt minimum; aim for comfortable targets and spacing.",
+        "evidence": "Apple's current HIG lists **44 × 44 pt default** and **28 × 28 pt minimum** controls for iOS/iPadOS, not a universal 44pt minimum; aim for comfortable targets and spacing.",
         "explanation": "Added missing native/cross-platform/alternate-output responsibilities as concrete design and interop contracts, explicitly not native SDK snippets. Covers mobile web capability/input coexistence, browser chrome/safe area/keyboard/viewport units, iOS tabs-stack-sheets/Back/Dynamic Type/system roles/symbols/VoiceOver, Android bars-rails-drawers/Back-vs-Up/predictive Back/edge-to-edge/IME/sp/48dp/Dynamic Color fallback/TalkBack, tablet/multi-window/foldable pane continuity/hinge/posture, and print/email constraints. Current Apple primary HIG overturns the source's universal 44pt-minimum wording; Android still documents 48dp targets. Preserves source-level distinction between webview and true native, emulator and hardware, and unobserved gestures/performance. Accessibility sections 3 and 6 retain web targets, orientation, zoom/reflow and scaling rather than importing native dimensions as WCAG minima.",
         "primary_urls": [
           "https://developer.apple.com/design/human-interface-guidelines/accessibility",
@@ -1419,7 +2511,17 @@
           "bool": 0.18
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/design-system.md",
+        "section": "7. Keep the system continuous",
+        "evidence": "Before changing a shared token/component, identify actual consumers and intentional variants, including dark theme, compact views, validation and pending states. Specify the needed contract, migrate every affected caller in the authorized cutover, and remove superseded styles, dead imports, duplicated components and obsolete examples. Do not leave two competing conventions or broaden a local change into unrelated cleanup.",
+        "explanation": "The original source's incumbent ownership/extraction/tokens/behavior/migration/documentation contracts are already synthesized in sections 1, 3 and 7; no missing-context-driven addition is warranted. Section 3 defines one authoritative role and behavior ownership, fields/dialogs/pending names, composition instead of boolean universals; section 4 covers long content/localization/reflow. No need to inspect or edit another slice's architecture document to repair this row.",
+        "primary_urls": [
+          "https://vuejs.org/api/composition-api-helpers.html#useid"
+        ],
+        "anchor": "7-keep-the-system-continuous"
+      }
     },
     {
       "source": ".agents/skills/peccable/references/typography.md",
@@ -2576,7 +3678,7 @@
         "disposition": "corrected",
         "reference": "references/alternative-ui.md",
         "section": "Quasar utility, layout and upgrade contracts",
-        "evidence": "Do not apply the older source's \u201cno APIs added in 2.33.x\u201d claim to all later 2.35.x releases.",
+        "evidence": "Do not apply the older source's “no APIs added in 2.33.x” claim to all later 2.35.x releases.",
         "explanation": "Adds retained 2.33 pagination/date/color/virtual-scroll fixes, 2.32 SSR images/aspect/transition/native-layout changes, 2.31 readonly/dark/field CSS, 2.30 observer callback/timing, 2.29 activation and 2.28 popup/platform changes, earlier language/textarea/virtual SSR/RTL/SSG boundaries. Added-API lookup preserves all capability categories without freezing obsolete counts, and nativeEl/disable-tab-selection guidance is explicit. Older wrapper advice is superseded by separately documented exact app-vite3.10.3 API, not silently dropped.",
         "primary_urls": [
           "https://github.com/quasarframework/quasar/releases/tag/quasar-v2.33.0",
@@ -4214,7 +5316,7 @@
         "disposition": "corrected",
         "reference": "references/routing-tanstack.md",
         "section": "Scope, matching, and return-type traps",
-        "evidence": "In generic hooks, `strict: false` relaxes route-specific **typing**; it does not search for a requested parent or make an inactive route active.",
+        "evidence": "In hooks that expose `strict`, `strict: false` relaxes route-specific **typing** and forbids `from` in the exact shared-core type; it does not search for a requested parent or make an inactive route active.",
         "explanation": "Expanded all substantive hook families: loader deps/context/match/search/params and selected state refs; match arrays and relative parent/child slices; scoped Route/getRouteApi methods; useMatchRoute's function-then-computed result; back-index limitation; optional missing matches; useAwaited tuple/throwing behavior; blocker resolver versus void; element scroll restoration and head ownership. Corrects the source's wrong strict:false runtime explanation and its useLinkProps plain-object assertion using exact current implementation versus declaration evidence. Does not claim core structural-sharing configuration guarantees React behavior in Vue.",
         "primary_urls": [
           "https://unpkg.com/@tanstack/vue-router@1.170.41/dist/esm/useMatch.js",
@@ -4797,7 +5899,7 @@
         "disposition": "corrected",
         "reference": "references/data-tables.md",
         "section": "Incumbent migration audit beyond the composable rename",
-        "evidence": "Split `enablePinning` into `enableColumnPinning`/`enableRowPinning`; rename `columnSizingInfo` \u2192 `columnResizing`, `setColumnSizingInfo` \u2192 `setColumnResizing`, and its change callback.",
+        "evidence": "Split `enablePinning` into `enableColumnPinning`/`enableRowPinning`; rename `columnSizingInfo` → `columnResizing`, `setColumnSizingInfo` → `setColumnResizing`, and its change callback.",
         "explanation": "Adds the omitted full coherent migration audit: processing/function slots, per-slice atoms/state, renderer/footer, prototype/internal method removal, every logical pinning region and argument, sizing/resizing split, some-versus-all/Shift selection, feature-first generics, metadata/registry typing and removal of stock bridge. Advanced feature section supplies current aggregation definitions/depth semantics and app table factories; no alias shim or forced unrelated migration.",
         "primary_urls": [
           "https://tanstack.com/table/latest/docs/framework/vue/guide/migrating"
@@ -4981,7 +6083,7 @@
         "disposition": "covered",
         "reference": "references/virtualization.md",
         "section": "Geometry contract",
-        "evidence": "Reactive counts/options require `computed(() => ({ \u2026 }))` or a ref of the **whole options object**.",
+        "evidence": "Reactive counts/options require `computed(() => ({ … }))` or a ref of the **whole options object**.",
         "explanation": "Overturns low-confidence warning: Version and adapter boundary already states imports, exact adapter/core, Ref/.value/script-template behavior and Vue peer; Geometry contract already explains null-then-mounted scroll ref, reactive whole options and scope cleanup, and complete example tracks items/total in computed. Added advanced section makes observer override/onChange ownership explicit. Vue2 peer compatibility is recorded, not taught as the Vue3.5 implementation target.",
         "primary_urls": [
           "https://unpkg.com/@tanstack/vue-virtual@3.13.47/dist/esm/index.d.ts",
@@ -5667,7 +6769,7 @@
         "disposition": "corrected",
         "reference": "references/visualization.md",
         "section": "Linked interaction, styling, and incumbent upgrades",
-        "evidence": "use shared domains and capture the widest-mark chart's `onRenderComplete(svg, margin, bleed, \u2026)` horizontal bleed",
+        "evidence": "use shared domains and capture the widest-mark chart's `onRenderComplete(svg, margin, bleed, …)` horizontal bleed",
         "explanation": "Preserves exact matched wrapper/core 1.7.1 composition/lifecycle/standalone/data contracts and full safe line SFC. Adds advanced mark/topology/categorical/waterfall/bleed, theme/pattern/legend and incumbent debugging workflows. Existing Crosshair.template=function is correct and overturns source's selector-map example; wrappers are not manually destroyed while live. SSR/MCP sections now give versioned real incumbent workflows.",
         "primary_urls": [
           "https://unovis.dev/releases/1.7",
@@ -6738,7 +7840,7 @@
         "reference": "references/components.md",
         "section": "Async components and built-in boundaries",
         "evidence": "After resolving, it reenters pending when the default root is replaced",
-        "explanation": "Overturn warning: experimental status, single root per slot, root replacement/key, fallback timeout on reversion, pending/resolve/fallback events, ancestor error capture, nested suspensible and RouterView\u2192Transition\u2192KeepAlive\u2192Suspense ordering are all explicit. Not every deeper fetch retriggers fallback, nor is nested delegation mandatory in every design.",
+        "explanation": "Overturn warning: experimental status, single root per slot, root replacement/key, fallback timeout on reversion, pending/resolve/fallback events, ancestor error capture, nested suspensible and RouterView→Transition→KeepAlive→Suspense ordering are all explicit. Not every deeper fetch retriggers fallback, nor is nested delegation mandatory in every design.",
         "primary_urls": [
           "https://vuejs.org/guide/built-ins/suspense.html"
         ],
@@ -7060,7 +8162,7 @@
         "reference": "references/virtualization.md",
         "section": "Geometry contract",
         "evidence": "A one-time `{ count: rows.value.length }` does not update when rows change.",
-        "explanation": "Overturn uncertain coverage: exact Vue adapter/ref API, bounded scrolling/spacer/position geometry, stable keys, reactive counts, estimates/overscan and measureElement are concrete; Complete example: dynamic read-only rows implements variable heights and hydration/focus boundaries. Core rejects arbitrary50\u2013100-row/fps rules. TanStack headless current path is usable; incumbent alternative selection is not a forced migration.",
+        "explanation": "Overturn uncertain coverage: exact Vue adapter/ref API, bounded scrolling/spacer/position geometry, stable keys, reactive counts, estimates/overscan and measureElement are concrete; Complete example: dynamic read-only rows implements variable heights and hydration/focus boundaries. Core rejects arbitrary50–100-row/fps rules. TanStack headless current path is usable; incumbent alternative selection is not a forced migration.",
         "primary_urls": [
           "https://registry.npmjs.org/@tanstack/vue-virtual/3.13.47",
           "https://tanstack.com/virtual/latest/docs/framework/vue/vue-virtual"
@@ -7533,7 +8635,7 @@
         "disposition": "covered",
         "reference": "references/debugging-ssr.md",
         "section": "Start at the first divergent boundary",
-        "evidence": "Compilation/import failure \u2192 tree A. State is wrong or stale \u2192 tree B. State is correct but DOM/interaction is wrong \u2192 tree C. Late work/errors/leaks \u2192 tree D. Initial server HTML differs from client \u2192 tree E.",
+        "evidence": "Compilation/import failure → tree A. State is wrong or stale → tree B. State is correct but DOM/interaction is wrong → tree C. Late work/errors/leaks → tree D. Initial server HTML differs from client → tree E.",
         "explanation": "Read the entire historical index. Its broad navigation responsibilities are preserved by the new master diagnostic route plus focused trees and advanced matrices; every underlying source unit has an individual disposition. An old index does not require reinstalling its 139 child files or duplicating that navigation architecture. The candidate missing label is overturned by this explicit entry and the complete underlying crosswalk.",
         "primary_urls": [
           "https://vuejs.org/guide/scaling-up/ssr.html",
@@ -8290,7 +9392,7 @@
         "primary_urls": [
           "https://vuejs.org/guide/extras/reactivity-in-depth"
         ],
-        "author_section": "Tree B \u2014 state is stale, unexpectedly shared or recursively updating",
+        "author_section": "Tree B — state is stale, unexpectedly shared or recursively updating",
         "anchor": "b2-is-the-derived-state-pure-and-the-effect-bounded"
       }
     },
@@ -8438,7 +9540,18 @@
           "bool": 0.12
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/core-vue.md",
+        "section": "Choose state by its mutation contract",
+        "evidence": "| Derived value | `computed()` | Pure synchronous getter; do not fetch, mutate source state, or emit inside it. |",
+        "explanation": "Computed purity and selection of watchers for side effects already appear in core and the directly mapped diagnostics reference. No need to reproduce the source's browser-global immediate title watcher or uncancelled fetch example.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free",
+          "https://vuejs.org/guide/essentials/watchers.html"
+        ],
+        "anchor": "choose-state-by-its-mutation-contract"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/computed-return-value-readonly.md",
@@ -8506,7 +9619,17 @@
           "bool": 0.11
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/debugging-ssr.md",
+        "section": "Tree A — compilation, resolution or application setup fails",
+        "evidence": "Register plugins, provides, global components and error/warn handlers on the app before `app.mount`.",
+        "explanation": "Mapped current diagnostic guidance explicitly gives initialization order. It correctly does not repeat the source's false claim that every configuration operation after mount is silently ignored: installed runtime use/component/directive/config setters are not all disabled by isMounted.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/application.html#mounting-the-app"
+        ],
+        "anchor": "tree-a--compilation-resolution-or-application-setup-fails"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/declare-emits-for-documentation.md",
@@ -8655,7 +9778,7 @@
       "resolution": {
         "disposition": "covered",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "Use a top-level macro; use imported values where allowed.",
         "explanation": "Existing macro branch preserves top-level defineEmits, emit reuse, imported runtime options and exclusive runtime/type declaration. B3/A1 clarify this must not become the source blanket prohibition on all other macro locals.",
         "primary_urls": [
@@ -8853,7 +9976,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "Use Vite's `import.meta.glob` with literal patterns and deliberate eager/lazy handling;",
         "explanation": "Tree A already replaces require.context with literal import.meta.glob and deliberate eager/lazy handling, linked to tooling. Added registration scope/name diagnosis preserves usable Vite cutover without inventing a second glob convention.",
         "primary_urls": [
@@ -9247,7 +10370,18 @@
           "bool": 0.1
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/core-vue.md",
+        "section": "Lifecycle guarantees, not timing folklore",
+        "evidence": "Synchronous registration can occur inside an ordinary helper called from setup; it need not be lexically in the SFC. Arbitrary async continuations lose that active instance/scope.",
+        "explanation": "Existing paragraph supplies synchronous call-chain ownership and the following sentence supplies the compiler-restored top-level script-setup await exception. The source's absolute after-await prohibition must not overwrite that 3.5 distinction.",
+        "primary_urls": [
+          "https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiLifecycle.ts",
+          "https://vuejs.org/api/composition-api-lifecycle.html"
+        ],
+        "anchor": "lifecycle-guarantees-not-timing-folklore"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/lifecycle-ssr-awareness.md",
@@ -9318,7 +10452,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "Local registration is not transitive.",
         "explanation": "Tree A and A1 preserve local non-transitive registration and actual-consumer imports, self-reference/import aliases and app-global lookup; slot lexical scope is retained in C1.",
         "primary_urls": [
@@ -9355,7 +10489,17 @@
           "bool": 0.08
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/debugging-ssr.md",
+        "section": "Tree A — compilation, resolution or application setup fails",
+        "evidence": "`mount()` returns the component public instance, not the app; keep the app variable if later access is needed.",
+        "explanation": "The exact supposedly missing mount return distinction is already stated in a mapped current document. Core/components need no duplicate bootstrap section.",
+        "primary_urls": [
+          "https://vuejs.org/api/application.html#app-mount"
+        ],
+        "anchor": "tree-a--compilation-resolution-or-application-setup-fails"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/multi-root-component-class-attrs.md",
@@ -9506,7 +10650,7 @@
       "resolution": {
         "disposition": "covered",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "`v-if` has higher priority than `v-for`",
         "explanation": "Already preserves Vue 3 precedence and two valid repairs: computed filtering for item predicates or separate conditional/loop nodes for whole-list visibility; no old Vue 2 priority copy.",
         "primary_urls": [
@@ -9663,7 +10807,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "Register plugins, provides, global components and error/warn handlers on the app before `app.mount`.",
         "explanation": "Tree A retains all app configuration and plugins before mount, dependency order and duplicate plugin install behavior; A1 makes augmentation/runtime installation separation concrete.",
         "primary_urls": [
@@ -9783,7 +10927,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "Use a top-level macro; use imported values where allowed.",
         "explanation": "Tree A preserves hoisted defineProps/defineEmits runtime-options limitations and imported binding repair; A1 distinguishes module versus instance scope. Does not copy the source prohibition onto unrelated macros with different semantics.",
         "primary_urls": [
@@ -10177,7 +11321,18 @@
           "bool": 0.12
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/core-vue.md",
+        "section": "Choose state by its mutation contract",
+        "evidence": "| Primitive or replaceable object with nested mutations | `ref()` | Script uses `.value`; object values become deeply reactive. |",
+        "explanation": "Core states script .value and demonstrates script versus template usage in complete SFCs. Its tracking/identity section correctly limits template unwrapping instead of repeating the source's absolute never-.value-in-template rule.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#ref",
+          "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-when-unwrapping-in-templates"
+        ],
+        "anchor": "choose-state-by-its-mutation-contract"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/refs-in-collections-need-value.md",
@@ -10206,7 +11361,17 @@
           "bool": 0.09
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/core-vue.md",
+        "section": "Tracking and identity edge cases",
+        "evidence": "Reactive object properties unwrap refs; reactive array elements and `Map` entries do not. In script, use `.value` for those ref entries.",
+        "explanation": "The array/Map rule is explicit. No need to restore the source's misleading comment that ordinary collection items are not independently reactive.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-in-arrays-and-collections"
+        ],
+        "anchor": "tracking-and-identity-edge-cases"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/render-function-avoid-internal-vnode-properties.md",
@@ -10274,7 +11439,18 @@
           "bool": 0.1
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/components.md",
+        "section": "Rendering, directives, plugins, and custom elements",
+        "evidence": "Create unique vnodes per tree position; pass component slots as functions.",
+        "explanation": "Current guidance explicitly covers the required vnode identity rule and returns a render function rather than a setup-time frozen render result. Multiple nearly identical factories from the source are unnecessary.",
+        "primary_urls": [
+          "https://vuejs.org/guide/extras/render-function.html#vnodes-must-be-unique",
+          "https://vuejs.org/guide/extras/render-function.html#declaring-render-functions"
+        ],
+        "anchor": "rendering-directives-plugins-and-custom-elements"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/rendering-render-function-h-import-vue3.md",
@@ -10463,7 +11639,7 @@
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
         "section": "C1a. Discriminate native input and listener failures",
-        "evidence": "For an empty select use model `''` with `<option disabled value=\"\">Choose\u2026</option>` to avoid iOS's first-option change trap.",
+        "evidence": "For an empty select use model `''` with `<option disabled value=\"\">Choose…</option>` to avoid iOS's first-option change trap.",
         "explanation": "Adds concrete empty model/disabled empty option contract and explains the iOS first-option change-event trap, instead of requiring a placeholder for selects that already have a valid initial option.",
         "primary_urls": [
           "https://vuejs.org/guide/essentials/forms"
@@ -10776,7 +11952,7 @@
         "reference": "references/debugging-ssr.md",
         "section": "C2. Separate identity, DOM availability and style ancestry",
         "evidence": "Loose top-level slot content normally supplies default content.",
-        "explanation": "Adds explicit loose top-level content \u2192 default slot rule and explicit default template when scoped/named slots mix; slot placement remains a consumer lexical-scope contract.",
+        "explanation": "Adds explicit loose top-level content → default slot rule and explicit default template when scoped/named slots mix; slot placement remains a consumer lexical-scope contract.",
         "primary_urls": [
           "https://vuejs.org/guide/extras/render-function"
         ],
@@ -10888,7 +12064,18 @@
           "bool": 0.1
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/components.md",
+        "section": "Decide the smallest meaningful contract",
+        "evidence": "| Parent controls rendering/content | Named/scoped slots | Parent owns slot lexical scope; child explicitly supplies slot props. |",
+        "explanation": "Table states lexical ownership; generic-list and TitleInput/TitleEditor examples actually pass typed slot props across that boundary. No missing-context gap remains.",
+        "primary_urls": [
+          "https://vuejs.org/guide/components/slots.html#render-scope",
+          "https://vuejs.org/guide/components/slots.html#scoped-slots"
+        ],
+        "anchor": "decide-the-smallest-meaningful-contract"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/slot-v-slot-on-components-or-templates-only.md",
@@ -10920,7 +12107,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "`v-slot` belongs on components or `<template>`, not a native element.",
         "explanation": "Tree A preserves v-slot placement on components/templates; C2 explicitly retains mixed named/default scoped slot syntax and render-function forwarding. No native-element v-slot workaround.",
         "primary_urls": [
@@ -11074,7 +12261,18 @@
           "bool": 0.14
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/components.md",
+        "section": "Async components and built-in boundaries",
+        "evidence": "| `<Suspense>` — **experimental** | Coordinate async setup/async components in one subtree | Not a fetch cache or generic watcher loading indicator; has no built-in error slot. |",
+        "explanation": "Current guidance explicitly supplies ancestor error ownership and core says return false only when intentionally stopping reporting. The original automatic return-false recipe is not an obligation. Runtime-specific errorComponent handling under Suspense is independently correct in pinned 3.5.44.",
+        "primary_urls": [
+          "https://vuejs.org/guide/built-ins/suspense.html#error-handling",
+          "https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured"
+        ],
+        "anchor": "async-components-and-built-in-boundaries"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/suspense-ssr-hydration-issues.md",
@@ -11890,7 +13088,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "An absent Boolean prop is normally cast to `false`; use an explicit `default: undefined` when absence must remain distinguishable.",
         "explanation": "Tree A preserves Boolean absent-to-false casting and explicit default undefined for three-state absence; A1 preserves actual runtime/tooling separation rather than requiring null/string workarounds.",
         "primary_urls": [
@@ -11929,7 +13127,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "supported imported types do not imply support for a conditional type describing the entire props object.",
         "explanation": "Tree A preserves AST-based imported/limited-complex props types, conditional entire-object limitation and supported individual prop use; A1 retains module export/import scope instead of copying old-version blanket imported-type bans.",
         "primary_urls": [
@@ -11968,7 +13166,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "Type DOM handlers as `Event`/the actual event type and narrow `event.target` before accessing input-specific fields.",
         "explanation": "Tree A retains Event/actual event typing with target narrowing; A1 preserves valid template assertions under real invariants. Vue receives native DOM events, not the source synthetic-event mental model.",
         "primary_urls": [
@@ -12007,7 +13205,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "Prefer inference for `reactive()` because its deep ref unwrapping can differ from a supplied generic type.",
         "explanation": "Tree A retains inferred reactive return type and deep-ref-unwrapping/generic mismatch; B3 explains shallow/raw ownership boundaries. It does not ban generics that already match their true return contract.",
         "primary_urls": [
@@ -12281,7 +13479,7 @@
       "resolution": {
         "disposition": "corrected",
         "reference": "references/debugging-ssr.md",
-        "section": "Tree A \u2014 compilation, resolution or application setup fails",
+        "section": "Tree A — compilation, resolution or application setup fails",
         "evidence": "`v-else(-if)` must immediately follow the conditional branch;",
         "explanation": "Tree A preserves immediately adjacent v-else(-if) and separated condition/loop nodes; A1 explicitly distinguishes v-show from branch pairing. No silent unconditionally rendered else workaround.",
         "primary_urls": [
@@ -12357,7 +13555,18 @@
           "bool": 0.13
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/core-vue.md",
+        "section": "Tracking and identity edge cases",
+        "evidence": "`.sort()` and `.reverse()` mutate arrays. Copy first inside a computed getter when sorting a source array; derived results themselves are not a second source of truth.",
+        "explanation": "The precise mutating-array failure and copy-first repair are already explicit; unsupported-environment ES2023 methods need not be introduced.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/list.html#displaying-filtered-sorted-results",
+          "https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free"
+        ],
+        "anchor": "tracking-and-identity-edge-cases"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/v-for-key-attribute.md",
@@ -12822,7 +14031,17 @@
           "bool": 0.11
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/core-vue.md",
+        "section": "Select an effect, then its schedule",
+        "evidence": "| Side effect with explicit dependencies | `watch(refOrGetter, callback)` | `watch(state.count, ...)`, which passes a number. |",
+        "explanation": "Existing table gives correct source and concrete primitive-value failure; following prose separately covers arrays of sources, direct-reactive deep watching and getter comparison semantics.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/watchers.html#watch-source-types"
+        ],
+        "anchor": "select-an-effect-then-its-schedule"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/watcheffect-async-dependency-tracking.md",
@@ -12851,7 +14070,17 @@
           "bool": 0.1
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/core-vue.md",
+        "section": "Select an effect, then its schedule",
+        "evidence": "| Side effect whose synchronous reads are its dependencies | `watchEffect()` | Assuming reads after the first `await` are tracked. |",
+        "explanation": "Exact synchronous dependency boundary is already stated, with explicit watch alternatives and getter normalization in linked composables. Existing cancellation-safe async module is stronger than the source's uncancelled response examples.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/watchers.html#watcheffect"
+        ],
+        "anchor": "select-an-effect-then-its-schedule"
+      }
     },
     {
       "source": ".agents/skills/vue-debug-guides/reference/watcheffect-flush-post-for-refs.md",
@@ -13788,7 +15017,18 @@
           "bool": 0.11
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/migration.md",
+        "section": "Incumbent Options API",
+        "evidence": "Methods/lifecycle hooks that use instance `this` must use regular method/function syntax, not arrow functions.",
+        "explanation": "Mapped migration reference already contains the exact methods-this rule; core/components explicitly route incumbent Options work there. No extra rewrite or duplicate section is justified.",
+        "primary_urls": [
+          "https://vuejs.org/guide/essentials/reactivity-fundamentals.html#declaring-methods",
+          "https://vuejs.org/guide/typescript/options-api.html"
+        ],
+        "anchor": "incumbent-options-api"
+      }
     },
     {
       "source": ".agents/skills/vue-options-api-best-practices/reference/stateful-methods-lifecycle.md",
@@ -14287,7 +15527,18 @@
           "bool": 0.14
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/state.md",
+        "section": "Pinia: setup store and consuming component",
+        "evidence": "Destructure state/getters with `storeToRefs(store)`; plain `{ count } = store` captures a value. Actions are bound and may be destructured directly.",
+        "explanation": "The current complete notes SFC already applies storeToRefs to notes/count and direct destructuring to addNote. The exact explanatory sentence at line 122 covers the source's invariant and avoids its misleading assertion that event-handler references lose bound Pinia context. No content gap exists.",
+        "primary_urls": [
+          "https://unpkg.com/pinia@4.1.0/dist/pinia.js",
+          "https://pinia.vuejs.org/core-concepts/#destructuring-from-a-store"
+        ],
+        "anchor": "pinia-setup-store-and-consuming-component"
+      }
     },
     {
       "source": ".agents/skills/vue-pinia-best-practices/reference/state-url-for-ephemeral-filters.md",
@@ -14583,7 +15834,7 @@
         "disposition": "corrected",
         "reference": "references/routing.md",
         "section": "Guards, injection, failures, and metadata",
-        "evidence": "A target must be outside the rule redirecting to it; two individually non-self redirects can still form A\u2192B\u2192A.",
+        "evidence": "A target must be outside the rule redirecting to it; two individually non-self redirects can still form A→B→A.",
         "explanation": "Added concrete redirect-graph debugging using guarded destination/decision tracing, resolve(...).matched, shallow metadata and a single readiness/policy snapshot; covers login, guest-only/error/onboarding/direct-entry cases. Existing return table exempts public destinations and auth companion owns identity implementation. Explicitly rejects user-controlled _redirectCount as a loop fix, rather than copying the source workaround or implying a production runtime loop detector is a security boundary.",
         "primary_urls": [
           "https://router.vuejs.org/guide/advanced/navigation-guards.html",
@@ -14656,7 +15907,18 @@
           "bool": 0.19
         }
       },
-      "resolution": null
+      "resolution": {
+        "disposition": "covered",
+        "reference": "references/routing.md",
+        "section": "URL normalization and reuse",
+        "evidence": "`/users/1` → `/users/2` reuses the page instance: setup/mount do not rerun. `beforeEnter` does not run for changes to params, query, or hash on the same record. Use a narrow watcher for post-confirmation work; `onBeforeRouteUpdate` if work must approve/block navigation. Parent `beforeEnter` also does not rerun between its children.",
+        "explanation": "Existing mapped guidance explicitly covers reused lifecycle, narrow watchers, update-guard approval and deliberate keyed remount tradeoffs. Its adjacent async component also owns cancellation/current-result publication and separates identity generation from route ID. The loader fix elsewhere in this document does not alter this quotation.",
+        "primary_urls": [
+          "https://raw.githubusercontent.com/vuejs/router/v4.6.4/packages/docs/guide/essentials/dynamic-matching.md",
+          "https://raw.githubusercontent.com/vuejs/router/v4.6.4/packages/docs/guide/advanced/navigation-guards.md"
+        ],
+        "anchor": "url-normalization-and-reuse"
+      }
     },
     {
       "source": ".agents/skills/vue-router-best-practices/reference/router-simple-routing-cleanup.md",
@@ -14921,7 +16183,7 @@
         "disposition": "corrected",
         "reference": "references/routing.md",
         "section": "Incumbent migrations",
-        "evidence": "**Router 4 classic \u2192 5:** upstream describes no breaking classic-route change except the IIFE devtools bundle limitation.",
+        "evidence": "**Router 4 classic → 5:** upstream describes no breaking classic-route change except the IIFE devtools bundle limitation.",
         "explanation": "Added requested version-bounded v3 constructor/history/catch-all/readiness/ref/scroll/dynamic-route/app and RouterView/Link migration checklist, non-forced classic v4 upgrade, and complete external-unplugin plugin/utilities/loaders/virtual-module/Volar/client-types/generated-map dependency cutover. Experimental deprecations distinguish reroute, removed selectNavigationResult and ESM-only opt-in code. Relevant current features from historical release notes are owned in guard/parser/file-generation sections; obsolete release bug lists are not promoted to additional current APIs.",
         "primary_urls": [
           "https://router.vuejs.org/guide/migration/v4-to-v5.md",
@@ -15255,7 +16517,7 @@
         "disposition": "corrected",
         "reference": "references/testing.md",
         "section": "Mounting and wrapper API contracts for incumbent suites",
-        "evidence": "`scopedSlots` \u2192 `slots`, `setChecked`/`setSelected` \u2192 `setValue`,",
+        "evidence": "`scopedSlots` → `slots`, `setChecked`/`setSelected` → `setValue`,",
         "explanation": "Added remaining v1 option/method removals, attachToDocument/scopedSlots/setChecked/setSelected/createWrapper/enableAutoDestroy conversions, stub spelling/default-slot scope, string scoped params, config entry changes and v2.5 shared config. Existing class-component removal/emission clearing retained. No deprecated aliases shipped as shims.",
         "primary_urls": [
           "https://unpkg.com/@vue/test-utils@2.5.1/dist/src/types.d.ts",
@@ -15970,7 +17232,7 @@
         "reference": "references/vuetify-components.md",
         "section": "Actions, cards, alerts, and chip selection",
         "evidence": "`image` is a card background, not a substitute for informative image alt text.",
-        "explanation": "Added card parts/title/subtitle/text, slot-based media, sizing/aspect/crop/alt boundaries, link versus nested action semantics, and loading-color contract; card-grid recipe is under Page composition and transactional editing. Existing root equal-height grid preserved. Theme handles supported variants/radii/elevation0\u20135 instead of source dark prop and 0\u201324 assumption; source loading=\"saving\" was not copied as a state API.",
+        "explanation": "Added card parts/title/subtitle/text, slot-based media, sizing/aspect/crop/alt boundaries, link versus nested action semantics, and loading-color contract; card-grid recipe is under Page composition and transactional editing. Existing root equal-height grid preserved. Theme handles supported variants/radii/elevation0–5 instead of source dark prop and 0–24 assumption; source loading=\"saving\" was not copied as a state API.",
         "primary_urls": [
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VCard/VCard.tsx",
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VImg/VImg.tsx"
@@ -16133,7 +17395,7 @@
         "disposition": "corrected",
         "reference": "references/vuetify-components.md",
         "section": "Input models, timing, and cross-field validation",
-        "evidence": "`lazy` skips initial validation (`lazy` alone means `input lazy`), **not** \u201csubmit only\u201d or \u201cwait until first submit\u201d.",
+        "evidence": "`lazy` skips initial validation (`lazy` alone means `input lazy`), **not** “submit only” or “wait until first submit”.",
         "explanation": "Retained complete typed VForm submit/reset example; added input-specific variants/models/null clearing, textarea, password accessible reveal/autocomplete, boolean switch/checkbox, array values/indeterminate, radios/sliders/precision boundary, exact timing and cross-field/wizard revalidation. Existing selects section covers object identity/multiple/clear values. Corrected source validate-on-blur/lazy misconceptions and credentials logging; auth ownership remains real app provider.",
         "primary_urls": [
           "https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/validation.ts",
@@ -17620,7 +18882,7 @@
         "reference": "references/vueuse.md",
         "section": "Reactive math",
         "evidence": "- Projection extrapolates; it does not clamp. Guard a zero-width input domain. `createProjection` reuses reactive numeric domains; `createGenericProjection` requires a custom projector for non-number domains.",
-        "explanation": "Overturned partial warning: existing section covers all material math responsibilities without a redundant export inventory\u2014dedicated scalar wrappers and callable-key useMath, aggregation forms and empty NaN/infinities, getter/ref input tracking, writable clamp read/write mutation, reactive domains and custom reusable projection, precision modes/numeric rather than financial/localized guarantees, logicAnd/Or/Not and aliases. Complete createMetrics factory preserves request/setup ownership and guarded empty mean.",
+        "explanation": "Overturned partial warning: existing section covers all material math responsibilities without a redundant export inventory—dedicated scalar wrappers and callable-key useMath, aggregation forms and empty NaN/infinities, getter/ref input tracking, writable clamp read/write mutation, reactive domains and custom reusable projection, precision modes/numeric rather than financial/localized guarantees, logicAnd/Or/Not and aliases. Complete createMetrics factory preserves request/setup ownership and guarded empty mean.",
         "primary_urls": [
           "https://cdn.jsdelivr.net/npm/@vueuse/math@15.0.0/dist/index.d.ts",
           "https://github.com/vueuse/vueuse/blob/v15.0.0/packages/math/useClamp/index.ts"
@@ -20537,8 +21799,9 @@
         ]
       },
       "verification_check_ids": [
-        "nuxt-generated-typecheck",
-        "nuxt-ssr-request-isolation"
+        "fourth-pass-nuxt-core-type-build",
+        "fourth-pass-nuxt-cancellation-browser",
+        "fourth-pass-nuxt-http-hydration"
       ]
     },
     {
@@ -20551,20 +21814,23 @@
         "section": "Stable manual Vuetify integration",
         "anchor": "stable-manual-vuetify-integration",
         "evidence": "There is one `VApp` and one `VMain`; do not put another app wrapper in a page/layout.",
-        "explanation": "Author review of selected stable Nuxt 4.6.2/Vue 3.5.44/Vuetify 4.3.0 integration: a universal per-app plugin, explicit component imports, the single Nuxt router and root landmarks, deterministic theme/layer ownership, official Pinia 4/Colada modules and required devtools peers. Complete contextual files build on the core catalogue rather than duplicate its working application. Clerk 3.1.15 is separately credential-required; its h3-v1 event/function contract and absent-auth 401 are not a live provider pass. Scoped parent verification check IDs link only actual recorded acceptance when populated; no native verdict or fabricated authenticated session result is supplied.",
+        "explanation": "Author review of selected stable Nuxt 4.6.2/Vue 3.5.44/Vuetify 4.3.0 integration: a universal per-app plugin, explicit component imports, the single Nuxt router and root landmarks, deterministic theme/layer ownership, and official Pinia/Colada request/payload modules. The selected Colada development-panel peer is optional. Private Colada consumers use accepted identity/epoch guards and explicit cancellation/removal on transitions and unmount; native Nuxt cancellation uses returned owner clear() or an owned controller before namespace invalidation, not an abort promise from clearNuxtData(). Complete contextual files build on the core catalogue rather than duplicate its application. Clerk 3.1.15 remains credential-required; h3-v1 event/auth handling is not a live provider pass. Retained parent check IDs require final current-check reconciliation and do not certify the newly repaired private boundary.",
         "primary_urls": [
           "https://unpkg.com/vuetify@4.3.0/lib/framework.js",
           "https://unpkg.com/vuetify@4.3.0/lib/composables/theme.js",
           "https://unpkg.com/@pinia/nuxt@1.0.3/dist/runtime/plugin.js",
           "https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/runtime/plugin.js",
           "https://unpkg.com/@clerk/nuxt@3.1.15/dist/module.js",
-          "https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/clerkMiddleware.d.ts"
+          "https://unpkg.com/@clerk/nuxt@3.1.15/dist/runtime/server/clerkMiddleware.d.ts",
+          "https://unpkg.com/@pinia/colada-nuxt@1.2.0/package.json",
+          "https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs",
+          "https://unpkg.com/nuxt@4.6.2/dist/app/composables/asyncData.js"
         ]
       },
       "verification_check_ids": [
-        "nuxt-generated-typecheck",
-        "nuxt-production-build",
-        "nuxt-browser-hydration"
+        "fourth-pass-nuxt-selected-type-build",
+        "fourth-pass-nuxt-private-epoch-smoke",
+        "fourth-pass-nuxt-http-hydration"
       ]
     }
   ],

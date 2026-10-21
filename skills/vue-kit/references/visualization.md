@@ -44,7 +44,7 @@ This SFC uses only the TypeScript core. Browser initialization is deferred until
 ```vue
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { XYContainer } from '@unovis/ts'
+import type { XYContainer, XYContainerConfigInterface } from '@unovis/ts'
 
 type Point = { day: number; revenue: number }
 const data = ref<Point[]>([
@@ -55,29 +55,32 @@ const failure = ref<string | null>(null)
 const invalid = computed(() => data.value.some(d =>
   !Number.isFinite(d.day) || !Number.isFinite(d.revenue) || d.revenue < 0,
 ))
-const yDomain = computed<[number, number]>(() => [
+const yDomain = computed<[number, number]>(() => invalid.value ? [0, 1] : [
   0, data.value.reduce((max, d) => Math.max(max, d.revenue), 1),
 ])
 let chart: XYContainer<Point> | undefined
+let chartConfig: XYContainerConfigInterface<Point> | undefined
 let alive = true
 onMounted(async () => {
   try {
     const { Axis, Line, XYContainer } = await import('@unovis/ts')
     if (!alive || !host.value) return
-    chart = new XYContainer<Point>(host.value, {
+    chartConfig = {
       height: 280, duration: 0, yDomain: yDomain.value,
       ariaLabel: 'Daily revenue, in US dollars',
       components: [new Line<Point>({ x: d => d.day, y: d => d.revenue })],
       xAxis: new Axis<Point>({ label: 'Day', tickValues: [1, 2, 3] }),
       yAxis: new Axis<Point>({ label: 'USD' }),
-    }, invalid.value ? [] : data.value)
+    }
+    chart = new XYContainer<Point>(host.value, chartConfig, invalid.value ? [] : data.value)
   } catch (cause) {
     if (alive) failure.value = cause instanceof Error ? cause.message : String(cause)
   }
 })
 watch([data, yDomain, invalid], () => {
-  if (invalid.value) chart?.setData([])
-  else chart?.update({ yDomain: yDomain.value }, undefined, data.value)
+  if (!chart || !chartConfig) return
+  chartConfig = { ...chartConfig, yDomain: yDomain.value }
+  chart.update(chartConfig, undefined, invalid.value ? [] : data.value)
 }, { flush: 'post' })
 onBeforeUnmount(() => {
   alive = false
@@ -113,7 +116,7 @@ function useZeroValues() {
 </style>
 ```
 
-A plain TypeScript host follows the same construction/update/destroy lifecycle without Vue. Do not mutate `chart.config` or `line.config` directly. For batching, methods with `preventRender` can defer work; finish with an actual render-producing update. Creating a new container on every data change leaks work and loses interaction state.
+A plain TypeScript host follows the same construction/update/destroy lifecycle without Vue. **1.7.1 container config updates resolve against defaults, not the previous config**: retain and resupply the complete application-owned config, including component/axis instances, dimensions, duration, and accessible name. A domain-only `update({ yDomain })` drops those settings. Component `setConfig` likewise resolves against defaults; supply the complete owned component config when updating it. Do not mutate `chart.config` or `line.config` directly. For batching, methods with `preventRender` can defer work; finish with an actual render-producing update. Creating a new container on every data change leaks work and loses interaction state. [Pinned config resolution](https://unpkg.com/@unovis/ts@1.7.1/core/container/index.js), [XY update sequence](https://unpkg.com/@unovis/ts@1.7.1/containers/xy-container/index.js).
 
 ## Unovis Vue: declarative wrappers, not parallel imperative ownership
 

@@ -21,7 +21,7 @@
       ],
       "documents": 1,
       "flagged_documents": 0,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
     },
     {
       "id": "floating-ui-vue-skilld",
@@ -60,7 +60,7 @@
       ],
       "documents": 13,
       "flagged_documents": 5,
-      "notes": "Design/accessibility invariants are retained as applicable guidance; architecture-ui is authored cross-library synthesis, not an upstream framework mandate. Unrelated agent utilities are not runtime dependencies."
+      "notes": "Design/accessibility invariants are retained as applicable guidance; architecture-ui is authored cross-library synthesis, not an upstream framework mandate. Unrelated agent utilities are not runtime dependencies. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
     },
     {
       "id": "pinia-colada-skilld",
@@ -281,7 +281,7 @@
       ],
       "documents": 140,
       "flagged_documents": 48,
-      "notes": "Vue 3.5 supports useTemplateRef inside v-for; array order is not a data-index contract. Debugging recommendations are not observed runtime results."
+      "notes": "Vue 3.5 supports useTemplateRef inside v-for; array order is not a data-index contract. Debugging recommendations are not observed runtime results. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 12 previously native-only covered source units; snapshot counts and native judgments remain historical, not confirmed gap totals."
     },
     {
       "id": "vue-expert",
@@ -327,7 +327,7 @@
       ],
       "documents": 11,
       "flagged_documents": 3,
-      "notes": "Incumbent Options API interoperability, not the default for new code."
+      "notes": "Incumbent Options API interoperability, not the default for new code. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
     },
     {
       "id": "vue-patterns",
@@ -350,7 +350,7 @@
       ],
       "documents": 7,
       "flagged_documents": 5,
-      "notes": "Pinia lifetime and ownership guidance contributes to authored data-architecture synthesis. URL ownership is limited to normalized nonsensitive shareable view state; a store name alone does not guarantee SSR isolation."
+      "notes": "Pinia lifetime and ownership guidance contributes to authored data-architecture synthesis. URL ownership is limited to normalized nonsensitive shareable view state; a store name alone does not guarantee SSR isolation. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
     },
     {
       "id": "vue-router-best-practices",
@@ -359,7 +359,7 @@
       ],
       "documents": 9,
       "flagged_documents": 4,
-      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results."
+      "notes": "Substantive capability guidance is authored in the listed routes; exact package status and primary evidence are stated there. Source snapshot counts are historical coverage evidence, not validation results. Fourth-pass author evidence in coverage-audit.json now explicitly resolves 1 previously native-only covered source unit; snapshot counts and native judgments remain historical, not confirmed gap totals."
     },
     {
       "id": "vue-router-skilld",

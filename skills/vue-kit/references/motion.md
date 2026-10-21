@@ -354,36 +354,52 @@ onBeforeUnmount(cancel)
 
 ### Scroll: separate decoration from content
 
-Complete `ScrollAccent.vue`. The document remains static and readable; only an `aria-hidden` accent follows viewport passage. Reduced motion removes the accent, not the content.
+Complete `ScrollAccent.vue` and its decorative child `ScrollDecoration.vue`. The document remains static and readable. Reduced motion unmounts the **subscription owner**, not merely its rendered span, so the scroll listener and transformed-value subscriptions stop while the content stays mounted.
 
 ```vue
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion-v'
+import { useReducedMotion } from 'motion-v'
+import ScrollDecoration from './ScrollDecoration.vue'
 
 const target = useTemplateRef<HTMLElement>('target')
 const reduced = useReducedMotion()
-const { scrollYProgress } = useScroll({
-  target,
-  offset: ['start end', 'end start'],
-})
-const x = useTransform(scrollYProgress, [0, 1], [-12, 12])
 </script>
 
 <template>
   <section ref="target">
     <h2>Delivery information</h2>
     <p>Review the confirmed estimate before placing your order.</p>
-    <motion.span v-if="!reduced" class="accent" aria-hidden="true" :style="{ x }" />
+    <ScrollDecoration v-if="!reduced && target" :target="target" />
   </section>
 </template>
 
+```
+
+```vue
+<!-- ScrollDecoration.vue -->
+<script setup lang="ts">
+import { motion, useScroll, useTransform } from 'motion-v'
+
+const props = defineProps<{ target: HTMLElement }>()
+const { scrollYProgress } = useScroll(() => ({
+  target: props.target,
+  offset: ['start end', 'end start'],
+}))
+const x = useTransform(scrollYProgress, [0, 1], [-12, 12])
+</script>
+
+<template>
+  <motion.span class="accent" aria-hidden="true" :style="{ x }" />
+</template>
 <style scoped>
 .accent { display: block; width: 3rem; height: 0.25rem; background: currentColor; }
 </style>
 ```
 
 `useScroll()` returns `scrollX`, `scrollY` (pixels) and `scrollXProgress`, `scrollYProgress` (normalized between configured intersections). `container` is the scrolling element; `target` is the measured element. Vue refs are accepted. Native ScrollTimeline acceleration is capability-dependent, not a guarantee for every offset/browser. Bind MotionValues to motion styles instead of rerendering Vue on every scroll tick. `useMotionValueEvent(value, 'change', callback)` handles unsubscription on unmount; retain its returned unsubscribe if you need an earlier stop. Scroll composables belong in setup, not repeatedly in event handlers. [useScroll](https://motion.dev/docs/vue-use-scroll), [2.8.0 declarations](https://unpkg.com/motion-v@2.8.0/dist/es/value/use-scroll.d.ts).
+
+In **2.8.0**, `useScroll` owns its listener through a setup-time `watchEffect` cleanup, while `useTransform` releases its subscriptions on component unmount. Hiding only their consumer does not stop that work. Keep both hooks in the conditional decoration owner; do not recreate them inside a preference watcher or substitute a detached effect scope for the component lifecycle. [Scroll cleanup](https://unpkg.com/motion-v@2.8.0/dist/es/value/use-scroll.mjs), [transform subscription cleanup](https://unpkg.com/motion-v@2.8.0/dist/es/value/use-combine-values.mjs).
 
 For a large motion surface, `LazyMotion` + `m` components loads a chosen feature bundle: `domAnimation` for basic animation/gestures/presence, `domMax` for layout/drag too. Use `strict` to catch accidentally importing full `motion` components into that subtree; measure the actual application bundle rather than promising fixed kilobytes. [LazyMotion](https://motion.dev/docs/vue-lazymotion).
 

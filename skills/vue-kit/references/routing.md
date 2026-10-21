@@ -436,14 +436,26 @@ export const useCatalogItem = defineBasicLoader(async to => {
 </script>
 
 <script setup lang="ts">
+import { shallowRef } from 'vue'
+
 const { data: item, error, isLoading, reload } = useCatalogItem()
+const reloadError = shallowRef<string>()
+async function reloadItem(): Promise<void> {
+  if (isLoading.value) return
+  reloadError.value = undefined
+  try {
+    await reload()
+  } catch (cause) {
+    reloadError.value = cause instanceof Error ? cause.message : 'Could not reload the item.'
+  }
+}
 </script>
 
 <template>
   <p v-if="isLoading" role="status">Loading catalog item</p>
-  <p v-else-if="error" role="alert">{{ error.message }}</p>
+  <p v-else-if="error || reloadError" role="alert">{{ reloadError ?? error?.message }}</p>
   <h1 v-else-if="item">{{ item.title }}</h1>
-  <button type="button" @click="reload()">Reload item</button>
+  <button type="button" :disabled="isLoading" @click="reloadItem">Reload item</button>
 </template>
 ```
 
@@ -475,7 +487,7 @@ export const useCatalogSummary = defineBasicLoader(async () => {
 })
 ```
 
-`reload()` returns `Promise<void>`, uses the current route, and must not be started during an ongoing navigation. The basic loader does **not** expose the source's invented `refetch()` method. In setup call the loader synchronously; awaiting it there can duplicate requests and confuses its two call contracts. `useIsDataLoading()` from `vue-router/experimental` is the navigation-wide loading ref; manually reloading data is not represented by it, so use the individual loader's `isLoading` for reload UI.
+`reload()` returns `Promise<void>`, uses the current route, and must not be started during an ongoing navigation. The button's disabled state **and handler check** reject a reload while this loader is busy; the handler also catches the reload promise, which can reject even when the local error ref is populated. A host with additional async guards/chunk-pending UI must gate reload against that navigation state too: a loader's `isLoading` is not a whole-navigation flag. The basic loader does **not** expose the source's invented `refetch()` method. In setup call the loader synchronously; awaiting it there can duplicate requests and confuses its two call contracts. `useIsDataLoading()` from `vue-router/experimental` reflects the navigation's loader phase, not time waiting in earlier guards/chunk loading or manual reloads; use the individual loader's `isLoading` for reload UI. [Exact reload implementation](https://unpkg.com/vue-router@5.4.0/dist/experimental/index.js).
 
 Unexpected blocking errors abort and go to `router.onError`, **not** the local error ref. A loader's `errors: [ExpectedError]` or predicate can instead permit navigation and expose a local error; then `data` may be undefined. Global `DataLoaderPlugin({ router, errors })` definitions require `errors: true` on an opting-in loader. Local `errors: false` retains abort behavior; a local list/predicate overrides global matching. Lazy/reload errors are local regardless of that expected-error filter. Never classify navigation-control exceptions as successful data. `{ server: false }` skips server loading; `{ lazy: !import.meta.env.SSR }` instead blocks SSR but not client navigation. Neither implements state serialization.
 

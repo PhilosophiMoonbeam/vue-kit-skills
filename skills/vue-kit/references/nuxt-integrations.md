@@ -13,7 +13,7 @@ Use **Bun 1.4.3** for a new application's package management and Node **24.15.0*
 | Optional server-state cache | `@pinia/colada@1.4.8`, `@pinia/colada-nuxt@1.2.0`, `@pinia/colada-devtools@2.0.1` | Official module, after Pinia; one query owner per feature |
 | Optional authentication | `@clerk/nuxt@3.1.15`, direct `h3@1.15.11` for its h3-specific endpoint | Real Clerk application/keys; default Nitro 2 server boundary, not arbitrary builder certification |
 
-Pinia's Vue peer is `^3.5.11`; its **required** devtools peer is `@vue/devtools-api ^8.2.1` (TypeScript `>=5.6.0` is optional). `@pinia/nuxt@1.0.3` requires Pinia `^4.1.0`. Colada requires Vue `^3.5.41` and admits Pinia `^2.2.6 || ^3.0.0 || ^4.0.2`; its Nuxt module requires Colada `>=1.4.5` and **non-optional** `@pinia/colada-devtools ^2.0.0`. Install that peer even if the panel is disabled. The devtools package's Vite/Devframe integration peers are optional; the module only registers its panel with the Vite builder and compatible Nuxt DevTools 4 during development. These peer ranges admit the selected versions; they are not runtime proof. [Pinia metadata](https://registry.npmjs.org/pinia/4.1.0), [Pinia module metadata](https://registry.npmjs.org/@pinia/nuxt/1.0.3), [Colada metadata](https://registry.npmjs.org/@pinia/colada/1.4.8), [Colada module metadata](https://registry.npmjs.org/@pinia/colada-nuxt/1.2.0), [devtools metadata](https://registry.npmjs.org/@pinia/colada-devtools/2.0.1), [module implementation](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/module.mjs).
+Pinia's Vue peer is `^3.5.11`; its **required** devtools peer is `@vue/devtools-api ^8.2.1` (TypeScript `>=5.6.0` is optional). `@pinia/nuxt@1.0.3` requires Pinia `^4.1.0`. Colada requires Vue `^3.5.41` and admits Pinia `^2.2.6 || ^3.0.0 || ^4.0.2`; its Nuxt module requires Colada `>=1.4.5`. The module's `@pinia/colada-devtools ^2.0.0` peer is **optional** in both its published manifest and registry metadata; omit it when no panel is wanted. The devtools package's Vite/Devframe integration peers are optional too. The module only registers an installed panel with the Vite builder and compatible Nuxt DevTools 4 during development. These peer ranges admit the selected versions; they are not runtime proof. [Pinia metadata](https://registry.npmjs.org/pinia/4.1.0), [Pinia module metadata](https://registry.npmjs.org/@pinia/nuxt/1.0.3), [Colada metadata](https://registry.npmjs.org/@pinia/colada/1.4.8), [Colada module manifest](https://unpkg.com/@pinia/colada-nuxt@1.2.0/package.json), [registry metadata](https://registry.npmjs.org/@pinia/colada-nuxt/1.2.0), [devtools metadata](https://registry.npmjs.org/@pinia/colada-devtools/2.0.1), [module implementation](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/module.mjs).
 
 Clerk Nuxt 3.1.15 declares Nuxt `>=4.0.0` module compatibility and depends on `@clerk/vue ^2.5.13` and `@clerk/backend ^3.26.0`, not exact transitive pins. Retain the resolved lockfile; hosted Clerk JavaScript/UI have their own delivery/version boundary. Do not install the Vue SDK separately or call `clerkPlugin` alongside the Nuxt module. [Exact package](https://registry.npmjs.org/@clerk/nuxt/3.1.15), [module source](https://unpkg.com/@clerk/nuxt@3.1.15/dist/module.js), [hosted component versioning](https://clerk.com/docs/reference/components/versioning).
 
@@ -191,6 +191,7 @@ Prefer native Nuxt data for a simple page read. Select Colada when its shared qu
 
 ```sh
 bun add --exact @pinia/colada@1.4.8 @pinia/colada-nuxt@1.2.0
+# Optional development panel; not required by the query module:
 bun add --dev --exact @pinia/colada-devtools@2.0.1
 ```
 
@@ -378,46 +379,165 @@ Nuxt 4.6's portable `defineEventHandler` from `nuxt/server` passes `RequestEvent
 
 ## Identity transitions and private caches
 
-Clerk owns reactive user/session/organization state; do not duplicate it in Pinia or treat hydrated profile data as proof. The public Colada page above intentionally contains no private data, and the account page does not cache its server identity response. If introducing a private query, make that feature choose **either** native Nuxt data **or** Colada, never both. Include loaded/accepted identity, session, active organization and every result-changing input in its key; disable work until identity is ready. Forward request credentials only to the intended API and authorize there. A client key isolates display caches, not backend access.
+Clerk owns reactive user/session/organization state; do not duplicate it in Pinia or treat hydrated profile data as proof. The public Colada page above intentionally contains no private data, and the base account page above does not cache its server identity response. If introducing a private query, make that feature choose **either** native Nuxt data **or** Colada, never both. Include loaded/accepted identity, session, active organization and every result-changing input in its key; disable work until identity is ready. Forward request credentials only to the intended API and authorize there. A client key isolates display caches, not backend access.
 
-On sign-out, user/session change or organization switch, immediately stop rendering the old identity's data, cancel old reads, remove their entries and reset identity-bound drafts/stores before enabling new work. Pass cancellation signals to transport and reject stale mutation results before committing them. Do not retain previous private data as placeholder content during the transition. Do not indiscriminately persist/hydrate the entire private cache. For native Nuxt private data, use a consistent private-key namespace and `clearNuxtData` (which clears/aborts pending entries), plus the same identity partitioning; the core [data lifecycle](nuxt.md#data-payload-and-cancellation) owns that alternative.
+On sign-out, user/session change or organization switch, immediately stop rendering the old identity's data, cancel old reads, remove their entries and reset identity-bound drafts/stores before enabling new work. Pass cancellation signals to transport and reject stale mutation results before committing them. Do not retain previous private data as placeholder content during the transition. Do not indiscriminately persist/hydrate the entire private cache. For native Nuxt private data, use a consistent private-key namespace, the same identity partitioning and each owner's returned `clear()` (or an explicitly owned transport controller), then `clearNuxtData` for namespace invalidation. In 4.6.2, `clearNuxtData` alone deletes pending-promise bookkeeping but does **not** abort the transport; the core [data lifecycle](nuxt.md#data-payload-and-cancellation) owns that alternative.
 
-Complete contextual `app/components/PrivateCacheBoundary.vue`, **only when both Clerk and Colada are selected and private Colada consumers are introduced**. Mount it once around all private consumers; their `useQuery` keys must start with `['private', sessionId, userId, orgId, ...]`, and their `enabled` predicate must require a loaded signed-in identity. It synchronously gates the subtree and cancels old work, waits for consumers to unmount, removes inactive old entries, then mounts the new identity's subtree. Colada forbids removing active entries; do not remove them before teardown. Public cache entries are untouched. Reset any actual identity-bound Pinia draft store in the same transition owner; the guide's public `preferences` store contains no such draft.
+The following complete contextual files apply **only when Clerk and Colada are both selected and private Colada consumers are introduced**. They use the existing authenticated `/api/private/session` endpoint, not a substitute backend. The boundary owns an immutable accepted identity and a monotonically increasing epoch; children never derive a changing private key directly from Clerk's live refs. Its synchronous gate invalidates old callbacks before the next render. It cancels reads, waits for child teardown, re-enumerates/removes inactive private entries, then accepts the latest identity. Checking only entries captured before teardown misses entries created meanwhile. An active entry after teardown fails closed rather than enabling another identity over an incomplete reset.
+
+Complete `shared/types/private-identity.ts`. These public identifiers partition a recipient's cache; they are not session proof:
+
+```ts
+export interface PrivateIdentity {
+  readonly epoch: number
+  readonly sessionId: string
+  readonly userId: string
+  readonly orgId: string | null
+}
+```
+
+Complete `app/components/PrivateCacheBoundary.vue`:
 
 ```vue
 <script setup lang="ts">
-import { computed, nextTick, shallowRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onUnmounted, shallowRef, watch } from 'vue'
 import { useAuth } from '@clerk/nuxt/composables'
 import { useQueryCache } from '@pinia/colada'
+import type { PrivateIdentity } from '#shared/types/private-identity'
 
 const { isLoaded, isSignedIn, sessionId, userId, orgId } = useAuth()
 const cache = useQueryCache()
 const transitioning = shallowRef(false)
-let transition = 0
-const identity = computed(() => JSON.stringify([
-  isLoaded.value, isSignedIn.value, sessionId.value, userId.value, orgId.value,
+const blocked = shallowRef(false)
+let epoch = 0
+let disposed = false
+const identityKey = computed(() => JSON.stringify([
+  isLoaded.value, isSignedIn.value, sessionId.value ?? null,
+  userId.value ?? null, orgId.value ?? null,
 ]))
-watch(identity, async () => {
-  const current = ++transition
+let acceptedIdentityKey = identityKey.value
+function captureIdentity(version: number): PrivateIdentity | null {
+  const session = sessionId.value
+  const user = userId.value
+  return isLoaded.value && isSignedIn.value && session && user
+    ? Object.freeze({ epoch: version, sessionId: session, userId: user, orgId: orgId.value ?? null })
+    : null
+}
+const accepted = shallowRef<PrivateIdentity | null>(captureIdentity(epoch))
+function isCurrent(identity: PrivateIdentity) {
+  return !disposed && accepted.value === identity && acceptedIdentityKey === identityKey.value
+}
+function purgePrivateEntries() {
+  let complete = true
+  for (const entry of cache.getEntries({ key: ['private'] })) {
+    cache.cancel(entry)
+    if (entry.active) complete = false
+    else cache.remove(entry)
+  }
+  return complete
+}
+watch(identityKey, async () => {
+  const current = ++epoch
+  accepted.value = null
   transitioning.value = true
-  const oldEntries = cache.getEntries({ key: ['private'] })
+  blocked.value = false
   cache.cancelQueries({ key: ['private'] })
   await nextTick()
-  for (const entry of oldEntries) {
-    if (!entry.active) cache.remove(entry)
+  if (disposed || current !== epoch) return
+  if (!purgePrivateEntries()) {
+    blocked.value = true
+    transitioning.value = false
+    return
   }
-  if (current === transition) transitioning.value = false
+  acceptedIdentityKey = identityKey.value
+  accepted.value = captureIdentity(current)
+  transitioning.value = false
 }, { flush: 'sync' })
+onBeforeUnmount(() => {
+  disposed = true
+  ++epoch
+  accepted.value = null
+  cache.cancelQueries({ key: ['private'] })
+})
+onUnmounted(() => { purgePrivateEntries() })
 </script>
 
 <template>
-  <div v-if="!transitioning && isLoaded && isSignedIn" :key="identity"><slot /></div>
+  <div v-if="accepted" :key="accepted.epoch">
+    <slot v-bind="{ identity: accepted, isCurrent }" />
+  </div>
+  <p v-else-if="blocked" role="alert">Private data could not be reset.</p>
   <p v-else-if="transitioning || !isLoaded" role="status">Loading authentication</p>
   <p v-else>Sign in to view private data.</p>
 </template>
 ```
 
-Mount it before the private subtree, not separately in each query consumer. Its watcher is component-owned and disposed on unmount; it does not install another cache. Mutation authorization remains server-owned even after a browser cancellation. [Actual query-cache cancellation/removal APIs](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts), [Clerk computed auth contract](https://unpkg.com/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts), [identity design](auth.md#identity-teardown-and-pinia-integration).
+Complete `app/components/PrivateSession.vue`. Its fixed snapshot key starts with `['private', sessionId, userId, orgId, epoch, ...]`. The guard also covers imperative `refetch()`, which is not disabled by `enabled: false` in Colada. A response must still belong to the captured identity before entering its cache:
+
+```vue
+<script setup lang="ts">
+import { useQuery } from '@pinia/colada'
+import type { PrivateIdentity } from '#shared/types/private-identity'
+
+const props = defineProps<{
+  identity: PrivateIdentity
+  isCurrent: (identity: PrivateIdentity) => boolean
+}>()
+const identity = props.identity
+const requestFetch = useRequestFetch()
+const { state, asyncStatus, refetch } = useQuery({
+  key: ['private', identity.sessionId, identity.userId, identity.orgId, identity.epoch, 'session'],
+  enabled: () => props.isCurrent(identity),
+  query: async ({ signal }) => {
+    if (!props.isCurrent(identity)) throw new Error('Private session changed')
+    const result = await requestFetch<{
+      userId: string
+      sessionId: string | null
+      orgId: string | null
+    }>('/api/private/session', { signal })
+    if (!props.isCurrent(identity) || result.userId !== identity.userId
+      || result.sessionId !== identity.sessionId || result.orgId !== identity.orgId) {
+      throw new Error('Private session changed')
+    }
+    return result
+  },
+})
+</script>
+
+<template>
+  <section :aria-busy="asyncStatus === 'loading'">
+    <h2>Server session</h2>
+    <p v-if="state.status === 'pending'" role="status">Loading private session</p>
+    <p v-else-if="state.status === 'error'" role="alert">Unable to load this session.</p>
+    <p v-else>Server-verified user: {{ state.data.userId }}</p>
+    <button type="button" :disabled="asyncStatus === 'loading'" @click="refetch()">Refresh session</button>
+  </section>
+</template>
+```
+
+Complete optional replacement `app/pages/account.vue` when enabling that private query. The existing `/account` private/no-store route rule and `auth` middleware still apply:
+
+```vue
+<script setup lang="ts">
+import { UserButton } from '@clerk/nuxt/components'
+import PrivateCacheBoundary from '~/components/PrivateCacheBoundary.vue'
+import PrivateSession from '~/components/PrivateSession.vue'
+
+definePageMeta({ middleware: 'auth' })
+</script>
+
+<template>
+  <section>
+    <h1>Account</h1>
+    <PrivateCacheBoundary v-slot="{ identity, isCurrent }">
+      <UserButton />
+      <PrivateSession :identity="identity" :is-current="isCurrent" />
+    </PrivateCacheBoundary>
+  </section>
+</template>
+```
+
+Mount one boundary around **all** private consumers; public entries remain untouched. Private consumers, including `defineQuery` subscribers, must be subtree-owned: no retained store/effect scope outside it, `KeepAlive`, or leave transition that keeps them active after the teardown tick. Unmount also cancels/removes the departing subtree's cache so a later sign-out while it is absent cannot leave its private entries behind. The watcher is component-owned, and its epoch/disposal checks prevent an already-awaiting callback from reopening an unmounted or superseded subtree. Reset any real private drafts in the transition owner before accepting another identity; the supplied `preferences` store contains none. Apply `isCurrent(capturedIdentity)` before committing mutation results too; browser cancellation cannot undo an authorized server write. [Exact query-cache lifecycle implementation](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs), [query-cache APIs](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts), [Clerk computed auth contract](https://unpkg.com/@clerk/vue@2.5.13/dist/composables/useAuth.d.ts), [identity design](auth.md#identity-teardown-and-pinia-integration).
 
 ## Verification boundaries
 

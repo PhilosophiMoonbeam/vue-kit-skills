@@ -90,9 +90,10 @@ function toggleTheme() {
 <template>
   <main class="office-preview">
     <h1>Office preview</h1>
-    <label :for="fieldId">Office</label>
+    <label :id="`${fieldId}-label`" :for="fieldId">Office</label>
     <Select
-      :input-id="fieldId" v-model="office" :options="offices"
+      :label-id="fieldId" v-model="office" :options="offices"
+      :ariaLabelledby="`${fieldId}-label`"
       option-label="name" option-value="code" placeholder="Choose an office"
     />
     <Button type="button" :disabled="office === null" @click="preview">Preview office</Button>
@@ -109,6 +110,10 @@ function toggleTheme() {
 ```
 
 The theme switch is a client-event operation, not SSR setup code. An incumbent app should initialize its theme from its existing preference owner rather than introducing this second local flag. See [theme architecture](design-system.md).
+
+In **5.0.3**, noneditable Select renders its focusable combobox as a `span`, not a native labelable input. Use the current `labelId` prop for the focused element's ID and label-click handling; `inputId` is deprecated. Bind the declared `ariaLabelledby` prop to the visible label ID; Select forwards this as DOM `aria-labelledby`. `label[for]` alone does not name that span. Use the component prop spelling, not a raw `aria-labelledby` component attribute, for strict template checking. [Exact Select render and label-click implementation](https://unpkg.com/primevue@5.0.3/select/index.mjs); [declared Select props](https://unpkg.com/primevue@5.0.3/select/index.d.ts).
+
+**Browser acceptance plan, not an observed pass:** mount this shell at 320px and 1280px CSS width in each theme. Tab to the combobox and inspect its accessible name: it must remain “Office” before and after selecting London/New York, not become the placeholder or selected city. Click the visible label to focus it; use Space/Arrow keys/Enter to select, Escape to dismiss, then Tab to Preview office and activate it. Confirm local-only status, visible focus, reachable theme/preview actions and no clipped label or popup at either width.
 
 ### Theming, migration and failure guidance
 

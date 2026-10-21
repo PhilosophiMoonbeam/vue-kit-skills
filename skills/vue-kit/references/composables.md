@@ -103,6 +103,8 @@ Why the pieces matter:
 - `shallowRef` is intentional here: results are externally owned snapshots. Consumers must not mutate nested `data` and expect Vue to observe it. The returned computed protects assignment to `.value`, not deep runtime immutability of arbitrary `T`.
 - Stopping disposes work but is not a reload API. If cache identity, background refetch, retries, deduplication, pagination, or SSR data transfer is required, use the incumbent [TanStack Query](tanstack-query.md), [Pinia Colada](pinia-colada.md), or framework data layer rather than expanding this primitive silently.
 
+In an SSR component, start this primitive after mount rather than using it for server data. Vue 3.5.44 immediately stops an eager default-flush watcher created during server setup; it does not await that callback's promise. Here that cleanup aborts the run and prevents its result from committing. Use `onServerPrefetch` with request-owned data transfer or the framework data layer for server-rendered results. [Pinned SSR watcher branch](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiWatch.ts).
+
 ## DOM effects: create on the client, follow target replacement
 
 Complete `useClickCount.ts`. Called synchronously during component setup, it watches a possibly-null template target only after mount, removes the listener before moving to another target, and disposes at scope termination.
@@ -116,21 +118,25 @@ import {
 export function useClickCount(target: MaybeRefOrGetter<HTMLElement | null>) {
   const count = ref(0)
   let stop: WatchStopHandle | undefined
+  let disposed = false
   const increment = () => { count.value++ }
 
   onMounted(() => {
+    if (disposed) return
     stop = watch(() => toValue(target), (element, _old, onCleanup) => {
       if (!element) return
       element.addEventListener('click', increment)
       onCleanup(() => element.removeEventListener('click', increment))
     }, { immediate: true, flush: 'post' })
   })
-  onScopeDispose(() => stop?.())
+  onScopeDispose(() => { disposed = true; stop?.() })
   return { count: readonly(count) }
 }
 ```
 
 Contextual consumer: import `useTemplateRef` from Vue and `useClickCount` from this module, create `const button = useTemplateRef<HTMLButtonElement>('button')`, call `useClickCount(button)`, and render `<button ref="button">Count clicks</button>`. Avoid evaluating `window`/`document` in module scope or server setup. A `typeof window` guard does not make request-global mutable state safe. KeepAlive deactivation does not dispose a scope; explicitly suspend active-only listeners/timers via activation hooks when that is the contract.
+
+The disposal flag also covers an enclosing effect scope stopped **before** mount: stopping that scope does not unregister the component's pending mounted hook. Without the guard, that hook would later create a watcher/listener after its intended owner had ended.
 
 ## Ownership beyond components
 
@@ -215,7 +221,9 @@ export function useTweenedNumber(
 ) {
   const displayed = ref(toValue(source))
   let stop: WatchStopHandle | undefined
+  let disposed = false
   onMounted(() => {
+    if (disposed) return
     stop = watch(
       [() => toValue(source), () => toValue(reducedMotion)],
       ([target, reduce], _old, onCleanup) => {
@@ -243,14 +251,14 @@ export function useTweenedNumber(
       { immediate: true },
     )
   })
-  onScopeDispose(() => stop?.())
+  onScopeDispose(() => { disposed = true; stop?.() })
   return readonly(displayed)
 }
 ```
 
 Render the returned display ref, not a duplicate domain field; changes restart from the last displayed value. Use an installed animation library when its interpolation capabilities are needed, but kill its prior tween in the same watcher cleanup contract. Numbers outside JavaScript's safe precision are not made exact by tweening. See [component animation decisions](components.md#transition-and-persistent-element-animation-contracts) and [motion](motion.md).
 
-Each frame also checks the live inputs before committing, so a frame queued before a batched watcher reruns cannot write an obsolete target or ignore a newly enabled reduced-motion preference. Cleanup marks that run inactive as well as cancelling its queued frame. Intermediate input changes batched away do not create separate runs.
+Each frame also checks the live inputs before committing, so a frame queued before a batched watcher reruns cannot write an obsolete target or ignore a newly enabled reduced-motion preference. Cleanup marks that run inactive as well as cancelling its queued frame. The disposal flag prevents a pending mounted hook from starting frames after its enclosing scope has already stopped. Intermediate input changes batched away do not create separate runs.
 
 ## Nuxt and server boundaries
 
@@ -266,4 +274,5 @@ All TypeScript fences are complete modules with application-owned contracts stat
 - [Official composable conventions and side effects](https://vuejs.org/guide/reusability/composables.html), [watcher cleanup and scheduling](https://vuejs.org/guide/essentials/watchers.html).
 - [Effect scopes and shallow boundaries](https://vuejs.org/api/reactivity-advanced.html), [external state integration](https://vuejs.org/guide/extras/reactivity-in-depth.html#integration-with-external-state-systems).
 - [Vue 3.5.44 watcher invalidation and stop cleanup](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/watch.ts), [value/ref/getter normalization](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/ref.ts).
+- [Vue 3.5.44 mounted-hook instance ownership](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiLifecycle.ts), [effect-scope disposal](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/effectScope.ts), [SSR watcher handling](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiWatch.ts).
 - [Custom refs](https://vuejs.org/api/reactivity-advanced.html#customref), [Vue animation techniques](https://vuejs.org/guide/extras/animation.html), [animation frame scheduling](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame).

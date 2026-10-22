@@ -242,7 +242,17 @@ Complete `app/app.vue`:
 
 ```vue
 <script setup lang="ts">
-const theme = useCookie<'light' | 'dark'>('office-theme', { default: () => 'light' })
+const theme = useCookie<'light' | 'dark'>('office-theme', {
+  default: () => 'light',
+  decode(value) {
+    if (typeof value !== 'string') return 'light'
+    try {
+      return decodeURIComponent(value) === 'dark' ? 'dark' : 'light'
+    } catch {
+      return 'light'
+    }
+  },
+})
 useHead({ htmlAttrs: { class: () => theme.value === 'dark' ? 'app-dark' : '' } })
 </script>
 
@@ -252,7 +262,17 @@ useHead({ htmlAttrs: { class: () => theme.value === 'dark' ? 'app-dark' : '' } }
 Complete `app/pages/index.vue` by copying the **entire** `src/App.vue` office-preview SFC above, with these two exact replacements. Replace `const dark = shallowRef(false)` with:
 
 ```ts
-const theme = useCookie<'light' | 'dark'>('office-theme', { default: () => 'light' })
+const theme = useCookie<'light' | 'dark'>('office-theme', {
+  default: () => 'light',
+  decode(value) {
+    if (typeof value !== 'string') return 'light'
+    try {
+      return decodeURIComponent(value) === 'dark' ? 'dark' : 'light'
+    } catch {
+      return 'light'
+    }
+  },
+})
 const dark = computed(() => theme.value === 'dark')
 ```
 
@@ -276,6 +296,8 @@ After the heading add `<NuxtLink to="/other">Other page</NuxtLink>`. Complete `a
 ```
 
 Nuxt supplies `useCookie`, `useHead`, `NuxtLink` and `NuxtPage`; no separate Vue/router/bootstrap file belongs here. The non-sensitive theme cookie supplies deterministic request-owned initial markup; **the persistent app shell owns `useHead`**, keeping the selector on `html` across route changes and document refreshes, including body portals. The page edits the same named cookie through Nuxt's reactive cookie synchronization; it does not install a second head/theme owner. Preserve an incumbent preference owner rather than adding this one. Never choose initial SSR markup from browser-only storage/media. No Vuetify/Pinia/cache integration is required for this standalone UI recipe.
+
+Both cookie readers deliberately use the same allowlisted decoder: only the canonical `dark` value selects dark; `light`, unknown values and malformed URI encoding resolve to light without changing the SSR/client tree. A TypeScript generic does not validate stored cookies. **Nuxt 4.6.2's default decoder calls `decodeURIComponent` without catching malformed encoding**, so an `office-theme=%` cookie otherwise throws during server setup rather than supplying the default. The local decoder catches that boundary; the next theme action writes a canonical value through Nuxt's normal encoder. This fallback does not claim malformed cookies are automatically rewritten. [Exact cookie implementation](https://unpkg.com/nuxt@4.6.2/dist/app/composables/cookie.js).
 
 After all files exist:
 

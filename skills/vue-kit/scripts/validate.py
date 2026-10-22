@@ -42,6 +42,15 @@ NATIVE_COUNTS = {
     'native_reference_readiness': {'ready': 37, 'mixed': 1},
 }
 
+# Bind discovery policy, escalation identities and retrievable source metadata
+# separately from native judgments and editable semantic routing dispositions.
+OPENVUE_INPUT_FIELDS = ('rubric', 'input_cap', 'escalation', 'truncated', 'escalated', 'native_errors')
+OPENVUE_SOURCE_FIELDS = (
+    'source_kind', 'source_path', 'source_url', 'bytes', 'truncated', 'escalated',
+    'source_identity_sha256', 'source_blob_sha1',
+)
+OPENVUE_INPUT_FINGERPRINT = '0545c91984a36770067d15a862975eccd58c5a712ce89204ca186e345b9692da'
+
 # Current additions are reviewed separately from the immutable 38-reference
 # native population. Declaring a new file here requires its own extension review.
 CURRENT_REFERENCE_EXTENSIONS = (
@@ -1042,6 +1051,7 @@ class Validator:
         owners = set(CURRENT_REFERENCE_EXTENSIONS[2:])
         active = {self.display(reference) for reference in self.references}
         native, kinds, represented = {}, Counter(), set()
+        source_metadata, dispositions, references = {}, Counter(), Counter()
         for row in rows:
             if not isinstance(row, dict):
                 self.error(path, 'OpenVue document must be an object')
@@ -1054,6 +1064,7 @@ class Validator:
             if not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest):
                 self.error(path, f'{identity}: source SHA-256 is required')
             native[identity] = {'sha256': digest, 'native': row.get('native')}
+            source_metadata[identity] = {key: row.get(key) for key in OPENVUE_SOURCE_FIELDS}
             for key in ('owner', 'risk'):
                 verdict = row.get('native', {}).get(key) if isinstance(row.get('native'), dict) else None
                 if (not isinstance(verdict, dict) or not isinstance(verdict.get('choice'), str)
@@ -1069,8 +1080,11 @@ class Validator:
                 self.error(path, f'{identity}: final owner must be an indexed OpenVue reference')
             else:
                 represented.add(owner)
+                references[owner] += 1
             if row.get('disposition') not in ('documented', 'context_only', 'excluded'):
                 self.error(path, f'{identity}: invalid final disposition')
+            else:
+                dispositions[row['disposition']] += 1
             if not isinstance(row.get('reason'), str) or not row['reason'].strip():
                 self.error(path, f'{identity}: evidence-backed disposition reason is required')
             urls = row.get('primary_urls')
@@ -1088,6 +1102,18 @@ class Validator:
                     or len(set(identities)) != expected):
                 self.error(path, f'OpenVue {label} inputs must retain their complete unique identities')
         self.validate_native_fingerprint(path, 'openvue-documents', native)
+        self.compare_counts(path, 'disposition_counts', report.get('disposition_counts'), dict(dispositions))
+        self.compare_counts(path, 'reference_counts', report.get('reference_counts'), dict(references))
+        inputs = {key: report.get(key) for key in OPENVUE_INPUT_FIELDS}
+        inputs['sources'] = source_metadata
+        try:
+            encoded = json.dumps(inputs, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
+            fingerprint = hashlib.sha256(encoded.encode('utf-8')).hexdigest()
+        except (ValueError, UnicodeError, RecursionError) as exc:
+            self.error(path, f'cannot fingerprint frozen OpenVue discovery inputs: {exc}')
+        else:
+            if fingerprint != OPENVUE_INPUT_FINGERPRINT:
+                self.error(path, 'frozen OpenVue discovery inputs differ from the accepted snapshot')
 
     def validate_service_independence(self):
         self.checks.append('service-independent capability boundary and supported UI successor')

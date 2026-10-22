@@ -58,11 +58,11 @@ ConfirmDialog's documentation says a target is mandatory for alignment; the publ
 
 Set `defaultFocus: 'reject'` for destructive actions. `acceptProps` and `rejectProps` configure labels/severity; message/icon slots customize content, while `container` exposes accept/reject/close callbacks and transfers the full UI responsibility to you. `accept` runs only for explicit acceptance; `reject` only for its explicit button. X/Escape can call `onHide`, while `close()`, outside/scroll popup dismissal, and host unmount are **not a guaranteed reject/onHide sequence**. `onShow` is dispatched before the entry transition, not proof focus has arrived. Do not build a Promise that resolves only on reject and then hangs on dismissal. Never put deletion in `onHide`, `finally`, or toast-close.
 
-The service does not await an async accept callback; its UI closes immediately. Catch failures in an application-owned async function, keep busy/error state outside the disappearing confirmation, revalidate the record/permission at commit, and notify success **after** commit. Confirmation is not protection against stale data or a second caller. Server-backed applications must repeat authorization/concurrency checks on the server. The local store below performs its protected-record check in the same IndexedDB read/write transaction as deletion.
+The service does not await an async accept callback; its UI closes immediately. Catch failures in an application-owned async function, keep busy/error state outside the disappearing confirmation, revalidate the record/permission at commit, and notify success **after** commit. Confirmation is not protection against stale data or a second caller. Server-backed applications must repeat authorization/concurrency checks on the server. The local store below checks the protected flag and compares the originally displayed record with current storage in the same IndexedDB read/write transaction as the change; a stale rename or deletion fails instead of overwriting another tab's work.
 
 ### Complete local persistence and service-backed flow
 
-This is real browser IndexedDB, not a fake network call. A fresh database seeds two local records once; remounting preserves edits/deletion. `AbortSignal` aborts outstanding transactions on owner disposal. Draft cancellation never starts a write. The type guards protect the untyped dynamic-dialog boundary rather than casting its payload. This application intentionally allows only one dynamic dialog at a time: 1.0.0's host uses shared `currentInstance` bookkeeping during close transitions, so simultaneous overlapping close lifetimes are not a contract to depend on.
+This is real browser IndexedDB, not a fake network call. A fresh database seeds two local records once; remounting preserves edits/deletion. `AbortSignal` aborts outstanding transactions on owner disposal, but cannot undo an already committed change. Aborting at that completion boundary can throw `InvalidStateError`, so the cancellation helper ignores only that finished-transaction condition; every async UI continuation still checks its owner. Draft cancellation never starts a write. The type guards protect the untyped dynamic-dialog boundary rather than casting its payload. This application intentionally serializes local decisions and allows only one dynamic dialog at a time: 1.0.0's host uses shared `currentInstance` bookkeeping during close transitions, so overlapping close lifetimes are not a contract to depend on.
 
 <!-- fixture: src/project-store.ts -->
 ```ts
@@ -71,6 +71,13 @@ export function isProject(value: unknown): value is Project {
   return typeof value === 'object' && value !== null && 'id' in value &&
     typeof value.id === 'string' && 'title' in value && typeof value.title === 'string' &&
     'protected' in value && typeof value.protected === 'boolean'
+}
+
+function abortPending(tx: IDBTransaction) {
+  try { tx.abort() }
+  catch (cause) {
+    if (!(cause instanceof DOMException && cause.name === 'InvalidStateError')) throw cause
+  }
 }
 
 function database(signal: AbortSignal): Promise<IDBDatabase> {
@@ -101,7 +108,7 @@ export async function readProjects(signal: AbortSignal): Promise<Project[]> {
     const request = tx.objectStore('projects').getAll()
     let result: Project[] = []
     let failure: Error | null = null
-    const abort = () => tx.abort()
+    const abort = () => abortPending(tx)
     signal.addEventListener('abort', abort, { once: true })
     request.onsuccess = () => {
       const values: unknown = request.result
@@ -115,23 +122,26 @@ export async function readProjects(signal: AbortSignal): Promise<Project[]> {
 }
 
 export async function changeProject(
-  id: string, change: { kind: 'delete' } | { kind: 'rename'; title: string }, signal: AbortSignal
+  expected: Project, change: { kind: 'delete' } | { kind: 'rename'; title: string }, signal: AbortSignal
 ): Promise<void> {
   const db = await database(signal)
   return new Promise((resolve, reject) => {
     if (signal.aborted) { db.close(); reject(signal.reason); return }
     const tx = db.transaction('projects', 'readwrite')
     const store = tx.objectStore('projects')
-    const request = store.get(id)
+    const request = store.get(expected.id)
     let failure: Error | null = null
-    const abort = () => tx.abort()
+    const abort = () => abortPending(tx)
     signal.addEventListener('abort', abort, { once: true })
     request.onsuccess = () => {
       const project: unknown = request.result
       if (!isProject(project)) failure = new Error('Project no longer exists.')
       else if (project.protected) failure = new Error('Protected projects cannot be changed.')
+      else if (project.title !== expected.title || project.protected !== expected.protected) {
+        failure = new Error('Project changed elsewhere. Reload before trying again.')
+      }
       else if (change.kind === 'rename' && !change.title.trim()) failure = new Error('Title is required.')
-      else if (change.kind === 'delete') store.delete(id)
+      else if (change.kind === 'delete') store.delete(expected.id)
       else store.put({ ...project, title: change.title.trim() })
       if (failure) tx.abort()
     }
@@ -206,9 +216,27 @@ const lifetime = new AbortController()
 let alive = true
 let opened: DynamicDialogInstance | null = null
 
+let decisionOpen = false
+let restoreAfterOperation = false
+function restoreOutcomeFocus() {
+  if (!alive || busy.value || decisionOpen || opened || !restoreAfterOperation) return
+  restoreAfterOperation = false
+  heading.value?.focus()
+}
+function afterDecisionHide() {
+  decisionOpen = false
+  restoreOutcomeFocus()
+}
 onMounted(async () => {
-  try { projects.value = await readProjects(lifetime.signal); outcome.value = 'Ready' }
-  catch (cause) { if (alive) error.value = message(cause) }
+  try {
+    const next = await readProjects(lifetime.signal)
+    if (!alive) return
+    projects.value = next
+    outcome.value = 'Ready'
+  }
+  catch (cause) {
+    if (alive) { error.value = message(cause); outcome.value = 'Could not load local projects' }
+  }
   finally { if (alive) busy.value = false }
 })
 onBeforeUnmount(() => {
@@ -218,41 +246,43 @@ onBeforeUnmount(() => {
   opened = null
 })
 function message(cause: unknown) { return cause instanceof Error ? cause.message : String(cause) }
-async function commit(id: string, change: { kind: 'delete' } | { kind: 'rename'; title: string }) {
+async function commit(project: Project, change: { kind: 'delete' } | { kind: 'rename'; title: string }) {
   if (!alive || busy.value) return
   busy.value = true
   error.value = ''
+  restoreAfterOperation = true
   try {
-    await changeProject(id, change, lifetime.signal)
+    await changeProject(project, change, lifetime.signal)
     const next = await readProjects(lifetime.signal)
     if (!alive) return
     projects.value = next
     outcome.value = change.kind === 'delete' ? 'Project deleted' : 'Project renamed'
     toast.add({ group: 'projects', severity: 'success', summary: outcome.value, life: 3500 })
-    if (change.kind === 'delete') heading.value?.focus()
   } catch (cause) {
     if (alive) { error.value = message(cause); outcome.value = 'Operation failed; stored state may need reloading' }
-  } finally { if (alive) busy.value = false }
+  } finally {
+    if (alive) { busy.value = false; restoreOutcomeFocus() }
+  }
 }
 function askDelete(event: MouseEvent, project: Project, popup: boolean) {
   const target = event.currentTarget
-  if (!(target instanceof HTMLElement) || busy.value || opened) return
+  if (!alive || !(target instanceof HTMLElement) || busy.value || opened || decisionOpen) return
   if (project.protected) { error.value = 'Protected projects cannot be changed.'; return }
+  decisionOpen = true
   confirm.require({
     group: popup ? 'project-popup' : 'project-delete', target,
     header: 'Delete project?', message: `Delete ${project.title}?`, defaultFocus: 'reject',
     rejectProps: { label: 'Keep project', severity: 'secondary' },
     acceptProps: { label: 'Delete permanently', severity: 'danger' },
-    accept: () => { void commit(project.id, { kind: 'delete' }) },
-    reject: () => { outcome.value = 'Deletion rejected' },
-    onHide: () => { if (target.isConnected) target.focus() }
+    accept: () => { void commit(project, { kind: 'delete' }) },
+    reject: () => { if (alive) outcome.value = 'Deletion rejected' }
   })
 }
 function rename(project: Project) {
-  if (busy.value || opened || project.protected) return
+  if (!alive || busy.value || opened || decisionOpen || project.protected) return
   const dialogProps = {
     header: 'Rename project', modal: true, style: { width: 'min(32rem, 95vw)' }, draggable: false,
-    onAfterHide: () => { opened = null }
+    onAfterHide: () => { opened = null; restoreOutcomeFocus() }
   }
   opened = dialog.open(RenameProject, {
     props: dialogProps,
@@ -262,7 +292,7 @@ function rename(project: Project) {
       if (alive && options?.type === 'config-close' && typeof data === 'object' && data !== null &&
           'kind' in data && data.kind === 'rename' && 'id' in data && data.id === project.id &&
           'title' in data && typeof data.title === 'string') {
-        void commit(project.id, { kind: 'rename', title: data.title })
+        void commit(project, { kind: 'rename', title: data.title })
       }
     }
   })
@@ -283,15 +313,15 @@ function rename(project: Project) {
         <Button :label="`Quick delete ${project.title}`" :disabled="busy || project.protected" @click="askDelete($event, project, true)" />
       </li>
     </ul>
-    <ConfirmDialog group="project-delete" :draggable="false" />
-    <ConfirmPopup group="project-popup" :pt="{ root: { 'aria-label': 'Quick delete project' } }" />
+    <ConfirmDialog group="project-delete" :draggable="false" :pt="{ transition: { onAfterLeave: afterDecisionHide } }" />
+    <ConfirmPopup group="project-popup" :pt="{ root: { 'aria-label': 'Quick delete project' }, transition: { onAfterLeave: afterDecisionHide } }" />
     <DynamicDialog />
     <Toast group="projects" position="bottom-right" />
   </section>
 </template>
 ```
 
-**Dynamic host completion policy:** the inferred `dialogProps` object includes the Dialog's Vue `onAfterHide` event listener; passing this variable preserves structural typing without inventing an event on DynamicDialog or casting its options. Only clear the single active handle after this transition cleanup. `onClose` occurs earlier; immediately opening another dialog from it races the host's shared close bookkeeping.
+**Completion and focus policy:** the inferred `dialogProps` object includes the Dialog's Vue `onAfterHide` listener; passing this variable preserves structural typing without inventing an event on DynamicDialog or casting its options. Clear the single active handle only after transition cleanup. `onClose` occurs earlier; immediately opening another dialog from it races the host's shared close bookkeeping. Confirm hosts use their declared `pt.transition.onAfterLeave` to release the same local decision guard. Persistence may finish before or after a portal leaves: only restore the stable outcome heading when **both** operation and overlay cleanup have finished. Otherwise the library's leave-time restoration can target a disabled or deleted opener, or override application focus. Cancel/reject still use the live opener's native restoration. A conflict remains an inline error; reload to inspect current data before making a new decision.
 
 ### Complete application shell and overlay consumer
 
@@ -415,6 +445,8 @@ li { margin-block: .5rem; }
 
 ToastService `add({ id?, group?, severity, summary, detail, life? })` returns a string/number ID. `remove({ id })`, `removeGroup(group)`, and `removeAllGroups()` have different scopes. Omit `life` for sticky messages; `closable` controls dismiss UI. Hosts filter exact groups; default and named groups are not interchangeable. Supported severities include success/info/warn/error/secondary/contrast: toast **error**, button **danger**. `message` slot changes message content; `container` receives `{ message, closeCallback }` and replaces the whole presentation. Keep names and working close controls. Default alert/live announcements can be assertive; avoid one toast per keystroke and keep actionable errors inline. Closing/removing/expiring a toast cancels no request unless the application deliberately connects that action to an AbortController. Never leave a background timer running after its owner disappears.
 
+In this release, service dispatch is synchronous but rendering/transitions are not. Toast's explicit close and `remove({ id })` emit `close`; timeout emits **`life-end`**, not `close`. `removeGroup(group)` clears that host without per-message close events, while `removeAllGroups()` emits `close` for each currently held message before clearing them. Host unmount unsubscribes its bus listeners and each message clears its expiry timer; it does not report successful work or a synthetic close outcome. Do not wait for a single toast-close callback as a universal completion/cleanup signal. These differences are explicit in the [Toast runtime](https://unpkg.com/openvue@1.0.0/toast/index.mjs) and [ToastService runtime](https://unpkg.com/openvue@1.0.0/toastservice/index.mjs).
+
 Standalone FocusTrap can be locally registered as `import vFocustrap from 'openvue/focustrap'` and used on a real DOM container. Its binding supports `disabled`, `autoFocus`, and focusable selectors. The 1.0.0 implementation only unbinds on `disabled` updates; it does not symmetrically rebuild a trap when toggling back, and hidden sentinels are not a complete modal implementation. Prefer mounting/unmounting the trapped region for lifecycle changes. Do not stack a standalone trap around Dialog/Popover or trap ordinary page navigation. Restore focus yourself when removing a standalone region.
 
 BlockUI creates a mask; local blocking needs a positioning context. Full-screen mode appends a mask to body, locks scroll, and blurs the active element. Neither local nor full-screen mask makes underlying controls disabled/inert, prevents keyboard activation or programmatic mutation, or restores the old focus for you. Bind `disabled` on real controls, guard handlers, expose a status/error and recovery, and avoid competing full-page scroll locks. Treat `aria-busy` as an announcement, not a lock.
@@ -424,3 +456,5 @@ Tooltip renders a generated tooltip ID and Escape hides it, but the published 1.
 ## Evidence and release boundaries
 
 Primary official pages: [Dialog](https://openvue.dev/dialog/), [Drawer](https://openvue.dev/drawer/), [Popover](https://openvue.dev/popover/), [Toast](https://openvue.dev/toast/), [ConfirmDialog](https://openvue.dev/confirmdialog/), [ConfirmPopup](https://openvue.dev/confirmpopup/), [DynamicDialog](https://openvue.dev/dynamicdialog/), [FocusTrap](https://openvue.dev/focustrap/), [BlockUI](https://openvue.dev/blockui/), [Tooltip](https://openvue.dev/tooltip/). Read alongside published [confirmation options](https://unpkg.com/openvue@1.0.0/confirmationoptions/index.d.ts), [ConfirmDialog runtime](https://unpkg.com/openvue@1.0.0/confirmdialog/index.mjs), [ConfirmPopup runtime](https://unpkg.com/openvue@1.0.0/confirmpopup/index.mjs), [DynamicDialog options](https://unpkg.com/openvue@1.0.0/dynamicdialogoptions/index.d.ts), [DynamicDialog runtime](https://unpkg.com/openvue@1.0.0/dynamicdialog/index.mjs), [Dialog declarations](https://unpkg.com/openvue@1.0.0/dialog/index.d.ts), [Popover runtime](https://unpkg.com/openvue@1.0.0/popover/index.mjs), [ToastService declarations](https://unpkg.com/openvue@1.0.0/toastservice/index.d.ts), [FocusTrap runtime](https://unpkg.com/openvue@1.0.0/focustrap/index.mjs), [BlockUI runtime](https://unpkg.com/openvue@1.0.0/blockui/index.mjs), and [Tooltip options](https://unpkg.com/openvue@1.0.0/tooltip/index.d.ts). Source snapshot: official showcase corpus at commit `d064f02ac75c3aaeb60a676c70e5ee08e3e3042e`; release runtime/declarations outrank later prose.
+
+The local cancellation boundary follows the browser's [`IDBTransaction.abort()` contract](https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction/abort): finished transactions cannot be aborted. Same-store read/write transactions serialize; keeping the snapshot comparison and write together prevents a different tab's committed edit being silently replaced.

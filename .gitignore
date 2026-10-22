@@ -12,3 +12,6 @@
 .reference
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+
+# Python verification bytecode
+__pycache__/

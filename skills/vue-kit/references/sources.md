@@ -80,6 +80,8 @@ The OpenVue expansion uses the **122-page canonical official-document corpus** p
 
 [Selection and architecture](openvue.md) routes to the seven focused implementation owners rather than duplicating their APIs here. The [OpenVue coverage ledger](../assets/openvue-coverage.json) owns corpus identities, routing/dispositions and release conflicts; [scoped verification](../assets/verification.json) owns executed checks, exact environments and limits. Reading every source page or routing it to a reference does not prove browser, SSR, accessibility or optional-peer compatibility. The historical source/native inventories remain unchanged.
 
+The validator separately fingerprints the OpenVue discovery rubric, input cap, escalation policy/identities and retrievable source metadata. Native hypotheses and immutable discovery inputs remain distinct from editable semantic routing. Disposition and reference summary counts must describe the actual document rows; refreshing packaged hashes does not authorize rewriting discovery history.
+
 ## Reproducible coverage assets
 
 - [Source manifest](../assets/source-manifest.json), schema 2: **47 retained historical roots**, of which 46 remain active and one is the nine-document presentation exclusion below. Two separately identified extensions cover OpenVue primary sources and application-owned session contracts; they are not invented historical source judgments.

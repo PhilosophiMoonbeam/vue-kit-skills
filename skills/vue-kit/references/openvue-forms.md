@@ -381,6 +381,8 @@ FileUpload does not save anything unless a real transport is configured. Default
 
 `accept`, size and count checks are browser UX, not security enforcement. A real service must authenticate/authorize, enforce byte limits/content inspection, choose safe filenames/storage, and reject dangerous active content regardless of extension/MIME. Do not inline arbitrary SVG/HTML or expose credentials in url. Default image preview creates object URLs on File objects and this release has no revokeObjectURL call in its uploader lifecycle: own cleanup of preview URLs you retain. Avoid default image previews if you cannot manage their lifetime. The example accepts plain text and parses it **locally**, explicitly without a network upload or image preview.
 
+In basic mode a new selection replaces the old queue **before** validation, and `select` still fires with `files: []` when every new file is rejected. Invalidate any pending read and replace the previous report in that branch; otherwise a rejected replacement leaves a stale success (or permanent “Reading local text”) even though no file is selected.
+
 <!-- example:LocalTextFile.vue -->
 ```vue
 <script setup lang="ts">
@@ -393,7 +395,10 @@ let alive = true
 async function selected(event: FileUploadSelectEvent) {
   const ticket = ++generation
   const file = event.files[0]
-  if (!file) return
+  if (!file) {
+    report.value = 'No accepted local file. Choose a .txt file of at most 4096 bytes.'
+    return
+  }
   if (file.size > 4096 || !file.name.toLowerCase().endsWith('.txt')) {
     report.value = 'Choose a .txt file of at most 4096 bytes.'
     return

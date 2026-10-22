@@ -74,9 +74,12 @@ From the repository root:
 
 ```sh
 python3 skills/vue-kit/scripts/validate.py skills/vue-kit --json
+python3 -m unittest discover -s verification -p 'test_*.py'
 ```
 
 The standard-library validator checks skill structure, reference navigation, retained source identity/native-hypothesis fingerprints, current ownership and content-addressed packaged files. It does not execute optional integrations or confer runtime certification.
+
+Repository-only regression consumers run the validator from isolated packaged copies and reject corrupted discovery policy, source/escalation identities and routing summaries. They refresh each copy's footprint so a stale hash cannot disguise a missing provenance check; they are not application runtime tests.
 
 [Sources and verification policy](skills/vue-kit/references/sources.md) explain the revised provenance population: **47 retained historical roots, 459 documents and 327 original triage flags**, plus separately identified OpenVue and application-session contract extensions. One retained nine-document root remains an explicit presentation-integration exclusion; it is not supported guidance. [Coverage routing](skills/vue-kit/assets/coverage-audit.json) preserves the retained hashes and native hypotheses without pretending historical dispositions validate revised examples.
 

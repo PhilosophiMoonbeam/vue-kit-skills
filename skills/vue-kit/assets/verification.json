@@ -4,8 +4,8 @@
     "vue": "3.5.44",
     "vuetify": "4.3.0"
   },
-  "recorded_at": "2026-10-22T20:06:34.896540Z",
-  "scope": "OpenVue deep-coverage observations appended to43 unchanged historical checks. Each result retains its bounded source scope; prior checks are not relabeled as reruns. New consumers use exact working-tree fences afterdf73c58. Packaged hashes bind content, not execution authenticity.",
+  "recorded_at": "2026-10-22T21:09:01.754241Z",
+  "scope": "Follow-up OpenVue hardening observations appended to54 unchanged prior checks. Before profiles use committedb0bd8c5; corrected consumers use exact working-tree fences. Prior results retain their original source scopes and are not relabeled as reruns. Packaged hashes bind current bytes, not execution authenticity.",
   "environment": {
     "node": "24.15.0",
     "bun": "1.4.3",
@@ -1460,6 +1460,232 @@
         ],
         "limits": "Each probe asserts a specific coverage diagnostic; the snapshot was refreshed so the rejection is not merely stale-hash detection. Structural integrity and routing checks do not independently certify source semantics or execution authenticity."
       }
+    },
+    {
+      "id": "openvue-hardening-local-file",
+      "scope": "Exact LocalTextFile SFC; accepted/rejected replacement, pending read retirement and explicit clearing.",
+      "result": "passed",
+      "command": "bun install && bun run typecheck && bun run build; bunx --no-install playwright test",
+      "recorded_at": "2026-10-22T21:09:01.754241Z",
+      "source_profile": {
+        "kind": "follow-up working-tree exact-fence consumers",
+        "base_commit": "b0bd8c5",
+        "repository_files_sha256": {
+          "skills/vue-kit/references/openvue-forms.md": "75facb3c6f700bae66e18eb59582796e6e7498c8471856cf1950f33952d5b50b"
+        },
+        "boundary": "Base commit identifies the actual failing-before profile. Corrected consumers come from current exact fences; hashes bind their source, not execution authenticity."
+      },
+      "details": {
+        "environment": {
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": false,
+          "chart_js_dev_type_provider": "4.6.1",
+          "unstyled": true,
+          "playwright": "1.56.1"
+        },
+        "production_modules": 55,
+        "browser_scenarios": 1,
+        "before": "Committed consumer retained valid.txt:3 words after selecting a4097-byte replacement; the rejection assertion failed.",
+        "after": [
+          "valid local text reports3 words",
+          "oversized and wrong-type replacements report no accepted file",
+          "rejected replacement retires a pending genuine File.text result",
+          "Clear local report restores its named initial status"
+        ],
+        "probe_boundary": "One genuine File.text promise is held to order the race; its real result is released and awaited. No file content or component is mocked.",
+        "limits": "Local text inspection only; no upload service, sanitizer or storage security is certified."
+      }
+    },
+    {
+      "id": "openvue-hardening-cookie",
+      "scope": "Exact official Nuxt profile; malformed/unknown preference decoding, SSR and hydration/navigation.",
+      "result": "passed",
+      "command": "bun install && bun run prepare && bun run typecheck && bun run build; BASE_URL=[production server] PLAYWRIGHT_MODULE=[actual local module] node scenario.mjs",
+      "recorded_at": "2026-10-22T21:09:01.754241Z",
+      "source_profile": {
+        "kind": "follow-up working-tree exact-fence consumers",
+        "base_commit": "b0bd8c5",
+        "repository_files_sha256": {
+          "skills/vue-kit/references/openvue-setup.md": "c46453f0c08de43eab343628485854149d97ba2bb863d35333fd607c37ba1f18"
+        },
+        "boundary": "Base commit identifies the actual failing-before profile. Corrected consumers come from current exact fences; hashes bind their source, not execution authenticity."
+      },
+      "details": {
+        "environment": {
+          "nuxt": "4.6.2",
+          "nitro": "2.13.5",
+          "vite": "8.3.5",
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "themes": "1.0.0",
+          "module": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.2",
+          "node_types": "24.13.2",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "compiler_boundary": "Unchanged generated Nuxt compiler configuration; not a claim of skipLibCheck:false."
+        },
+        "http_cases": 14,
+        "browser_scenarios": 7,
+        "viewport": 320,
+        "before": "office-theme=% producedHTTP500 rather than200 at the real production SSR endpoint.",
+        "after": "Both routes return200 and consistent SSR theme classes/styles for malformed percent sequences, unknown/object-shaped values, light/dark and encoded dark. All seven browser cases hydrate cleanly, toggle to canonical cookies and retain theme through navigation/refresh.",
+        "strict_correction": "The declared decoder accepts string|null|undefined; both exact readers explicitly narrow to string before decodeURIComponent. No cast or weaker gate.",
+        "limits": "Non-sensitive preference fallback only. Invalid values are normalized in memory and rewritten by a real theme action, not falsely claimed to auto-repair every stored cookie."
+      }
+    },
+    {
+      "id": "openvue-hardening-interactions",
+      "scope": "Exact overlay/navigation consumers plus native IndexedDB, actual Router links and real Toast hosts from production entries.",
+      "result": "passed",
+      "command": "bun install; bun run typecheck && bun run build && bun run test:focused",
+      "recorded_at": "2026-10-22T21:09:01.754241Z",
+      "source_profile": {
+        "kind": "follow-up working-tree exact-fence consumers",
+        "base_commit": "b0bd8c5",
+        "repository_files_sha256": {
+          "skills/vue-kit/references/openvue-overlays.md": "cd6aafd8e4e6859ee20101f25a84e95d55bb58219cd74399d7d58f5b3cd00e38",
+          "skills/vue-kit/references/openvue-navigation.md": "428a1fcf1fa8caa2d700f2561255101a93699bf3de6a6662eefc1228f7710700"
+        },
+        "boundary": "Base commit identifies the actual failing-before profile. Corrected consumers come from current exact fences; hashes bind their source, not execution authenticity."
+      },
+      "details": {
+        "environment": {
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": false,
+          "chart_js_dev_type_provider": "4.6.1",
+          "themes": "1.0.0",
+          "vue_router": "4.6.3",
+          "playwright": "1.64.1"
+        },
+        "production_modules": 354,
+        "browser_scenarios": 8,
+        "before": [
+          "Stored title became Stale local title after another tab had committed a newer title.",
+          "Outcome heading lost focus after a slow DynamicDialog leave.",
+          "Native completion-boundary abort emitted two uncaught InvalidStateError messages.",
+          "New plan retained Abandoned draft and disabled destinations retained href anchors.",
+          "Invalid stored data left Loading local projects while aria-busy was already false and an error was displayed."
+        ],
+        "after": [
+          "same-transaction snapshot checks reject stale rename and delete",
+          "focus waits for persistence plus portal cleanup",
+          "pending native writes abort on owner disposal; completed work is not undone or reported as uncaught cancellation",
+          "New plan clears only its draft/review; tab switching and committed-record identity are preserved",
+          "disabled static/function-valued destinations have no active anchor; enabled modified-click opens a real destination tab",
+          "actual Toast remove/expiry/group/unmount events remain distinct",
+          "failed initial read publishes an error outcome, not permanent loading"
+        ],
+        "production_boundary": "Five built HTML entries plus a manifest-backed emitted project-store module. No dev-source import, fake database or network stub. A genuine external IndexedDB transaction orders the disposal case; native complete events order the finished-transaction edge.",
+        "diagnostic_boundary": "An additional before-run emitted net::ERR_NETWORK_CHANGED; it was retained, not filtered. The final8-case run passed with no captured page/console errors.",
+        "limits": "Local snapshot equality is not a revisioned server protocol, distributed conflict resolution, authentication or authorization. Initial-load owner-guard strengthening also has source evidence; it is not separately advertised as a failing-before visible-publication case."
+      }
+    },
+    {
+      "id": "openvue-hardening-audit",
+      "scope": "Frozen discovery inputs, honest route summaries and standalone CLI corruption rejection.",
+      "result": "passed",
+      "command": "python3 [throwaway audit-probe.py] --expect-rejection; python3 -m unittest discover -s verification -p test_*.py -v",
+      "recorded_at": "2026-10-22T21:09:01.754241Z",
+      "source_profile": {
+        "kind": "follow-up working-tree exact-fence consumers",
+        "base_commit": "b0bd8c5",
+        "repository_files_sha256": {
+          "skills/vue-kit/scripts/validate.py": "61295b15a9dcc317e3390c06622ffd21218a465781a88b6bd86ed6e9bcdd8ce8",
+          "verification/test_validate.py": "98c3900ba6dd3bb8f506cdce5fa43a3e4a72575b33435fa4c729d00df8c34b54"
+        },
+        "boundary": "Base commit identifies the actual failing-before profile. Corrected consumers come from current exact fences; hashes bind their source, not execution authenticity."
+      },
+      "details": {
+        "before_accepted_corruptions": 7,
+        "after_rejected_corruptions": 7,
+        "healthy_standalone_control": "passed",
+        "permanent_regressions": 6,
+        "covered_boundaries": [
+          "erased rubric",
+          "same-cardinality escalation identity substitution",
+          "swapped source kinds",
+          "replaced retrievable source URL",
+          "false disposition/reference summaries",
+          "invalid Unicode policy produces a diagnostic rather than traceback"
+        ],
+        "input_fingerprint": "0545c91984a36770067d15a862975eccd58c5a712ce89204ca186e345b9692da",
+        "fixture_boundary": "Copies refresh the audit footprint before invoking the real standalone CLI; stale hashes cannot substitute for actual metadata validation.",
+        "preserved": "All original native maps/source assets and54 prior check objects remain unchanged.",
+        "limits": "Frozen provenance does not independently certify upstream truth, final semantic routing or runtime authenticity."
+      }
+    },
+    {
+      "id": "openvue-hardening-reference-syntax",
+      "scope": "Current master and48 references, including four changed OpenVue owners.",
+      "result": "passed",
+      "command": "node syntax.mjs (throwaway compiler consumer)",
+      "recorded_at": "2026-10-22T21:09:01.754241Z",
+      "source_profile": {
+        "kind": "follow-up working-tree exact-fence consumers",
+        "base_commit": "b0bd8c5",
+        "repository_files_sha256": {
+          "skills/vue-kit/references/openvue-forms.md": "75facb3c6f700bae66e18eb59582796e6e7498c8471856cf1950f33952d5b50b",
+          "skills/vue-kit/references/openvue-setup.md": "c46453f0c08de43eab343628485854149d97ba2bb863d35333fd607c37ba1f18",
+          "skills/vue-kit/references/openvue-overlays.md": "cd6aafd8e4e6859ee20101f25a84e95d55bb58219cd74399d7d58f5b3cd00e38",
+          "skills/vue-kit/references/openvue-navigation.md": "428a1fcf1fa8caa2d700f2561255101a93699bf3de6a6662eefc1228f7710700"
+        },
+        "boundary": "Base commit identifies the actual failing-before profile. Corrected consumers come from current exact fences; hashes bind their source, not execution authenticity."
+      },
+      "details": {
+        "documents": 49,
+        "fences": 358,
+        "vue_fences": 144,
+        "script_fences": 158,
+        "json_fences": 11,
+        "contextual_property_fragments": 3,
+        "errors": 0,
+        "limits": "Bare Vue fragments were template-wrapped; three explicitly contextual property fragments were object-wrapped. Syntax/template compilation is separate from imported typing and runtime behavior."
+      }
+    },
+    {
+      "id": "openvue-hardening-installed-skill",
+      "scope": "Pre-self-record exact70-file hardened package installed independently through Bun and npm Skills CLI.",
+      "result": "passed",
+      "command": "bunx/npx skills@latest add [local repository] --skill vue-kit --agent codex --copy --yes; installed standard-library validator; skills-ref validate; complete SHA256 comparison",
+      "recorded_at": "2026-10-22T21:09:01.754241Z",
+      "source_profile": {
+        "kind": "follow-up working-tree exact-fence consumers",
+        "base_commit": "b0bd8c5",
+        "repository_files_sha256": {},
+        "boundary": "Base commit identifies the actual failing-before profile. Corrected consumers come from current exact fences; hashes bind their source, not execution authenticity."
+      },
+      "details": {
+        "isolated_installations": 2,
+        "selected_skills_each": 1,
+        "matching_files_each": 70,
+        "structural_checks_each": 15,
+        "structural_errors_each": 0,
+        "official_format_each": "Valid skill",
+        "limits": "Observed before this final self-record append. Local-source copies are not remote publication proof; a final public installation is separately exercised and reported at delivery. No legacy corpus or application dependencies are needed by the installed validator."
+      }
     }
   ],
   "limits": [
@@ -1482,7 +1708,7 @@
   "snapshots": {
     "algorithm": "sha256",
     "files": {
-      "CHANGELOG.md": "25e302c4f84eabb62b6950661d109e5babfed79bff211e4dede25916a1c10665",
+      "CHANGELOG.md": "3442d78ef242a13737a36e29226cebca20d3d3069ffd40d6da32bd526d5cf437",
       "SKILL.md": "3a31471f640dec697962e9114ee1d017ccb46d7e9ad68bbffd336d4fe710cea9",
       "assets/coverage-audit.json": "51ea3146ff327fe4315f309bf67794956f834085ddbf0ae72903b767d42a0e32",
       "assets/example-app/.gitignore": "790e3169bc19b046fe55ba1da6d13b976c28363c8c00462a2195fe5faf260910",
@@ -1526,17 +1752,17 @@
       "references/nuxt.md": "82961a80e0a4ec283c19552f62ca921f280f12847da93d77a8722f30c97671bf",
       "references/openvue-components.md": "93c48bc7db9c19fd2b8bf40e3a72ec98808374da6082c3fed3119a663b2cbc75",
       "references/openvue-data.md": "6d81cff788373b8a4bd1502f894bb74e7da031bde84f7bac4c8148a31fdfdfcc",
-      "references/openvue-forms.md": "654e364112d8a2ef9653270056d422246bccf6edfd723b0ee2f7e2959fb96815",
-      "references/openvue-navigation.md": "ba4dce6fecf7b540fa5250c916d5dc96a07b0dbf5b117551ea2b65d883779bf2",
-      "references/openvue-overlays.md": "9ddfe504f4b95c1b9706ba8ea4b89962aa2503227655daaff287518a9956f82d",
-      "references/openvue-setup.md": "e7f563a99c5876a310b69cf28738451d0fa1cc432c43e7b85a47cb71b16b931c",
+      "references/openvue-forms.md": "75facb3c6f700bae66e18eb59582796e6e7498c8471856cf1950f33952d5b50b",
+      "references/openvue-navigation.md": "428a1fcf1fa8caa2d700f2561255101a93699bf3de6a6662eefc1228f7710700",
+      "references/openvue-overlays.md": "cd6aafd8e4e6859ee20101f25a84e95d55bb58219cd74399d7d58f5b3cd00e38",
+      "references/openvue-setup.md": "c46453f0c08de43eab343628485854149d97ba2bb863d35333fd607c37ba1f18",
       "references/openvue-theming.md": "428ee886fa1296d84f92ef87869e7ab30b842b3b967ca7c4637027070759f263",
       "references/openvue.md": "724954cab14012b609f7479d5380f69f5cff254cd762a1e8ab322f6aa7bcbdaf",
       "references/pinia-colada.md": "e060c694546bafca9a4f7a00d2aaba75d9c6f8c49928cb11defaf379ecb4a09b",
       "references/routing-tanstack.md": "91b5963312ab458e83736cc83bf10f51f11885eb7ae76fd8bbb730aa0b4c074c",
       "references/routing.md": "4be5196530ef7bab1c4cbdbf1b145b0197fae3db0c03aff38e6e059d933f04c2",
       "references/setup-tooling.md": "107538e165ef32e53fe835254e2bebebb6b2a1ed57f9b734feddaaa1c6d398ed",
-      "references/sources.md": "572180a7eb04f34819bc52317e359b5ecb3bb3ff1671d0258ee960a849683534",
+      "references/sources.md": "f72a0781ac3c548c6b62f9607620aede6d962816ba878c44a2503a0b5f52db59",
       "references/state.md": "4c1fc546c5d3b761948452e671f7961766d64393d247d3adb08c03236c33cf4e",
       "references/tanstack-form.md": "30dae0ba2c5204418046e2da86794d6415c510fdc46a9749dfc1a4b7bc595533",
       "references/tanstack-query.md": "7c44e7213e0aedbe694ec3b70dcbea28535332acc881d98b764f3d370608f052",
@@ -1550,7 +1776,7 @@
       "references/vuetify-theme.md": "70903e8fb509581884a84ff5737933a82e32cae9272599a166b0cd1df0534f6b",
       "references/vueuse-integrations.md": "ddac73fa9ba4e17e959b25e1f401bf753f42276fb6442c4d15f3612a74ca0448",
       "references/vueuse.md": "58d15abe32ab82bb027d9d57318a15bee87b535fb99d42d2e6407f43c4c8114e",
-      "scripts/validate.py": "892142c52e9fbf3369a2ec2db73abf03494e22f9aa5bc6844a7bdac4da01259f"
+      "scripts/validate.py": "61295b15a9dcc317e3390c06622ffd21218a465781a88b6bd86ed6e9bcdd8ce8"
     }
   },
   "support_tightening": {
@@ -1578,5 +1804,17 @@
     "boundary": "Master and eight focused owners replace the shallow OpenVue portion; Quasar remains separate. No excluded package is restored; no future-major compatibility is implied.",
     "appended_check_count": 11,
     "time_boundary": "Recorded timestamps identify evidence packaging, not invented per-scenario execution times."
+  },
+  "openvue_hardening": {
+    "recorded_at": "2026-10-22T21:09:01.754241Z",
+    "time_boundary": "Evidence-packaging timestamp, not invented per-test execution times.",
+    "working_tree_after": "b0bd8c5",
+    "historical_checks_preserved": 54,
+    "parallel_capability_reviews": 3,
+    "browser_scenarios": 16,
+    "http_cookie_cases": 14,
+    "permanent_validator_regressions": 6,
+    "boundary": "Material findings in the eight OpenVue owners and validator were resolved. This is not a whole-ecosystem/all-browser/future-major certification; no package offering was added or restored.",
+    "appended_check_count": 6
   }
 }

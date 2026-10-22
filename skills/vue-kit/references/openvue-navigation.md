@@ -42,12 +42,13 @@ The Menu page promises automatic popup trigger ARIA, but its published 1.0.0 run
 
 `as` changes a root tag; it cannot magically turn a div into a keyboard-complete button. `asChild` is a **Vue scoped-slot contract**, not React element cloning and not a universal activator slot. Button exposes class and `a11yAttrs`; Tab exposes additional `onClick`/active bindings at runtime, while the 1.0.0 Tab declaration types its default slot without a scope. A runtime snippet that destructures those undeclared fields is not strict-template-safe. Prefer normal Tab content/default headers. Step exposes nested root/header attributes and has the release defect described above. Never invent `onValueChange`, `open`, `DialogTrigger`, or React render props.
 
-For router menus, install Vue Router as an explicit optional dependency, import `RouterLink` from `vue-router`, and provide a configured router at app creation (see setup). The **contextual template fragment** below replaces Menu's item slot inside an already configured router application; `items` is its application-owned menu model with `route` destinations. It deliberately keeps an anchor with `href` and all `props.action` handlers/ARIA. `navigate` respects modified clicks; do not blanket `.prevent` or replace links with `router.push` divs. Do not define both a navigation `command` and an `@click` router navigation for the same item. Use only vetted `item.url` values for the external branch.
+For router menus, install Vue Router as an explicit optional dependency, import `RouterLink` from `vue-router`, and provide a configured router at app creation (see setup). The **contextual template fragment** below replaces Menu's item slot inside an already configured router application; `items` is its application-owned menu model with `route` destinations. Enabled destinations retain an anchor with `href` and `props.action`. `navigate` respects modified clicks; do not blanket `.prevent` or replace links with `router.push` divs. Render disabled destinations without a live link or navigation listener: Menu's disabled styling/keyboard filtering is not a native anchor lock. The predicate below accepts both declared boolean and function-valued disabled models. Do not define both a navigation `command` and an `@click` router navigation for the same item. Use only vetted `item.url` values for the external branch.
 
 ```vue
 <Menu :model="items" ariaLabel="Project destinations">
   <template #item="{ item, props }">
-    <RouterLink v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+    <span v-if="typeof item.disabled === 'function' ? item.disabled() : item.disabled" v-bind="props.action" aria-disabled="true">{{ item.label }}</span>
+    <RouterLink v-else-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
       <a :href="href" v-bind="props.action" @click="navigate">{{ item.label }}</a>
     </RouterLink>
     <a v-else :href="item.url" :target="item.target" rel="noopener" v-bind="props.action">{{ item.label }}</a>
@@ -116,6 +117,7 @@ function selectStep(value: unknown) {
 function startPlan() {
   activeTab.value = 'plan'
   activeStep.value = 'details'
+  title.value = ''
   error.value = ''
 }
 function next(activate: (value: string | number) => void) {
@@ -194,7 +196,7 @@ async function publish() {
 </template>
 ```
 
-The workflow keeps Tabs' default `lazy=false`, preserving draft inputs while hidden. Wait for `nextTick()` before focusing the overview after switching: even an existing CSS-hidden heading must become visible before focus can move. Draft state remains in the parent if panels become lazy. Published records have application-owned UUIDs that remain stable when commands reset the separate draft. Hidden panels are excluded from the accessible tree; return to Overview to inspect retained records through their named list, rather than interpreting an inaccessible hidden list as deleted state. Never use display indexes for reorderable tab or record identity.
+The workflow keeps Tabs' default `lazy=false`, preserving draft inputs while hidden. Switching tabs preserves the draft; the explicit **New plan** command clears it and returns to Details, invalidating its prior review without touching published records. Wait for `nextTick()` before focusing the overview after switching: even an existing CSS-hidden heading must become visible before focus can move. Draft state remains in the parent if panels become lazy. Published records have application-owned UUIDs that remain stable when commands reset the separate draft. Hidden panels are excluded from the accessible tree; return to Overview to inspect retained records through their named list, rather than interpreting an inaccessible hidden list as deleted state. Never use display indexes for reorderable tab or record identity.
 
 For an independent application, use this complete entry with the SFC above and a normal `index.html` containing `<div id="app"></div>` and a module script for `/src/navigation-main.ts`. No service host, Router, or additional application helper is required; installation/compiler profiles are in [setup](openvue-setup.md).
 
@@ -213,4 +215,4 @@ createApp(NavigationWorkflow).use(OpenVue, { theme: { preset: Aura } }).mount('#
 
 Official pages: [Tabs](https://openvue.dev/tabs/), [Accordion](https://openvue.dev/accordion/), [Stepper](https://openvue.dev/stepper/), [Menu](https://openvue.dev/menu/), [TieredMenu](https://openvue.dev/tieredmenu/), [Menubar](https://openvue.dev/menubar/), [MegaMenu](https://openvue.dev/megamenu/), [PanelMenu](https://openvue.dev/panelmenu/), [Breadcrumb](https://openvue.dev/breadcrumb/), [ContextMenu](https://openvue.dev/contextmenu/), [Dock](https://openvue.dev/dock/), [Button](https://openvue.dev/button/), [SplitButton](https://openvue.dev/splitbutton/), [SpeedDial](https://openvue.dev/speeddial/). Source corpus snapshot `d064f02ac75c3aaeb60a676c70e5ee08e3e3042e`. Published [Tab declarations](https://unpkg.com/openvue@1.0.0/tab/index.d.ts), [Tabs declarations](https://unpkg.com/openvue@1.0.0/tabs/index.d.ts), [Accordion declarations](https://unpkg.com/openvue@1.0.0/accordion/index.d.ts), [Step runtime](https://unpkg.com/openvue@1.0.0/step/index.mjs), [StepPanel declarations](https://unpkg.com/openvue@1.0.0/steppanel/index.d.ts), [MenuItem model](https://unpkg.com/openvue@1.0.0/menuitem/index.d.ts), [PanelMenu declarations](https://unpkg.com/openvue@1.0.0/panelmenu/index.d.ts), [Button declarations](https://unpkg.com/openvue@1.0.0/button/index.d.ts), and [SpeedDial declarations](https://unpkg.com/openvue@1.0.0/speeddial/index.d.ts) determine copyable 1.0.0 APIs when indexed examples differ. In particular, do not cast around Tab's undeclared headless slot scope, use a JavaScript Map for PanelMenu expansion, or rely on Step's misspelled headless tabindex binding.
 
-The Menu naming/active-descendant/trigger-ARIA caveats are grounded in the [published Menu runtime](https://unpkg.com/openvue@1.0.0/menu/index.mjs), rather than assuming the page's automatic-wiring claim applies to this release.
+The Menu naming/active-descendant/trigger-ARIA caveats are grounded in the [published Menu runtime](https://unpkg.com/openvue@1.0.0/menu/index.mjs), rather than assuming the page's automatic-wiring claim applies to this release. Its item-content click handler dispatches `command` before the parent's disabled check, and default/custom anchors are not natively disabled. Keep the workflow's command guards and remove live destination links for disabled models; styling and filtering alone do not enforce either boundary.

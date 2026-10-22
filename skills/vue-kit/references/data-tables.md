@@ -9,6 +9,7 @@ Read for sortable/filterable records, selection, remote pagination, or custom ce
 | Ordinary Material table in a Vuetify application | Prefer Vuetify **4.3.0** `VDataTable`; use `item-value="id"`, stable headers, and scoped cell slots. |
 | Server supplies the current page | `VDataTableServer`: bind `items`, total `items-length`, loading, and controlled options; handle `update:options`. Its `page` is **one-based**. |
 | Bounded-height Material table with many local rows | Consider `VDataTableVirtual`; do not stack a second virtualizer around it. |
+| Existing or explicitly selected OpenVue rich-widget UI | Use [OpenVue data](openvue-data.md) for DataTable, TreeTable, hierarchy, collection and built-in virtual-scroller contracts; do not transplant Vuetify or TanStack models. |
 | Bespoke layout, explicit processing pipeline, complex headless state | TanStack Vue Table; you own markup, styling, keyboard behavior, accessible names, loading/error/empty states, and pagination controls. |
 | A small read-only dataset | Native `<table>` may need neither library. |
 

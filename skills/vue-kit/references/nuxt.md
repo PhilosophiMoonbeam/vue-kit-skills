@@ -2,6 +2,8 @@
 
 First-class host guide for **Nuxt 4.6.2 + Vue 3.5.44**, for new applications and ordinary extension work. Nuxt owns bootstrap, file routing, SSR, payload transfer and the server engine; do not create a second Vue app, Router, Pinia instance or SPA hydration pipeline. Use [migration](migration.md#nuxt-3-to-4-migration) only for an actual Nuxt 3 upgrade. Add [selected Nuxt integrations](nuxt-integrations.md) only when Vuetify, Pinia, or an additional query owner is required; that guide is not certification of every optional module.
 
+For an existing or explicitly selected OpenVue application, use [the official OpenVue Nuxt-module profile](openvue-setup.md#official-nuxt-module-complete-separate-application) after this host guide, then select only the needed [OpenVue capability owner](openvue.md#read-only-the-owner-needed). It is a separate UI profile, not a reason to install a second bootstrap or combine UI plugins.
+
 ## Start and generated types
 
 Use **Bun 1.4.3** as the preferred launcher/package manager for a new project, with Node **24.15.0** available for the Nuxt Node runtime (supported Node range `^22.22.3 || ^24.15.0 || >=26.0.0`). The [4.6.2 package manifest](https://unpkg.com/nuxt@4.6.2/package.json) is the version authority, rather than an older generic Node minimum. For the standard starter, run `bun create nuxt@latest catalog-app`, select Bun when prompted, then pin Nuxt/Vue to the versions above and retain one authoritative `bun.lock`. The scaffold CLI and starter evolve independently of the pinned framework. Preserve an incumbent application's selected package manager and lockfile instead of converting it during unrelated work. [Official installation and Bun scaffold command](https://nuxt.com/docs/4.x/getting-started/installation).

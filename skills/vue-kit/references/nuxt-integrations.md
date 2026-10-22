@@ -2,6 +2,8 @@
 
 Read after [Nuxt](nuxt.md) when adding Vuetify, domain state, or an optional query cache. These are selected self-hostable library integration contracts, not blanket support for every Nuxt module or authentication-service setup. Nuxt remains the only application/router/SSR owner; do not copy the plain-Vue bootstrap from the linked SPA guides.
 
+OpenVue's separate official-module configuration, generated styles and SSR boundaries belong to [OpenVue setup](openvue-setup.md#official-nuxt-module-complete-separate-application), reached through [OpenVue selection](openvue.md). Do not copy this manual Vuetify integration into that profile or treat either profile as blanket certification of other modules.
+
 ## Selected versions and ownership
 
 Use **Bun 1.4.3** for a new application's package management and Node **24.15.0** for its Nuxt server/tooling, with Nuxt **4.6.2**, Vue **3.5.44**, generated TypeScript contexts and the lockfile from [the core catalogue](nuxt.md#local-catalogue-example). Preserve an existing application's package manager and authoritative lockfile instead of creating a second one. Preserve the bundled SPA's separate versions; this is a Nuxt application profile.

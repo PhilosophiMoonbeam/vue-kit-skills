@@ -7,7 +7,7 @@ it with this example. Read [Vuetify setup](vuetify-setup.md) only when Vuetify i
 selected; [Nuxt](nuxt.md) owns Nuxt host lifecycle and module boundaries.
 [Debugging and SSR](debugging-ssr.md) owns hydration diagnostics and request-isolation
 investigation. [Migration](migration.md) owns actual application/API upgrades.
-For an explicitly selected OpenVue alternative, use the [dedicated Vite shell](alternative-ui.md#setup-in-a-dedicated-vite-app); do not add its UI plugin/theme to the default Vuetify workbench. The [complete official Nuxt module profile](alternative-ui.md#official-nuxt-module-complete-separate-application) is separate from standalone Vite bootstrap.
+For an explicitly selected OpenVue alternative, use its [dedicated Vite shell](openvue-setup.md#setup-in-a-dedicated-vite-app), not the default Vuetify workbench. The [official Nuxt module profile](openvue-setup.md#official-nuxt-module-complete-separate-application) has a separate host lifecycle. [OpenVue theming](openvue-theming.md) owns token/PT/layer contracts.
 
 ## Exact example baseline and API status
 

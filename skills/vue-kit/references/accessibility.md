@@ -2,6 +2,8 @@
 
 Read for semantics, forms, keyboard/focus, overlays, contrast, scaling, responsive access, and nonvisual alternatives. Baseline: **Vue 3.5.44; Vuetify 4.3.0**, stable; **WCAG 2.2** is the standards target, not a library certification. This reference emphasizes common implementation risks; it is not an exhaustive conformance audit or legal opinion. A WCAG AA claim requires all applicable A and AA criteria, full pages and complete processes, not just the controls below. [Design-system.md](design-system.md) owns visual/product decisions; [testing.md](testing.md) owns automation.
 
+For an existing or explicitly selected OpenVue application, pair these process-level requirements with [forms/control forwarding](openvue-forms.md#labels-messages-and-forwarding), [overlay focus and lifetime](openvue-overlays.md#dialog-drawer-popover-focus-and-dom-lifetime), [navigation semantics](openvue-navigation.md), and [theme/RTL/contrast boundaries](openvue-theming.md#rtl-contrast-focus-and-acceptance-boundaries) only as needed. Component defaults are not a conformance claim.
+
 ## 1. Start with the actual task and DOM
 
 1. Identify the complete user process, changed components, supported input methods, locales/themes and consequential states. Preserve working platform affordances and the incumbent architecture.

@@ -14807,12 +14807,20 @@
   ],
   "extensions": [
     "references/nuxt.md",
-    "references/nuxt-integrations.md"
+    "references/nuxt-integrations.md",
+    "references/openvue.md",
+    "references/openvue-setup.md",
+    "references/openvue-theming.md",
+    "references/openvue-forms.md",
+    "references/openvue-data.md",
+    "references/openvue-overlays.md",
+    "references/openvue-navigation.md",
+    "references/openvue-components.md"
   ],
   "counts": {
     "sources": 459,
     "roots": 47,
     "historical_references": 38,
-    "active_references": 40
+    "active_references": 48
   }
 }

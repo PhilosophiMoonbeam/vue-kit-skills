@@ -141,7 +141,7 @@ Read this guide once; then take only the branch that owns the next implementatio
 | Shared client workflow | [state](state.md) | [auth](auth.md) only for identity/session integration |
 | New Vuetify screen | [UI architecture](architecture-ui.md), [Vuetify components](vuetify-components.md) | [design system](design-system.md), [Vuetify theme](vuetify-theme.md) for token changes |
 | Deployment or hydration change | [Nuxt](nuxt.md) for a Nuxt host; [debugging and SSR](debugging-ssr.md) for diagnosis | [Nuxt integrations](nuxt-integrations.md) for a selected SDK/module; [setup and tooling](setup-tooling.md) for standalone build changes |
-| Incumbent stack extension | Owning specialist, then [migration](migration.md) only if migration is required | [alternative UI](alternative-ui.md) or [TanStack routing](routing-tanstack.md) only for that incumbent/capability |
+| Incumbent stack extension | Owning specialist, then [migration](migration.md) only if required | [OpenVue](openvue.md), [Quasar](alternative-ui.md) or [TanStack routing](routing-tanstack.md) only for that incumbent/capability |
 | Acceptance/evidence design | [testing](testing.md) | The feature's specialist for library-specific failure modes |
 
 ## Verification boundary

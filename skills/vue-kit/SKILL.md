@@ -2,7 +2,7 @@
 name: vue-kit
 description: >-
   Build, debug, test, and modernize Vue applications with TypeScript, Composition
-  API, Vuetify, Router, Pinia, forms, server-state queries, authentication,
+  API, Vuetify, OpenVue, Router, Pinia, forms, server-state queries, authentication,
   accessible UI, charts, motion, SSR, Nuxt, and Vite tooling. Use for Vue SFCs,
   Nuxt applications/modules/server routes, composables, ecosystem integrations,
   architecture, migrations, and Vue runtime or type errors. Routes to focused,
@@ -120,7 +120,15 @@ to load every linked document. Combine owners only when the task crosses domains
 | UI design/review, hierarchy, tokens, responsive states, coherent product patterns | [Design system](references/design-system.md) | Accessibility; the chosen UI component owner |
 | Keyboard/focus, names/labels, dialogs, error announcements, reduced motion | [Accessibility](references/accessibility.md) | Headless UI or Vuetify components for implementation contracts |
 | Reka UI, Floating UI Vue, shadcn-vue primitives and positioning | [Headless UI](references/headless-ui.md) | Accessibility; design system for styling |
-| OpenVue 1.x or newer, Quasar, or an incumbent UI alternative | [Alternative UI](references/alternative-ui.md) | Setup tooling for integration; do not install competing UI systems casually |
+| Incumbent Quasar components, plugins, Vite/CLI or platform modes | [Quasar](references/alternative-ui.md) | Preserve its host; do not install competing UI systems casually |
+| OpenVue selection, capability ownership or cross-feature architecture | [OpenVue index](references/openvue.md) | The focused owner below, not every OpenVue reference |
+| OpenVue Vite/Nuxt setup, registration, exact type prerequisites or cutover | [OpenVue setup](references/openvue-setup.md) | Nuxt first for a Nuxt host; no SPA bootstrap in its module |
+| OpenVue tokens, styled/unstyled mode, PT, icons, CSS layers, RTL or theme changes | [OpenVue theming](references/openvue-theming.md) | Design system; overlays for portaled interaction ownership |
+| OpenVue inputs/selectors, Form/FormField/resolvers, files or rich-text drafts | [OpenVue forms](references/openvue-forms.md) | General forms for submit/service policy; one draft owner |
+| OpenVue DataTable/TreeTable, tree/list models, paging, virtualization or Chart | [OpenVue data](references/openvue-data.md) | The selected query owner for remote data; not a second cache |
+| OpenVue modal/anchored overlays, confirmations, dynamic dialogs or toast | [OpenVue overlays](references/openvue-overlays.md) | Accessibility; plugin, rendered host and caller are distinct |
+| OpenVue buttons/menus, tabs, accordion, stepper or navigation models | [OpenVue navigation](references/openvue-navigation.md) | Router only for genuine navigation; preserve native anchors |
+| OpenVue layout/media, progress/feedback, scoped directives or local terminal | [OpenVue components](references/openvue-components.md) | Theming for styling; measured progress is not invented activity |
 
 ### Data presentation and motion
 
@@ -187,6 +195,9 @@ to load every linked document. Combine owners only when the task crosses domains
   corrections and scoped evidence; risk labels are not confirmed defect totals.
 - [Support-boundary audit](assets/support-audit.json): registry triage, exact-release
   exclusions, primary sources and executable consumer evidence; not a package allowlist.
+- [OpenVue coverage](assets/openvue-coverage.json): all122 pinned official guide
+  and component pages, retained native discovery maps, release conflicts and
+  explicit final owners/exclusions. Documentation coverage is not runtime coverage.
 
 When verification is authorized, select the repository's own typecheck, tests,
 production build, and browser checks that exercise the change. For UI behavior,

@@ -2,6 +2,8 @@
 
 Read when changing color modes, semantic tokens, component defaults, density, fonts, Sass settings, or Vuetify 3 styles. **Baseline: Vuetify 4.3.0 with Vue 3.5.44.** Setup/imports/adapters belong in [vuetify-setup.md](vuetify-setup.md); layout and interactions belong in [vuetify-components.md](vuetify-components.md). For product-level design and accessibility, use [design-system.md](design-system.md) and [accessibility.md](accessibility.md).
 
+For an existing or explicitly selected OpenVue surface, use [OpenVue theming](openvue-theming.md) for presets/tokens, pass-through, dark selectors, portal scope and CSS layers. Vuetify theme variables and defaults are not OpenVue contracts; choose the owning UI system before changing application-wide styles.
+
 ## Put the change in the owning layer
 
 | Change | Mechanism | Lifetime |
@@ -267,7 +269,7 @@ Link this file first in `index.html`'s head, before other stylesheets or module 
 
 Do not rely on a JavaScript import or a bundled CSS `@import` to establish first delivery. Load the order declaration before framework/component styles first establish layer order. Later declarations cannot reorder already-created layers. The nested declarations also prevent early generated theme CSS from fixing `theme-background`/`theme-foreground` ahead of typography/helpers. In this example Vuetify utilities intentionally beat `app-overrides`; place an app layer later only if it should win. Inspect the winning rule and layer before adding `!important` or an internal-element selector. Utility precedence is not an excuse to remove focus styles. [4.3 custom layer loading](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/docs/src/pages/en/styles/layers.md#custom-layer-order).
 
-For a translucent role, use `color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, transparent)` rather than assuming the stored channel list contains exactly three channels. For Tailwind/UnoCSS coexistence, map the installed framework's reset and utility layers explicitly; do not paste legacy `@tailwind` syntax into a different major version. See [alternative-ui.md](alternative-ui.md).
+For a translucent role, use `color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, transparent)` rather than assuming the stored channel list contains exactly three channels. For Tailwind/UnoCSS coexistence, map the installed framework's reset and utility layers explicitly; do not paste legacy `@tailwind` syntax into a different major version. For OpenVue-specific layer/reset ownership see [OpenVue theming](openvue-theming.md#css-layers-resets-and-motion); [Quasar](alternative-ui.md) has its own incumbent styling route.
 
 ## Sass remains the compile-time path
 

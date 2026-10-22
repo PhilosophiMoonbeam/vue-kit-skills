@@ -14,7 +14,7 @@ Registry and declaration evidence: [3.5.44 metadata](https://registry.npmjs.org/
 
 Alignment to 3.5.44 above applies to an **explicitly authorized adoption of this baseline**, not an instruction to downgrade or upgrade an incumbent framework during diagnosis. Keep its mutually compatible runtime/compiler/renderer until that migration is in scope. Vue's release policy warns that newer-minor compiler output may require the newer runtime; beta/RC/edge exports are not evidence for a stable 3.5 API. Test a deliberately selected prerelease in a separate exactly pinned integration, not by mixing a 3.6 compiler into this target. [Official compiler compatibility and prerelease policy](https://vuejs.org/about/releases.html#compiled-code-compatibility-with-older-runtime).
 
-For an explicitly authorized UI-library cutover, [OpenVue integration](alternative-ui.md#openvue-1x-plugin-and-token-theme) owns the OpenVue 1.x package/theme boundary and complete Vite examples. Inspect actual component contracts rather than renaming imports mechanically: Select retains its declared label-ID behavior, Carousel is data-driven with an item slot, and Dialog uses `v-model:visible`. Keep Quasar and other unrelated incumbent integrations unchanged.
+For an explicitly authorized UI-library cutover, [OpenVue setup](openvue-setup.md) owns its 1.x package/host boundary and complete Vite/Nuxt profiles; the [capability index](openvue.md) routes deeper contracts. Do not rename imports mechanically: Select retains its label-ID behavior, Carousel is data-driven with an item slot, and Dialog models `visible`. Keep Quasar and unrelated incumbent integrations unchanged.
 
 ## What is and is not a Vue 3.5 API
 

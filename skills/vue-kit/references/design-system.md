@@ -43,7 +43,7 @@ Use contrast in scale, placement, grouping, and information sequence before addi
 
 Keep one authoritative definition for each role. Reuse the incumbent theme, CSS variables, assets, and component API; do not add parallel aliases just to rename them. Separate primitives from semantic roles only when coordinated change benefits from that distinction.
 
-For an OpenVue application, [OpenVue tokens and overlays](alternative-ui.md#theming-services-and-cutover-contracts) own its primitive/semantic/component preset API, scheme-specific overrides and document-root dark selector. Reuse that existing owner rather than installing Vuetify or a second runtime theme controller to repair one component.
+For an OpenVue application, [OpenVue theming](openvue-theming.md) owns primitive/semantic/component tokens, scheme-specific overrides, PT/layer contracts and the document-root dark selector; [overlays](openvue-overlays.md) owns interaction lifetimes. Reuse those existing owners instead of installing Vuetify or a second theme controller to repair one component.
 
 | Vocabulary | Implementation decision | Failure to prevent |
 | --- | --- | --- |

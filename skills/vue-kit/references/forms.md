@@ -2,6 +2,8 @@
 
 Read this before adding validation, editing server records, or connecting a form library to Vuetify. It owns cross-library decisions; package contracts belong to [vee-validate](vee-validate.md), [TanStack Vue Form](tanstack-form.md), and [FormKit](formkit.md). Read [accessibility](accessibility.md) for interaction requirements and [remote-data architecture](architecture-data.md) for query/mutation ownership.
 
+For an existing or explicitly selected OpenVue application, continue to [OpenVue forms and input contracts](openvue-forms.md) for its optional Form/FormField owner, resolver semantics, model shapes and native-input forwarding. Keep the cross-library draft/submission boundaries here; do not layer a second validation owner over an existing form.
+
 Baseline: Vue **3.5.44**, Vuetify **4.3.0**. Recommendations about ownership and conflict policy below are application architecture, not guarantees made by a form library.
 
 ## Pick one validation owner

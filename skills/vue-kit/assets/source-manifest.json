@@ -480,15 +480,28 @@
     {
       "id": "openvue",
       "references": [
-        "references/alternative-ui.md"
+        "references/openvue.md",
+        "references/openvue-setup.md",
+        "references/openvue-theming.md",
+        "references/openvue-forms.md",
+        "references/openvue-data.md",
+        "references/openvue-overlays.md",
+        "references/openvue-navigation.md",
+        "references/openvue-components.md"
       ],
       "primary_urls": [
         "https://github.com/openvi-foundation/openvue",
         "https://registry.npmjs.org/openvue/1.0.0",
         "https://registry.npmjs.org/@openvue/themes/1.0.0",
-        "https://registry.npmjs.org/@openvue/nuxt-module/1.0.0"
+        "https://registry.npmjs.org/@openvue/nuxt-module/1.0.0",
+        "https://registry.npmjs.org/@openvue/core/1.0.0",
+        "https://registry.npmjs.org/@openvue/forms/1.0.0",
+        "https://github.com/openvi-foundation/openvue/tree/d064f02ac75c3aaeb60a676c70e5ee08e3e3042e/apps/showcase/server/assets/llms/pages",
+        "https://github.com/openvi-foundation/openvue/tree/d064f02ac75c3aaeb60a676c70e5ee08e3e3042e/apps/showcase/server/assets/llms/components",
+        "https://context7.com/openvi-foundation/openvue",
+        "https://openvue.dev/llms.txt"
       ],
-      "notes": "OpenVue 1.x and newer is the supported successor; exact authoring snapshot is 1.0.0. Verify installed exports and integration contracts rather than assuming future-major compatibility."
+      "notes": "OpenVue 1.x and newer is the supported successor; exact authoring snapshot is 1.0.0 with Vue 3.5.44, while Vuetify 4.3.x remains preferred. Eight capability references are backed by assets/openvue-coverage.json: all 122 pinned official documents retain native routing hypotheses and receive final semantic dispositions. Context7 is discovery, not release or runtime certification; reconcile installed exports and declarations and use only bounded executed evidence in assets/verification.json. Future-major compatibility is not assumed."
     },
     {
       "id": "application-session-contract",

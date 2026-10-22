@@ -4,8 +4,8 @@
     "vue": "3.5.44",
     "vuetify": "4.3.0"
   },
-  "recorded_at": "2026-10-22T04:21:44.146708Z",
-  "scope": "Current support-boundary observations appended to35 unchanged historical/fifth-pass checks. Each result retains its original bounded source scope; prior checks are not relabeled as reruns. Current recipes are working-tree revisions after4f720aa. Packaged hashes bind content, not execution authenticity.",
+  "recorded_at": "2026-10-22T20:06:34.896540Z",
+  "scope": "OpenVue deep-coverage observations appended to43 unchanged historical checks. Each result retains its bounded source scope; prior checks are not relabeled as reruns. New consumers use exact working-tree fences afterdf73c58. Packaged hashes bind content, not execution authenticity.",
   "environment": {
     "node": "24.15.0",
     "bun": "1.4.3",
@@ -1055,6 +1055,411 @@
         },
         "boundary": "Local-source installation, not a remote-publication claim. No legacy input corpus or application dependencies are required for the installed structural validator. Snapshot self-exclusion avoids recursive hashing; current final payload is independently checked at delivery."
       }
+    },
+    {
+      "id": "openvue-deep-forms",
+      "scope": "Five complete form consumers; real production HTTP, DOM and local file/editor behavior.",
+      "result": "passed",
+      "command": "node extract.mjs && bun run strict && bun run build && bun run browser",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "environment": {
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "themes": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": false,
+          "chart_js_dev_type_provider": "4.6.1"
+        },
+        "production_modules": 1045,
+        "browser_cases": 7,
+        "behaviors": [
+          "raw versus canonical resolver values; invalid/valid/dirty/touched/reset",
+          "nullable numeric clearing and revalidation",
+          "scalar multi-selection identity after option object replacement",
+          "partial-parent hierarchy map and committed cascade leaf ID",
+          "incomplete/complete date range, mask blur, controlled OTP reset",
+          "actual completion HTTP cancellation, stale work retirement, failure and disconnection",
+          "actual local text-file reading and escaped rich HTML with fresh editor reset owner"
+        ],
+        "corrections": "Strict release contracts use declared PT, Date model, controlled OTP, editor toolbar slot and no asserted hierarchy change payload. Browser harness uses keyboard for hidden combobox inputs, hover expansion for cascade groups and explicit calendar dismissal.",
+        "limits": "Local HTTP is an application-owned fixture; no upload server, backend authorization, stored-HTML sanitization or all-input/browser certification. Quill2.0.3 is the actual optional runtime; large combined demo bundle warning remains visible."
+      }
+    },
+    {
+      "id": "openvue-deep-data",
+      "scope": "Four complete data consumers; client processing, cell cancellation, hierarchy and sparse virtual viewport.",
+      "result": "passed",
+      "command": "bun run extract && bun run typecheck && bun run build; bun run browser",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "environment": {
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "themes": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": false,
+          "chart_js_dev_type_provider": "4.6.1"
+        },
+        "production_modules": 306,
+        "browser_cases": 6,
+        "behaviors": [
+          "numeric sorting/filter/paging, stable selection, expansion and edit",
+          "zero-result data state",
+          "wrapper-level invalid Enter cancellation, corrected value and Escape",
+          "shared tree/tree-table identity and actual Tree aria-checked",
+          "sparse virtual loading geometry, recycled rows and owner disposal",
+          "runtime error observation"
+        ],
+        "corrections": "Removed a filter-event page reset that undid pagination. Cancel invalid cell edits on the wrapper event through structural narrowing because declarations omit preventDefault. Root IDs use actual PT; Tree single selection exposes aria-checked in this release.",
+        "limits": "Local arrays and sparse fixture are not a remote query cache, server pagination/authorization or universal tree/virtualization certification."
+      }
+    },
+    {
+      "id": "openvue-deep-interaction",
+      "scope": "Exact overlay/navigation consumers with actual IndexedDB domain transactions and production emitted store module.",
+      "result": "passed",
+      "command": "bun run extract && bun run strict && bun run build && bun run browser",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "environment": {
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "themes": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": false,
+          "chart_js_dev_type_provider": "4.6.1"
+        },
+        "production_modules": 328,
+        "browser_cases": 8,
+        "behaviors": [
+          "confirm rejection/Escape/X versus accepted persistent deletion",
+          "anchored confirmation",
+          "private dynamic-dialog draft validation and commit",
+          "caller disposal removes portal without commit",
+          "modal containment, body theme scope and trigger restoration",
+          "Drawer/Popover/FocusTrap/BlockUI/Tooltip",
+          "tabs/stepper/menu state and same-ID retained record after draft reset",
+          "domain transaction protects record even when UI disabled state is bypassed"
+        ],
+        "corrections": "Tooltip1.0 does not install its advertised describedby relation: persistent help is associated with its actual control. Step header has explicit native PT name. Production tests import the actual manifest-emitted store entry, not a dev source URL.",
+        "limits": "IndexedDB persistence and local domain policy are real but not server authentication/authorization, multi-process concurrency or distributed transaction certification. Combined fixture bundle warning is not suppressed."
+      }
+    },
+    {
+      "id": "openvue-deep-theming",
+      "scope": "Exact five-file theme consumer and nonce-bearing production server.",
+      "result": "passed",
+      "command": "node extract.mjs && bun run typecheck && bun run build && bun run browser",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "environment": {
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "themes": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": false,
+          "chart_js_dev_type_provider": "4.6.1"
+        },
+        "production_modules": 244,
+        "browser_cases": 6,
+        "behaviors": [
+          "painted global/scoped tokens, reset, real control actions and text contrast",
+          "live body portal theme/focus/trigger lifecycle",
+          "merged PT attributes, panel keyboard visibility/focus",
+          "unstyled action and real counter",
+          "persistent explicit preference and live system changes",
+          "nonce-bearing style creation and token updates without CSP violations; disposal"
+        ],
+        "limits": "CSP intentionally permits inline style attributes; stylesheet nonces do not authorize those attributes. Contrast applies to the named fixture controls, not a blanket accessibility audit. No cross-request theme mutation is certified."
+      }
+    },
+    {
+      "id": "openvue-deep-parent-components",
+      "scope": "Exact office shell plus four layout/media/terminal SFCs in an actual production host.",
+      "result": "passed",
+      "command": "node extract.mjs && bun run typecheck && bun run build && node smoke.mjs",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "environment": {
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "themes": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.13",
+          "vite": "8.3.4",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true,
+          "skipLibCheck": false,
+          "chart_js_dev_type_provider": "4.6.1"
+        },
+        "production_modules": 297,
+        "browser_cases": 7,
+        "viewports": [
+          320,
+          1280
+        ],
+        "behaviors": [
+          "named Select label focus, local selection status, disabled trigger before selection",
+          "named modal body portal; initial focus, Tab/Shift+Tab containment, Escape and trigger restoration in both themes",
+          "checklist real percentage0/100/reset and disclosure",
+          "loaded overlapping native image geometry; range50→51 changes computed clipping50%→51%",
+          "carousel endpoints/page status at both widths",
+          "sole terminal help/status; unmount/remount resets command owner without duplicated responses"
+        ],
+        "corrections": "Actual visual inspection exposed stacked inline SVGs: ImageCompare default stylesheet requires adjacent img nodes. Corrected exact source to real local data-URI images, matching geometry and named native slider.",
+        "limits": "Carousel slides contain no interactive descendants, so hidden-slide focus with added controls remains an application check. Gallery/fullscreen/media, every utility, screen-reader and all-browser behavior are not certified. Data-URI image policy is explicit."
+      }
+    },
+    {
+      "id": "openvue-deep-nuxt",
+      "scope": "Fresh exact official module/options tuple, generated strict contexts, node-server SSR and browser hydration.",
+      "result": "passed",
+      "command": "bun install && bunx --no-install nuxt prepare && bunx --no-install nuxt typecheck && bunx --no-install nuxt build; node nuxt-smoke.mjs",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "environment": {
+          "nuxt": "4.6.2",
+          "nitro": "2.13.5",
+          "vite": "8.3.5",
+          "vue": "3.5.44",
+          "openvue": "1.0.0",
+          "module": "1.0.0",
+          "themes": "1.0.0",
+          "typescript": "5.9.3",
+          "vue_tsc": "3.3.2",
+          "node_types": "24.13.2",
+          "node": "24.15.0",
+          "bun": "1.4.3",
+          "browser": "Chrome/156.0.8078.47",
+          "strict": true,
+          "strictTemplates": true
+        },
+        "production_modules": {
+          "client": 241,
+          "server": 134
+        },
+        "browser_cases": 2,
+        "viewports": [
+          320,
+          1280
+        ],
+        "http_responses": 4,
+        "behaviors": [
+          "both routes and theme cookies return200 with initial component and theme styles",
+          "clean named selection/modal hydration, body portal, focus containment/restoration and no clipping",
+          "light/dark computed portal backgrounds differ",
+          "client navigation and document refresh retain theme cookie",
+          "Persistent app-dark remains on /other and return navigation, including document refresh after changing preference."
+        ],
+        "corrections": "Failing-before HTTP probe showed dark cookie on /other without app-dark when page owned useHead. Moved head ownership to persistent app shell; page updates same Nuxt cookie.",
+        "limits": "Standalone local UI profile only. Other optional components, selected cache/Vuetify modules, deployment adapters and exhaustive SSR matrix are not covered by this new run."
+      }
+    },
+    {
+      "id": "openvue-expanded-reference-syntax",
+      "scope": "Master plus48 current references; syntax/template compilation only.",
+      "result": "passed",
+      "command": "node reference-syntax.mjs (throwaway consumer)",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {
+          "references/openvue.md": "724954cab14012b609f7479d5380f69f5cff254cd762a1e8ab322f6aa7bcbdaf"
+        }
+      },
+      "details": {
+        "documents": 49,
+        "fences": 358,
+        "vue_fences": 144,
+        "script_fences": 158,
+        "json_fences": 11,
+        "contextual_property_fragments": 3,
+        "errors": 0,
+        "limits": "Bare Vue fragments wrapped in template; three explicitly contextual modules/search/params property fragments wrapped in an object. No imported-type or runtime claim from syntax alone."
+      }
+    },
+    {
+      "id": "openvue-official-skill-format",
+      "scope": "Current master metadata and progressive-discovery footprint.",
+      "result": "passed",
+      "command": "skills-ref validate skills/vue-kit; uv run --with tiktoken python [master measurement]",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "official_result": "Valid skill",
+        "master": {
+          "lines": 207,
+          "body_tokens": 3673,
+          "total_tokens": 3828,
+          "encoding": "cl100k_base"
+        },
+        "references_directly_indexed": 48,
+        "limits": "Format/token checks do not certify reference semantics or runtime behavior."
+      }
+    },
+    {
+      "id": "openvue-expanded-workbench-build",
+      "scope": "Unchanged bundled Vue/Vuetify/Pinia/Router workbench after expanded reference integration.",
+      "result": "passed",
+      "command": "bun install --frozen-lockfile && bun run typecheck && bun run build",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "production_modules": 626,
+        "frozen_install": "65 installs across89 packages; no changes",
+        "limits": "Dependency/type/build replay only. Earlier workbench browser interactions are retained historical checks, not newly rerun."
+      }
+    },
+    {
+      "id": "openvue-expanded-installation",
+      "scope": "Pre-self-record70-file package installed independently through actual Bun and npm Skills CLI copy workflows.",
+      "result": "passed",
+      "command": "bunx/npx skills@latest add [local repository] --skill vue-kit --agent codex --copy --yes; installed Python validator; skills-ref validate; full SHA256 payload comparison",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "isolated_installs": 2,
+        "selected_skills_each": 1,
+        "matching_files_each": 70,
+        "structural_checks_each": 15,
+        "structural_errors_each": 0,
+        "official_format_each": "Valid skill",
+        "limits": "Local-source CLI installation, not a remote publication claim. Performed before this final self-record append; complete final payload is independently replayed afterward. Application dependencies and legacy source corpus are not installed-validator prerequisites."
+      }
+    },
+    {
+      "id": "openvue-expanded-coverage-invariants",
+      "scope": "Complete native document maps and retained historical objects plus corrupted standalone package rejection.",
+      "result": "passed",
+      "command": "Python standard-library exact-object/hash comparisons; five throwaway mutated-package Validator consumers with refreshed footprints",
+      "recorded_at": "2026-10-22T20:06:34.896540Z",
+      "source_profile": {
+        "kind": "exact-fence working-tree consumers",
+        "base_commit": "df73c58",
+        "boundary": "Base commit is authoring lineage, not a false attribution of changed recipes to committed code.",
+        "reference_sha256": {}
+      },
+      "details": {
+        "official_documents_native_maps_preserved": 122,
+        "historical_source_roots_preserved": 47,
+        "historical_source_records_preserved": 459,
+        "historical_reference_objects_preserved": 38,
+        "historical_check_objects_preserved": 43,
+        "whole_historical_assets_preserved": [
+          "source-audit.json",
+          "removals.json",
+          "fifth-pass-audit.json",
+          "support-audit.json"
+        ],
+        "probes": [
+          {
+            "case": "missing-document",
+            "rejected": true
+          },
+          {
+            "case": "native-probability",
+            "rejected": true
+          },
+          {
+            "case": "outside-owner",
+            "rejected": true
+          },
+          {
+            "case": "dropped-escalation",
+            "rejected": true
+          },
+          {
+            "case": "malformed-native",
+            "rejected": true
+          }
+        ],
+        "limits": "Each probe asserts a specific coverage diagnostic; the snapshot was refreshed so the rejection is not merely stale-hash detection. Structural integrity and routing checks do not independently certify source semantics or execution authenticity."
+      }
     }
   ],
   "limits": [
@@ -1070,14 +1475,16 @@
     "Fifth-pass checks exercise only their named working-tree consumers. Proposed smoke scenarios and source-only adjudications in assets/fifth-pass-audit.json are not runtime evidence; no complete optional-package runtime or SSR matrix is claimed.",
     "Generated-link rewrite execution and full VueUse SSR hydration remain outside current observations. Named SSR construction/default-markup, lazy-catalog and actual compiler-removal profiles are now exercised; this is not a universal SSR matrix.",
     "Packaged snapshots are current integrity metadata, not execution authentication. Historical results remain bound to their original source scopes; final installation and publication are separately exercised and reported at delivery.",
-    "motion-v2.8.0/core15 full-declaration compatibility and SFC factory consumers fail and are explicitly restricted; native application-source/runtime passes use the unchanged existing skipLibCheck:true profile. No gate is weakened to adopt the library."
+    "motion-v2.8.0/core15 full-declaration compatibility and SFC factory consumers fail and are explicitly restricted; native application-source/runtime passes use the unchanged existing skipLibCheck:true profile. No gate is weakened to adopt the library.",
+    "New OpenVue corpus coverage does not mean every official component was executed. Current runtime cases are limited to the named exact-fence consumers; source-only component contracts and explicit non-offerings remain labeled in the coverage ledger.",
+    "OpenVue1.0 configuration declarations require Chart.js as a development type provider under skipLibCheck:false even without a runtime Chart import. Actual Chart/Editor capability peers are separate runtime decisions."
   ],
   "snapshots": {
     "algorithm": "sha256",
     "files": {
-      "CHANGELOG.md": "fd448d9e3be4c0f16c49ae89db83eb2e02184d6beae88610c54d16f52e9ba004",
-      "SKILL.md": "1ff46552489844d63de1b949b3a372f64ef82cf3bd7af91bff24e362f5bb840a",
-      "assets/coverage-audit.json": "65e86257fe5e80d379ca6c3d15f6583a9117384a808cb0edd45d5e0138003ba7",
+      "CHANGELOG.md": "25e302c4f84eabb62b6950661d109e5babfed79bff211e4dede25916a1c10665",
+      "SKILL.md": "3a31471f640dec697962e9114ee1d017ccb46d7e9ad68bbffd336d4fe710cea9",
+      "assets/coverage-audit.json": "51ea3146ff327fe4315f309bf67794956f834085ddbf0ae72903b767d42a0e32",
       "assets/example-app/.gitignore": "790e3169bc19b046fe55ba1da6d13b976c28363c8c00462a2195fe5faf260910",
       "assets/example-app/bun.lock": "df11fc483015619236c4e7897914519dfbc61a1628eafee08790e28b80e62211",
       "assets/example-app/index.html": "319db4614cf84739ed57b557a7bfa5d6298123967e9d43e9c28bb839a29eae39",
@@ -1090,37 +1497,46 @@
       "assets/example-app/tsconfig.json": "ec8e92019f896b9308343f8a7f57e8f875049890cd65ad44a7ad8b6c48943222",
       "assets/example-app/vite.config.ts": "0646e0ff42ef72dab57bc185b5532332fda14aec21625357b8ce272028a2cffe",
       "assets/fifth-pass-audit.json": "e020094d421d4747143b05ba461e6367f5d1ac8a2410ca20b0a4b7896372a961",
+      "assets/openvue-coverage.json": "f0ee35c77826f7163ae0bb0836fe445cae46b6c3137af16739e39de46cfc7c03",
       "assets/removals.json": "45aba80e2be2ebb0ee5834c69ec703b506988b85234cc42568277237fc07a5f1",
       "assets/source-audit.json": "6c3d0d32161cfe217387f4b6f754930f66669173a3f56beccabd867c642999bb",
-      "assets/source-manifest.json": "dcea5076ac712c5146f0f09b6755506880952eacd43ac7663d858f72d0076e20",
+      "assets/source-manifest.json": "cfac23618a872e145700f661db74e160fba01289c7eec611ad13073a44585ec1",
       "assets/support-audit.json": "10254d4ba21787eec5aefb9ffc2d1b0f80ebb5362c3ad098a10802959547f3b5",
-      "references/accessibility.md": "0fb8bf2540413d245bf444bbc4b1972b6d25edd3b07982bcf876f27dd0f8a423",
+      "references/accessibility.md": "2aedad5ab47c0be2b9c4b52c9f4bcec97baaa297236f47ec77dc5d69749f1e7b",
       "references/ai-streaming.md": "377fb644830fb34ba01c38c4270aca742df1a5bc319d9c0ae3b6922622194497",
-      "references/alternative-ui.md": "297eb857f0814c0397640c03cd1e3856099a013573cd2559b7ef78f51c9f80b6",
+      "references/alternative-ui.md": "6830b590ef89ae97c445a39997b0f014dfe86e9583002388eeaa951f4a9574ab",
       "references/architecture-data.md": "d8048ef95d20628ceb1da2a239fc1e9bcf2a8e67f1d658a3a6edb21e2e88d5ff",
-      "references/architecture-ui.md": "e6cbad9eb91358f32f5dba39cc9d0de82cd8b9d1817af59bcde0e43cf7ad99ff",
-      "references/architecture.md": "63bdd0e85be79d526c7d98c497187e2f5decbe9df2db7d8152768991c780e8a6",
+      "references/architecture-ui.md": "22c9970f761d5952f39d62fad2d02bb3ef4b212d382cd93e8820893df423efe9",
+      "references/architecture.md": "0c49df7d7e1687bc4ab7404e36a47ade76282d7ea4708cf0563da7dc6a44a61b",
       "references/auth.md": "ab3b9b54bd0bb9cf23dbb16b88caecaa428034337cc1bdde91b36cc0031583fc",
       "references/components.md": "2ba9de0700983e5f6dc284adc1a7ed1d4f055b062f0d6762cfbd5f10e280ffea",
       "references/composables.md": "6ad7512461bd9dabb29c913223799f6bed686f9394b7e1443494c3e5ddc680d8",
       "references/core-vue.md": "d840026cbcca7eb25d73b9ac126ee683901aeace6f2721affcca09c4cac950e9",
-      "references/data-tables.md": "91da9f277f2dee030250bba433d407bd5eb869e72ba2dffee74a55009ad57676",
+      "references/data-tables.md": "77d57da093b4a7baaa7a8fd06f3caadf70df4a684d8078f65f5caf6660ec1c30",
       "references/debugging-ssr.md": "6dc4b84c9e3f9a469f35c312fc273ac42258fa9897e0535b94e885e2659844ef",
-      "references/design-system.md": "7fb20f766839959bf416155d713dccb2308598d2dbf2551f405f6dda401289af",
+      "references/design-system.md": "7cd622b7239ae763390dbff25affa879f569abd1023a651ff2a091d67dfb1623",
       "references/docs-vitepress.md": "793d3f2641fa5726c1d87563c48c0f7d3cff0d7b346d65f56441de65e2c68e1f",
       "references/formkit.md": "f6d2f565eecd9a0eef9af836a58ab3d10bc0e77ebac099b4cb7a2479496e0da5",
-      "references/forms.md": "e3bfb9fe4b37b529eef7229b48238c70c994bc92ce21841c62b7a778063d27cf",
-      "references/headless-ui.md": "34dde8a2689a26bea3120f33df9515cfc171d47bff9bce40cf82f50ab513cc6a",
+      "references/forms.md": "6e8a8007a0c5bb6cd80052e28ea0881531e38b50c2e338893cbfe64988fb628b",
+      "references/headless-ui.md": "9b913c81752a2189418db06f7f719c720227329659a358b808d4996818c58e82",
       "references/i18n-head.md": "44fdf09211ab6e31b05562eddce51187b4ccc4e9b8aec401602cf240d1637b3e",
-      "references/migration.md": "3fcb2b51bbe5a5668a5d7d5e62e14b70b765c8ff7721b056931eebbe9ff8a844",
+      "references/migration.md": "7db94404fbe9ef58924760ba97a0a0e5783d0f5f0ce84c7c1df96373e236e361",
       "references/motion.md": "1f4f933f861279cf4669c832bff836c382eb71cac53aa5e86eabde96271f2cc0",
-      "references/nuxt-integrations.md": "531a640284312952fbdf13c75844e79cfdd909e3303adc41ac9e4c32b384b06e",
-      "references/nuxt.md": "37c77ecd5684bd1d4b19426b3ef71608daee8506a9e419d26708a8113ca52f49",
+      "references/nuxt-integrations.md": "c7eaed5f2d0ec33f89cb4bb1ff9ab89ebb0f6412066ca180d7434ec24f328ff7",
+      "references/nuxt.md": "82961a80e0a4ec283c19552f62ca921f280f12847da93d77a8722f30c97671bf",
+      "references/openvue-components.md": "93c48bc7db9c19fd2b8bf40e3a72ec98808374da6082c3fed3119a663b2cbc75",
+      "references/openvue-data.md": "6d81cff788373b8a4bd1502f894bb74e7da031bde84f7bac4c8148a31fdfdfcc",
+      "references/openvue-forms.md": "654e364112d8a2ef9653270056d422246bccf6edfd723b0ee2f7e2959fb96815",
+      "references/openvue-navigation.md": "ba4dce6fecf7b540fa5250c916d5dc96a07b0dbf5b117551ea2b65d883779bf2",
+      "references/openvue-overlays.md": "9ddfe504f4b95c1b9706ba8ea4b89962aa2503227655daaff287518a9956f82d",
+      "references/openvue-setup.md": "e7f563a99c5876a310b69cf28738451d0fa1cc432c43e7b85a47cb71b16b931c",
+      "references/openvue-theming.md": "428ee886fa1296d84f92ef87869e7ab30b842b3b967ca7c4637027070759f263",
+      "references/openvue.md": "724954cab14012b609f7479d5380f69f5cff254cd762a1e8ab322f6aa7bcbdaf",
       "references/pinia-colada.md": "e060c694546bafca9a4f7a00d2aaba75d9c6f8c49928cb11defaf379ecb4a09b",
       "references/routing-tanstack.md": "91b5963312ab458e83736cc83bf10f51f11885eb7ae76fd8bbb730aa0b4c074c",
       "references/routing.md": "4be5196530ef7bab1c4cbdbf1b145b0197fae3db0c03aff38e6e059d933f04c2",
-      "references/setup-tooling.md": "904d91e1888bbca59e36b6aeaad661d09de0f16318df85f7ee854faeb9970ac9",
-      "references/sources.md": "d8ba694f6833fa99ceb240175e17aac4783b328736847c36ce76d1eb008650e4",
+      "references/setup-tooling.md": "107538e165ef32e53fe835254e2bebebb6b2a1ed57f9b734feddaaa1c6d398ed",
+      "references/sources.md": "572180a7eb04f34819bc52317e359b5ecb3bb3ff1671d0258ee960a849683534",
       "references/state.md": "4c1fc546c5d3b761948452e671f7961766d64393d247d3adb08c03236c33cf4e",
       "references/tanstack-form.md": "30dae0ba2c5204418046e2da86794d6415c510fdc46a9749dfc1a4b7bc595533",
       "references/tanstack-query.md": "7c44e7213e0aedbe694ec3b70dcbea28535332acc881d98b764f3d370608f052",
@@ -1131,10 +1547,10 @@
       "references/visualization.md": "8d369f8cb602378dcfd4bbf523e534f46b1044774b042e1468f68341aaa8daab",
       "references/vuetify-components.md": "fc77ffea42644ded19a129dc5155da0ae992ad8b0a7b571824dde67e9ea53d03",
       "references/vuetify-setup.md": "f9b0c73996c9cb69ed1ceb3f76949d2a5dcf9ba0d472129bca6efff5ddcf1746",
-      "references/vuetify-theme.md": "e3a49d143f7d77ebddd1138f70272835a6cdd6a42ae4be86c7064e7a94a3bb76",
+      "references/vuetify-theme.md": "70903e8fb509581884a84ff5737933a82e32cae9272599a166b0cd1df0534f6b",
       "references/vueuse-integrations.md": "ddac73fa9ba4e17e959b25e1f401bf753f42276fb6442c4d15f3612a74ca0448",
       "references/vueuse.md": "58d15abe32ab82bb027d9d57318a15bee87b535fb99d42d2e6407f43c4c8114e",
-      "scripts/validate.py": "93d00e3f9ae03015892c7eb5b37b7e37e9c623ee36a00071faf7b10705fd0973"
+      "scripts/validate.py": "892142c52e9fbf3369a2ec2db73abf03494e22f9aa5bc6844a7bdac4da01259f"
     }
   },
   "support_tightening": {
@@ -1145,5 +1561,22 @@
     "native_model": "typesafe/jev-1.14.0",
     "working_tree_after": "4f720aa",
     "boundary": "Registry eligibility, source research, expected-negative diagnostics and successful consumer observations remain separate."
+  },
+  "openvue_expansion": {
+    "audit": "assets/openvue-coverage.json",
+    "recorded_at": "2026-10-22T20:06:34.896540Z",
+    "historical_checks_unchanged": 43,
+    "source_commit": "d064f02ac75c3aaeb60a676c70e5ee08e3e3042e",
+    "official_documents": 122,
+    "semantic_dispositions": {
+      "documented": 109,
+      "context_only": 12,
+      "excluded": 1
+    },
+    "native_hypotheses_boundary": "Complete retained probability maps are discovery inputs, not semantic acceptance or runtime certification. All21 capped inputs and80 escalations received final dispositions.",
+    "current_reference_count": 48,
+    "boundary": "Master and eight focused owners replace the shallow OpenVue portion; Quasar remains separate. No excluded package is restored; no future-major compatibility is implied.",
+    "appended_check_count": 11,
+    "time_boundary": "Recorded timestamps identify evidence packaging, not invented per-scenario execution times."
   }
 }

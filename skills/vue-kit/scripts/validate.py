@@ -35,6 +35,7 @@ SEMVER = re.compile(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?\Z")
 NATIVE_FINGERPRINTS = {
     'sources': '4ead9391a8b08445619f6dc719ea4a0ef3e1db603873817a45364939e0830c16',
     'references': '4e81026e20777414d4a0c2871fa207c79d1668ed3f3f5b9e1bc65867184355c2',
+    'openvue-documents': '2c668b838114fb39e8fb83174d2c61a87030ef9f7b3a180ddabd7f7aaa43bb14',
 }
 NATIVE_COUNTS = {
     'native_source_choices': {'covered': 331, 'partial': 126, 'missing': 1, 'out_of_scope': 1},
@@ -46,6 +47,14 @@ NATIVE_COUNTS = {
 CURRENT_REFERENCE_EXTENSIONS = (
     'references/nuxt.md',
     'references/nuxt-integrations.md',
+    'references/openvue.md',
+    'references/openvue-setup.md',
+    'references/openvue-theming.md',
+    'references/openvue-forms.md',
+    'references/openvue-data.md',
+    'references/openvue-overlays.md',
+    'references/openvue-navigation.md',
+    'references/openvue-components.md',
 )
 HISTORICAL_REFERENCE_COUNT = 38
 ACTIVE_REFERENCE_COUNT = HISTORICAL_REFERENCE_COUNT + len(CURRENT_REFERENCE_EXTENSIONS)
@@ -920,7 +929,7 @@ class Validator:
 
     def validate_coverage(self):
         self.checks.extend(['retained historical source identities, native hypotheses and current routing',
-                            'historical reference population plus separately indexed host extensions'])
+                            'historical reference population plus separately indexed reviewed extensions'])
         path = self.root / 'assets/coverage-audit.json'
         report = self.load_json('assets/coverage-audit.json')
         if not isinstance(report, dict):
@@ -997,13 +1006,88 @@ class Validator:
         self.validate_native_fingerprint(path, 'references', native_references)
         extensions = report.get('extensions')
         if extensions != list(CURRENT_REFERENCE_EXTENSIONS):
-            self.error(path, 'host extension paths must match the current explicit inventory')
+            self.error(path, 'reviewed extension paths must match the current explicit inventory')
         active = {self.display(reference) for reference in self.references}
         if reference_paths | set(CURRENT_REFERENCE_EXTENSIONS) != active or len(references) != 38:
-            self.error(path, 'historical references and host extensions must cover the complete active index')
+            self.error(path, 'historical references and reviewed extensions must cover the complete active index')
         self.compare_counts(path, 'counts', report.get('counts'), {
-            'sources': 459, 'roots': 47, 'historical_references': 38, 'active_references': 40,
+            'sources': 459, 'roots': 47, 'historical_references': 38, 'active_references': ACTIVE_REFERENCE_COUNT,
         })
+
+    def validate_openvue_coverage(self):
+        self.checks.append('complete OpenVue documentation routing and retained native hypotheses (not runtime certification)')
+        path = self.root / 'assets/openvue-coverage.json'
+        report = self.load_json('assets/openvue-coverage.json')
+        if not isinstance(report, dict):
+            self.error(path, 'OpenVue coverage must be an object')
+            return
+        if (report.get('schema_version') != 1 or report.get('baseline') != BASELINE
+                or report.get('openvue') != '1.0.0'
+                or report.get('source_commit') != 'd064f02ac75c3aaeb60a676c70e5ee08e3e3042e'):
+            self.error(path, 'OpenVue coverage schema, baseline or source release disagree')
+        if report.get('unresolved') != [] or not isinstance(report.get('method'), str):
+            self.error(path, 'OpenVue coverage requires its method and empty unresolved list')
+        if (report.get('input_cap') != 26000 or not isinstance(report.get('rubric'), dict)
+                or not isinstance(report.get('escalation'), str)):
+            self.error(path, 'OpenVue coverage requires the frozen rubric, cap and escalation policy')
+        self.compare_counts(path, 'counts', report.get('counts'), {
+            'documents': 122, 'pages': 27, 'components': 95, 'truncated': 21, 'escalated': 80,
+        })
+        if report.get('native_fingerprint') != NATIVE_FINGERPRINTS['openvue-documents']:
+            self.error(path, 'OpenVue native fingerprint metadata disagrees with the frozen population')
+        rows = report.get('documents')
+        if not isinstance(rows, list):
+            self.error(path, 'OpenVue documents must be an array')
+            return
+        owners = set(CURRENT_REFERENCE_EXTENSIONS[2:])
+        active = {self.display(reference) for reference in self.references}
+        native, kinds, represented = {}, Counter(), set()
+        for row in rows:
+            if not isinstance(row, dict):
+                self.error(path, 'OpenVue document must be an object')
+                continue
+            identity = row.get('id')
+            if not isinstance(identity, str) or not identity or identity in native:
+                self.error(path, 'OpenVue document identities must be unique nonempty strings')
+                continue
+            digest = row.get('sha256')
+            if not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest):
+                self.error(path, f'{identity}: source SHA-256 is required')
+            native[identity] = {'sha256': digest, 'native': row.get('native')}
+            for key in ('owner', 'risk'):
+                verdict = row.get('native', {}).get(key) if isinstance(row.get('native'), dict) else None
+                if (not isinstance(verdict, dict) or not isinstance(verdict.get('choice'), str)
+                        or not isinstance(verdict.get('probabilities'), dict)):
+                    self.error(path, f'{identity}: complete native {key} verdict is required')
+            kind = row.get('source_kind')
+            if kind not in ('pages', 'components'):
+                self.error(path, f'{identity}: invalid source kind')
+            else:
+                kinds[kind] += 1
+            owner = row.get('final_reference')
+            if not isinstance(owner, str) or owner not in owners or owner not in active:
+                self.error(path, f'{identity}: final owner must be an indexed OpenVue reference')
+            else:
+                represented.add(owner)
+            if row.get('disposition') not in ('documented', 'context_only', 'excluded'):
+                self.error(path, f'{identity}: invalid final disposition')
+            if not isinstance(row.get('reason'), str) or not row['reason'].strip():
+                self.error(path, f'{identity}: evidence-backed disposition reason is required')
+            urls = row.get('primary_urls')
+            if (not isinstance(urls, list) or not urls
+                    or any(not isinstance(url, str) or not url.startswith('https://') for url in urls)):
+                self.error(path, f'{identity}: primary HTTPS evidence is required')
+        if len(rows) != 122 or len(native) != 122 or dict(kinds) != {'pages': 27, 'components': 95}:
+            self.error(path, 'OpenVue coverage must route all27 guide and95 component pages exactly once')
+        if represented != owners:
+            self.error(path, 'all eight OpenVue capability owners must be represented')
+        for label, expected in (('truncated', 21), ('escalated', 80)):
+            identities = report.get(label)
+            if (not isinstance(identities, list) or len(identities) != expected
+                    or any(not isinstance(identity, str) or identity not in native for identity in identities)
+                    or len(set(identities)) != expected):
+                self.error(path, f'OpenVue {label} inputs must retain their complete unique identities')
+        self.validate_native_fingerprint(path, 'openvue-documents', native)
 
     def validate_service_independence(self):
         self.checks.append('service-independent capability boundary and supported UI successor')
@@ -1023,7 +1107,7 @@ class Validator:
             if forbidden.search(remaining):
                 self.error(path, 'excluded vendor material remains outside the permitted successor attribution')
         if attribution_count != 1:
-            self.error(self.root / 'references/alternative-ui.md',
+            self.error(self.root / 'references/openvue.md',
                        'exactly one supported-successor fork attribution is required')
 
     def validate_verification(self):
@@ -1174,6 +1258,7 @@ class Validator:
             self.validate_removals()
             self.validate_package()
             self.validate_coverage()
+            self.validate_openvue_coverage()
             self.validate_service_independence()
             self.validate_verification()
         return {'valid': not self.errors, 'checks': self.checks, 'errors': sorted(set(self.errors))}

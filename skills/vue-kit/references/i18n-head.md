@@ -299,7 +299,7 @@ For typed catalogs, use a canonical schema with `createI18n`/`useI18n` generics 
 
 ### Explicit precompilation and build selection
 
-Optional **`@intlify/unplugin-vue-i18n 11.2.7`** supports Vite `^6 || ^7 || ^8`, requires Node `>=22.13`, and compiles JSON/YAML resources and SFC blocks. This complete Vite config is for the standalone Composition-only example, not VitePress's Vite 5 graph:
+Optional **`@intlify/unplugin-vue-i18n 11.2.7`** supports Vite `^6 || ^7 || ^8`, requires Node `>=22.13`, and compiles catalog imports and SFC blocks. This complete Vite config supports both standalone Composition-only factories above, not VitePress's Vite 5 graph. Compiler retention is explicit because the eager factory contains inline message strings:
 
 ```ts
 import { fileURLToPath } from 'node:url'
@@ -315,12 +315,15 @@ export default defineConfig({
       compositionOnly: true,
       fullInstall: true,
       runtimeOnly: true,
+      dropMessageCompiler: false,
     }),
   ],
 })
 ```
 
-`fullInstall: true` retains the three components used above. For SSR select the plugin's `ssr: true` option in the host's shared build config. `runtimeOnly` removes runtime string compilation: all eager/lazy imports must pass through `include`; fetched raw strings require a compiler-capable build instead. `dropMessageCompiler`/`__INTLIFY_DROP_MESSAGE_COMPILER__` must not be enabled just because JSON imports exist. Plugin-generated AST resources and message functions are not interchangeable build artifacts; select options together from the installed plugin's [README](https://unpkg.com/@intlify/unplugin-vue-i18n@11.2.7/README.md) and [types](https://unpkg.com/@intlify/unplugin-vue-i18n@11.2.7/lib/types.d.mts).
+`fullInstall: true` retains the three components used above. For SSR select the plugin's `ssr: true` option in the host's shared build config. The **11.2.7 Vite implementation** aliases `vue-i18n` to its runtime distribution whenever `runtimeOnly: true`, not only in production as the README suggests. In **vue-i18n 11.4.16**, that distribution still registers the shared JIT `compile` function; with `dropMessageCompiler: false`, it compiles raw strings. Therefore `runtimeOnly: true` alone neither proves compiler removal nor requires every message to be precompiled. [Exact plugin](https://unpkg.com/@intlify/unplugin-vue-i18n@11.2.7/lib/index.mjs), [runtime entry](https://unpkg.com/vue-i18n@11.4.16/dist/vue-i18n.runtime.mjs), [compiler branch](https://unpkg.com/@intlify/core-base@11.4.16/dist/core-base.mjs).
+
+Enable `dropMessageCompiler`/`__INTLIFY_DROP_MESSAGE_COMPILER__` only when every message uses a compatible precompiled resource or message function. The fixed-map lazy factory's JSON files pass through `include`; the eager factory's inline `messages` object does **not**. Raw fetched strings also need retained string compilation. Do not treat some compiled JSON imports as proof that compiler removal is safe, or assume these exact-version distribution details hold after upgrading. Plugin-generated AST resources and message functions are not interchangeable build artifacts; select options together from the installed plugin's [README](https://unpkg.com/@intlify/unplugin-vue-i18n@11.2.7/README.md) and [types](https://unpkg.com/@intlify/unplugin-vue-i18n@11.2.7/lib/types.d.mts).
 
 Without that plugin, bundler feature flags are boolean literals in Vite `define`: `__VUE_I18N_FULL_INSTALL__` controls automatic component/directive installation; `__VUE_I18N_LEGACY_API__` controls Legacy support; `__INTLIFY_DROP_MESSAGE_COMPILER__` controls compiler removal. Keep root package imports so Node import/require and bundler conditions choose their correct build. A nonbundled CDN page instead uses the single global/browser distribution, matching Vue's runtime and production mode; do not mix multiple copies of its inlined Intlify runtime. The v11 plugin's virtual `@intlify/unplugin-vue-i18n/messages` eagerly bundles JSON/YAML only, not arbitrary JS/TS resources; direct fixed-map lazy imports retain code splitting. Optional message-key tree shaking defaults off; dynamic keys require keep-all or an explicit complete safelist. [Exact plugin metadata](https://registry.npmjs.org/@intlify/unplugin-vue-i18n/11.2.7), [Vue I18n export map](https://unpkg.com/vue-i18n@11.4.16/package.json).
 

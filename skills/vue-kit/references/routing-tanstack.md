@@ -29,7 +29,7 @@ This is one complete `src/main.ts` for an existing Vite TypeScript application w
 
 ```ts
 // src/main.ts
-import { createApp, defineComponent, h } from 'vue'
+import { createApp, defineComponent, h, type VNode } from 'vue'
 import {
   createRootRouteWithContext, createRoute, createRouter,
   Link, Outlet, RouterProvider, notFound, redirect,
@@ -46,7 +46,7 @@ const catalog: readonly Item[] = [
   { id: '3', title: 'Accessible navigation' },
 ]
 const Root = defineComponent({
-  setup() {
+  setup(): () => VNode {
     return () => h('div', [
       h('nav', { 'aria-label': 'Main' }, [
         h(Link, { to: '/' }, { default: () => 'Home' }),
@@ -62,7 +62,7 @@ const Home = defineComponent({
   setup: () => () => h('h1', 'Local catalog example'),
 })
 const ItemList = defineComponent({
-  setup() {
+  setup(): () => VNode {
     const data = useLoaderData({ from: '/items' })
     const navigate = useNavigate({ from: '/items' })
     return () => h('section', [
@@ -77,14 +77,14 @@ const ItemList = defineComponent({
         type: 'button',
         disabled: !data.value.hasNext,
         onClick: () => navigate({
-          to: '/items', search: previous => ({ ...previous, page: previous.page + 1 }),
+          to: '/items', search: previous => ({ page: previous.page + 1, q: previous.q }),
         }),
       }, 'Next page'),
     ])
   },
 })
 const ItemDetail = defineComponent({
-  setup() {
+  setup(): () => VNode {
     const item = useLoaderData({ from: '/items/$itemId' })
     return () => h('h1', item.value.title)
   },
@@ -92,7 +92,9 @@ const ItemDetail = defineComponent({
 const rootRoute = createRootRouteWithContext<RouterContext>()({
   component: Root,
   notFoundComponent: () => h('h1', 'Item or page not found'),
-  errorComponent: ({ error }) => h('p', { role: 'alert' }, error.message),
+  errorComponent: ({ error }) => h('p', { role: 'alert' },
+    error instanceof Error ? error.message : 'Unable to load this page.',
+  ),
 })
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -156,6 +158,8 @@ createApp({ setup: () => () => h(RouterProvider, { router }) }).mount('#app')
 ```
 
 The detail is intentionally a **sibling** with path `items/$itemId`, not a child of the list; it does not render inside the list. For nested layout routes use `getParentRoute` pointing at that layout, attach children with `addChildren`, and render `Outlet` in the layout. A pathless layout uses `id`, not a URL segment. Do not type-erase the tree/router with `AnyRouter` casts: `Register` and the concrete tree drive link/search/loader inference. Return **VNode render functions from setup**, rather than calling composables inside render callbacks. [Exact Vue route/component types](https://unpkg.com/@tanstack/vue-router@1.170.41/dist/esm/route.d.ts), [exports](https://unpkg.com/@tanstack/vue-router@1.170.41/dist/esm/index.d.ts).
+
+The explicit `setup(): () => VNode` return types on `Root`, `ItemList`, and `ItemDetail` bound only their rendered output. They break this single module's component → registered router → route component inference cycle without widening `router` or annotating loader consumers. Keep the loader results inferred from their actual returns: the list exposes `{ items: Item[]; total: number; hasNext: boolean }`, and the detail exposes `Item` after the not-found guard. Do not “repair” an implicitly-any map callback by annotating just `item`; that can conceal lost loader-data inference. The error renderer accepts the adapter's `unknown` error, narrows `Error` before reading `message`, and uses fixed text for other thrown values rather than coercing arbitrary objects. [Vue render-function contract](https://vuejs.org/guide/extras/render-function.html#declaring-render-functions), [exact loader subscription types](https://unpkg.com/@tanstack/vue-router@1.170.41/dist/esm/useLoaderData.d.ts), [exact error-component declaration](https://unpkg.com/@tanstack/vue-router@1.170.41/dist/esm/CatchBoundary.d.ts).
 
 ## Vue subscriptions and navigation
 
@@ -251,7 +255,7 @@ const blocker = useBlocker({
 
 ## Search validation and loader ordering
 
-TanStack's default search parser is JSON-first: numbers/booleans/arrays/objects can be parsed values, not just strings. Treat its input as unknown. The example accepts string/number page inputs, defaults invalid values to 1, and discards unknown search keys from its validated result. This is a deliberate permissive URL policy; a strict application can throw validation errors to show a route error boundary instead. Defaults must be identical during server and client rendering.
+TanStack's default search parser is JSON-first: numbers/booleans/arrays/objects can be parsed values, not just strings. Treat its input as unknown. The example accepts string/number page inputs and defaults invalid values to 1. Its validator returns only `page` and `q`, but the shared core merges that output into the incoming match search; this does **not** strip unknown fields from the current URL or an updater's runtime input. The Next-page updater explicitly selects the two intended fields instead of spreading arbitrary inbound keys. This is a deliberate permissive URL policy; a strict application can throw validation errors to show a route error boundary instead. Defaults must be identical during server and client rendering. [Exact validation/merge implementation](https://unpkg.com/@tanstack/router-core@1.171.38/src/router.ts).
 
 `validateSearch` defines the validated shape, not a security boundary. If using a schema library, verify its exact adapter and input/output default semantics; do not assume every schema produces optional navigation inputs. Serialization adapters for SSR are **not** search-schema adapters. Default JSON search supports arrays/objects; a custom serializer is not required just because a value is non-scalar. Dates and richer application values need a documented round trip. Never put access tokens or sensitive payloads into URLs.
 
@@ -326,22 +330,25 @@ Set `pendingComponent`/`errorComponent`/`notFoundComponent` on the owning route 
 For non-critical work, return a promise-valued field from a loader (optionally wrapped with `defer`) while awaiting critical data first; pass its exact promise to a consumer rather than awaiting everything and claiming streaming. This complete **contextual promise consumer** takes an application/loader-owned promise and uses the Vue adapter's actual required `children` function prop, not an assumed default-slot API:
 
 ```vue
+<!-- src/DeferredText.vue -->
 <script setup lang="ts">
-import { h } from 'vue'
+import { h, shallowRef, watch } from 'vue'
 import { Await } from '@tanstack/vue-router'
-defineProps<{ promise: Promise<string> }>()
+const props = defineProps<{ promise: Promise<string> }>()
+const revision = shallowRef(0)
+watch(() => props.promise, () => { revision.value++ }, { flush: 'sync' })
 function renderText(text: string) { return h('p', text) }
 </script>
 
 <template>
   <Suspense>
-    <Await :promise="promise" :children="renderText" />
+    <Await :key="revision" :promise="promise" :children="renderText" />
     <template #fallback><p role="status">Loading details</p></template>
   </Suspense>
 </template>
 ```
 
-Rejected promises need an enclosing route/error boundary; `<Suspense>` is not an error handler. `useAwaited({ promise })` instead returns `[data, deferredPromise]` (not a ref), and throws its pending promise/error internally; prefer `Await`'s async setup rather than assuming thrown React promises automatically implement Vue streaming. Browser deferred display and server streamed serialization are different acceptance gates.
+`Await` captures its promise in async setup; changing the prop alone does not restart it in 1.170.41. The synchronous revision/key remounts it for each replacement promise, including a reused route's new loader result. It does not cancel the old operation; the owning service still needs its own cancellation/publication boundary. Rejected promises need an enclosing route/error boundary; `<Suspense>` is not an error handler. `useAwaited({ promise })` instead returns `[data, deferredPromise]` (not a ref), and throws its pending promise/error internally; prefer `Await`'s async setup rather than assuming thrown React promises automatically implement Vue streaming. Browser deferred display and server streamed serialization are different acceptance gates.
 
 `remountDeps` returns a small JSON-serializable dependency value; the Vue adapter `JSON.stringify`s it as the component key. For example, `remountDeps: ({ params }) => params.itemId` deliberately resets local detail state on item changes. It does **not** return the source's claimed `'before'`/`'after'` timing modes. Preserve a draft elsewhere before forcing remount; freshness/loader dependency changes need not destroy a form.
 
@@ -449,7 +456,7 @@ Document metadata is also part of that protocol: route `head()` returns `{ meta,
 
 The code-based catalog and file-based root are complete browser alternatives inside an existing Vue/Vite TypeScript app. `applyPermissions` is explicitly a contextual extension; no real identity provider/backend is supplied. No SSR runnable claim is made: exact signatures and the required protocol are documented instead. Research inspected registry, published declarations/runtime, and official source; no compilation, browser, build, or runtime verification is claimed here.
 
-An integrating agent should check generated route inference/`Register`; malformed and repeated search values; list/detail navigation; denied redirects and auth snapshot invalidation; missing item/route boundaries; loader dependency changes and obsolete loads; intent preloads without side effects; Query/cache freshness ownership; back/forward/hash restoration and focus; plugin output after renames; and per-request SSR/serialization/hydration isolation if adopting SSR. Unknown Vue production-support status remains explicit until authoritative upstream evidence resolves it.
+An integrating agent should check generated route inference/`Register`; malformed/repeated search values and unknown inbound keys versus explicitly selected navigation output; list/detail navigation; denied redirects and auth snapshot invalidation; missing item/route boundaries; loader dependency changes and obsolete loads; replacement deferred promises on a reused route, including late old completion and rejection; intent preloads without side effects; Query/cache freshness ownership; back/forward/hash restoration and focus; plugin output after renames; and per-request SSR/serialization/hydration isolation if adopting SSR. Unknown Vue production-support status remains explicit until authoritative upstream evidence resolves it.
 
 ## Sources
 

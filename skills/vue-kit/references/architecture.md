@@ -137,7 +137,7 @@ Read this guide once; then take only the branch that owns the next implementatio
 | Next decision | Minimum next reading | Add only when needed |
 | --- | --- | --- |
 | New feature boundary | [components](components.md), [composables](composables.md) | [core Vue](core-vue.md) for unfamiliar reactivity |
-| Remote editable resource | [data architecture](architecture-data.md), [forms](forms.md) | One query and one form-library reference, not all alternatives |
+| Remote editable resource | [data architecture](architecture-data.md), [forms](forms.md) | The existing read owner's reference; one selected form branch only when needed. Nuxt native data does not require a second query cache |
 | Shared client workflow | [state](state.md) | [auth](auth.md) only for identity/session integration |
 | New Vuetify screen | [UI architecture](architecture-ui.md), [Vuetify components](vuetify-components.md) | [design system](design-system.md), [Vuetify theme](vuetify-theme.md) for token changes |
 | Deployment or hydration change | [Nuxt](nuxt.md) for a Nuxt host; [debugging and SSR](debugging-ssr.md) for diagnosis | [Nuxt integrations](nuxt-integrations.md) for a selected SDK/module; [setup and tooling](setup-tooling.md) for standalone build changes |

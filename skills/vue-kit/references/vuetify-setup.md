@@ -175,11 +175,13 @@ import { VTextField } from 'vuetify/components/VTextField'
 
 const name = shallowRef('')
 const pressed = shallowRef(false)
-const buttonAttrs = {
+const buttonAttrs: Pick<ButtonHTMLAttributes, 'type' | 'onClick' | 'class' | 'style'> = {
   type: 'button',
   onClick: () => { pressed.value = !pressed.value },
-} satisfies ButtonHTMLAttributes
-const inputAttrs = { required: true } satisfies InputHTMLAttributes
+}
+const inputAttrs: Pick<InputHTMLAttributes, 'required' | 'class' | 'style'> = {
+  required: true,
+}
 </script>
 
 <template>
@@ -190,7 +192,7 @@ const inputAttrs = { required: true } satisfies InputHTMLAttributes
 
 Keep Vuetify's component props (`label`, `loading`, etc.) as component props, not in a native bag. Native `required` is not a substitute for awaited `VForm`/server validation. Report standard SFC compilation and strict-fixture checking as separate proof profiles; the other examples retain readable runtime-native syntax. [Tagged VBtn root/emits](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VBtn/VBtn.tsx), [VTextField input forwarding](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VTextField/VTextField.tsx), [Vue fallthrough attributes](https://vuejs.org/guide/components/attrs.html).
 
-Keep stored bags narrow. A whole `ButtonHTMLAttributes` annotation widens overlapping `disabled` to `Booleanish`, incompatible with Vuetify's boolean prop. For a weak-type error on an all-native bag, use a narrow `Pick` retaining optional shared `class`/`style` in its type without adding a runtime value.
+Keep stored bags narrow. A whole `ButtonHTMLAttributes` annotation widens overlapping `disabled` to `Booleanish`, incompatible with Vuetify's boolean prop. The narrow `Pick` above retains optional shared `class`/`style` in the type without adding runtime attributes; this avoids a no-common-properties weak-type error. `satisfies` checks an object without adding those optional keys to its inferred type. [TypeScript weak types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-4.html#weak-type-detection), [satisfies semantics](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator).
 
 ## Styles and icon contracts
 

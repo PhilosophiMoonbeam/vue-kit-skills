@@ -310,9 +310,16 @@ load and provide the initial data before `renderToString`, safely serialize it,
 and create the client with `createSSRApp` plus the same data before mount. A
 Fastify handler merely wrapping HTML does not provide that pipeline. Never embed
 raw `JSON.stringify(userData)` into a script or hydrate with `createApp`; keep
-server/client builds distinct and serve the generated client asset manifest, not
-a production `/src/entry-client.ts` URL. [SSR/debugging](debugging-ssr.md) owns
-hydration/error isolation; [setup/tooling](setup-tooling.md) owns server/build seams.
+server/client builds distinct and serve the **emitted client assets**, not a
+production `/src/entry-client.ts` URL. Use the built client `index.html` for its
+rewritten asset links, or read `build.manifest` server-side to generate entry JS
+and recursively imported CSS links under the deployment base. A manifest JSON
+file is not a client script. The separate `build.ssrManifest` maps rendered
+module IDs to client assets for optional preload hints; it does not replace
+entry resolution. [Vite production SSR](https://vite.dev/guide/ssr#building-for-production),
+[manifest-driven HTML](https://vite.dev/guide/backend-integration).
+[SSR/debugging](debugging-ssr.md) owns hydration/error isolation;
+[setup/tooling](setup-tooling.md) owns server/build seams.
 
 ### Incumbent mobile, Capacitor and PWA workflow
 
@@ -346,10 +353,11 @@ device permissions are additional, not proven by a web build.
    JavaScript request. Camera's supported incumbent
    `getPhoto({ resultType: CameraResultType.Uri, source: CameraSource.Camera|Photos })`
    returns `webPath` for display; do not treat it as an uploaded/persisted file.
-   In camera 8.2.6 this API is deprecated, not removed: new work can use
-   `takePhoto`/`chooseFromGallery` and their **MediaResult** contract, not assume
-   their results are old `Photo` objects. Handle Android `appRestoredResult` for
-   camera activities when the OS killed the original process.
+   In camera 8.2.6 this API is deprecated, not removed: `takePhoto` returns one
+   **MediaResult**; `chooseFromGallery` returns **MediaResults** with a `results`
+   array, even for single-selection use. Neither is the old `Photo` result.
+   Handle Android `appRestoredResult` for camera activities when the OS killed
+   the original process.
 5. For GPS, use `getCurrentPosition` for one read or `watchPosition` only while the
    feature needs it. It resolves a **promise of an ID**; stop must also handle an
    ID arriving after teardown. `clearWatch({ id })` is asynchronous; report release

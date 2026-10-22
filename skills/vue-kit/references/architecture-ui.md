@@ -12,7 +12,7 @@ For new or existing Nuxt applications, [Nuxt](nuxt.md) owns pages/layouts, SSR a
 
 | Requirement | Mechanism (synthesis) | Rejected alternative and consequence | Specialist route |
 | --- | --- | --- | --- |
-| Consistent controls and responsive workspace | Vuetify components plus a small semantic token layer | Combining several full frameworks creates competing defaults, themes, CSS and overlay behavior | [Vuetify setup](vuetify-setup.md), [components](vuetify-components.md) |
+| Consistent controls and responsive workspace | Vuetify components and incumbent semantic tokens; add only missing roles | Combining full frameworks or adding a parallel token layer creates competing defaults, themes, CSS and overlay behavior | [Vuetify setup](vuetify-setup.md), [components](vuetify-components.md) |
 | Product-specific hierarchy and density | Semantic tokens, typography roles, purposeful layout and stable component policies | Styling every screen independently produces inconsistent error/focus/state behavior | [design system](design-system.md), [Vuetify theme](vuetify-theme.md) |
 | An uncommon accessible interaction | First assess the existing component; then one headless primitive/positioner where a real gap exists | Adding Reka/Floating UI just for a different look duplicates responsibility | [headless UI](headless-ui.md) |
 | Enter/leave or list movement | Built-in Vue transition or existing component transition first | Several animation engines writing one element's transform create timing and cleanup conflicts | [motion](motion.md) |
@@ -42,7 +42,7 @@ Vuetify preference is a project default, not an assertion that every component m
 
 Place DOM refs, resize observers, focus, drag listeners and cleanup with the UI that owns them. Do not move them into a global Pinia store for convenience. If descendants share a capability, provide a typed scoped instance at their actual owner; do not inject an entire screen controller. [Components](components.md) and [composables](composables.md) own those patterns.
 
-The route/feature creates the overlay interaction instance; opening allocates an edit-session identity, not another global controller. Closing retires that identity and its delayed UI effects. Unmount disposes DOM subscriptions; [KeepAlive deactivation](https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance) needs an explicit suspend/close policy. Neither path cancels a server write. Scope-loss disposal follows [data architecture](architecture-data.md#tenant-switch-logout-and-permission-loss-protocol).
+The route/feature creates the overlay interaction instance; opening allocates an edit-session identity, not another global controller. Closing retires that identity and its delayed UI effects. The UI owner must disconnect observers and remove external listeners/subscriptions on unmount; Vue does not automatically dispose arbitrary DOM resources. [KeepAlive deactivation](https://vuejs.org/guide/built-ins/keep-alive.html#lifecycle-of-cached-instance) is not unmount: define suspend/close behavior and resume only the still-current interaction. See [composable side-effect cleanup](https://vuejs.org/guide/reusability/composables.html#side-effects). Neither path undoes a server write. Scope-loss disposal follows [data architecture](architecture-data.md#tenant-switch-logout-and-permission-loss-protocol).
 
 ### Overlay protocol and focus ledger
 
@@ -262,7 +262,7 @@ Responsive behavior includes long translations, RTL, zoom, touch targets, virtua
 | --- | --- | --- |
 | Build a Vuetify feature | [Vuetify components](vuetify-components.md), [accessibility](accessibility.md) | [forms](forms.md) for a draft/submit workflow |
 | Change application visual language | [design system](design-system.md), [Vuetify theme](vuetify-theme.md) | [alternative UI](alternative-ui.md) for an incumbent framework |
-| Add an overlay capability gap | [headless UI](headless-ui.md), [accessibility](accessibility.md) | Existing dialog integration before introducing another owner |
+| Add an overlay capability gap | Incumbent dialog/component contract, then [accessibility](accessibility.md) | [Headless UI](headless-ui.md) only for a demonstrated unsupported behavior; preserve one interaction owner |
 | Data-rich screen | [data tables](data-tables.md) or [visualization](visualization.md) | [virtualization](virtualization.md) only for its actual performance need |
 | Add animation | [motion](motion.md) | No second engine without a concrete capability reason |
 | Locale/head or SSR composition | [i18n and head](i18n-head.md), [debugging and SSR](debugging-ssr.md) | [data architecture](architecture-data.md) when server responses vary by locale/access |

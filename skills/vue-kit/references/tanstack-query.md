@@ -199,7 +199,7 @@ Unmount is not unconditional transport cancellation. In **5.104.5**, removing th
 
 For a variable number of independent requests, use `useQueries({ queries: () => optionsArray, combine })`, not a loop that creates composables inside a watcher. The getter tracks membership and order; without `combine`, the returned **ref** contains results in input order. Deduplicate identical keys before mapping results back to repeated UI rows. Its `placeholderData` callback receives no previous-query argument. Wrap a spread plus an inline `select` in `queryOptions({ ...options, select })` to preserve inference. [Pinned implementation](https://unpkg.com/@tanstack/vue-query@5.104.5/src/useQueries.ts)
 
-Complete scoped composable against an application-owned service. It returns partial results and each error rather than making independent requests fail as one batch:
+Complete scoped composable against an application-owned service. `scope` is a non-secret representation partition covering tenant/principal/auth epoch as required; `null` means no readable identity. The service must honor the captured partition, not reread a later session after awaiting work. All consumers of one key must agree on that service contract. Results remain partial rather than failing as one batch:
 
 ```ts
 import { type Ref } from 'vue'
@@ -207,16 +207,25 @@ import { queryOptions, useQueries } from '@tanstack/vue-query'
 
 export interface Project { id: string; name: string }
 export interface ProjectReader {
-  get(id: string, signal: AbortSignal): Promise<Project>
+  get(scope: string, id: string, signal: AbortSignal): Promise<Project>
 }
 
-export function useProjects(ids: Readonly<Ref<readonly string[]>>, service: ProjectReader) {
+export function useProjects(
+  scope: Readonly<Ref<string | null>>,
+  ids: Readonly<Ref<readonly string[]>>,
+  service: ProjectReader,
+) {
   return useQueries({
-    queries: () => [...new Set(ids.value)].map((id) => queryOptions({
-      queryKey: ['projects', id] as const,
-      queryFn: ({ signal }) => service.get(id, signal),
-      staleTime: 30_000,
-    })),
+    shallow: true,
+    queries: () => {
+      const owner = scope.value
+      if (owner === null) return []
+      return [...new Set(ids.value)].map((id) => queryOptions({
+        queryKey: ['projects', owner, id] as const,
+        queryFn: ({ signal }) => service.get(owner, id, signal),
+        staleTime: 30_000,
+      }))
+    },
     combine: (results) => ({
       projects: results.flatMap((result) => result.data ? [result.data] : []),
       errors: results.flatMap((result) => result.error ? [result.error] : []),
@@ -228,11 +237,11 @@ export function useProjects(ids: Readonly<Ref<readonly string[]>>, service: Proj
 
 - Dependent requests: derive the child's key and `enabled` from the parent's resolved ID; do not mount a new composable when the parent finishes. For type-safe absence use a whole-options getter switching `queryFn` between a real function and `skipToken`, as below. `refetch()` cannot execute `skipToken`.
 - `select` transforms one observer's view, not the canonical cached payload. It reruns when source data or the function identity changes. Use stable pure selectors; put reactive selector dependencies in a whole-options getter or a computed view, not an untracked closure. `initialData` initializes cache state once rather than remaining a reactive source; pair older seed data with `initialDataUpdatedAt`.
-- `shallow: true` on query/mutation options or `useQueries` avoids deep result proxies for large immutable payloads. Replace roots through cache APIs; nested mutation is not a reactive update contract. `queryOptions`, `infiniteQueryOptions`, and `mutationOptions` share typed definitions; their getter forms preserve reactive options, not durable mutation variables.
+- `shallow: true` on query/mutation options or `useQueries` avoids deep result proxies for large immutable payloads. Replace roots through cache APIs; nested mutation is not a reactive update contract. It does not disable core structural-sharing traversal, bound request fan-out, or virtualize rendering. `queryOptions`, `infiniteQueryOptions`, and `mutationOptions` share typed definitions; their getter forms preserve reactive options, not durable mutation variables.
 - `usePrefetchQuery` / `usePrefetchInfiniteQuery` return `void` and prefetch within an owned reactive scope only when **no cached state exists**. An existing error/pending entry suppresses this path too. For an explicit freshness-aware retry/loader use `client.query` / `client.infiniteQuery`, handle rejection, and resolve option getters at the call site. These imperative calls default to no retries unless configured and do not accept observer-only scheduling such as `enabled`. [Prefetch source](https://unpkg.com/@tanstack/vue-query@5.104.5/src/usePrefetchQuery.ts), [core client](https://unpkg.com/@tanstack/query-core@5.104.5/src/queryClient.ts)
 - `suspense()` fetches stale data or resolves fresh data; it waits while disabled and only rejects a fetch failure when `throwOnError` requests it. For async setup, call all composables before awaiting it, provide a Vue `<Suspense>` fallback and an explicit error policy. `onServerPrefetch(suspense)` is a separate SSR choice, not automatic server fetching.
 
-Complete adaptable lookup wrapper: callers can pass a literal ID, ref, or `() => props.id`. `toValue` executes **inside** the tracked whole-options getter; the transport captures that resolved ID and consumes the provided abort signal.
+Complete adaptable lookup wrapper: callers can pass literal/ref/getter inputs. Resolve both the representation partition and ID **inside** the tracked whole-options getter; the transport captures them and consumes the abort signal. A null partition or absent ID has no executable query function; cached data still requires the private-identity retirement procedure below.
 
 ```ts
 import { toValue, type MaybeRefOrGetter } from 'vue'
@@ -240,19 +249,21 @@ import { queryOptions, skipToken, useQuery } from '@tanstack/vue-query'
 
 export interface Account { id: string; displayName: string }
 export interface AccountReader {
-  get(id: string, signal: AbortSignal): Promise<Account>
+  get(scope: string, id: string, signal: AbortSignal): Promise<Account>
 }
 
 export function useAccount(
+  scope: MaybeRefOrGetter<string | null>,
   id: MaybeRefOrGetter<string | undefined>, service: AccountReader,
 ) {
   const options = queryOptions(() => {
+    const owner = toValue(scope)
     const currentId = toValue(id)
     return {
-      queryKey: ['accounts', currentId] as const,
-      queryFn: currentId === undefined
+      queryKey: ['accounts', owner, currentId] as const,
+      queryFn: owner === null || currentId === undefined
         ? skipToken
-        : ({ signal }: { signal: AbortSignal }) => service.get(currentId, signal),
+        : ({ signal }: { signal: AbortSignal }) => service.get(owner, currentId, signal),
     }
   })
   return useQuery(options)
@@ -290,9 +301,10 @@ For incumbent offline mutation replay: assign a stable `mutationKey`; register i
 - Await/return invalidation when the UI must remain pending through reconciliation. Default invalidation marks matching entries stale and refetches active matches; `exact: true` restricts to one key, `refetchType: 'none'` only marks stale. The examples use default non-throwing refetch handling: consumers inspect the query's refresh-error state, while an accepted write remains successful. If opting into `{ throwOnError: true }`, catch/report reconciliation failure separately inside the mutation hook; a rejecting success-path hook enters mutation error handling and can trigger rollback after an accepted write. Neither policy is an atomic transaction with the backend. [Pinned refetch policy](https://unpkg.com/@tanstack/query-core@5.104.5/src/queryClient.ts), [mutation lifecycle](https://unpkg.com/@tanstack/query-core@5.104.5/src/mutation.ts).
 - Prefer **UI-level optimism** for a pending form/row: render submitted variables separately from canonical data and discard the overlay on failure. When several mutations overlap, one mutation observer's `variables` is only its latest call; use distinct operation IDs and `useMutationState` to render all pending operations.
 
-Complete cache-optimism composable against an **application-owned service interface**. Create this composable **once in a shared app/feature provider** and route all writes to these resources through its returned `rename`. It explicitly rejects overlapping commands rather than pretending snapshot rollback composes. The service is not implemented here; it must enforce authorization and its own conflict/version contract.
+Complete cache-optimism composable against an **application-owned service interface**. Create it **once in a shared identity-bound app/feature provider**, with a non-secret `cacheScope` covering principal/tenant/auth epoch as required, and route all writes through `rename`. Readers must use the same `taskOptions` partition. Stop this provider's scope before removing its private entries; recreate it for the next identity. It rejects overlapping commands and suppresses its own cache callbacks after retirement. The service must retain submitted identity, authorize writes and enforce its conflict/version contract; disposal cannot undo an accepted server write.
 
 ```ts
+import { onScopeDispose } from 'vue'
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/vue-query'
 
 export interface Task { id: number; tenant: string; title: string }
@@ -302,21 +314,30 @@ export interface TaskService {
   rename(input: Rename): Promise<Task>
 }
 
-export function taskOptions(service: TaskService, tenant: string, id: number) {
+export function taskOptions(
+  service: TaskService, cacheScope: string, tenant: string, id: number,
+) {
   return queryOptions({
-    queryKey: ['tasks', tenant, 'detail', id] as const,
+    queryKey: ['tasks', cacheScope, tenant, 'detail', id] as const,
     queryFn: ({ signal }) => service.get(tenant, id, signal),
   })
 }
 
-export function useSingleWriterRename(service: TaskService) {
+export function useSingleWriterRename(service: TaskService, cacheScope: string) {
   const client = useQueryClient()
+  let active = true
   let writing = false
+  onScopeDispose(() => { active = false })
   const mutation = useMutation({
-    mutationFn: (input: Rename) => service.rename(input),
+    mutationFn: (input: Rename) => {
+      if (!active) throw new Error('This writer has retired')
+      return service.rename(input)
+    },
     onMutate: async (input: Rename) => {
-      const key = taskOptions(service, input.tenant, input.id).queryKey
+      if (!active) throw new Error('This writer has retired')
+      const key = taskOptions(service, cacheScope, input.tenant, input.id).queryKey
       await client.cancelQueries({ queryKey: key, exact: true })
+      if (!active) throw new Error('This writer has retired')
       const previous = client.getQueryData(key)
       if (previous) client.setQueryData(key, { ...previous, title: input.title })
       // Capture the installed value: structural sharing may change object identity.
@@ -324,15 +345,17 @@ export function useSingleWriterRename(service: TaskService) {
       return { key, previous, installed }
     },
     onError: (_error, _input, snapshot) => {
-      if (snapshot?.previous && client.getQueryData(snapshot.key) === snapshot.installed) {
+      if (active && snapshot?.previous && client.getQueryData(snapshot.key) === snapshot.installed) {
         client.setQueryData(snapshot.key, snapshot.previous)
       }
     },
-    onSettled: (_data, _error, input) =>
-      client.invalidateQueries({ queryKey: ['tasks', input.tenant] }),
+    onSettled: (_data, _error, input) => {
+      if (active) return client.invalidateQueries({ queryKey: ['tasks', cacheScope, input.tenant] })
+    },
   })
 
   async function rename(input: Rename): Promise<Task> {
+    if (!active) throw new Error('This writer has retired')
     if (writing) throw new Error('A rename is already pending in this writer')
     writing = true
     try {
@@ -346,6 +369,8 @@ export function useSingleWriterRename(service: TaskService) {
 ```
 
 Rollback must not overwrite a later mutation, a background refresh, or newly authenticated data. A reference-equality guard only prevents restoring over a different installed value; **it does not solve overlapping snapshots**: B can snapshot A's optimistic value, then restore it after both fail. Two separately created writers are not serialized by this example. For real concurrency use an app-wide per-resource coordinator, operation overlays with rebasing, or server versions/conflict resolution. TanStack mutation `scope: { id }` serializes mutation execution, but `onMutate` can run before the execution queue starts; it does not make overlapping optimistic snapshots safe. Invalidation from an earlier mutation can also clobber a later optimistic value. [Optimistic updates](https://tanstack.com/query/latest/docs/framework/vue/guides/optimistic-updates), [pinned mutation lifecycle](https://unpkg.com/@tanstack/query-core@5.104.5/src/mutation.ts)
+
+Retirement is not mutation cancellation: hook-level callbacks can outlive their component, and a caller awaiting `rename()` must separately guard its own navigation/notice commits. Partitioned keys and the provider's active guard prevent this writer from rolling back or invalidating a later identity's cache; stop readers/writers, cancel/remove the retired partition, and clear its persisted state before exposing the next identity.
 
 ## SSR dehydration and serialization
 

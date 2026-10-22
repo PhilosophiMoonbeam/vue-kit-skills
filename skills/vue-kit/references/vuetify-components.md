@@ -533,24 +533,37 @@ Complete descendant SFC combining two local panels, keyed choice values, and gen
 
 ```vue
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { shallowRef, type HTMLAttributes } from 'vue'
 import { VTabs, VTab, VTabsWindow, VTabsWindowItem } from 'vuetify/components/VTabs'
 import { VSelect } from 'vuetify/components/VSelect'
 import { VListItem } from 'vuetify/components/VList'
 import { VFileInput } from 'vuetify/components/VFileInput'
 
+const tablistAttrs: Pick<HTMLAttributes, 'aria-label' | 'class' | 'style'> = {
+  'aria-label': 'Draft panels',
+}
+
 const tab = shallowRef('details')
 const priority = shallowRef<string | null>('normal')
 const files = shallowRef<File[]>([])
+const rejectedNames = shallowRef<string[]>([])
 const priorities = [
   { code: 'normal', title: 'Normal', description: 'Use the standard queue.' },
   { code: 'urgent', title: 'Urgent', description: 'Needs time-sensitive review.' },
 ]
+
+function selectFiles(value: File | File[] | null | undefined) {
+  files.value = value == null ? [] : Array.isArray(value) ? value : [value]
+}
+
+function rejectFiles(value: File[]) {
+  rejectedNames.value = value.map(file => file.name)
+}
 </script>
 
 <template>
   <section aria-label="Draft settings">
-    <VTabs v-model="tab" align-tabs="start" aria-label="Draft panels">
+    <VTabs v-model="tab" v-bind="tablistAttrs" align-tabs="start">
       <VTab value="details">Details</VTab>
       <VTab value="attachments">Attachments</VTab>
     </VTabs>
@@ -571,14 +584,21 @@ const priorities = [
       </VTabsWindowItem>
       <VTabsWindowItem value="attachments" class="pt-4">
         <VFileInput
-          v-model="files"
+          :model-value="files"
           multiple
           chips
           show-size
           label="Local attachments"
           filter-by-type="image/png,image/jpeg"
+          hint="Choose PNG or JPEG files."
+          persistent-hint
+          @update:model-value="selectFiles"
+          @rejected="rejectFiles"
         />
         <p>Files are local only; nothing has been uploaded.</p>
+        <p v-if="rejectedNames.length" role="status">
+          Last rejected files: {{ rejectedNames.join(', ') }}. Only PNG and JPEG files are selected.
+        </p>
         <ul>
           <li v-for="(file, index) in files" :key="`${file.name}-${file.lastModified}-${index}`">
             {{ file.name }}: {{ file.size }} bytes
@@ -592,6 +612,8 @@ const priorities = [
 
 Tab and panel values must match; `align-tabs`, not obsolete `align`/`centered` snippets, controls alignment. Use tab/window components together to retain their integration. Tabs switch local panels; route navigation belongs to the router. Check keyboard navigation and actual tab/panel naming in the integrated UI. [Tabs source](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VTabs/VTabs.tsx).
 
+The locally checked `tablistAttrs` bag keeps the accessible name on the actual `role="tablist"`: 4.3 forwards `VTabs` attributes to its `VSlideGroup` tablist, although its published props omit `aria-label`. As in [strict native fallthrough](vuetify-setup.md#strict-template-checking-and-native-fallthrough), the narrow annotation retains optional shared `class`/`style` keys without emitting them or widening unrelated component props. Keep the name on `VTabs`, not only on the surrounding section.
+
 In 4.3 `VSelect`'s **slot name remains `item`**. Its payload `item` is raw domain data; `internalItem` is the normalized wrapper. Bind slot `props` to `VListItem` to preserve selection, refs, and accessibility. `item-title` is the visible label, `item-value` is the model identity, `return-object` changes the model to the object, and `multiple` changes it to an array. A `VAutocomplete` owns filtered choices, while `VCombobox` permits values absent from the list; validate those intentionally. Server-backed autocomplete search/request ownership belongs to a query layer, not a huge local list. [Select slot implementation](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VSelect/VSelect.tsx).
 
 For lists, `lines="one"|"two"|"three"` sets presentation; use `title`/`subtitle`, prepend icons/avatars, and append slots for actual content rather than assuming `text` creates a third-line API. `nav` changes styling, not navigation. Bind `v-model:opened` for nested groups and `v-model:selected` for selection. Use the current `select-strategy` (`single-independent` for one independent leaf, `independent` for independent multiple selection) instead of copying a nonexistent list `multiple` prop. Bind group activator props and distinct values; append actions must not accidentally trigger the parent navigation/selection handler.
@@ -601,6 +623,8 @@ For dynamic tabs, use stable values/keys rather than indexes; when removing the 
 `VAutocomplete :custom-filter` can implement prefix matching with `(value, query) => value.toLocaleLowerCase().startsWith(query.toLocaleLowerCase())`; it filters supplied data, not an absent remote dataset. For server search, bind `v-model:search`, use the cache/request owner to replace items, use `no-filter` when results are already server-filtered, and preserve selected identity while the suggestion page changes. For multiple file rules the input value is a **file array**: validate every file with `Array.isArray(value) && value.every(file => file.size <= limit)` after deciding the empty-selection policy; a rule reading `value.size` from a multiple input is incorrect.
 
 `VFileInput` emits an array with `multiple` and a single file otherwise; initializing its non-multiple model to `[]` does not preserve array output. Clearing can emit an empty value, so do not blindly read `files[0].name`. A multiple model initialized to `[]` is convenient. `accept` is a chooser hint; 4.3 `filter-by-type` additionally filters selected/dropped files and emits `rejected` for rejected files. Neither is a security boundary. Enforce size/type/content/server limits in the real upload implementation. `VFileUpload` is **stable** in 4.3 at `vuetify/components/VFileUpload`, offers a dropzone/list, and still performs no HTTP request. Upload progress must reflect real transport events, not a timer. If previews use object URLs, revoke them on replacement/unmount. [File input](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VFileInput/VFileInput.tsx), [file upload](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VFileUpload/VFileUpload.tsx), [file filtering](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/fileFilter.ts).
+
+The `multiple` flag controls runtime shape, but 4.3's published `update:modelValue` signature remains `File | File[]`; the fence normalizes that boundary to an app-owned `File[]` and handles empty clears. `filter-by-type` also supplies the native chooser's accept pattern. Keep rejected-file feedback visible instead of silently discarding input. [Tagged file-input model, filtering, and native input](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VFileInput/VFileInput.tsx).
 
 ## Public hotkey, scrolling, and mask workflows
 

@@ -292,7 +292,7 @@ Schema issue objects require message projection (for example `issue.message`), n
 
 `form.FormGroup` passes its parent automatically; standalone exported `FormGroup`/`Field` components need an explicit `form` option. The slot is `{ group, state }`; `state.value` is the group value and `state.meta` contains `isFieldsValid`, `isGroupValid`, `isValid`, `isSubmitting`, and its own `submissionAttempts`. A group error is `{ group: message, fields: { email: message } }`, with **relative** field-error paths; rendered `form.Field` names remain full form paths. `group.handleSubmit()` validates/submits only the group and awaits `onGroupSubmit`; `onGroupSubmitInvalid` handles rejection by validation. Neither proves the other steps valid.
 
-Complete session-only two-step SFC, using **Zod 4.6.7**. Group schemas are the same objects composed into the final schema, so bypassing a step does not bypass final validation. There is one HTML form, not nested forms. The last group hands off to whole-form submission; only the latter accepts the session snapshot.
+Complete session-only two-step SFC, using **Zod 4.6.7**. Group schemas are the same objects composed into the final schema, so bypassing a step does not bypass final validation. Exactly one step's HTML form is mounted; forms are never nested. Each form submits its active group, so Enter and its submit button take the same path. Only the last group's callback invokes whole-form submission and accepts the session snapshot.
 
 ```vue
 <script setup lang="ts">
@@ -325,7 +325,7 @@ function invalidStep() {
 </script>
 
 <template>
-  <form novalidate @submit.prevent.stop="form.handleSubmit()">
+  <div>
     <form.FormGroup
       v-if="step === 0"
       name="contact"
@@ -334,6 +334,7 @@ function invalidStep() {
       :onGroupSubmitInvalid="invalidStep"
       v-slot="{ group, state }"
     >
+      <form novalidate @submit.prevent.stop="group.handleSubmit()">
       <fieldset>
         <legend>Contact</legend>
         <form.Field name="contact.email" v-slot="{ field, state: emailState }">
@@ -350,10 +351,11 @@ function invalidStep() {
             {{ emailState.meta.errors.map(issue => issue?.message).join(' ') }}
           </p>
         </form.Field>
-        <button type="button" :disabled="state.meta.isSubmitting" @click="group.handleSubmit()">
+        <button type="submit" :disabled="state.meta.isSubmitting">
           Next
         </button>
       </fieldset>
+      </form>
     </form.FormGroup>
     <form.FormGroup
       v-else name="profile"
@@ -362,6 +364,7 @@ function invalidStep() {
       :onGroupSubmitInvalid="invalidStep"
       v-slot="{ group, state }"
     >
+      <form novalidate @submit.prevent.stop="group.handleSubmit()">
       <fieldset>
         <legend>Profile</legend>
         <form.Field name="profile.age" v-slot="{ field, state: ageState }">
@@ -377,14 +380,15 @@ function invalidStep() {
           </p>
         </form.Field>
         <button type="button" @click="step = 0">Back</button>
-        <button type="button" :disabled="state.meta.isSubmitting" @click="group.handleSubmit()">
+        <button type="submit" :disabled="state.meta.isSubmitting">
           Apply for this session
         </button>
       </fieldset>
+      </form>
     </form.FormGroup>
     <p role="status">{{ status }}</p>
     <p v-if="accepted">Session-only email: {{ accepted.contact.email }}</p>
-  </form>
+  </div>
 </template>
 ```
 

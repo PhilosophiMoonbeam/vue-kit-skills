@@ -141,7 +141,7 @@ The disposal flag also covers an enclosing effect scope stopped **before** mount
 ## Ownership beyond components
 
 - Synchronously created setup effects stop automatically on component unmount. Non-Vue resources still require cleanup. Use `onScopeDispose` for a scope-oriented composable; use mount/unmount hooks when resources are specifically tied to rendered DOM.
-- `effectScope()` owns computed/watch effects created synchronously in `run()`. A detached scope (`effectScope(true)`) is independent; its creator must stop it. Async continuations do not automatically remain inside a prior `scope.run`.
+- `effectScope()` owns watch/watchEffect effects created synchronously in `run()`. A detached scope (`effectScope(true)`) is independent; its creator must stop it. Async continuations do not automatically remain inside a prior `scope.run`. In **3.5.44**, retained computed refs are not disposed/frozen by scope stop; a later read can still evaluate their pure getter. Scope disposal must terminate side effects and resources, not rely on making derived values unreadable. [Pinned scope](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/effectScope.ts), [computed implementation](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/computed.ts).
 - Do not suppress missing-scope warnings to conceal a lifetime bug. For utilities usable outside setup, accept explicit disposal ownership or return a disposer and document when it must run.
 - Do not create a watcher in every event handler or timer tick. Create one watcher synchronously and gate it on readiness; otherwise stop each dynamically created watcher.
 - `onWatcherCleanup` can be used by nested synchronous helpers within a watcher. It does not replace `onScopeDispose`, nor can it be registered after `await`. Prefer whichever explicit cleanup API matches the resource's real owner.
@@ -243,7 +243,11 @@ export function useTweenedNumber(
             return
           }
           const fraction = Math.min(1, (now - start) / durationMs)
-          displayed.value = from + (target - from) * fraction
+          displayed.value = fraction === 1
+            ? target
+            : (from < 0) === (target < 0)
+              ? from + (target - from) * fraction
+              : from * (1 - fraction) + target * fraction
           if (fraction < 1) frame = requestAnimationFrame(step)
         }
         frame = requestAnimationFrame(step)
@@ -256,7 +260,7 @@ export function useTweenedNumber(
 }
 ```
 
-Render the returned display ref, not a duplicate domain field; changes restart from the last displayed value. Use an installed animation library when its interpolation capabilities are needed, but kill its prior tween in the same watcher cleanup contract. Numbers outside JavaScript's safe precision are not made exact by tweening. See [component animation decisions](components.md#transition-and-persistent-element-animation-contracts) and [motion](motion.md).
+Render the returned display ref, not a duplicate domain field; changes restart from the last displayed value. Same-sign endpoints use a bounded difference; opposite-sign endpoints use weighted terms so subtracting two finite extremes cannot overflow. Completion assigns the exact target. Use an installed animation library when its interpolation capabilities are needed, but kill its prior tween in the same watcher cleanup contract. Numbers outside JavaScript's safe precision are not made exact by tweening. See [component animation decisions](components.md#transition-and-persistent-element-animation-contracts) and [motion](motion.md).
 
 Each frame also checks the live inputs before committing, so a frame queued before a batched watcher reruns cannot write an obsolete target or ignore a newly enabled reduced-motion preference. Cleanup marks that run inactive as well as cancelling its queued frame. The disposal flag prevents a pending mounted hook from starting frames after its enclosing scope has already stopped. Intermediate input changes batched away do not create separate runs.
 

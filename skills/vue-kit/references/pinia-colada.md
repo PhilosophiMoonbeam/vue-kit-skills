@@ -166,6 +166,8 @@ Do not depend on whichever observer last supplied an entry's options to reconcil
 
 In 1.4.8, `defineQuery` retains one setup result per query-cache instance. Losing the last scoped consumer **pauses** its setup scope and untracks its entries; it does not stop/recreate that setup or reset extra refs. A later consumer resumes the same setup. Entry `gcTime` governs cached query entries, not these extra controller refs. The setup scope belongs to the Pinia cache store and ends when that Pinia is disposed. Do not equate route unmount, cache-entry GC, and store disposal. [Exact `ensureDefinedQuery` / `defineQuery` lifecycle](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs)
 
+Private-identity retirement must also reset any extra refs retained by `defineQuery`; deleting entries or leaving the route does not reset that controller. Keep private inputs/results out of those extra refs, provide an explicit owner reset, or dispose the identity's Pinia when the whole app boundary ends. Do not stop an internal cache scope or add a second Pinia just to clear one feature.
+
 ## Freshness, errors, and cancellation
 
 | Concern | Colada 1.4.8 contract |
@@ -203,10 +205,10 @@ Throw/reject for failures; never catch and return `[]` to make a failed query ap
 - For cache optimism, put `onMutate` **before** `mutation` in the options object so its returned context is inferred in later hooks. Context properties can be undefined if `onMutate` throws.
 - Prefer UI-level optimism for a collocated form: overlay submitted variables while loading; remove the overlay on failure and display the error. Multiple pending operations need distinct operation IDs and mutation-cache entries, not just the latest `variables` ref.
 
-Complete cache-optimism composable against an **application-owned service interface**. Instantiate it **once in a shared app/feature provider** and route all relevant writes through the returned `rename`. It enforces one pending command in that shared writer; the service implementation and server conflict policy are application responsibilities.
+Complete cache-optimism composable against an **application-owned service interface**. Instantiate it **once in a shared identity-bound app/feature provider**, with a non-secret `cacheScope` covering principal/tenant/auth epoch as required, and route all writes through `rename`. Readers must use the same `taskOptions` partition. Stop this provider's scope before removing its private entries; recreate it for the next identity. One pending command is permitted, and its cache callbacks stop publishing after retirement. The service must retain submitted identity, authorize writes and enforce its conflict/version contract; disposal cannot undo an accepted server write.
 
 ```ts
-import { shallowRef } from 'vue'
+import { onScopeDispose, shallowRef } from 'vue'
 import { defineQueryOptions, useMutation, useQueryCache } from '@pinia/colada'
 
 export interface Task { id: number; tenant: string; title: string }
@@ -216,42 +218,52 @@ export interface TaskService {
   rename(input: Rename): Promise<Task>
 }
 
-export function taskOptions(service: TaskService, tenant: string, id: number) {
+export function taskOptions(
+  service: TaskService, cacheScope: string, tenant: string, id: number,
+) {
   return defineQueryOptions({
-    key: ['tasks', tenant, 'detail', id],
+    key: ['tasks', cacheScope, tenant, 'detail', id],
     query: ({ signal }) => service.get(tenant, id, signal),
   })
 }
 
-export function useSingleWriterRename(service: TaskService) {
+export function useSingleWriterRename(service: TaskService, cacheScope: string) {
   const cache = useQueryCache()
+  let active = true
   let writing = false
+  onScopeDispose(() => { active = false })
   const reconciliationError = shallowRef<unknown>(null)
   const mutation = useMutation({
     onMutate: (input: Rename) => {
-      const key = taskOptions(service, input.tenant, input.id).key
+      if (!active) throw new Error('This writer has retired')
+      const key = taskOptions(service, cacheScope, input.tenant, input.id).key
       cache.cancelQueries({ key, exact: true })
       const previous = cache.getQueryData(key)
       const installed = previous ? { ...previous, title: input.title } : undefined
       if (installed) cache.setQueryData(key, installed)
       return { key, previous, installed }
     },
-    mutation: (input: Rename) => service.rename(input),
+    mutation: (input: Rename) => {
+      if (!active) throw new Error('This writer has retired')
+      return service.rename(input)
+    },
     onError: (_error, _input, snapshot) => {
-      if (snapshot.previous && cache.getQueryData(snapshot.key) === snapshot.installed) {
+      if (active && snapshot.previous && cache.getQueryData(snapshot.key) === snapshot.installed) {
         cache.setQueryData(snapshot.key, snapshot.previous)
       }
     },
     onSettled: async (_data, _error, input) => {
+      if (!active) return
       try {
-        await cache.invalidateQueries({ key: ['tasks', input.tenant] })
+        await cache.invalidateQueries({ key: ['tasks', cacheScope, input.tenant] })
       } catch (cause) {
-        reconciliationError.value = cause
+        if (active) reconciliationError.value = cause
       }
     },
   })
 
   async function rename(input: Rename): Promise<Task> {
+    if (!active) throw new Error('This writer has retired')
     if (writing) throw new Error('A rename is already pending in this writer')
     writing = true
     reconciliationError.value = null
@@ -266,6 +278,8 @@ export function useSingleWriterRename(service: TaskService) {
 ```
 
 The separate `reconciliationError` is intentional, not a swallowed write error: consumers must present it as “refresh failed,” while `rename` still resolves an accepted write or rejects the original write failure. In 1.4.8, a rejecting `onSettled` overrides the mutation promise's outcome and prevents the following assignment of `asyncStatus = 'idle'`. Catch/report refresh failures inside that hook rather than misclassifying an accepted write or leaving loading stuck. [Pinned mutation-cache `mutate` finally block](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs)
+
+Mutation hooks can finish after their consumer unmounts; callers awaiting `rename()` must separately guard their own navigation/notice commits. The active guard and partitioned keys prevent this writer's late rollback/invalidation from reaching a later identity. Stop private readers/writers, cancel/remove the retired partition and clear its persisted state before exposing the next identity; removing a mutation-cache entry does not cancel its accepted server write.
 
 An unconditional snapshot rollback can erase another mutation or a background refresh. A reference-equality guard prevents restoring over a different installed value but **does not compose overlapping snapshots**: B can snapshot A's optimistic value, then restore it after both fail. Separately instantiated writers are not serialized. For overlapping writers, use an app-wide per-resource coordinator, operation overlays with rebasing, or server versions/conflict resolution. Earlier invalidations can overwrite later optimism too; a bare `onError => restore(previous)` is not a general concurrency solution. Never restore across a principal/tenant cache reset. [Optimistic updates](https://pinia-colada.esm.dev/guide/optimistic-updates.md), [invalidation](https://pinia-colada.esm.dev/guide/query-invalidation.md).
 

@@ -2,7 +2,7 @@
 
 ## When to read and version boundary
 
-Read when a route, remote cache, Pinia store, form, and auth integration touch the same workflow. This is **authored synthesis** of coordination boundaries, not a substitute for one library's API reference. Baseline **Vue 3.5.44**; query-specific factual contracts below refer to **@tanstack/vue-query 5.104.5**, with **Pinia 4.1.0** for application-state context. Use [Query](tanstack-query.md) or [Colada](pinia-colada.md), not both caches for the same resource. Their adapters, hydration APIs, and defaults are not interchangeable. [Package versions](https://registry.npmjs.org/@tanstack/vue-query/5.104.5).
+Read when route state, remote data, a form, and access scope touch the same workflow; neither Pinia nor a dedicated query cache is required. This is **authored synthesis** of coordination boundaries, not a substitute for one library's API reference. Baseline **Vue 3.5.44**; query-specific factual contracts below refer to **@tanstack/vue-query 5.104.5**, with **Pinia 4.1.0** for application-state context. Preserve the resource's existing read owner. In Nuxt that can be native data; when a dedicated cache is selected, use [Query](tanstack-query.md) or [Colada](pinia-colada.md), never two owners for the same resource. Their adapters, hydration APIs, and defaults are not interchangeable. [Package versions](https://registry.npmjs.org/@tanstack/vue-query/5.104.5).
 
 Start with [application architecture](architecture.md) if deployment and ownership are undecided. In Nuxt, [Nuxt core](nuxt.md#data-payload-and-cancellation) owns request context, native data and payloads; [Nuxt integrations](nuxt-integrations.md) owns selected store/query setup and a provider-neutral private-cache contract. Otherwise continue to [forms](forms.md), [state](state.md), [auth](auth.md), or [routing](routing.md) only for the mechanism being implemented.
 
@@ -120,7 +120,7 @@ Returning/awaiting invalidation in mutation success callbacks can extend pending
 
 ### Typed save coordinator without fabricated transport
 
-The complete TypeScript function below demonstrates **application-owned orchestration** with injected real capabilities. It is not a runnable backend example, query adapter, form validator, or authorization implementation. The adapter must validate response scope/resource identity and canonical data before returning `saved`; `acceptAndRefresh` must reconcile the captured scope only, cancel conflicting reads if needed, and reject when the chosen refresh policy fails. The caller uses a separate validation lock before invoking this function.
+The complete TypeScript function below demonstrates **application-owned orchestration** with injected real capabilities. It is not a runnable backend example, query adapter, form validator, or authorization implementation. Before returning `saved` or `conflict`, the adapter must validate each server snapshot's scope/resource identity and canonical data; a conflict's `latest` is not exempt. `acceptAndRefresh` must reconcile the captured scope only, cancel conflicting reads if needed, and reject when the chosen refresh policy fails. The caller uses a separate validation lock before invoking this function.
 
 ```ts
 export interface SaveInput {
@@ -204,7 +204,7 @@ Do not let the form's generic catch handler turn `committed/stale` into “Save 
 ## End-to-end responsibility handoff
 
 1. **Route coordinator:** normalize the selected case and list arguments; acquire the current access scope; decide leave behavior.
-2. **Query adapter:** load authorized detail/list under scoped keys and expose remote status separately from local form status.
+2. **Read adapter:** load authorized detail/list through the resource's one owner—Nuxt native data, the selected cache, or a local read lifecycle—and expose remote status separately from local form status. Apply the scoped identity and completion policy through that owner's actual API.
 3. **Editor:** capture editable values and revision; own validation, dirty state, duplicate lock, and field-error focus. A background cache update is not a draft reset instruction.
 4. **Command adapter:** obtain current credentials, send the real service's command/precondition, validate its response; the server verifies principal, tenant, action, object ownership and allowed fields atomically with the write as required by the domain.
 5. **Mutation coordinator:** translate confirmed write outcomes into cache reconciliation, keeping write failure distinct from read refresh failure.
@@ -215,11 +215,11 @@ Do not let the form's generic catch handler turn `committed/stale` into “Save 
 
 | Implementation question | Read next, in order |
 | --- | --- |
-| Which cache and how to key it? | One of [Query](tanstack-query.md) / [Colada](pinia-colada.md); [state](state.md) only if shared client state also exists |
+| Which read owner and key? | For Nuxt-native data, [Nuxt data ownership](nuxt.md#data-payload-and-cancellation); for the selected dedicated cache, [Query](tanstack-query.md) or [Colada](pinia-colada.md); for an uncached local read, [composables](composables.md). Add a cache only for a requirement the incumbent owner cannot meet; [state](state.md) only for shared client state |
 | How to bind and submit the draft? | [forms](forms.md), then the selected [VeeValidate](vee-validate.md), [TanStack Form](tanstack-form.md), [FormKit](formkit.md), or [Vuetify component](vuetify-components.md) branch |
-| How to protect UX and server operations? | [auth](auth.md), [routing](routing.md); backend authorization review remains separate |
+| How to protect UX and server operations? | [auth](auth.md), then host-owned routing: [Nuxt](nuxt.md) or standalone [routing](routing.md); backend authorization review remains separate |
 | Why does old work overwrite new data? | [composables](composables.md), then the selected cache's cancellation/mutation section |
-| Why is SSR leaking or refetching? | [debugging and SSR](debugging-ssr.md), then selected cache/store SSR section |
+| Why is SSR leaking or refetching? | [Nuxt request ownership](nuxt.md#request-context-and-state) for a Nuxt host; [debugging and SSR](debugging-ssr.md) for diagnosis; selected cache/store SSR section only when installed |
 | What proves the protocol? | [testing](testing.md) |
 
 **Proposed checks, not observed results:** reverse read completion order; tenant switch during read/save/refetch; logout with a kept-alive dirty editor; two edits with the same revision; save confirmed then refresh rejected; missing/expired credentials and forged tenant/resource IDs; browser Back during validation/save; reload after an unknown write outcome; two concurrent SSR requests. Assert user-visible state, actual server authorization, private-cache removal, and absence of stale navigation/announcements. A frontend unit test cannot prove backend isolation or atomic conditional writes.

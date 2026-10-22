@@ -221,7 +221,7 @@ const { page, lang, isDark } = useData()
 </template>
 ```
 
-The link matches this example's `cleanUrls: false`; adjust for the host's actual route policy. A loader's `ContentData.url` excludes `base`, so pass it through `withBase` in generated component links. `defineLoader({ watch, load })` handles non-Markdown data; `createContentLoader` handles Markdown globs relative to `srcDir`, with `includeSrc`, `render`, `excerpt`, and `transform` selecting shipped data. Avoid returning full source/HTML when only title/URL is needed; if customizing glob ignores, preserve exclusions for generated output and dependencies. [Exact client API](https://unpkg.com/vitepress@1.6.4/dist/client/index.d.ts), [exact Node API](https://unpkg.com/vitepress@1.6.4/dist/node/index.d.ts).
+The link matches this example's `cleanUrls: false`; adjust for the host's actual route policy. In 1.6.4, a loader's `ContentData.url` excludes `base` and is derived from the **source path**, not `rewrites`. Map rewritten routes explicitly before applying `withBase` to generated links. `defineLoader({ watch, load })` handles non-Markdown data; `createContentLoader` handles Markdown globs relative to `srcDir`, with `includeSrc`, `render`, `excerpt`, and `transform` selecting shipped data. Avoid returning full source/HTML when only title/URL is needed; if customizing glob ignores, preserve exclusions for generated output and dependencies. [Exact client API](https://unpkg.com/vitepress@1.6.4/dist/client/index.d.ts), [exact Node API](https://unpkg.com/vitepress@1.6.4/dist/node/index.d.ts), [1.6.4 loader URL construction](https://github.com/vuejs/vitepress/blob/v1.6.4/src/node/contentLoader.ts).
 
 ### Default-theme navigation, search and localization
 
@@ -240,8 +240,8 @@ export default defineConfig({
       options: {
         detailedView: false,
         _render(src, env, md) {
-          if (env.frontmatter?.search === false) return ''
-          return md.render(src, env)
+          const html = md.render(src, env)
+          return env.frontmatter?.search === false ? '' : html
         },
       },
     },
@@ -249,7 +249,7 @@ export default defineConfig({
 })
 ```
 
-A custom `_render` must preserve the `search: false` exclusion itself. `miniSearch.options`/`searchOptions` tune matching; per-locale options/translations must match indexed language content. Do not index secrets and expect an exclusion flag to protect published HTML. [Exact theme types](https://unpkg.com/vitepress@1.6.4/types/default-theme.d.ts), [search](https://vitepress.dev/reference/default-theme-search), [locales](https://vitepress.dev/guide/i18n).
+A custom `_render` must render **before** reading `env.frontmatter`: Markdown rendering populates it; the hook initially receives only path metadata. Then preserve the `search: false` exclusion itself. `miniSearch.options`/`searchOptions` tune matching; per-locale options/translations must match indexed language content. Do not index secrets and expect an exclusion flag to protect published HTML. [Exact indexing order](https://github.com/vuejs/vitepress/blob/v1.6.4/src/node/plugins/localSearchPlugin.ts), [exact theme types](https://unpkg.com/vitepress@1.6.4/types/default-theme.d.ts), [search](https://vitepress.dev/reference/default-theme-search), [locales](https://vitepress.dev/guide/i18n).
 
 ### Markdown authoring and 0.x migration
 

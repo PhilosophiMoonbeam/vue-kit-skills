@@ -46,7 +46,7 @@ Run `bun install` in that new directory; retain its `bun.lock`. `bun run postins
 }
 ```
 
-Preparation creates the app (Vue/browser), server (request runtime), shared (both) and node (configuration/build) TypeScript contexts, including auto-import and route declarations. Do not replace them with the bundled Vite SPA tsconfig, manually edit generated files, or import browser composables into server/shared code. Extend generated options via `typescript.tsConfig` or the matching `appTsConfig`, `serverTsConfig`, `sharedTsConfig`, `nodeTsConfig` in Nuxt config. [Generated project references](https://nuxt.com/docs/4.x/directory-structure/tsconfig), [exact 4.6.2 configuration declarations](https://unpkg.com/@nuxt/schema@4.6.2/dist/index.d.ts).
+Preparation creates the app (Vue/browser), server (request runtime), shared (both) and node (configuration/build) TypeScript contexts, including auto-import and route declarations. Do not replace them with the bundled Vite SPA tsconfig, manually edit generated files, or import browser composables into server/shared code. Extend generated options via `typescript.tsConfig` or the matching `appTsConfig`, `serverTsConfig`, `sharedTsConfig`, `nodeTsConfig` in Nuxt config. [Generated project references](https://nuxt.com/docs/4.x/directory-structure/tsconfig), [exact 4.6.2 configuration declarations](https://unpkg.com/@nuxt/schema@4.6.2/dist/index.d.mts).
 
 ## Directories, layers and aliases
 

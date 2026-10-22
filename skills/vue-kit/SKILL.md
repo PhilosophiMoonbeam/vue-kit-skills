@@ -183,6 +183,8 @@ to load every linked document. Combine owners only when the task crosses domains
 - [Scoped verification](assets/verification.json): exercised checks, exact versions,
   limitations and content-addressed packaged files. Earlier checks do not certify
   changed examples; consult [sources](references/sources.md) for evidence policy.
+- [Fifth-pass audit](assets/fifth-pass-audit.json): native review dispositions,
+  corrections and scoped evidence; risk labels are not confirmed defect totals.
 
 When verification is authorized, select the repository's own typecheck, tests,
 production build, and browser checks that exercise the change. For UI behavior,

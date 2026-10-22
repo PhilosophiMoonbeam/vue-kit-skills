@@ -62,6 +62,8 @@ afterEach(() => {
 })
 ```
 
+VTU 2.5.1 auto-unmount calls every tracked root's `unmount()` even if a test already called it. For tests that assert teardown or must remove attached hosts immediately, choose one owner: the explicit-cleanup files below call `disableAutoUnmount()` once and unmount every wrapper in `finally`. This file-local choice relies on Vitest's default `isolate: true`; preserve that isolation rather than combining it with a shared `isolate: false` environment. Other fixtures retain the setup's auto-unmount. [Exact tracking/cleanup](https://github.com/vuejs/test-utils/blob/v2.5.1/src/utils/autoUnmount.ts), [file isolation](https://vitest.dev/config/isolate.html).
+
 Consumer commands, not a record of executed verification:
 
 ```sh
@@ -218,7 +220,7 @@ The public adapter call count is useful here because duplicate submission is a r
 - Use `get` for required DOM, `find(...).exists()` for legitimate absence. Use `findComponent(Component)` for component boundaries, not as a substitute for a user-facing assertion. CSS selectors in VTU are not accessible-name queries; browser role/label locators catch a different class of regression.
 - Use `props`, `slots`, `global.provide`, `global.plugins` and narrowly scoped `global.stubs`. Drive a controlled `v-model` through a consumer host that handles `update:modelValue`; otherwise the test may observe an emission without exercising parent synchronization.
 - Test slot scope by supplying a consumer slot and asserting its output. Test attrs forwarding through the final input/button, including label, disabled and click behavior. Component-local registration is not registration for every descendant.
-- VTU 2 migration: `propsData` → `props`, `destroy()` → `unmount()`, `createLocalVue` → mount-local `global.plugins`, `mocks/provide/stubs` → `global.*`; `findAll()` returns an array. `setData` is for Options API data, not `<script setup>` refs. Keep Options API consumers supported without teaching tests that mutate component internals. [Migration](https://test-utils.vuejs.org/migration/).
+- VTU 2 migration: `propsData` → `props`, `destroy()` → `unmount()`, `createLocalVue` → mount-local `global.plugins`, `mocks/provide/stubs` → `global.*`; `findAll()` returns an array. In **2.5.1**, `setData` also has setup-state branches, including `<script setup>`; the older Options-only limitation is not this release's implementation. That access is still private-state mutation: drive public inputs/actions instead. Mount-time `data` overrides remain an Options API contract. [Migration](https://test-utils.vuejs.org/migration/), [exact `setData` implementation](https://github.com/vuejs/test-utils/blob/v2.5.1/src/vueWrapper.ts).
 
 VTU 2.5.0 removed class-component support; 2.5.1 is not a compatibility bridge for an incumbent class-component suite. Migrate the component definition under a separate authorized migration, or preserve the existing compatible test toolchain while diagnosing a narrow failure. In 2.5.x a child's emitted history is cleared when it unmounts, so inspect required public emissions before teardown. Although `defineExpose` bindings are accessible on wrapper instances, that access is not a reason to test private state. [VTU 2.5.0 release](https://github.com/vuejs/test-utils/releases/tag/v2.5.0).
 
@@ -261,12 +263,14 @@ Keep app installation in production and fixture plugin installation aligned, but
 Pure ref/computed-only functions can be exercised directly; lifecycle/injection consumers need setup context. This complete `src/subscription.spec.ts` fixture owns an explicit application-like subscription interface and asserts rendered behavior plus teardown. It does not require a private `wrapper.vm` escape or a global helper that obscures providers.
 
 ```ts
-import { mount } from '@vue/test-utils'
+import { disableAutoUnmount, mount } from '@vue/test-utils'
 import {
   defineComponent, h, inject, nextTick, onMounted, onUnmounted, ref,
   type InjectionKey,
 } from 'vue'
 import { expect, test } from 'vitest'
+
+disableAutoUnmount()
 
 interface Messages {
   subscribe: (receive: (value: string) => void) => () => void
@@ -303,22 +307,28 @@ test('receives messages and releases each consumer subscription', async () => {
   const first = mount(Consumer, {
     global: { provide: { [messagesKey as symbol]: source } },
   })
-  expect(first.get('[role="status"]').text()).toBe('Waiting')
-  for (const receive of listeners) receive('First update')
-  await nextTick()
-  expect(first.get('[role="status"]').text()).toBe('First update')
-  first.unmount()
+  try {
+    expect(first.get('[role="status"]').text()).toBe('Waiting')
+    for (const receive of listeners) receive('First update')
+    await nextTick()
+    expect(first.get('[role="status"]').text()).toBe('First update')
+  } finally {
+    first.unmount()
+  }
   expect(listeners.size).toBe(0)
 
   const second = mount(Consumer, {
     global: { provide: { [messagesKey as symbol]: source } },
   })
-  expect(listeners.size).toBe(1)
-  expect(second.get('[role="status"]').text()).toBe('Waiting')
-  for (const receive of listeners) receive('Second update')
-  await nextTick()
-  expect(second.get('[role="status"]').text()).toBe('Second update')
-  second.unmount()
+  try {
+    expect(listeners.size).toBe(1)
+    expect(second.get('[role="status"]').text()).toBe('Waiting')
+    for (const receive of listeners) receive('Second update')
+    await nextTick()
+    expect(second.get('[role="status"]').text()).toBe('Second update')
+  } finally {
+    second.unmount()
+  }
   expect(listeners.size).toBe(0)
 })
 ```

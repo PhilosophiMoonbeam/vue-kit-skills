@@ -175,10 +175,12 @@ async function focusAlpha() {
 
 ```ts
 // src/IdentityFocus.spec.ts
-import { mount } from '@vue/test-utils'
+import { disableAutoUnmount, mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { expect, test } from 'vitest'
 import IdentityFocus from './IdentityFocus.vue'
+
+disableAutoUnmount()
 
 test('focus follows Alpha identity after reversing the visible rows', async () => {
   const host = document.createElement('div')
@@ -197,7 +199,7 @@ test('focus follows Alpha identity after reversing the visible rows', async () =
 })
 ```
 
-This test checks the DOM order and focus outcome, not the internal Map or callback invocation order. A future implementation can use another identity-safe technique without changing the consumer contract.
+This isolated test file disables the shared setup's auto-unmount because its `finally` owns wrapper/host cleanup; otherwise VTU 2.5.1 attempts a second unmount. It checks DOM order and focus, not the internal Map or callback invocation order. Another identity-safe implementation can preserve the same consumer contract. See [teardown ownership](testing.md#minimal-deterministic-unit-setup).
 
 ### C3. Motion and caching change lifetime
 

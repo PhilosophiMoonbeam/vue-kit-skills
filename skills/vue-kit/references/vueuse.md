@@ -368,7 +368,7 @@ For `OnClickOutside`, configure `:options` and handle `@trigger`, rather than in
 
 ### Wrapper contracts beyond the common example
 
-Wrapper props/slots are defined by the [15.0.0 declarations](https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/dist/index.d.ts); DOM and forwarded options by the [published runtime](https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/dist/index.js). Slots generally expose reactively unwrapped composable results, **not** refs requiring `.value` in the template. Choose the matching workflow above before choosing its wrapper.
+Wrapper props/slots are defined by the [15.0.0 declarations](https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/dist/index.d.ts); DOM and forwarded options by the [published runtime](https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/dist/index.js). Most slots expose reactively unwrapped results; `UseDeviceMotion` is an exception and passes the composable's refs unchanged (for example, `acceleration.value?.x`). Choose the matching workflow above before choosing its wrapper.
 
 | Template-local task | Wrapper contract and exception |
 | --- | --- |
@@ -382,22 +382,22 @@ Wrapper props/slots are defined by the [15.0.0 declarations](https://cdn.jsdeliv
 | Theme/preference slots | `UseDark` exposes `{ isDark, toggleDark }`, `UseColorMode` exposes `{ mode, system, store }`. PreferredColorScheme/Contrast/Dark/Languages/ReducedMotion/ReducedTransparency wrappers expose named colorScheme/contrast/prefersDark/languages/motion/transparency. They are pure slots; keep one theme owner and deterministic SSR markup. |
 | Scalar browser state | `UseActiveElement`, `UseDocumentVisibility`, `UseOnline`, `UsePageLeave`, `UseWindowFocus`, and `UseDevicePixelRatio` wrap scalar returns under element/visibility/isOnline/isLeft/focused/pixelRatio. `UseBrowserLocation`, `UseWindowSize`, `UseMouse`, and `UseNetwork` expose their full result. All are pure slots; window-size initial dimensions are assumptions, not client measurements. |
 | Capability/sensor slots | `UseBattery`, `UseClipboard`, `UseDeviceMotion`, `UseDeviceOrientation`, `UseDevicesList`, `UseEyeDropper`, and `UseGeolocation` expose the matching capability's return, with that wrapper's declared options (not every core overload). Render support/permission/error states and explicit activation controls. Wrapping does not grant permission. |
-| Idle/pointer | Pure-slot `UseIdle` requires timeout and exposes idle/lastActive/reset. `UsePointer` accepts target window (default) or self; self relies on the component's resolved root, so use an explicit composable target for ambiguous roots. |
+| Idle/pointer | Pure-slot `UseIdle` requires timeout and exposes idle/lastActive/reset. `UsePointer` defaults to window. **In 15.0.0, target self receives a null ref never attached to rendered DOM**, so it does not track that slot's element. Use `usePointer({ target: elementRef })` for element-local events, not a guessed wrapper root. |
 | Clock slots | `UseNow`, `UseTimeAgo` (required time), and `UseTimestamp` force controls mode and accept scheduler for timing; removed interval/immediate timing props do not reappear through a wrapper. |
-| Ephemeral URL/pagination | `UseObjectUrl` passes the **URL string itself** to its slot, only when nonempty. `UseOffsetPagination` exposes currentPage/currentPageSize/pageCount/navigation and emits page-change/page-size-change/page-count-change with the whole state; it does not fetch a page. |
+| Ephemeral URL/pagination | `UseObjectUrl` passes the **URL string itself** to its slot, only when nonempty. `UseOffsetPagination` exposes currentPage/currentPageSize/pageCount/navigation and emits page-change/page-size-change/page-count-change with the whole state; it does not fetch a page. Its setup captures ordinary prop values, and `total: 0` becomes undefined/unbounded in v15. Use the composable with reactive inputs when totals/pages must change. |
 
 ### Directive payloads and lifecycle
 
-Most directives bind a handler or `[handler, options]` at mount; replacing that tuple later is **not** a general reactive-options contract. Keep handler closures current, pass specifically reactive options only where supported, or remount the target. `vScrollLock` explicitly handles binding updates. Unmount disposes scoped effects; it does not undo an application action already started by a handler.
+Most directives bind a handler or `[handler, options]` at mount; replacing that tuple later is **not** a general reactive-options contract. Keep handler closures current, pass specifically reactive options only where supported, or remount the target. Unmount disposes scoped effects; it does not undo an application action already started by a handler. `vScrollLock` receives updates but has the shared-closure defect below.
 
 | Directive | Handler/binding contract |
 | --- | --- |
 | `vOnClickOutside` | Pointer/focus event depending on options; `.bubble` selects bubble phase unless capture is explicitly overridden. Ignore the opening trigger when necessary. |
 | `vOnKeyStroke` | KeyboardEvent; argument is a key or comma-separated keys, **case-sensitive native key names** (e.g. Escape, not a fabricated lowercase alias). Options can set eventName/dedupe/target. |
 | `vOnLongPress` | PointerEvent; with a function binding, directive modifiers become long-press modifiers; tuple mode uses its own options. Provide another action path. |
-| `vElementBounding` | `{ height, bottom, left, right, top, width, x, y }`, not an observer entry array. |
+| `vElementBounding` | `{ height, bottom, left, right, top, width, x, y }` contains **refs**, not numbers or an observer entry array: read `bounds.width.value` in the handler. Unlike `vElementSize`, its watch is not immediate. |
 | `vElementHover` | Boolean hovered state. |
-| `vElementOverflow` | Full `{ isXOverflowed, isYOverflowed, update, stop }` state; second tuple item is an options object, not a bare observeMutation flag. The stop defect below still applies. |
+| `vElementOverflow` | Full `{ isXOverflowed, isYOverflowed, update, stop }` state, including refs; second tuple item is an options object, not a bare observeMutation flag. The stop defect below still applies. |
 | `vElementSize` | `{ width, height }`; optional tuple is `[handler, initialSize, options]`, with an immediate initial callback. |
 | `vElementVisibility` | Boolean by default; `{ controls: true }` changes the payload to full state including isVisible. |
 | `vInfiniteScroll` | Unwrapped scroll state; configure canLoadMore and avoid an exhausted-list load loop. |
@@ -405,7 +405,45 @@ Most directives bind a handler or `[handler, options]` at mount; replacing that 
 | `vMouseInElement` | Reactive mouse-in-element state **without stop**. |
 | `vResizeObserver` | Native `(entries, observer)` callback and box/window options. |
 | `vScroll` | Full scroll state on both scrolling and scroll-end; custom options onScroll/onStop still run. Avoid counting the same business action twice. |
-| `vScrollLock` | Boolean, not a callback tuple; true locks this element and updated values toggle it. It is not dialog background inertness. |
+| `vScrollLock` | Boolean, not a callback tuple. **15.0.0 shares one state/isMounted closure across all bindings**: later elements can toggle the first lock, and remount does not reinitialize it. Use one `useScrollLock` per distinct, stable target instead. Neither API provides background inertness. |
+
+The [pointer wrapper](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/usePointer/component.ts), [bounding directive](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useElementBounding/directive.ts), and [scroll-lock directive](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useScrollLock/directive.ts) establish these release-specific limits; do not extend them to later releases without inspecting their implementation.
+
+### Runnable SFC: explicit targets and directive refs
+
+Mount independent copies to give each scrollable panel its own pointer listener and lock. Keep each target stable for this owner's lifetime; do not stack multiple lock owners on the same element. The bounding handler reads its ref payload explicitly, unlike `vElementSize`'s numeric payload:
+
+```vue
+<script setup lang="ts">
+import { ref, useTemplateRef } from 'vue'
+import { usePointer, useScrollLock, type UseElementBoundingReturn } from '@vueuse/core'
+import { vElementBounding } from '@vueuse/components'
+
+const panel = useTemplateRef<HTMLElement>('panel')
+const { x, y } = usePointer({ target: panel })
+const locked = useScrollLock(panel)
+const width = ref(0)
+function measure(bounds: Pick<UseElementBoundingReturn, 'width'>) {
+  width.value = bounds.width.value
+}
+</script>
+
+<template>
+  <label><input v-model="locked" type="checkbox" /> Lock this panel's scrolling</label>
+  <p>Panel width: {{ width }} px. Last pointer: {{ x }}, {{ y }}</p>
+  <div ref="panel" v-element-bounding="[measure, { updateTiming: 'next-frame' }]" class="panel"
+    tabindex="0" role="region" aria-label="Scrollable pointer area">
+    <div class="content">Move the pointer here; resize or scroll this panel.</div>
+  </div>
+</template>
+
+<style scoped>
+.panel { width: 20rem; max-width: 100%; height: 10rem; overflow: auto; resize: horizontal; }
+.content { min-height: 20rem; }
+</style>
+```
+
+Pointer coordinates here remain viewport coordinates; the explicit target controls which element's events update them. Initial SSR markup uses the composables' defaults without reading DOM. In 15.0.0 the bounding directive installs its watcher after creating the composable; synchronous initial measurement can precede that watcher and never notify a handler when dimensions stay unchanged. `updateTiming: 'next-frame'` lets the watcher observe the first measurement. The handler still reads the supplied refs. Scope disposal removes listeners and unlocks the still-owned target. These are source-derived scenarios for the consuming browser, not executed browser results.
 
 ## Reactive math
 

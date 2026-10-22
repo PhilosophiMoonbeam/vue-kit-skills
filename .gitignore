@@ -7,3 +7,8 @@
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+# Refs
+.reference
+# Playwright CLI output (may contain credentials)
+.playwright-cli/

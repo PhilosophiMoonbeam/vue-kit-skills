@@ -6,12 +6,16 @@ Read for transitions, list movement, gestures, exit retention, layout animation,
 
 Target Vue **3.5.44**, Composition API and TypeScript. Registry metadata and published declarations inspected: **motion-v 2.8.0** and **@vueuse/motion 3.0.3**, both stable ESM packages with Vue `>=3.0.0` peers. This is API evidence, not an exercised compatibility matrix. `motion-v` additionally peers on `@vueuse/core >=10.0.0`; VueUse Motion depends on VueUse `^13.0.0`. Inspect the lockfile rather than assuming every VueUse package resolves to the application's version. [Motion package](https://unpkg.com/motion-v@2.8.0/package.json), [VueUse Motion package](https://unpkg.com/@vueuse/motion@3.0.3/package.json).
 
+**Exact-graph selection restriction:** `motion-v@2.8.0` + `@vueuse/core@15.0.0` + Vue **3.5.44** is **not supported under full declaration checking** in the researched Vue-tsc **3.3.13** / TypeScript **5.9.3** consumer (`skipLibCheck: false`). Core 15 satisfies Motion's declared `>=10` peer, but `use-in-view.d.ts` imports `MaybeRef` from core, which does not export it in this graph (TS2459). Motion also globally extends Vue's `HTMLAttributes` with its `Options`, whose gesture `onDrag` conflicts with Vue's native event signature. These are concrete package declaration defects, not missing optional browser ambient names. [Exact view import](https://unpkg.com/motion-v@2.8.0/dist/es/utils/use-in-view.d.ts), [global HTML augmentation](https://unpkg.com/motion-v@2.8.0/dist/es/types/instance.d.ts), [Motion drag signature](https://unpkg.com/motion-v@2.8.0/dist/es/features/gestures/drag/types.d.ts).
+
+Passing native consumers in a project that **already** uses `skipLibCheck: true` does not repair those declarations. **Never flip that flag, suppress declarations, or patch dependencies to adopt this offering.** Choose Vue/CSS when the incumbent full-declaration gate rejects the graph. The native Motion recipes below are bounded incumbent options **only where the existing dependency graph and compiler gate accept them**, not blanket native-type certification or permission to weaken that gate. Retain VueUse Motion only under its own incumbent ownership and accepted graph; it is not an automatic substitute solely because another engine's declarations fail.
+
 | Need | Prefer | Boundary |
 |---|---|---|
 | Color, opacity, focus/hover decoration | CSS transition | No animation dependency; target properties explicitly, not `transition: all`. |
 | One entering/leaving DOM root | Vue `Transition` + CSS | Supports `v-if`, `v-show`, keyed component replacement; one root only. |
 | Insert/remove/reorder a keyed list | Vue `TransitionGroup` + CSS | Unique stable keys; move class; no `mode`. |
-| Springs, coordinated variants, drag, retained exits, measured/shared layout, motion values | `motion-v` | Use Vue components/composables, not React hooks or JSX copied from engine documentation. |
+| Springs, coordinated variants, drag, retained exits, measured/shared layout, motion values | `motion-v` only where the existing graph/compiler gate accepts it | The exact core-15 graph fails full declaration checking; do not weaken the gate to adopt it. Use Vue APIs, not React hooks/JSX. |
 | Existing VueUse Motion directives/presets or imperative Popmotion integration | `@vueuse/motion` | Keep the incumbent engine; its variants and timing units differ from Motion for Vue. |
 | Vuetify/headless overlay already owns its transition | That component's transition API | Do not add another presence engine around its owned DOM. |
 
@@ -109,7 +113,7 @@ Install only if selected: `bun add --exact motion-v@2.8.0` and satisfy its VueUs
 
 | Concern | Vue API and constraint |
 |---|---|
-| Element/components | `<motion.div>`, `<motion.button>`, SVG tags; dynamic `<Motion as="section">`; `motion.create(Component)` requires deliberate DOM/attribute forwarding. |
+| Native elements | `<motion.div>`, `<motion.button>`, SVG tags; dynamic `<Motion as="section">`. Arbitrary SFC wrapping with `motion.create(Component)` is excluded from the 2.8.0 strict-TypeScript recipes; see the diagnostic below. |
 | State/variants | `:animate="target"` or variant label; `:variants="states"`; dynamic variant functions receive `:custom="value"`; labels propagate to descendants unless overridden. |
 | Timing | `:transition="{ type: 'tween', duration: 0.18 }"` uses **seconds**. Springs use `stiffness`/`damping`/`mass`, or duration/bounce; avoid mixing those control models. |
 | Gestures | `whileHover`, `whilePress`, `whileFocus`, `whileDrag`, `whileInView`; e.g. `:whilePress="{ scale: 0.98 }"`. Not React's `whileTap`. |
@@ -181,6 +185,8 @@ button:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
 
 `MotionConfig` defaults to **`reducedMotion="never"`**. Set `"user"` for transform/layout reduction; opacity/color remain enabled. In **2.8.0**, the published component/directive bridge passes `reducedMotionConfig` but does **not** forward the engine's `skipAnimations` constructor option; the public config type alone does not establish that behavior. `useAnimate` separately reads `skipAnimations` when creating scoped animations. Do not rely on either setting to retroactively stop running effects. This list swaps only its noninteractive animated subtree for static rows on a live preference change; the controls and application state remain mounted. Stop manual controls explicitly as below. [MotionConfig](https://motion.dev/docs/vue-motion-config), [configuration types](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion-config/types.d.ts), [published state bridge](https://unpkg.com/motion-v@2.8.0/dist/es/state/motion-state.mjs), [engine configuration](https://unpkg.com/motion-dom@14.3.0/dist/es/render/VisualElement.mjs), [scoped animation](https://unpkg.com/motion-v@2.8.0/dist/es/animation/hooks/use-animate.mjs).
 
+**Preference ownership in 2.8.0:** `useReducedMotion()` directly wraps VueUse's reactive media query; it does **not** read a parent `MotionConfig`. Conversely, the pinned engine copies `prefersReducedMotion.current` into each visual element's `shouldReduceMotion` during `mount()`, rather than subscribing that field to subsequent preference changes. A root `"user"` policy is therefore a useful initial baseline, **not a live interruption/retargeting contract** for an already-mounted element. Own live handling in the component: use the hook, stop imperative controls, and replace only noninteractive decoration with state-correct static DOM (as the list/directive examples do). Preserve controls/focus and business state outside that branch. Avoid remounting an entire interactive widget solely to refresh the engine's snapshot. [Exact Vue hook](https://unpkg.com/motion-v@2.8.0/dist/es/animation/hooks/use-reduced-motion.mjs), [pinned engine mount](https://unpkg.com/motion-dom@14.3.0/dist/es/render/VisualElement.mjs).
+
 For shared layout, namespace `layoutId` per repeated widget, or use a scoped `LayoutGroup id`. Give scrollable measured ancestors `layoutScroll`, fixed ancestors `layoutRoot`, and set `borderRadius`/`boxShadow` inline for scale correction. `layout="position"` avoids stretching text/images during size changes; SVG layout animation is not supported. [Layout documentation](https://motion.dev/docs/vue-layout-animations).
 
 Advanced coordination remains explicit: `AnimatePresence :custom="direction"` supplies data to dynamic exit variants after the child has logically left; `anchorX="right"` changes `popLayout` anchoring; `@exitComplete` signals **visual** removal only. `LayoutGroup` supports `inherit="id"`/`"group"` as well as boolean inheritance, and its slot exposes `renderKey`/`forceRender`; `useLayoutGroup().forceRender()` is the incumbent manual coordination route when a participating sibling would not otherwise update. Do not key business components by a changing render counter just to trigger motion. `layoutDependency` can limit measurements to a meaningful dependency; omitting it is safer than a stale token that hides real layout changes. `crossfade` controls shared-layout fading, not semantic visibility. [Presence types](https://unpkg.com/motion-v@2.8.0/dist/es/components/animate-presence/types.d.ts), [group contract](https://unpkg.com/motion-v@2.8.0/dist/es/components/use-layout-group.d.ts), [slot contract](https://unpkg.com/motion-v@2.8.0/dist/es/components/LayoutGroup.d.ts).
@@ -189,7 +195,13 @@ For optional staggered **decoration**, use `delayChildren: stagger(0.04)` (impor
 
 ### Custom nodes, directives, and feature ownership
 
-For an incumbent custom component, create `motion.create(Component)` **once**, outside render/computed callbacks. In **2.8.0**, Motion finds its DOM node through the wrapper instance's **`$el`**, skipping text/comment siblings; there is no React-style ref-forwarding requirement. Give the wrapped component one stable native root and forward styles, attributes (including Motion's discovery attribute), and relevant listeners to that same root. Ordinary single-root fallthrough suffices; with `inheritAttrs: false`, bind `$attrs` explicitly there. An exposed ref does not redirect measurement to a nested node, and a fragment's first element is not a supported multi-root measurement contract. Use `forwardMotionProps` only when that component intentionally consumes motion options. `asChild` likewise needs one deliberate child forwarding to that measured root, not an arbitrary Vuetify component. Keep component-library overlays on their own transition API. [Component options](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/utils.d.ts), [root resolution](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/use-motion-state.mjs), [element selection](https://unpkg.com/motion-v@2.8.0/dist/es/components/hooks/use-motion-elm.mjs).
+**Excluded at 2.8.0: arbitrary SFC `motion.create(Component)` wrapping in strict TypeScript.** The published overload constrains its argument to Vue's default `DefineComponent`; the strict Vue 3.5.44 consumer rejected both a required-prop SFC and a prop-free slotted SFC, including a `ComputedOptions` index-signature incompatibility. Removing required props is not a fix. Do not cast, suppress the error, alter dependency declarations, or invent a forwarding shim. Keep the custom component intact and move animation ownership to a native `motion.span`/`motion.div` only when that element is semantically valid; otherwise retain the component's existing transition API. This exclusion does not remove the working native Motion API. [Exact factory declaration](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/utils.d.ts).
+
+The supported native owner binds its own attributes and typed style object directly, for example `:style="{ display: 'inline-block' }"` on `motion.span`, with targets and lifecycle owned by the enclosing setup. Do not pass CSS strings where Motion's style declaration requires an object. Keep persistent controls outside any reduced-motion decoration branch, as in the complete directive example below.
+
+For migration/diagnosis only, the **runtime** finds a wrapped component's node through the wrapper proxy's `$el`, skipping text/comment siblings. An exposed nested ref does not redirect measurement, and a fragment is not a multi-root measurement contract. Runtime discovery and attribute forwarding do not prove strict factory type compatibility. [Root resolution](https://unpkg.com/motion-v@2.8.0/dist/es/components/motion/use-motion-state.mjs), [element selection](https://unpkg.com/motion-v@2.8.0/dist/es/components/hooks/use-motion-elm.mjs).
+
+For hooks needing `Ref<HTMLElement | null>`, use a `useTemplateRef<HTMLElement>` on a native measured ancestor; never type a component ref as an HTMLElement merely to satisfy a signature. The published `useDomRef()` unwraps `$el`, but its **2.8.0 declaration returns `Ref<any, any>`**, so it does not establish a typed component-to-element contract or repair the factory's SFC constraint. [Runtime helper](https://unpkg.com/motion-v@2.8.0/dist/es/utils/use-dom-ref.mjs), [exact declaration](https://unpkg.com/motion-v@2.8.0/dist/es/utils/use-dom-ref.d.ts).
 
 The **motion-v** directive is a genuine alternative to wrapper components. Complete `DirectiveAccent.vue`; its `vMotion` local binding registers `v-motion` without a global plugin. A live reduced preference replaces only the decorative node with a static counterpart, disposing the old directive without remounting the control. Changing only `transition.duration` does not retarget an unchanged animation target. [Engine target comparison](https://unpkg.com/motion-dom@14.3.0/dist/es/render/utils/animation-state.mjs).
 
@@ -407,6 +419,8 @@ For a large motion surface, `LazyMotion` + `m` components loads a chosen feature
 
 Install only if selected: `bun add --exact @vueuse/motion@3.0.3`. Its engine is **Popmotion 11**, not Motion for Vue or WAAPI. Timing numbers are **milliseconds**, despite seconds wording in some copied declaration comments: `duration: 180` is 180ms, not `0.18`. [Official timing documentation](https://motion.vueuse.org/features/transition-properties/), [exact runtime](https://unpkg.com/@vueuse/motion@3.0.3/dist/index.mjs).
 
+**Keep, do not duplicate:** retaining 3.0.3 for an existing Popmotion controller/preset integration is deliberate, not an instruction to install it beside Motion for Vue for ordinary reveals. Its different control/lifecycle API is a real incumbent migration boundary; package overlap or its older VueUse dependency alone is not evidence of incompatibility with Vue 3.5.44. New simple effects still default to native Vue/CSS, while Motion for Vue owns newly required layout/presence/drag features. Migrate an owned element end-to-end if its actual requirements change; do not translate only timing numbers while leaving both engines' directives or transforms attached. No recommendation here depends on a declaration-only promise, global registry fallback, or dependency patch.
+
 ### Directive plugin versus component-owned composable
 
 The directive requires registration. The following is a **contextual application-entry fragment** (`app` is the application's existing Vue App):
@@ -440,7 +454,7 @@ const selected = ref(false)
 const labelId = useId()
 const target = useTemplateRef<HTMLElement>('accent')
 const reduced = useReducedMotion()
-const accent = useMotion(target, { initial: { scaleX: 1, opacity: 0.35 } }, {
+const accentMotion = useMotion(target, { initial: { scaleX: 1, opacity: 0.35 } }, {
   lifeCycleHooks: false,
   syncVariants: false,
   visibilityHooks: false,
@@ -449,13 +463,13 @@ const accent = useMotion(target, { initial: { scaleX: 1, opacity: 0.35 } }, {
 
 watch([target, selected, reduced], ([element, isSelected, reduce]) => {
   if (!element) return
-  accent.stop()
+  accentMotion.stop()
   const state = { scaleX: isSelected ? 1 : 0.6, opacity: isSelected ? 1 : 0.35 }
-  if (reduce) accent.set({ ...state, scaleX: 1 })
-  else void accent.apply({ ...state, transition: { type: 'tween', duration: 160 } })
+  if (reduce) accentMotion.set({ ...state, scaleX: 1 })
+  else void accentMotion.apply({ ...state, transition: { type: 'tween', duration: 160 } })
 }, { immediate: true, flush: 'post' })
 
-onBeforeUnmount(() => accent.stop())
+onBeforeUnmount(() => accentMotion.stop())
 </script>
 
 <template>
@@ -476,6 +490,8 @@ onBeforeUnmount(() => accent.stop())
 }
 </style>
 ```
+
+**Template-ref naming invariant:** the string key `ref="accent"` must not also name a non-ref setup binding. In an inline-compiled SFC, `const accent = useMotion(...)` made that native ref resolve to the controller object instead of the intended template-ref key, causing a renderer failure. Keep the controller named `accentMotion` and the DOM target registered through `useTemplateRef('accent')`. This is an application naming defect, not evidence that nested VueUse packages create another Vue runtime. [Pinned compiler ref-binding resolution](https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-core/src/transforms/transformElement.ts).
 
 `useMotion` assembles element properties, transitions, variants, and optional features. Component-owned values register unmount cleanup; the example also stops in `onBeforeUnmount` and before every retarget. For manual `apply()` sequences, stopping a transition is not a guarantee its promise resolves: avoid post-await state commits without a current-generation guard. Direct `set()` is the reliable immediate reduced-motion path. `useSpring(motionProperties, options)` is the lower-level Popmotion alternative; its `set()` animates and `stop()` cancels—do not confuse that `set()` with `useMotion().set()`. [Controls](https://motion.vueuse.org/api/use-motion-controls/), [spring](https://motion.vueuse.org/api/use-spring/).
 
@@ -570,6 +586,10 @@ For incumbent presence/debug tooling, the v2 discovery attribute (historically `
 ## Verification boundary and acceptance checks
 
 Complete SFCs target Vue 3.5 with their named selected dependency. The [verification record](../assets/verification.json) defines executed compiler/type scopes, not a universal motion/browser/accessibility pass. The list/plugin-entry and motion-value setup fragments are explicitly contextual, not standalone applications; the Nuxt configs require an existing Nuxt project.
+
+Current isolated production consumers exercised native Motion attributes/transform, live reduced-motion decoration ownership, its config-only mount-time limitation, and the exact retained Popmotion selected-state/reduced-preference SFC. The original controller/template-ref collision crashed production mounting; renaming the controller fixed it. Application-source checks used the existing `skipLibCheck: true` profile; a separate current compiler confirmed the excluded SFC factory and full-declaration failures. None of this certifies all recipes, SSR hydration, gesture accessibility or every engine patch.
+
+Application-source typechecking is not complete dependency-declaration compatibility: apply the [exact-graph restriction](#baseline-and-selection) before selecting native Motion APIs. The separate full-declaration consumer also reported missing ambient Bluetooth/Temporal/HTMLWebViewElement names. Those are **ambient coverage requirements**, distinct from Motion's concrete wrong-module `MaybeRef` import and `HTMLAttributes.onDrag` conflict; adding ambient declarations cannot fix the import/signature defects. SFC `motion.create` remains excluded independently by its TS2769 factory constraint. Report each gate's actual scope rather than calling an application build with library checking skipped a full declaration pass.
 
 The integration owner should exercise: static/SSR content with JavaScript unavailable; initial and live reduced preference; rapid repeated activation and stop; unmount during animation; focus before/after removal; touch and keyboard activation; stable identity after sort/reset; layout inside scrolled/fixed ancestors; and no stale async sequence writing after disposal. Assert real business/DOM state rather than waiting a fixed animation duration. Inspect that no duplicate transition engine or global directive owns the same element. These are proposed checks, not reported passes.
 

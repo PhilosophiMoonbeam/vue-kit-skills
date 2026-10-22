@@ -374,30 +374,26 @@ Wrapper props/slots are defined by the [15.0.0 declarations](https://cdn.jsdeliv
 | --- | --- |
 | Outside click/press | `OnClickOutside`/`OnLongPress` render an `as` element (default div), accept `options`, and emit trigger; long-press slot also receives press state. They are targets, not portal-aware dialog systems; add ignored triggers/regions explicitly. |
 | Position and geometry | `UseDraggable` renders a target and exposes x/y/style/isDragging; apply style deliberately. `storageKey` enables position persistence and `storageType` selects local/session. `UseElementBounding` exposes rectangle/update; `UseElementSize` accepts initial width/height and box; `UseElementVisibility` exposes controls plus isVisible (its controls mode is forced). These wrappers render an `as` target. |
-| Overflow | `UseElementOverflow` renders an `as` target, accepts observeMutation, and exposes overflow state/update; its update event reports observer ticks. Read the pinned stop/SSR defect below before choosing this wrapper or its directive. |
 | Fullscreen/pointer capture | `UseFullscreen`, `UseMouseInElement`, `UseMousePressed`, and `UsePointerLock` render target elements. Fullscreen commands remain permission/activation dependent; mouse-in-element exposes element coordinates/isOutside, mouse-pressed exposes pressed/x/y/sourceType, pointer-lock exposes lock/unlock/support/locked state. These do not add keyboard alternatives. |
-| Safe area | `UseScreenSafeArea` applies selected top/right/bottom/left padding and exposes their CSS values. **v15 runtime omits as from declared runtime props**, so do not rely on its TypeScript as field to change the div; use the core composable when owning another element. |
 | Images | `UseImage` accepts image options and exposes loading/error state to its default slot. Loading/error slots take precedence. With no default slot, it renders an img (or as) carrying its props. Supply alt and a real failure presentation; preloading alone is not accessible image markup. |
 | Virtual rows | `UseVirtualList` requires list and options, renders its own container/wrapper divs, defaults height to 300px, slots each `{ index, data }`, and exposes scrollTo through its component ref. Match actual row height to itemHeight; as is not its element customization API. |
 | Theme/preference slots | `UseDark` exposes `{ isDark, toggleDark }`, `UseColorMode` exposes `{ mode, system, store }`. PreferredColorScheme/Contrast/Dark/Languages/ReducedMotion/ReducedTransparency wrappers expose named colorScheme/contrast/prefersDark/languages/motion/transparency. They are pure slots; keep one theme owner and deterministic SSR markup. |
 | Scalar browser state | `UseActiveElement`, `UseDocumentVisibility`, `UseOnline`, `UsePageLeave`, `UseWindowFocus`, and `UseDevicePixelRatio` wrap scalar returns under element/visibility/isOnline/isLeft/focused/pixelRatio. `UseBrowserLocation`, `UseWindowSize`, `UseMouse`, and `UseNetwork` expose their full result. All are pure slots; window-size initial dimensions are assumptions, not client measurements. |
 | Capability/sensor slots | `UseBattery`, `UseClipboard`, `UseDeviceMotion`, `UseDeviceOrientation`, `UseDevicesList`, `UseEyeDropper`, and `UseGeolocation` expose the matching capability's return, with that wrapper's declared options (not every core overload). Render support/permission/error states and explicit activation controls. Wrapping does not grant permission. |
-| Idle/pointer | Pure-slot `UseIdle` requires timeout and exposes idle/lastActive/reset. `UsePointer` defaults to window. **In 15.0.0, target self receives a null ref never attached to rendered DOM**, so it does not track that slot's element. Use `usePointer({ target: elementRef })` for element-local events, not a guessed wrapper root. |
+| Idle | Pure-slot `UseIdle` requires timeout and exposes idle/lastActive/reset. For pointer events use the explicitly targeted core composable below. |
 | Clock slots | `UseNow`, `UseTimeAgo` (required time), and `UseTimestamp` force controls mode and accept scheduler for timing; removed interval/immediate timing props do not reappear through a wrapper. |
-| Ephemeral URL/pagination | `UseObjectUrl` passes the **URL string itself** to its slot, only when nonempty. `UseOffsetPagination` exposes currentPage/currentPageSize/pageCount/navigation and emits page-change/page-size-change/page-count-change with the whole state; it does not fetch a page. Its setup captures ordinary prop values, and `total: 0` becomes undefined/unbounded in v15. Use the composable with reactive inputs when totals/pages must change. |
+| Ephemeral URL | `UseObjectUrl` passes the **URL string itself** to its slot, only when nonempty. |
 
 ### Directive payloads and lifecycle
 
-Most directives bind a handler or `[handler, options]` at mount; replacing that tuple later is **not** a general reactive-options contract. Keep handler closures current, pass specifically reactive options only where supported, or remount the target. Unmount disposes scoped effects; it does not undo an application action already started by a handler. `vScrollLock` receives updates but has the shared-closure defect below.
+Most directives bind a handler or `[handler, options]` at mount; replacing that tuple later is **not** a general reactive-options contract. Keep handler closures current, pass specifically reactive options only where supported, or remount the target. Unmount disposes scoped effects; it does not undo an application action already started by a handler. The excluded adapters below are not selection choices.
 
 | Directive | Handler/binding contract |
 | --- | --- |
 | `vOnClickOutside` | Pointer/focus event depending on options; `.bubble` selects bubble phase unless capture is explicitly overridden. Ignore the opening trigger when necessary. |
 | `vOnKeyStroke` | KeyboardEvent; argument is a key or comma-separated keys, **case-sensitive native key names** (e.g. Escape, not a fabricated lowercase alias). Options can set eventName/dedupe/target. |
 | `vOnLongPress` | PointerEvent; with a function binding, directive modifiers become long-press modifiers; tuple mode uses its own options. Provide another action path. |
-| `vElementBounding` | `{ height, bottom, left, right, top, width, x, y }` contains **refs**, not numbers or an observer entry array: read `bounds.width.value` in the handler. Unlike `vElementSize`, its watch is not immediate. |
 | `vElementHover` | Boolean hovered state. |
-| `vElementOverflow` | Full `{ isXOverflowed, isYOverflowed, update, stop }` state, including refs; second tuple item is an options object, not a bare observeMutation flag. The stop defect below still applies. |
 | `vElementSize` | `{ width, height }`; optional tuple is `[handler, initialSize, options]`, with an immediate initial callback. |
 | `vElementVisibility` | Boolean by default; `{ controls: true }` changes the payload to full state including isVisible. |
 | `vInfiniteScroll` | Unwrapped scroll state; configure canLoadMore and avoid an exhausted-list load loop. |
@@ -405,33 +401,63 @@ Most directives bind a handler or `[handler, options]` at mount; replacing that 
 | `vMouseInElement` | Reactive mouse-in-element state **without stop**. |
 | `vResizeObserver` | Native `(entries, observer)` callback and box/window options. |
 | `vScroll` | Full scroll state on both scrolling and scroll-end; custom options onScroll/onStop still run. Avoid counting the same business action twice. |
-| `vScrollLock` | Boolean, not a callback tuple. **15.0.0 shares one state/isMounted closure across all bindings**: later elements can toggle the first lock, and remount does not reinitialize it. Use one `useScrollLock` per distinct, stable target instead. Neither API provides background inertness. |
 
-The [pointer wrapper](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/usePointer/component.ts), [bounding directive](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useElementBounding/directive.ts), and [scroll-lock directive](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useScrollLock/directive.ts) establish these release-specific limits; do not extend them to later releases without inspecting their implementation.
+### Excluded v15 adapters: migrate, do not work around them
 
-### Runnable SFC: explicit targets and directive refs
+These exclusions are **15.0.0 source findings**, not a blanket rejection of VueUse or proof about a later release. Do not install a dependency patch, substitute a global, or keep the broken adapter behind a client-only boundary.
 
-Mount independent copies to give each scrollable panel its own pointer listener and lock. Keep each target stable for this owner's lifetime; do not stack multiple lock owners on the same element. The bounding handler reads its ref payload explicitly, unlike `vElementSize`'s numeric payload:
+| Excluded offering | Exact failure and supported replacement |
+| --- | --- |
+| `useElementOverflow`, `UseElementOverflow`, `vElementOverflow` | The core return object references undeclared `stop`: constructing it throws on ordinary Node SSR, while a browser can resolve `window.stop` instead of observer disposal. All three surfaces inherit that implementation. Own overflow comparison with `useResizeObserver`/`useMutationObserver`, an initial mount measurement, and the owning scope's cleanup; the complete component below does this. |
+| `vScrollLock` | One module-level `state`/`isMounted` closure is shared across bindings; updating the second element can toggle the first, and remount cannot initialize a fresh lock. Use one `useScrollLock` for each distinct, stable target, never multiple lock owners for the same body/element. Established dialog systems should retain their own lock manager. |
+| `UsePointer` | `target="self"` passes a null ref that is never attached to a DOM node. Remove the wrapper and call `usePointer({ target: elementRef })`; targeting selects event origin, **not element-relative coordinate conversion**. |
+| `UseOffsetPagination` | The published setup evaluates `total` once and applies a falsy-total fallback, turning **zero into unbounded pagination**; spreading scalar props also captures their setup values. Do not confuse a newly mounted controller with a reactive update of the original one. Use core `useOffsetPagination` with reactive total/pageSize and an owner-writable page ref. |
+| `vElementBounding` | Creates the core measurement before installing a non-immediate watcher. A synchronous initial measurement can be missed forever if geometry stays unchanged. Do not require a later resize or schedule an adapter workaround: consume `useElementBounding` refs directly. For a notification, watch those refs with `{ immediate: true }`; the initial zero state means “not measured,” not a real size. |
+| `UseScreenSafeArea` | Its declared `as` prop is absent from runtime props, so the advertised root customization does not work. Own the native semantic element and use CSS `env(safe-area-inset-top, 0px)` (and the other sides), or core `useScreenSafeArea()` refs when script actually needs the values. Do not accept a div merely to preserve this wrapper. [Pinned adapter](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useScreenSafeArea/component.ts). |
+
+Primary evidence: [overflow core](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useElementOverflow/index.ts), [overflow component](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useElementOverflow/component.ts), [pointer component](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/usePointer/component.ts), [pagination component](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useOffsetPagination/component.ts), [bounding directive](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useElementBounding/directive.ts), [scroll-lock directive](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useScrollLock/directive.ts). The [published components runtime](https://cdn.jsdelivr.net/npm/@vueuse/components@15.0.0/dist/index.js) and [published core runtime](https://cdn.jsdelivr.net/npm/@vueuse/core@15.0.0/dist/index.js) are the release artifacts, not latest-branch documentation.
+
+### Runnable SFC: owned pointer, lock, geometry, and overflow
+
+Mount independent copies to give each scrollable panel its own pointer listener and lock. Keep the panel stable for this owner's lifetime. The component owns overflow measurement, not a replacement library facade: resize observes the panel and its immediate HTML children; mutation observes content/style changes and retargets resize observation after child replacement.
 
 ```vue
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue'
-import { usePointer, useScrollLock, type UseElementBoundingReturn } from '@vueuse/core'
-import { vElementBounding } from '@vueuse/components'
+import { computed, onMounted, shallowRef, useTemplateRef } from 'vue'
+import { useElementBounding, useMutationObserver, usePointer, useResizeObserver, useScrollLock } from '@vueuse/core'
 
 const panel = useTemplateRef<HTMLElement>('panel')
 const { x, y } = usePointer({ target: panel })
 const locked = useScrollLock(panel)
-const width = ref(0)
-function measure(bounds: Pick<UseElementBoundingReturn, 'width'>) {
-  width.value = bounds.width.value
+const { width } = useElementBounding(panel)
+const isXOverflowed = shallowRef(false)
+const isYOverflowed = shallowRef(false)
+const childrenRevision = shallowRef(0)
+const resizeTargets = computed(() => {
+  void childrenRevision.value
+  const element = panel.value
+  return element
+    ? [element, ...Array.from(element.children).filter((child): child is HTMLElement => child instanceof HTMLElement)]
+    : []
+})
+function measureOverflow() {
+  const element = panel.value
+  isXOverflowed.value = !!element && element.scrollWidth > element.clientWidth
+  isYOverflowed.value = !!element && element.scrollHeight > element.clientHeight
 }
+useResizeObserver(resizeTargets, measureOverflow)
+useMutationObserver(panel, () => {
+  childrenRevision.value++
+  measureOverflow()
+}, { childList: true, subtree: true, characterData: true, attributes: true })
+onMounted(measureOverflow)
 </script>
 
 <template>
   <label><input v-model="locked" type="checkbox" /> Lock this panel's scrolling</label>
   <p>Panel width: {{ width }} px. Last pointer: {{ x }}, {{ y }}</p>
-  <div ref="panel" v-element-bounding="[measure, { updateTiming: 'next-frame' }]" class="panel"
+  <p>Overflow: horizontal {{ isXOverflowed }}, vertical {{ isYOverflowed }}</p>
+  <div ref="panel" class="panel"
     tabindex="0" role="region" aria-label="Scrollable pointer area">
     <div class="content">Move the pointer here; resize or scroll this panel.</div>
   </div>
@@ -443,7 +469,35 @@ function measure(bounds: Pick<UseElementBoundingReturn, 'width'>) {
 </style>
 ```
 
-Pointer coordinates here remain viewport coordinates; the explicit target controls which element's events update them. Initial SSR markup uses the composables' defaults without reading DOM. In 15.0.0 the bounding directive installs its watcher after creating the composable; synchronous initial measurement can precede that watcher and never notify a handler when dimensions stay unchanged. `updateTiming: 'next-frame'` lets the watcher observe the first measurement. The handler still reads the supplied refs. Scope disposal removes listeners and unlocks the still-owned target. These are source-derived scenarios for the consuming browser, not executed browser results.
+Pointer coordinates remain viewport coordinates; the explicit target controls which element's events update them. Initial SSR markup uses defaults without reading DOM. Measurement starts on mount/observer delivery. The `instanceof HTMLElement` check executes only after a panel exists in the browser; keep this component in its normal document realm. Core observers/listeners stop with the scope, and core scroll-lock disposal restores the stable owned target. Test actual unmount (`isConnected === false`) before asserting the detached element's restored inline overflow: a renderer failure that leaves the element connected is not a cleanup failure. This is not a reference-counted body-lock manager or an accessible dialog.
+
+### Runnable SFC: reactive bounded pagination without the adapter
+
+The parent supplies a finite nonnegative integer `total` and positive integer `pageSize`; those are application data contracts, not a guessed backend. Local `page` is this component's writable navigation owner. Prop updates remain live through getters; a zero total has one empty logical page, never an infinite page count. This example does not fetch data or infer that a page number is a server cache key.
+
+```vue
+<script setup lang="ts">
+import { shallowRef } from 'vue'
+import { useOffsetPagination } from '@vueuse/core'
+
+const props = defineProps<{ total: number; pageSize: number }>()
+const page = shallowRef(1)
+const { currentPage, pageCount, isFirstPage, isLastPage, prev, next } = useOffsetPagination({
+  total: () => props.total,
+  pageSize: () => props.pageSize,
+  page,
+})
+</script>
+
+<template>
+  <p v-if="props.total === 0">No records</p>
+  <p v-else>Page {{ currentPage }} of {{ pageCount }}</p>
+  <button type="button" :disabled="isFirstPage" @click="prev">Previous page</button>
+  <button type="button" :disabled="isLastPage" @click="next">Next page</button>
+</template>
+```
+
+Core accepts a getter for `total`/`pageSize`, but `page` is **`MaybeRef<number>`**, not a getter. For controlled pagination use an owner-writable model ref rather than mutating readonly props. Core clamps page count to at least one, including an empty total; assert empty UI and disabled navigation separately. [Pinned core signature/implementation](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useOffsetPagination/index.ts).
 
 ## Reactive math
 
@@ -485,7 +539,7 @@ Replace removed VueUse `templateRef` with Vue 3.5 `useTemplateRef`. Replace depr
 - **`useWebMCP`** registers an experimental document.modelContext tool. Name/description/inputSchema/annotations/enabled are reactive and changes re-register it; scope disposal aborts the registration signal. `isSupported` checks callable registerTool, `isRegistered` tracks registration, and error reports registration failures such as policy denial. Execute/formatOutput failures become isError responses and invoke onError; the error ref is not the execution-error channel. A schema/TypeScript generic is not application authorization or runtime validation: validate mutation arguments and permissions in the actual operation. [Exact source](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useWebMCP/index.ts).
 - **`useTemporalNow`** throws if neither native Temporal nor an explicit temporal implementation exists. It returns `{ now, timezone, calendar, isActive, pause, resume, ...helpers }`, defaults timezone UTC/calendar gregory, and accepts scheduler. Change timezone/calendar refs to refresh now. `format(options)` is on the **returned controller**, not `now.value.format`; ZonedDateTime uses toLocaleString. toTimezone/toCalendar/add/subtract return converted values rather than mutating now. Use a deliberate SSR clock strategy; a non-running server scheduler still constructs a current timestamp. [Exact source](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useTemporalNow/index.ts).
 - **`useLiveAnnouncer({ idPrefix, window })`** returns announce(message, mode?, timeout?), polite, and assertive; the timeout clears a message, not an announcement completion signal. It creates status/alert live regions, replaces text on nextTick, and reference-counts cleanup for a shared prefix. Call after body exists, choose unique prefixes for independent owners/realms, and avoid also announcing the same status through visible aria-live markup. [Exact source](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useLiveAnnouncer/index.ts).
-- **`useElementOverflow(target, { observeMutation, onUpdated, window })`** compares scrollWidth/scrollHeight against offsetWidth/offsetHeight; ResizeObserver watches the target and its immediate HTML children. Mutation observation is opt-in (true enables childList/subtree/characterData); call update after changes not captured by those observers. **Published 15.0.0 mistakenly returns the unbound global `stop`, not an observer-disposal closure.** Do not call its returned stop as cleanup: in a browser it resolves the global window stop function, and in an SSR environment without that global constructing the return object can throw. Mount the owner client-only, let its effect scope/unmount dispose observers, or use a directly owned resize/mutation observer when early stopping is required. This also affects the overflow wrapper/directive; do not copy the erroneous “stop effectScope” comment as an API guarantee. [Published runtime](https://cdn.jsdelivr.net/npm/@vueuse/core@15.0.0/dist/index.js), [tagged defect](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/core/useElementOverflow/index.ts). This is source evidence, not an exercised browser/SSR result.
+- **`useElementOverflow` and its adapters are excluded at 15.0.0.** See [excluded adapters](#excluded-v15-adapters-migrate-do-not-work-around-them) for the undeclared-stop SSR/disposal defect and the directly owned observer replacement. Client-only mounting does not repair its returned cleanup contract.
 
 Runnable setup-time composable exposing only an existing local count; absence of WebMCP is represented by its support state, not a fabricated backend:
 
@@ -515,7 +569,7 @@ When an upgrade changes behavior, compare these documented fixes before adding a
 
 ## Verification boundary
 
-Versions, declarations, and the behaviors called out above were researched against registry metadata and v15 source. Examples are authored runnable SFCs/modules, not executed here; no build, test, browser, or SSR hydration result is claimed. In the consuming app, verify target replacement/unmount, debounce teardown, abort/re-execute races, storage denial/malformed content, SSR first-render agreement, empty math inputs, and disclosure keyboard operation. Keep broader checks in [testing](testing.md).
+Registry metadata and v15 source define the broader API boundaries. Current scoped checks extracted the owned panel and reactive-pagination SFCs: strict application-source checks, production Chromium pointer/geometry/mutation/bordered-overflow, independent lock/unmount/remount, reactive totals/page size and empty bounds passed. Actual Node SSR checked their default markup and reproduced the excluded overflow core/component exception. Isolated browser negatives confirmed the named adapter failures; see [verification](../assets/verification.json). This is not all-utility, full-declaration or hydration certification. Still verify target replacement, debounce teardown, request races, storage denial/malformed content, SSR agreement and empty math inputs in the consuming app; use [testing](testing.md).
 
 ## Sources
 

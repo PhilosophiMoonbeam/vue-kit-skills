@@ -230,7 +230,7 @@ All signatures and behavior below are pinned to the [v15 integration sources](ht
 
 ### Validation and text
 
-- **`useAsyncValidator`** accepts reactive value/rules and `{ manual, immediate, validateOption }`. Automatic mode deeply watches data/rules; `manual: true` disables automatic validation, including its immediate run. `execute()` returns `{ pass, errors, errorInfo, errorFields }`; invalid input is represented in that result, not an automatic submission. Keep form pending/submission state and labels with the form owner. Concurrent executions have no latest-only guard: serialize manual validation when order matters. Use `UseAsyncValidator` only when slot-local validation fits the component boundary. [Implementation](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useAsyncValidator/index.ts).
+- **`useAsyncValidator`** accepts reactive value/rules and `{ manual, immediate, validateOption }`. Automatic mode deeply watches data/rules; `manual: true` disables automatic validation, including its immediate run. `execute()` returns `{ pass, errors, errorInfo, errorFields }`; invalid input is represented in that result, not an automatic submission. Keep form pending/submission state and labels with the form owner. Concurrent executions have no latest-only guard: serialize manual validation when order matters. The component adapter is excluded below; use the composable directly. [Implementation](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useAsyncValidator/index.ts).
 - **`useChangeCase`** accepts reactive text, a reactive supported function name, and options. A getter input gives a readonly computed; writable input wraps a writable computed whose setter stores raw text in the source and whose getter transforms it. With change-case **5.4.4**, use **`kebabCase`**, not the nonexistent `paramCase` export. Invalid transformation names throw on reading. Casing is not uniqueness, transliteration, or a safe identifier guarantee. [Exact peer types](https://cdn.jsdelivr.net/npm/change-case@5.4.4/dist/index.d.ts), [wrapper](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useChangeCase/index.ts).
 - **`useJwt`** returns computed `{ header, payload }`, with `fallbackValue` (default null) and `onError` for decoding failures. **An expired but syntactically valid token still decodes.** It does not check expiry, signatures, issuer, audience, or revocation. Authorization belongs on the server; client claims may support presentation only. [Implementation](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useJwt/index.ts).
 
@@ -258,15 +258,62 @@ Use these only for template-local ownership; import the explicit `/component` su
 | --- | --- |
 | `UseFocusTrap` | Props as/options; renders an as element (div default) as the trap target and provides the unwrapped controller to its default slot. It is **not pure renderless**. options are passed when setup constructs the trap; replacing an options object is not a general reactive-reconfiguration API. Keep the same visibility, fallback focus, background inertness, and return-focus rules as the composable. |
 | `UseSortable` | Props modelValue/options/as; renders an as target (div default), exposes start/stop/option in its default slot, and bridges modelValue through useVModel. Use v-model with an owner-controlled mutable array and stable keyed children; configure the actual container element with as rather than accidentally nesting a div in a list/table. This adds neither keyboard sorting nor server persistence. |
-| `UseAsyncValidator` | Props form/rules/options; renders only its default slot with unwrapped validation state. **Published 15.0.0 declares options but does not forward it:** setup calls useAsyncValidator(props.form, props.rules) with no third argument. Do not rely on :options="{ manual: true }" for submit-only validation; call the composable with explicit options instead. Its captured form/rules arguments also mean replacing those whole prop objects is not equivalent to passing getters to the composable. |
 
 These are observed source contracts, not browser results: [focus adapter](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useFocusTrap/component.ts), [sortable adapter](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useSortable/component.ts), [published validator adapter](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAsyncValidator/component.js). The low-level `insertNodeAt(parent, element, index)` and `removeNode(node)` exports are DOM helpers, not reactive list operations; prefer moveArrayElement with the owning array for Sortable/Vue reconciliation.
+
+### Excluded `UseAsyncValidator`: options are not forwarded
+
+Do not select the **15.0.0 component adapter** for validation. Its published runtime declares `options` but calls only `useAsyncValidator(props.form, props.rules)`, so `manual: true` silently becomes automatic deep validation. Captured form/rules props also lose whole-object replacement tracking. This is not repaired by a caveat on the positive selection table or by remounting the adapter. Use the function subpath and real reactive inputs; no package patch or wrapper shim is required. [Published defective adapter](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAsyncValidator/component.js), [supported composable](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAsyncValidator.js).
+
+Complete `ManualValidation.vue`, with `async-validator@4.2.5`. This validates local fields only; “valid” is not a saved/submitted backend result. The owner serializes executions and disables editing while a validation snapshot is pending:
+
+```vue
+<script setup lang="ts">
+import { onScopeDispose, reactive, shallowRef } from 'vue'
+import type { Rules } from 'async-validator'
+import { useAsyncValidator } from '@vueuse/integrations/useAsyncValidator'
+
+const form = reactive({ name: '' })
+const rules = {
+  name: { type: 'string', required: true, message: 'Enter a name.' },
+} satisfies Rules
+const busy = shallowRef(false)
+const notice = shallowRef('')
+let disposed = false
+const { execute } = useAsyncValidator(form, rules, { manual: true })
+onScopeDispose(() => { disposed = true })
+
+async function validate() {
+  if (busy.value || disposed) return
+  busy.value = true
+  notice.value = ''
+  try {
+    const result = await execute()
+    if (!disposed) notice.value = result.pass
+      ? 'Local fields are valid.'
+      : result.errors?.map(error => error.message).join(' ') || 'Local validation failed.'
+  } finally {
+    if (!disposed) busy.value = false
+  }
+}
+</script>
+
+<template>
+  <form @submit.prevent="validate">
+    <label>Name <input v-model="form.name" :disabled="busy" /></label>
+    <button type="submit" :disabled="busy">Validate fields</button>
+    <p role="status">{{ notice }}</p>
+  </form>
+</template>
+```
+
+For asynchronous remote rules, the application must supply their real service contract and decide input invalidation, disposal, and submission policy; this local rule example does not claim transport cancellation.
 
 ## Migration and verification boundary
 
 v15 raises the Node floor to 22 and changes IndexedDB state/tab-sync behavior. Core/shared changes such as removed `templateRef`, scheduler options, and throttle trailing defaults also apply transitively; see [VueUse migration notes](vueuse.md#v15-migration-and-specialized-browser-apis). Do not assume a peer-range expansion is a request to migrate the entire app.
 
-Research observed registry releases, package exports, declarations, and implementations. The exact Axios reader SFC was exercised with VueUse integrations 15.0.0 and Axios 1.20.0 in a production-built Chromium consumer against local HTTP: success, HTTP failure, cancellation, serialization through the settled promise, unmount abort and remount isolation. See [verification evidence](../assets/verification.json) for the pinned profile and scoped build/browser results. This is not whole-reference runtime or SSR certification: focus-trap, cookies, IndexedDB, remaining wrappers and component adapters retain source-only coverage here. In the consuming app, verify focus entry/Tab/Escape/return after `v-if` and transition changes, absent peers, independent overlapping Axios controllers, same-path cookie deletion, request-isolated cookies, IndexedDB denial/tab synchronization, and keyboard reorder alternatives. See [testing](testing.md).
+Research covers registry releases, exports, declarations and implementations. Earlier production Chromium/local-HTTP checks exercised the exact Axios reader with integrations 15.0.0 and Axios 1.20.0: success, HTTP failure, settled-promise serialization, cancellation, unmount abort and remount isolation. Current production checks also confirmed the excluded manual-validator adapter's unwanted eager validation and the exact manual-composable replacement's explicit invalid/valid transitions without typing-triggered validation; its Node SSR defaults rendered. See [scoped evidence](../assets/verification.json). Focus-trap, cookies, IndexedDB and other unlisted adapters remain source-only, not whole-reference runtime/SSR certification. Verify focus entry/Tab/Escape/return, absent peers, independent Axios controllers, same-path cookie deletion, request isolation, IndexedDB denial/tab sync and keyboard reorder in the consuming app; use [testing](testing.md).
 
 ## Sources
 

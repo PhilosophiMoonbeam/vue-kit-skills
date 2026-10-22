@@ -9,10 +9,12 @@ Registry evidence: **`vee-validate@4.15.1` is latest stable**, Vue peer `^3.4.26
 | Installed line | Schema contract | Decision |
 | --- | --- | --- |
 | v4.15.1 | Functions/object rules; raw Yup schemas supported | Raw Yup validation is valid, but does not provide the typed input/output inference of its adapter. |
-| v4.15.1 typed schemas | `toTypedSchema` from `@vee-validate/yup`, `/zod`, or `/valibot` | Use the adapter matching the schema library and installed peer range. |
-| v5.0.0-beta.0 | Direct Standard Schema providers | Explicit experimental migration; remove adapter calls, not merely package names. |
+| v4.15.1 typed schemas | `toTypedSchema` from `@vee-validate/yup`, `/zod`, or `/valibot` | Keep the adapter on 4.15.1 and the schema library inside its declared peer. |
+| v5.0.0-beta.0 | Direct Standard Schema providers | Incumbent/explicit beta migration context only; not this guide's stable offering. |
 
 Confirmed v4 adapter constraints: **`@vee-validate/yup@4.15.1` → `yup ^1.3.2`**; **`@vee-validate/zod@4.15.1` → `zod ^3.24.0`**; **`@vee-validate/valibot@4.15.1` → `valibot ^1.0.0-beta.7`**. Example-compatible pins include Yup **1.7.1**, Zod **3.25.76**, Valibot **1.5.0**. Zod's registry latest **4.6.7 is outside this v4 Zod adapter's declared peer**; do not claim Zod 4 support from an old issue/comment. [Yup adapter manifest](https://unpkg.com/@vee-validate/yup@4.15.1/package.json), [Zod adapter manifest](https://unpkg.com/@vee-validate/zod@4.15.1/package.json), [Valibot adapter manifest](https://unpkg.com/@vee-validate/valibot@4.15.1/package.json).
+
+Each listed **4.15.1 adapter depends on `vee-validate: "4.15.1"`**, not a cross-major peer. Do not install these adapters alongside the v5 beta or pass Zod 4 into the v4 Zod adapter. Those combinations are excluded, not optional examples hidden behind a warning. Keep an incumbent v4 application on its compatible adapter/schema pair; if its wider application already requires Zod 4, use an application-owned function/object rule at the v4 boundary or select a separately evaluated Standard Schema form owner. Do not force incompatible peers or silently adopt a beta just to satisfy a dependency resolver. The manifests above establish the dependency/peer exclusion; no runtime incompatibility reproduction is claimed.
 
 V5 migration docs require Standard Schema-capable versions: Zod ≥3.24.0, Yup ≥1.7.0, Valibot ≥1.0.0. They also remove schema-derived `required` metadata and schema defaults used to initialize the form. Supply explicit `initialValues` and required UI semantics. This is not a recommendation to migrate an incumbent v4 app. [Official migration source](https://github.com/logaretm/vee-validate/blob/main/docs/src/pages/guide/migration.mdx), [5.0.0-beta.0 Standard Schema declarations](https://unpkg.com/vee-validate@5.0.0-beta.0/dist/vee-validate.d.ts).
 

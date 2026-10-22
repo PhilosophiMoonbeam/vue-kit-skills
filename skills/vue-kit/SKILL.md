@@ -97,7 +97,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | Pinia, TanStack Vue Store, local/shared state, hydration, store contracts | [State](references/state.md) | Architecture data for ownership decisions; auth for session state |
 | Application-owned sessions, identity loading, safe redirects, client guards and server authorization boundaries | [Session boundaries](references/auth.md) | Routing for protected navigation; debugging SSR for server applications; no hosted authentication SDK |
 | Vue Router routes, params, guards, navigation/history, v5 file routing or experimental loaders | [Routing](references/routing.md) | Auth for identity checks; testing for navigation; keep `vue-router/experimental` APIs distinct from stable imports |
-| Explicit TanStack Vue Router adapter evaluation or incumbent usage | [TanStack routing](references/routing-tanstack.md) | Routing for the stable Vue Router alternative; heed adapter status |
+| Explicit TanStack Vue Router browser-adapter evaluation or incumbent usage | [TanStack routing](references/routing-tanstack.md) | Vue Router/Nuxt for SSR; stock TanStack Vue SSR wrappers are excluded at the inspected release |
 | TanStack Vue Query cache, queries, mutations, invalidation, SSR | [TanStack Query](references/tanstack-query.md) | Architecture data for cache ownership; auth for user-scoped caches |
 | Pinia Colada queries, mutations, cache and SSR | [Pinia Colada](references/pinia-colada.md) | State for application state; do not add a second query cache by default |
 
@@ -185,6 +185,8 @@ to load every linked document. Combine owners only when the task crosses domains
   changed examples; consult [sources](references/sources.md) for evidence policy.
 - [Fifth-pass audit](assets/fifth-pass-audit.json): native review dispositions,
   corrections and scoped evidence; risk labels are not confirmed defect totals.
+- [Support-boundary audit](assets/support-audit.json): registry triage, exact-release
+  exclusions, primary sources and executable consumer evidence; not a package allowlist.
 
 When verification is authorized, select the repository's own typecheck, tests,
 production build, and browser checks that exercise the change. For UI behavior,

@@ -90,6 +90,14 @@ Observed fifth-pass checks include bounded before/after tween, router search/def
 
 The supported skill is service-independent: no hosted authentication SDK, provider-key management, commercial cloud account or implicit account provisioning. Application-owned APIs and self-hostable libraries remain valid when their contracts are explicit. Client session state and local test identities never establish server authentication or authorization. VitePress uses local search; AI streaming guidance consumes an application-owned or self-hosted endpoint rather than setting up a hosted model provider.
 
+### Subsequent support-boundary tightening
+
+The [support-boundary audit](../assets/support-audit.json) separates registry triage from executable compatibility. Its **140 exact releases / 135 package names** include historical exclusion citations and owner-specific schema majors, not 140 recommendations. No fetched release carries an npm deprecation notice. Experimental releases retain explicit limits; age, overlapping APIs and non-latest versions alone do not justify a cut.
+
+Exact-release failures remove individual offerings, not functioning packages: stock TanStack Vue SSR wrappers, defective VueUse adapters, mixed vee-validate/schema graphs and unsupported I18n compiler-removal combinations. Motion-v's custom-SFC declaration failure requires a typed native-tag alternative, not a cast. The owning references retain concise diagnosis and supported replacements; prior package exclusions remain unchanged. The registry's native verdicts, source-only findings and observed consumer results are distinct evidence classes.
+
+The earlier VueUse next-frame workaround is superseded by direct core geometry ownership. Actual compiler-removal and lazy-catalog profiles now distinguish raw string compilation from precompiled ASTs; `runtimeOnly` alone still does not remove the compiler. Current checks do not imply complete optional-package coverage, TanStack Vue SSR hydration support, all-browser accessibility or native GPU certification.
+
 ## Removed integrations
 
 ### Slidev, Twoslash, and FloatingVue

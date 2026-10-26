@@ -132,7 +132,7 @@ Complete embeddable SFC after the installation above. Required callbacks are exp
 
 ```vue
 <script setup lang="ts">
-import { nextTick, ref, shallowRef, useTemplateRef, type InputHTMLAttributes } from 'vue'
+import { nextTick, ref, shallowRef, useTemplateRef, type FormHTMLAttributes, type InputHTMLAttributes } from 'vue'
 import { FormKit, reset } from '@formkit/vue'
 import type { FormKitNode, FormKitSectionsSchema } from '@formkit/core'
 import type { FormKitInputs } from '@formkit/inputs'
@@ -206,8 +206,10 @@ async function submit(data: Draft, node: FormKitNode) {
 
 type FormBindings = Extract<FormKitInputs<{ type: 'form' }>, { type: 'form' }>
   & { submitLabel?: string }
+  & Pick<FormHTMLAttributes, 'novalidate'>
 const formBindings = {
   type: 'form',
+  novalidate: true,
   submitBehavior: 'live',
   submitLabel: 'Save',
   onSubmit: submit,
@@ -246,6 +248,8 @@ const emailAttrs: Pick<InputHTMLAttributes, 'autocomplete' | 'class' | 'style'> 
 The complete SFC uses narrow checked bindings for the **2.1.2 declaration boundary**, rather than weakening `strictTemplates`. The adapter exports a callable generic intersected with a runtime component whose props are a union; a literal `type="form"` does not reliably narrow direct form event bindings in strict template tooling. `FormBindings` selects the published `form` member, checking its `onSubmit`/`onSubmitInvalid` props while retaining the application's exact callback signatures. Its sole local extension, `submitLabel?: string`, describes a real runtime pseudo-prop: the pinned form definition registers `submitLabel` and renders it as the built-in submit button's label, but omits it from `FormKitInputProps['form']`. This is a local checked binding, not a global module augmentation or a claim that the package declares that property.
 
 `autocomplete` is likewise a real native input attribute absent from that props union. `emailAttrs` checks it against Vue's native attribute type; optional shared `class`/`style` keys avoid an all-native weak-type mismatch without creating runtime values. Keep the form and input bags on their respective components exactly as shown; do not put callbacks in the native bag or replace the collected node value with a second model. [Published Vue component types](https://unpkg.com/@formkit/vue@2.1.2/dist/index.d.mts), [input/form/event declarations](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.d.mts), [registered form pseudo-props and submit schema](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs), [Vue attribute routing](https://unpkg.com/@formkit/vue@2.1.2/dist/index.mjs).
+
+`novalidate` is checked against Vue's native `FormHTMLAttributes` and forwarded to the actual form through `$attrs`. It prevents the browser's `type="email"` constraint gate from intercepting submission before FormKit can run its own validation and invalid-submit callback. The pinned form section does not add it automatically; keep it on both complete forms here. Labels, email input semantics, `aria-required`, and error descriptions remain intact. [Pinned form/input sections](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs), [native `novalidate`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#novalidate).
 
 The 2.1.2 default input exposes required state and error descriptions but does not set native `aria-invalid`. The typed section extension projects existing visible-validation or explicit-error state onto that attribute; it adds no validator or submit gate and leaves pristine inputs unmarked. [Pinned Vue state bindings](https://unpkg.com/@formkit/vue@2.1.2/dist/index.mjs), [section overrides](https://formkit.com/essentials/inputs#sections-schema).
 
@@ -337,7 +341,7 @@ Complete SFC after Vue plugin installation. It renders fields from a typed, loca
 
 ```vue
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { shallowRef, type FormHTMLAttributes } from 'vue'
 import { FormKit, FormKitSchema } from '@formkit/vue'
 import type { FormKitSchemaDefinition, FormKitSectionsSchema } from '@formkit/core'
 import type { FormKitInputs } from '@formkit/inputs'
@@ -358,8 +362,10 @@ function applyForSession(data: { email: string }) {
 }
 type FormBindings = Extract<FormKitInputs<{ type: 'form' }>, { type: 'form' }>
   & { submitLabel?: string }
+  & Pick<FormHTMLAttributes, 'novalidate'>
 const formBindings = {
   type: 'form',
+  novalidate: true,
   submitLabel: 'Apply for this session',
   onSubmit: applyForSession,
 } satisfies FormBindings

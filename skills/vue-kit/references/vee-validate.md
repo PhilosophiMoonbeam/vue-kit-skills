@@ -197,7 +197,7 @@ Complete session-only SFC using `<Form>` instead of `useForm`. `Field` groups ch
 
 ```vue
 <script setup lang="ts">
-import { ref, type InputHTMLAttributes } from 'vue'
+import { nextTick, ref, useTemplateRef, type InputHTMLAttributes } from 'vue'
 import { ErrorMessage, Field, Form } from 'vee-validate'
 
 type ChoiceRegistration = Pick<InputHTMLAttributes, 'type' | 'class' | 'style'> & {
@@ -208,6 +208,11 @@ const basicRegistration: ChoiceRegistration = { type: 'radio', value: 'basic' }
 const proRegistration: ChoiceRegistration = { type: 'radio', value: 'pro' }
 
 const initialValues = { consent: false, plan: 'basic', channels: ['email'] }
+const consentInput = useTemplateRef<HTMLInputElement>('consentInput')
+async function focusInvalidConsent() {
+  await nextTick()
+  consentInput.value?.focus()
+}
 const applied = ref('')
 const options = ['email', 'sms']
 const consentRequired = (value: unknown) => value === true || 'Consent is required.'
@@ -221,13 +226,14 @@ function applyForSession(values: Record<string, unknown>) {
 </script>
 
 <template>
-  <Form :initial-values="initialValues" @submit="applyForSession" v-slot="{ isSubmitting, errors }">
+  <Form :initial-values="initialValues" @submit="applyForSession"
+    @invalid-submit="focusInvalidConsent" v-slot="{ isSubmitting, errors }">
     <Field name="consent" v-bind="consentRegistration" :unchecked-value="false"
       :rules="consentRequired" v-slot="{ field }">
       <label>
-        <input v-bind="field" type="checkbox" :value="true"
+        <input ref="consentInput" v-bind="field" type="checkbox" :value="true" required
           :aria-invalid="Boolean(errors.consent)" aria-describedby="consent-error" />
-        I consent
+        I consent (required)
       </label>
     </Field>
     <ErrorMessage name="consent" v-slot="{ message }">

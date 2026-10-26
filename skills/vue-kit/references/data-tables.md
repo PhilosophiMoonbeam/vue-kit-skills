@@ -45,7 +45,7 @@ After replacing controlled state/data, consume the resulting table model after V
 
 ### Feature composition, metadata, and app-scoped tables
 
-Register the behavior **and** its processing stage; state alone never creates a processed row model. Omit a processing slot when the server owns that stage. In **9.3.1**, use individual functions directly in column definitions (as in the example), or register only referenced string keys in `filterFns`, `sortFns`, and `aggregationFns`; a string such as `'auto'` cannot resolve an unregistered function.
+Register the behavior **and** its processing stage; state alone never creates a processed row model. Omit a processing slot when the server owns that stage. In **9.3.1**, use individual functions directly in column definitions (as in the example), or register the referenced keys in `filterFns`, `sortFns`, and `aggregationFns`. `'auto'` infers a registry key for filtering/aggregation and for specialized sorting; register those inferred functions too. Sorting alone has a built-in `sortFn_basic` fallback, so a missing specialized sort registration can silently change ordering rather than disable sorting. [Pinned sort resolution](https://unpkg.com/@tanstack/table-core@9.3.1/dist/features/row-sorting/rowSortingFeature.utils.js), [filter resolution](https://unpkg.com/@tanstack/table-core@9.3.1/dist/features/column-filtering/columnFilteringFeature.utils.js).
 
 | Capability | Registration and rendering contract |
 | --- | --- |
@@ -240,7 +240,7 @@ Do not convert custom HTML returned from data into `v-html`. A `cell` function m
 
 ## Remote sorting, filtering, and pagination
 
-A server table must process the **whole query**, not just the loaded page. Register the state features, omit local filtering/sorting/pagination row models, and set `manualFiltering: true`, `manualSorting: true`, `manualPagination: true`. Supply `rowCount` as the **filtered total**, or a correct `pageCount`; page length is not total count. TanStack `pageIndex` is **zero-based**. [Pagination guide](https://tanstack.com/table/latest/docs/guide/pagination).
+A server table must process the **whole query**, not just the loaded page. Register the state features, omit local filtering/sorting/pagination row models, and set `manualFiltering: true`, `manualSorting: true`, `manualPagination: true`. Supply `rowCount` as the **filtered total**, or a correct `pageCount`; page length is not total count. TanStack `pageIndex` is **zero-based**. [Vue pagination guide](https://tanstack.com/table/latest/docs/framework/vue/guide/pagination).
 
 The application owns the transport contract. A suitable explicit contract is:
 
@@ -287,5 +287,5 @@ The SFC is a complete local example; service types are an explicitly contextual 
 - [Vue Table 9.3.1 registry metadata](https://registry.npmjs.org/@tanstack/vue-table/9.3.1), [core 9.3.1 metadata](https://registry.npmjs.org/@tanstack/table-core/9.3.1).
 - [Official Vue v9 migration](https://tanstack.com/table/latest/docs/framework/vue/guide/migrating), [Vue state guide](https://tanstack.com/table/latest/docs/framework/vue/guide/table-state).
 - [Pinned Vue API declarations](https://unpkg.com/@tanstack/vue-table@9.3.1/dist/useTable.d.ts), [FlexRender declarations](https://unpkg.com/@tanstack/vue-table@9.3.1/dist/FlexRender.d.ts).
-- [Pagination](https://tanstack.com/table/latest/docs/guide/pagination), [row selection](https://tanstack.com/table/latest/docs/guide/row-selection), [column definitions](https://tanstack.com/table/latest/docs/guide/column-defs).
+- [Vue pagination](https://tanstack.com/table/latest/docs/framework/vue/guide/pagination), [Vue row selection](https://tanstack.com/table/latest/docs/framework/vue/guide/row-selection), [column definitions](https://tanstack.com/table/latest/docs/guide/column-defs).
 - [Vuetify data tables](https://vuetifyjs.com/en/components/data-tables/introduction/).

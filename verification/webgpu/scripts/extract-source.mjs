@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
@@ -51,9 +52,25 @@ const mounted = exactlyOne(
 )
 const webgpuHost = host.slice(0, mounted.index) + replacement + host.slice(mounted.index + mounted[0].length)
 
+const ordinary = vueFences(section('Complete WebGLRenderer compatibility example: client boundary, controls, and animated scene'))
+const webgl = ['SceneHost.vue', 'SceneCanvas.vue', 'SpinningCube.vue'].map(name => [
+  `recipes/webgl/${name}`,
+  exactlyOne(
+    ordinary.filter(body => body.startsWith(`<!-- ${name} -->\n`) || body.startsWith(`<!-- ${name} -->\r\n`)),
+    `ordinary ${name} fence`,
+  ),
+])
+
+const sha256 = content => createHash('sha256').update(content).digest('hex')
+const generatedSources = [
+  { name: 'SceneHost.vue', kind: 'prescribed-host-transformation', body: webgpuHost, sourceFence: host, section: 'Complete WebGLRenderer compatibility example: client boundary, controls, and animated scene', transformation: { prescribedBy: 'Experimental WebGPU and custom rendering', removed: mounted[0], replacement } },
+  { name: 'SceneCanvas.vue', kind: 'verbatim-source-fence', body: canvas, sourceFence: canvas, section: 'Experimental WebGPU and custom rendering' },
+  ...webgl.map(([name, body]) => ({ name, kind: 'verbatim-source-fence', body, sourceFence: body, section: 'Complete WebGLRenderer compatibility example: client boundary, controls, and animated scene' })),
+]
 await mkdir(outputUrl, { recursive: true })
-for (const [name, content] of [['SceneHost.vue', webgpuHost], ['SceneCanvas.vue', canvas]]) {
+for (const { name, body: content } of generatedSources) {
   const destination = new URL(name, outputUrl)
+  await mkdir(new URL('.', destination), { recursive: true })
   let previous
   try {
     previous = await readFile(destination, 'utf8')
@@ -63,3 +80,15 @@ for (const [name, content] of [['SceneHost.vue', webgpuHost], ['SceneCanvas.vue'
   if (previous !== content) await writeFile(destination, content, 'utf8')
   console.log(`Extracted ${fileURLToPath(destination)} from ${fileURLToPath(sourceUrl)}`)
 }
+const metadataUrl = new URL('../.generated/recipe-provenance.json', import.meta.url)
+await mkdir(new URL('.', metadataUrl), { recursive: true })
+await writeFile(metadataUrl, JSON.stringify({
+  reference: 'skills/vue-kit/references/tresjs.md',
+  referenceSha256: sha256(source),
+  generatedSources: generatedSources.map(({ body, sourceFence, ...entry }) => ({
+    ...entry,
+    sourceStartLine: source.slice(0, source.indexOf(sourceFence)).split('\n').length,
+    sourceFenceSha256: sha256(sourceFence),
+    sha256: sha256(body),
+  })),
+}, null, 2) + '\n')

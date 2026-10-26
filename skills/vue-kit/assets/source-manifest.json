@@ -501,7 +501,7 @@
         "https://context7.com/openvi-foundation/openvue",
         "https://openvue.dev/llms.txt"
       ],
-      "notes": "OpenVue 1.x and newer is the supported successor; exact authoring snapshot is 1.0.0 with Vue 3.5.44, while Vuetify 4.3.x remains preferred. Eight capability references are backed by assets/openvue-coverage.json: all 122 pinned official documents retain native routing hypotheses and receive final semantic dispositions. Context7 is discovery, not release or runtime certification; reconcile installed exports and declarations and use only bounded executed evidence in assets/verification.json. Future-major compatibility is not assumed."
+      "notes": "OpenVue is the supported successor; exact authoring snapshot is 1.0.0 with Vue 3.5.44, while Vuetify remains preferred at its authored 4.3.0 baseline. Eight capability references are backed by assets/openvue-coverage.json: all 122 pinned official documents retain native routing hypotheses and receive final semantic dispositions. Context7 is discovery, not release or runtime certification; reconcile installed exports and declarations and use only bounded executed evidence in assets/verification.json. Future-major compatibility is not assumed."
     },
     {
       "id": "application-session-contract",

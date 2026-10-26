@@ -1,0 +1,53 @@
+{
+  "repository": "https://github.com/KhronosGroup/glTF-Sample-Assets",
+  "revision": "4995a638c96dbc94376d3d6164e70fee3ac7f7a2",
+  "acquiredAt": "2026-10-23T02:15:45.624396+00:00",
+  "acquisition": "Approved static reader of immutable primary GitHub content API. Decoded bytes checked against API size and Git blob SHA-1. GLB base64 storage is only a byte-preserving text representation.",
+  "attribution": "Box by Cesium, 2017, CC BY 4.0; primary license, metadata and README retained unchanged.",
+  "files": [
+    {
+      "name": "Box.glb",
+      "primaryPath": "glTF-Binary/Box.glb",
+      "primaryUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/4995a638c96dbc94376d3d6164e70fee3ac7f7a2/Models/Box/glTF-Binary/Box.glb",
+      "primaryContentApi": "https://api.github.com/repos/KhronosGroup/glTF-Sample-Assets/contents/Models/Box/glTF-Binary/Box.glb?ref=4995a638c96dbc94376d3d6164e70fee3ac7f7a2",
+      "gitBlobSha": "95ec886b6b92b134291fd41d34ac9d5349306e0a",
+      "sha256": "ed52f7192b8311d700ac0ce80644e3852cd01537e4d62241b9acba023da3d54e",
+      "bytes": 1664,
+      "storedName": "Box.glb.base64",
+      "storageEncoding": "base64"
+    },
+    {
+      "name": "Box-LICENSE.md",
+      "primaryPath": "LICENSE.md",
+      "primaryUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/4995a638c96dbc94376d3d6164e70fee3ac7f7a2/Models/Box/LICENSE.md",
+      "primaryContentApi": "https://api.github.com/repos/KhronosGroup/glTF-Sample-Assets/contents/Models/Box/LICENSE.md?ref=4995a638c96dbc94376d3d6164e70fee3ac7f7a2",
+      "gitBlobSha": "87f5e5e13cabb47fea6df4627fbbc7497267dc91",
+      "sha256": "2759bbffe3b8aebe789958875a098045fe4039eb3e2291ef0fd09c65994bdddc",
+      "bytes": 771,
+      "storedName": "Box-LICENSE.md",
+      "storageEncoding": "utf8-exact"
+    },
+    {
+      "name": "Box-metadata.json",
+      "primaryPath": "metadata.json",
+      "primaryUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/4995a638c96dbc94376d3d6164e70fee3ac7f7a2/Models/Box/metadata.json",
+      "primaryContentApi": "https://api.github.com/repos/KhronosGroup/glTF-Sample-Assets/contents/Models/Box/metadata.json?ref=4995a638c96dbc94376d3d6164e70fee3ac7f7a2",
+      "gitBlobSha": "05c31b0b549fb78c5fc046089194a820b1e35a50",
+      "sha256": "f5867d1cb319a739e434cce40177c7da65701e747198eef97da025610eac9af6",
+      "bytes": 624,
+      "storedName": "Box-metadata.json",
+      "storageEncoding": "utf8-exact"
+    },
+    {
+      "name": "Box-README.md",
+      "primaryPath": "README.md",
+      "primaryUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/4995a638c96dbc94376d3d6164e70fee3ac7f7a2/Models/Box/README.md",
+      "primaryContentApi": "https://api.github.com/repos/KhronosGroup/glTF-Sample-Assets/contents/Models/Box/README.md?ref=4995a638c96dbc94376d3d6164e70fee3ac7f7a2",
+      "gitBlobSha": "f522414e2090580bcb127020c5a13067fd182e44",
+      "sha256": "ae63b4ad1c8136b881686e66faf930c9b9e71fa823a7a4b1738076ae06739c35",
+      "bytes": 898,
+      "storedName": "Box-README.md",
+      "storageEncoding": "utf8-exact"
+    }
+  ]
+}

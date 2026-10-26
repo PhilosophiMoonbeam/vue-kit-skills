@@ -97,7 +97,7 @@ label { display: flex; gap: .5rem; align-items: baseline; }
 | [Image](https://openvue.dev/image) | Image source/alternative, optional preview and declared image/preview parts | Put alternative text on the actual image, distinguish decorative content, and test preview keyboard/portal/focus behavior. Never insert untrusted HTML as a caption |
 | [ImageCompare](https://openvue.dev/imagecompare) | Direct `left`/`right` slots and an internal native range input, not a public comparison model | Give each visual a useful alternative and **name the range through `pt.slider`**; labeling only the root does not name the input. Keep one real root per slot and matching geometry |
 
-ImageCompare 1.0.0 updates the element immediately before its range input, while its default geometry/clipping CSS targets **direct adjacent `img` elements**. Keep exactly one real `img` per slot; inline `svg`, fragments and wrappers do not inherit that contract. It exposes neither a documented controlled slider value nor a business change event; do not invent `v-model`. [Published implementation](https://unpkg.com/openvue@1.0.0/imagecompare/index.mjs), [published style rules](https://unpkg.com/@openuxkit/styles@1.0.0/dist/imagecompare/index.mjs).
+ImageCompare 1.0.0 updates the element immediately before its range input, while the dependency-compatible **`@openuxkit/styles@1.1.0`** geometry/clipping CSS uses descendant `img` and adjacent-sibling `img + img` selectors (not direct-child selectors). Keep exactly one real `img` per slot: wrappers would make the range's previous sibling a wrapper rather than the clipped image, and inline `svg` does not match the image rules. It exposes neither a documented controlled slider value nor a business change event; do not invent `v-model`. [Published implementation](https://unpkg.com/openvue@1.0.0/imagecompare/index.mjs), [published style rules](https://unpkg.com/@openuxkit/styles@1.1.0/dist/imagecompare/index.mjs), [declared style dependency](https://registry.npmjs.org/openvue/1.0.0).
 
 ### Complete `LocalComparison.vue`
 
@@ -185,10 +185,10 @@ const cards = [
 
 | Capability | Contract and boundary |
 | --- | --- |
-| [ScrollPanel](https://openvue.dev/scrollpanel) | Bound actual width/height; custom scrollbars do not remove native content/keyboard needs. Use its declared refresh/scroll methods after meaningful geometry changes, not a perpetual measure loop |
+| [ScrollPanel](https://openvue.dev/scrollpanel) | Bound actual width/height; custom scrollbars do not remove native content/keyboard needs. The 1.0.0 runtime has `refresh()` and `scrollTop(number)`, but its published component declaration exposes neither method. Do not present them as a strict typed ref API; use a native scroll region when application-controlled scrolling is required |
 | [ScrollTop](https://openvue.dev/scrolltop) | `target` chooses window/parent, `threshold` controls visibility and `behavior` chooses scrolling. Supply a named button and choose non-smooth behavior under reduced motion; scrolling does not automatically move focus |
 | [DeferredContent](https://openvue.dev/deferredcontent) | Renders children only once its mounted viewport/window-scroll test succeeds, then emits `load`; not dynamic module import, request cancellation or a cache. Initial SSR has no child slot, so do not hide essential content behind it |
-| [AnimateOnScroll](https://openvue.dev/animateonscroll) | Explicit directive registration plus supplied enter/leave classes; the app supplies animation CSS and reduced-motion behavior. Keep essential content visible before JavaScript/observer execution |
+| [AnimateOnScroll](https://openvue.dev/animateonscroll) | Explicit directive registration plus supplied enter/leave classes; the app supplies animation CSS and reduced-motion behavior. In 1.0.0 an `enterClass` immediately sets inline `opacity: 0` until entry, so apply it only to nonessential decoration, not essential content. Merely reducing CSS animation duration does not undo that hiding |
 | [StyleClass](https://openvue.dev/styleclass) | Trusted local selector plus `toggleClass` or enter/leave class lifecycle; relative selectors address nearby nodes. CSS classes do not create a focus trap, dialog model, disabled control or authorization state |
 | [Ripple](https://openvue.dev/ripple) | Register the directive and deliberately enable plugin ripple; cosmetic pointer feedback only | 
 | [KeyFilter](https://openvue.dev/keyfilter) | Static supported preset/regular expression filters input behavior; not parsing, a mask, accessibility policy or server validation. Preserve paste/composition/mobile input paths and validate the complete accepted value |
@@ -197,6 +197,8 @@ const cards = [
 DeferredContent listens to **window scroll**, not every nested scrolling container; a hidden/nested owner needs its own actual visibility policy. Unmount removes its listener; `load` is visibility completion, not completion of async descendants. Use a genuine async component/import when code splitting is required. [Exact implementation](https://unpkg.com/openvue@1.0.0/deferredcontent/index.mjs).
 
 Do not copy a StyleClass example that toggles a disabled-looking CSS class and assume a control became disabled: use the actual `disabled` property and matching application state. Likewise, animation classes from a separate utility plugin are not built into a core OpenVue import. Keep global plugin/stylesheet choices with [theming](openvue-theming.md).
+
+These utility limits come from the published release, not assumed ancestry: [ScrollPanel declarations](https://unpkg.com/openvue@1.0.0/scrollpanel/index.d.ts), [ScrollPanel runtime methods](https://unpkg.com/openvue@1.0.0/scrollpanel/index.mjs), [AnimateOnScroll opacity/observer lifecycle](https://unpkg.com/openvue@1.0.0/animateonscroll/index.mjs).
 
 ### Complete `LocalTerminal.vue`: narrow incumbent boundary
 

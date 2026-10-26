@@ -4,7 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="data:,">
-  <title>Isolated WebGPU recipe</title>
+  <title>Vue Kit — isolated GPU scene</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #243447;
+      background: #fff;
+      font-size: 16px;
+      line-height: 1.5;
+      color-scheme: light;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 1rem; }
+    #app, section { min-width: 0; }
+    h1, h2, h3 { color: #172b3a; line-height: 1.25; margin: 0 0 0.75rem; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.125rem; }
+    p { margin: 0.75rem 0; overflow-wrap: anywhere; }
+    a { color: #076b68; text-underline-offset: 0.18em; }
+    button, input, select, textarea { font: inherit; }
+    button, select { max-width: 100%; padding: 0.45rem 0.7rem; }
+    button { color: #243447; background: #f4f8f8; border: 1px solid #91a8b2; border-radius: 0.35rem; cursor: pointer; }
+    button:hover:not(:disabled) { background: #e6f4f1; border-color: #087f79; }
+    button[aria-pressed="true"] { background: #d8efea; border-color: #087f79; }
+    button:disabled { color: #637383; cursor: default; background: #f4f5f6; border-color: #ccd4da; }
+    label { display: inline-flex; align-items: baseline; gap: 0.45rem; }
+    input[type="checkbox"] { accent-color: #087f79; }
+    :focus-visible { outline: 3px solid #087f79; outline-offset: 3px; }
+    details { margin-block: 0.75rem; }
+    summary { width: fit-content; max-width: 100%; color: #076b68; cursor: pointer; }
+    details p { max-width: 75ch; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; }
+    pre { max-width: 100%; overflow: auto; }
+    [role="alert"] { border-inline-start: 3px solid #b23b32; padding-inline-start: 0.75rem; color: #8b2922; }
+    [role="status"] { font-variant-numeric: tabular-nums; }
+    .scene { margin-block: 0.75rem; }
+    @media (max-width: 480px) {
+      body { padding: 0.75rem; }
+      button { min-height: 2.75rem; }
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>

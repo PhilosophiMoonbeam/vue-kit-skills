@@ -66,7 +66,7 @@ For an elective switch, settle save/discard/stay before retiring the old scope. 
 
 1. Enter a blocked/transitioning access state, immediately hide old private content, and invalidate the old UI operation epoch. Stop accepting edits/commands in that scope.
 2. Apply the accepted dirty-draft disposition. Involuntary session loss cannot be canceled by a dirty-form guard; close the private surface and follow an explicit privacy policy for unsaved data.
-3. Dispose old feature subscriptions and cancel private reads where supported. Remove old private cache entries and persisted private partitions; reset shared client workflows, selections, and draft instances. Do not remove only the visible detail key while list, summary, or export data remain.
+3. Dispose old feature subscriptions and cancel private reads where supported. Remove old private query entries, retained mutation variables/results, and persisted private partitions; reset shared client workflows, selections, draft instances, and extra controller refs retained by shared query setups. Use the selected cache's actual APIs: removing queries does not remove mutations, and removing mutation entries does not cancel their server writes or free pending promise closures. Do not remove only the visible detail key while list, summary, or export data remain. [Query retirement](tanstack-query.md#mutations-and-optimistic-concurrency), [Colada retirement](pinia-colada.md#mutations-invalidation-and-rollback).
 4. Establish the new session/tenant context through the real auth integration. Do not retag an old session's response as the new tenant's data. Await the integration's actual readiness contract.
 5. Create or activate the new scope, then enable its queries. Do not use previous-tenant data as placeholder content for the new scope.
 6. Guard every delayed UI effect against the captured scope/operation identity: notifications, form reset, navigation, selected-row updates, and focus restoration. A completed old mutation may require later reconciliation, but must not repopulate a retired private partition or move the new tenant's UI.
@@ -101,7 +101,7 @@ For an editor, a pessimistic save is usually the smallest honest design: hold th
 
 ## Save sequencing: confirmed write versus reconciled view
 
-**Worked design, synthesis:** an operator edits a case title. The baseline is revision `r7`; a background refetch returns `r8`. Keep the operator's dirty title and baseline `r7`; show that newer data exists. A conditional save against `r7` either succeeds atomically or returns conflict. Silently replacing the baseline with `r8` would defeat conflict detection.
+**Worked design, synthesis:** an operator edits a case title. The baseline is revision `r7`; a background refetch returns `r8`. Keep the operator's dirty title and baseline `r7`; show that newer data exists. With a real atomic revision-precondition contract, a save against `r7` cannot overwrite a mismatching revision: the server follows its conflict policy. Silently replacing the baseline with `r8` would defeat that conflict detection. HTTP [`If-Match`](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1) is one standard lost-update mechanism, not a claim that this application's backend implements it or that every failed save is a conflict.
 
 | Transition | Required behavior |
 | --- | --- |
@@ -232,3 +232,4 @@ Do not let the form's generic catch handler turn `committed/stale` into “Save 
 - [Query core 5.104.5 last-observer cancellation and signal consumption](https://unpkg.com/@tanstack/query-core@5.104.5/src/query.ts).
 - [Vue watcher side-effect cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [Vue SSR isolation](https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution), [Pinia SSR and hydration](https://pinia.vuejs.org/ssr/).
 - [OWASP authorization, server-side enforcement and every-request checks](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html).
+- [HTTP conditional writes and lost-update prevention (`If-Match`)](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1), [non-idempotent automatic retry boundary](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2).

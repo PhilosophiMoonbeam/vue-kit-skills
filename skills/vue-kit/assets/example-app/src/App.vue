@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, shallowRef, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, useTemplateRef, watch } from 'vue'
 import type { ButtonHTMLAttributes } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useTheme } from 'vuetify'
@@ -11,24 +11,21 @@ import { VMain } from 'vuetify/components/VMain'
 const theme = useTheme()
 const route = useRoute()
 const content = useTemplateRef<HTMLElement>('content')
-const changingTheme = shallowRef(false)
 const themeAction = computed(() => theme.current.value.dark ? 'Use light theme' : 'Use dark theme')
 
-async function changeTheme(): Promise<void> {
-  if (changingTheme.value) return
-  changingTheme.value = true
-  try {
-    await theme.change(theme.current.value.dark ? 'light' : 'dark', false)
-  } finally {
-    changingTheme.value = false
-  }
+function changeTheme(): Promise<void> {
+  // With transitions disabled, change() applies synchronously. Keep the trigger focusable.
+  return theme.change(theme.current.value.dark ? 'light' : 'dark', false)
 }
 
 watch(() => route.path, async () => {
-  document.title = `${route.path === '/about' ? 'About this example' : 'Tasks'} · Vue Kit Workbench`
+  const pageTitle = route.path === '/about'
+    ? 'About this example'
+    : route.path === '/graphics' ? 'Graphics' : 'Tasks'
+  document.title = `${pageTitle} · Vue Kit Workbench`
   await nextTick()
   content.value?.focus({ preventScroll: true })
-})
+}, { immediate: true })
 </script>
 
 <template>
@@ -47,12 +44,12 @@ watch(() => route.path, async () => {
           class="theme-button"
           v-bind="{ type: 'button', onClick: changeTheme } satisfies ButtonHTMLAttributes"
           variant="outlined"
-          :disabled="changingTheme"
         >
           {{ themeAction }}
         </VBtn>
         <nav class="app-nav" aria-label="Main navigation">
           <RouterLink class="nav-link" to="/">Tasks</RouterLink>
+          <RouterLink class="nav-link" to="/graphics">Graphics</RouterLink>
           <RouterLink class="nav-link" to="/about">About this example</RouterLink>
         </nav>
       </div>
@@ -161,6 +158,7 @@ watch(() => route.path, async () => {
   display: flex;
   grid-column: 1 / -1;
   gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .nav-link {

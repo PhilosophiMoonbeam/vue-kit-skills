@@ -1,8 +1,52 @@
 {
   "schema_version": 1,
   "recorded_at": "2026-10-22T04:20:02.615111Z",
-  "scope": "Subsequent support-boundary tightening after the fifth pass. Current metadata triage is not a recommendation list or ecosystem-wide runtime certification. Prior source/audit/removal populations are immutable historical records.",
+  "scope": "Historical support-boundary tightening after the fifth pass, with a separately dated current metadata review. The original triage is not a recommendation list or ecosystem-wide runtime certification. Prior source/audit/removal populations, native judgments, research notes and observed consumers are historical records.",
   "source_baseline": "4f720aa",
+  "evidence_policy": {
+    "historical_sections": [
+      "selection",
+      "triage",
+      "registry_records",
+      "metadata_adjudications",
+      "historical_integrity",
+      "research",
+      "consumer_observations",
+      "parent_corrections",
+      "fixture_provenance"
+    ],
+    "boundary": "recorded_at and source_baseline identify the original snapshot, not a fresh consumer run or the current contents of referenced files. Quoted contexts, changed_paths and extraction ranges describe that snapshot; they are not a current support inventory or instructions to edit those paths.",
+    "native_judgments": "Native choices, probabilities and canonical-input hashes are preserved verbatim. Two stored probability vectors sum to 0.99 (@tanstack/history@1.162.5 and sass@1.106.0); do not normalize historical output or treat its rounding as a package defect.",
+    "hashes": "historical_integrity.unchanged_files and fixture lock/extraction hashes describe the earlier observation boundary. They do not assert that today's files remain byte-identical. The original unprojected native inputs and removed temporary consumers cannot be reconstructed or freshly certified from this projection.",
+    "source_and_runtime": "Research source findings and proposed scenarios remain distinct from the parent observations that later exercised named scenarios. Neither is a new execution during the current metadata review. Current reference guidance owns adoption boundaries; a historical retain label does not supersede it."
+  },
+  "current_metadata_review": {
+    "reviewed_on": "2026-10-22",
+    "scope": "Fresh HTTPS responses from every registry_records[*].registry_url, for the same 140 exact releases and 135 package names. This is metadata research only, not a new native classification, package installation, compiler result or runtime run.",
+    "exact_release_responses": 140,
+    "identity_mismatches": 0,
+    "changed_stored_metadata_fields": 0,
+    "deprecated_releases": 0,
+    "comparison": "Names, versions, engines, peers, peer optionality, direct dependencies and repository fields present in the historical projection agree with the current responses. Repository directory remains intentionally projected out. This does not certify the full resolved dependency graph, optional integration behavior, SSR, browser rendering or GPU behavior.",
+    "omitted_optional_dependencies": [
+      "@vueuse/motion@3.0.3",
+      "bun@1.4.3",
+      "sass-embedded@1.106.0",
+      "sass@1.106.0",
+      "vite@8.3.4"
+    ],
+    "optional_dependency_boundary": "The historical metadata projection omits optionalDependencies. Those five current manifests declare them; absence from registry_records.metadata must not be read as absence from the package. In particular @vueuse/motion@3.0.3 declares optional @nuxt/kit ^3.13.0, which is not Nuxt 4 compatibility assurance.",
+    "prerelease_boundary": "The two prerelease identities remain vee-validate@5.0.0-beta.0 and vuetify-nuxt-module@1.0.0-rc.6. A latest dist-tag is not evidence of stable status: vuetify-nuxt-module/latest currently resolves to that rc release; vee-validate/latest resolves to 4.15.1.",
+    "sources": [
+      "https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#peerdependencies",
+      "https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#peerdependenciesmeta",
+      "https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#optionaldependencies",
+      "https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#engines",
+      "https://registry.npmjs.org/@vueuse/motion/3.0.3",
+      "https://registry.npmjs.org/vee-validate/latest",
+      "https://registry.npmjs.org/vuetify-nuxt-module/latest"
+    ]
+  },
   "selection": {
     "population": "Exact registry releases extracted from the initial master/reference snapshot, explicit owner-specific schema majors, plus the newly cited generator release. Historical do-not-copy/exclusion citations remain identifiable in their quoted contexts.",
     "exact_releases": 140,
@@ -8051,10 +8095,10 @@
     }
   },
   "limits": [
-    "Temporary consumers are removed after verification; commands identify exercised fixtures, not bundled runnable scripts. Exact dependency manifests, extraction mappings and assertions are preserved here.",
-    "Only named consumers executed. Metadata, source findings and runtime evidence are separate; neither native retain labels nor successful builds certify all optional packages.",
+    "Temporary consumers were removed after the historical verification; commands identify those earlier fixtures, not bundled runnable scripts. Their dependency manifests, extraction mappings and assertion summaries are preserved here, not complete executable harnesses.",
+    "Only the named historical consumers are recorded as executed. The current metadata review ran none of them. Metadata, source findings and runtime evidence are separate; neither native retain labels nor successful builds certify all optional packages.",
     "Stock TanStack Vue SSR and the named Motion declaration/factory graphs are excluded, not repaired. Future adoption needs actual successful consumers.",
     "No hosted accounts, authentication server, full Nuxt/SSR hydration matrix, screen-reader/all-browser or GPU certification added."
   ],
-  "packaging_projection": "Repository subdirectory fields are omitted uniformly from installed metadata because inherited source-tree labels are not needed for support decisions and may violate the retained-material boundary. Registry URLs expose authoritative originals; native input hashes cover the unprojected canonical JSON records. Names, releases, engines, peers, dependencies and native verdicts are unchanged."
+  "packaging_projection": "Registry metadata is a historical selected-field projection, not a complete package manifest. Repository subdirectory fields are omitted uniformly; optionalDependencies was not captured. Each registry_url exposes the authoritative exact-release manifest. Native input hashes refer to the original unprojected canonical inputs and are not reproducible from the installed projection alone. Stored names, releases, engines, peers, direct dependencies and native verdicts are unchanged."
 }

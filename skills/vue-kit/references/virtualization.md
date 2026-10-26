@@ -28,7 +28,7 @@ A single flowing block requires **contiguous indexes**. A custom `rangeExtractor
 
 Reactive counts/options require `computed(() => ({ … }))` or a ref of the **whole options object**. A one-time `{ count: rows.value.length }` does not update when rows change. `getScrollElement` is watched by the adapter; its ref becoming available after mount is expected. Adapter-owned observers are disposed with the Vue scope. [Official API](https://tanstack.com/virtual/latest/docs/api/virtualizer), [Vue adapter](https://tanstack.com/virtual/latest/docs/framework/vue/vue-virtual).
 
-The virtualizer's `Key` type includes `bigint`, which Vue 3.5 does not accept as a VNode key. Keep source IDs unique strings and normalize the exposed key at the Vue boundary. Match the measurement guard to the item-element generic; this example measures `HTMLDivElement`, not arbitrary `HTMLElement`.
+The virtualizer's `Key` type includes `bigint`, which Vue 3.5 does not accept as a VNode key. Keep source IDs unique strings and normalize the exposed key at the Vue boundary. Match the measurement guard to the item-element generic; this example measures `HTMLDivElement`, not arbitrary `HTMLElement`. Vue's closed `HTMLAttributes` does not declare `data-index`; the local `MeasuredRowAttributes` contract requires that numeric native attribute and binds it with `v-bind`, without weakening native attribute types or augmenting all components.
 
 ## Complete example: dynamic read-only rows
 
@@ -36,7 +36,7 @@ Install `@tanstack/vue-virtual@3.13.47`. This SFC generates local illustrative r
 
 ```vue
 <script setup lang="ts">
-import { computed, onMounted, ref, type ComponentPublicInstance } from 'vue'
+import { computed, onMounted, ref, type ComponentPublicInstance, type HTMLAttributes } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 
 type RecordRow = { id: string; text: string }
@@ -63,6 +63,10 @@ const options = computed(() => ({
 const virtualizer = useVirtualizer<HTMLDivElement, HTMLDivElement>(options)
 const items = computed(() => virtualizer.value.getVirtualItems())
 const total = computed(() => virtualizer.value.getTotalSize())
+type MeasuredRowAttributes = HTMLAttributes & { 'data-index': number }
+function measurementAttributes(index: number): MeasuredRowAttributes {
+  return { 'data-index': index }
+}
 function measure(element: Element | ComponentPublicInstance | null) {
   // This DOM ref callback runs on the client, not during server rendering.
   if (element instanceof HTMLDivElement) virtualizer.value.measureElement(element)
@@ -106,7 +110,7 @@ onMounted(() => { mounted.value = true })
         >
           <div
             v-for="item in items" :key="String(item.key)" :ref="measure"
-            role="listitem" :data-index="item.index"
+            role="listitem" v-bind="measurementAttributes(item.index)"
             :aria-posinset="item.index + 1" :aria-setsize="rows.length"
             class="row"
           >
@@ -197,7 +201,7 @@ The Vue hooks prefill scroll/rect/offset observer functions. Override them only 
 
 ## Evidence and proposed verification
 
-Pinned registry/declaration research establishes the documented adapter and core boundary. The SFC is a complete example, not an exercised browser result. Parent verification should cover scroll-to-last-item, resize and image growth, filtering while scrolled, data prepend/reorder, zero rows, keyboard scrolling, focus retention, SSR hydration, print/export alternatives, and remount cleanup. Profile rendered node count and main-thread processing separately.
+Pinned registry/declaration research establishes the documented adapter and core boundary. The SFC is a complete example, not an exercised browser result. A strict source-consumer check is distinct from checking every third-party declaration: keep strict TypeScript/template/unknown-prop checks enabled; if upstream published declarations fail, report the full-declaration failure separately from any bounded `skipLibCheck: true` consumer result. Neither profile proves DOM measurement or GPU behavior. Parent verification should cover scroll-to-last-item, resize and image growth, filtering while scrolled, data prepend/reorder, zero rows, keyboard scrolling, focus retention, SSR hydration, print/export alternatives, and remount cleanup. Profile rendered node count and main-thread processing separately.
 
 ## Sources
 
@@ -205,3 +209,4 @@ Pinned registry/declaration research establishes the documented adapter and core
 - [Pinned Vue declarations](https://unpkg.com/@tanstack/vue-virtual@3.13.47/dist/esm/index.d.ts), [Vue API guide](https://tanstack.com/virtual/latest/docs/framework/vue/vue-virtual).
 - [Virtualizer API: options, measurements, range extraction, scrolling](https://tanstack.com/virtual/latest/docs/api/virtualizer).
 - [Official dynamic Vue example](https://github.com/TanStack/virtual/blob/main/examples/vue/dynamic/src/components/RowVirtualizerDynamic.vue), [official window example](https://github.com/TanStack/virtual/blob/main/examples/vue/dynamic/src/components/RowVirtualizerDynamicWindow.vue).
+- [Vue 3.5.44 native attribute declarations](https://unpkg.com/@vue/runtime-dom@3.5.44/dist/runtime-dom.d.ts), [Vue object attribute binding](https://vuejs.org/guide/essentials/template-syntax#dynamically-binding-multiple-attributes).

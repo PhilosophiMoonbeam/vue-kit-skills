@@ -147,7 +147,7 @@ async function load() {
     if (disposed) return
     notice.value = isCancel(cause)
       ? 'Request canceled.'
-      : cause instanceof Error ? cause.message : String(cause)
+      : 'The summary could not be loaded. Try again.'
   }
   finally {
     if (!disposed) busy.value = false
@@ -170,7 +170,7 @@ onScopeDispose(() => {
 
 `busy` owns serialization through the **settled execute promise**, not just the wrapper's loading flag. In v15, `abort()` sets `isLoading` false immediately, before the aborted request's catch/finally runs. Re-enabling Load from that flag alone permits an old cancellation to overwrite a new execution's error and contaminate its shared thenable. The guard also rejects same-tick/programmatic duplicate loads; scope disposal prevents this example's notice/finally callbacks from publishing after unmount. Abort still permits the wrapper's internal error ref to settle; it is not disposal of the controller's refs. [Exact abort and shared thenable](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAxios.js)
 
-With `resetOnExecute: false`, an HTTP failure or cancellation leaves the previous successful summary visible; the notice describes the latest attempt, not the age of that retained data. After cancellation settles, a deliberate new Load clears the notice and may succeed. Unmount aborts the local HTTP request, but the server may still finish its work; remount creates a fresh controller, not a continuation of the disposed promise. Client cancellation is not server rollback.
+With `resetOnExecute: false`, an HTTP failure or cancellation leaves the previous successful summary visible; the notice describes the latest attempt, not the age of that retained data. The example renders a generic failure, not the transport's raw error message; adapters/interceptors can include internal request details in errors. After cancellation settles, a deliberate new Load clears the notice and may succeed. Unmount aborts the local HTTP request, but the server may still finish its work; remount creates a fresh controller, not a continuation of the disposed promise. Client cancellation is not server rollback. [Error-disclosure boundary](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html#error-handling).
 
 Create credential-bearing Axios instances per SSR request/app as appropriate. Do not mutate a server-global Axios default Authorization header with a user's token. Interceptor attachment and ejection belong to the instance owner, not every rendering consumer. Use [Query](tanstack-query.md) or [Colada](pinia-colada.md) when the actual requirement is resource caching/invalidation rather than imperative transport state.
 
@@ -313,7 +313,7 @@ For asynchronous remote rules, the application must supply their real service co
 
 v15 raises the Node floor to 22 and changes IndexedDB state/tab-sync behavior. Core/shared changes such as removed `templateRef`, scheduler options, and throttle trailing defaults also apply transitively; see [VueUse migration notes](vueuse.md#v15-migration-and-specialized-browser-apis). Do not assume a peer-range expansion is a request to migrate the entire app.
 
-Research covers registry releases, exports, declarations and implementations. Earlier production Chromium/local-HTTP checks exercised the exact Axios reader with integrations 15.0.0 and Axios 1.20.0: success, HTTP failure, settled-promise serialization, cancellation, unmount abort and remount isolation. Current production checks also confirmed the excluded manual-validator adapter's unwanted eager validation and the exact manual-composable replacement's explicit invalid/valid transitions without typing-triggered validation; its Node SSR defaults rendered. See [scoped evidence](../assets/verification.json). Focus-trap, cookies, IndexedDB and other unlisted adapters remain source-only, not whole-reference runtime/SSR certification. Verify focus entry/Tab/Escape/return, absent peers, independent Axios controllers, same-path cookie deletion, request isolation, IndexedDB denial/tab sync and keyboard reorder in the consuming app; use [testing](testing.md).
+Research covers registry releases, exports, declarations and implementations. Previously recorded production Chromium/local-HTTP checks exercised the then-current Axios reader with integrations 15.0.0 and Axios 1.20.0: success, HTTP failure, settled-promise serialization, cancellation, unmount abort and remount isolation. That historical reader rendered raw errors; the generic-error correction above has not been executed in this audit. Previously recorded checks also confirmed the excluded manual-validator adapter's unwanted eager validation and the manual-composable replacement's explicit invalid/valid transitions without typing-triggered validation; its Node SSR defaults rendered. See [scoped historical evidence](../assets/verification.json). Focus-trap, cookies, IndexedDB and other unlisted adapters remain source-only, not whole-reference runtime/SSR certification. Verify focus entry/Tab/Escape/return, absent peers, independent Axios controllers, same-path cookie deletion, request isolation, IndexedDB denial/tab sync and keyboard reorder in the consuming app; use [testing](testing.md).
 
 ## Sources
 

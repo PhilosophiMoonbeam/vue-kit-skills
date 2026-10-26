@@ -4,9 +4,9 @@ Use for an existing OpenVue application or an explicitly selected rich-widget al
 
 ## Release and evidence boundary
 
-**OpenVue 1.x and newer, a fork of PrimeVue 4.5.5**, is the supported alternative route. Verify installed exports before adopting a future major.
+**OpenVue 1.0.0, a fork of PrimeVue 4.5.5**, is the evidenced alternative route. Recheck installed exports and the intended consumer before adopting a later release or major; this snapshot does not certify future versions.
 
-The authoring snapshot is **Vue 3.5.44 / OpenVue 1.0.0**, with matching `@openvue/core`, `@openvue/themes`, optional `@openvue/forms` and official Nuxt module **1.0.0**. Packages are MIT licensed; no application license key, hosted account or commercial service is required. Core brings component SVG icons transitively. Icon fonts, Chart/Quill runtime features, utility CSS and form integration are separate choices; the selected full-declaration profile also needs the explicit Chart.js **development-only type prerequisite** in [setup](openvue-setup.md).
+The authoring snapshot is **Vue 3.5.44 / OpenVue 1.0.0**, with matching `@openvue/core`, `@openvue/themes`, optional `@openvue/forms` and official Nuxt module **1.0.0**. Packages are MIT licensed; no application license key, hosted account or commercial service is required. The `openvue` package depends on both `@openvue/core` and the component SVG icon package `@openvue/icons`; `@openvue/core` alone does not bring those icons. Icon fonts, Chart/Quill runtime features, utility CSS and form integration are separate choices; the selected full-declaration profile also needs the explicit Chart.js **development-only type prerequisite** in [setup](openvue-setup.md). [Exact component dependencies](https://registry.npmjs.org/openvue/1.0.0), [exact core dependencies](https://registry.npmjs.org/@openvue/core/1.0.0).
 
 The official Context7 library now resolves as **`/openvi-foundation/openvue`**. Its indexed Markdown comes from `apps/showcase/server/assets/llms/{pages,components}` in the upstream repository. Use Context7 for targeted discovery, then reconcile the locked release's exported declarations and runtime: repository `master` and generated documentation can lead the published package or contain stale examples. A snippet's presence is not compatibility or accessibility evidence.
 

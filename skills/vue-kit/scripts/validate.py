@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate an installed Vue Kit skill using Python 3.9+ and its standard library.
 
-Usage: python3 scripts/validate.py [ROOT] [--json]
+Usage: python3 scripts/validate.py [ROOT] [--json] [--refresh-footprint]
 
 The frontmatter reader deliberately supports a small YAML subset: top-level
 string fields, a two-space-indented metadata string map, quoted/plain scalars,
@@ -9,6 +9,13 @@ and literal/folded block strings (|, |-, |+, >, >-, >+). Folded blocks accept
 one plain paragraph; other YAML constructs are rejected, never evaluated.
 This checks packaged structure and provenance consistency, not example runtime
 behavior, upstream truth, or the availability of original source documents.
+Markdown checks cover this package's flat headings, fences and local links,
+not full CommonMark conformance. Lockfile presence is not lock resolution.
+An optional assets/current-audit.json is checked for inventory/evidence schema
+consistency and included in the footprint, not independently authenticated.
+--refresh-footprint replaces only snapshots.files after the other checks pass;
+it does not alter recorded checks, timestamps or historical source identities,
+and it does not establish that changed examples have been executed.
 """
 
 import argparse
@@ -23,10 +30,12 @@ from pathlib import Path
 import re
 import sys
 import unicodedata
+import tempfile
 from urllib.parse import unquote, urlsplit
 
 
 BASELINE = {"vue": "3.5.44", "vuetify": "4.3.0"}
+HISTORY_COMMIT = '7bf433b98951918c694358e372d3b02cf6f982e5'
 IGNORED = {".git", "node_modules", "dist", ".vite", "__pycache__", ".venv"}
 SEMVER = re.compile(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?\Z")
 # Fingerprints preserve the accepted native hypotheses, including probabilities,
@@ -50,6 +59,9 @@ OPENVUE_SOURCE_FIELDS = (
     'source_identity_sha256', 'source_blob_sha1',
 )
 OPENVUE_INPUT_FINGERPRINT = '0545c91984a36770067d15a862975eccd58c5a712ce89204ca186e345b9692da'
+
+# Original current-audit population only; not source truth or execution authentication.
+CURRENT_AUDIT_ORIGINAL_POPULATION = '0c334b90bdbbcdd1a2195f56114c28569d53c935e3cdf0a3c50e049073bf2eb7'
 
 # Current additions are reviewed separately from the immutable 38-reference
 # native population. Declaring a new file here requires its own extension review.
@@ -120,7 +132,7 @@ def scalar(value, line):
     if (value[0] in "[]{}&*!|>@`%#,?" or re.search(r":(?:\s|$)", value)
             or re.fullmatch(r"[-?:](?:\s.*)?", value)):
         raise FrontmatterError(f"line {line}: unsupported YAML syntax; quote this string")
-    if re.fullmatch(r"(?i:null|true|false|yes|no|on|off|~|[-+]?(?:\d[\d_.eE+-]*|\.inf|\.nan))", value):
+    if re.fullmatch(r"(?i:null|true|false|yes|no|on|off|~|[-+]?(?:\d[\d_.eE+-]*|0[xob][0-9a-f_]+|\.\d+(?:e[-+]?\d+)?|\.inf|\.nan))", value):
         raise FrontmatterError(f"line {line}: non-string YAML scalar; quote this value")
     return value
 
@@ -191,7 +203,7 @@ def frontmatter(text):
 
 
 def prose_lines(text, error):
-    """Keep line numbers while excluding fenced code (CommonMark fence rules)."""
+    """Exclude top-level fences; require closure as a package authoring policy."""
     output = []
     fence = None
     for number, row in enumerate(text.splitlines(), 1):
@@ -348,6 +360,8 @@ class Validator:
         self.packaged_files = None
         self.manifest = None
         self.audit = None
+        self.verification = None
+        self.current_footprint = {}
 
     def display(self, path):
         try:
@@ -616,7 +630,7 @@ class Validator:
         if extension_ids != {'openvue', 'application-session-contract'}:
             self.error(manifest_path, 'required local-library and application-session extensions are missing')
         history = manifest.get('history')
-        if not isinstance(history, dict) or history.get('commit') != '7bf433b98951918c694358e372d3b02cf6f982e5':
+        if not isinstance(history, dict) or history.get('commit') != HISTORY_COMMIT:
             self.error(manifest_path, 'history must identify the immutable pre-cutover snapshot')
         for path in sorted(self.references - registered):
             self.error(manifest_path, f'unregistered reference: {self.display(path)}')
@@ -624,6 +638,9 @@ class Validator:
             if audit is not None:
                 self.error(audit_path, 'audit must be an object')
             return
+        history = audit.get('history')
+        if not isinstance(history, dict) or history.get('commit') != HISTORY_COMMIT:
+            self.error(audit_path, 'history must identify the immutable pre-cutover snapshot')
         counts = audit.get('counts')
         if not isinstance(counts, dict):
             self.error(audit_path, 'counts object is required')
@@ -946,12 +963,19 @@ class Validator:
             return
         if report.get('schema_version') != 2 or report.get('baseline') != BASELINE:
             self.error(path, 'coverage schema/baseline disagree with current provenance')
-        if report.get('unresolved') != [] or not isinstance(report.get('method'), str):
+        if report.get('unresolved') != [] or not isinstance(report.get('method'), str) or not report['method'].strip():
             self.error(path, 'coverage method and empty unresolved list are required')
+        history = report.get('history')
+        if not isinstance(history, dict) or history.get('commit') != HISTORY_COMMIT:
+            self.error(path, 'history must identify the immutable pre-cutover snapshot')
         manifest_sources = self.manifest.get('sources', []) if isinstance(self.manifest, dict) else []
+        if not isinstance(manifest_sources, list):
+            manifest_sources = []
         roots = {row['id']: row for row in manifest_sources
                  if isinstance(row, dict) and isinstance(row.get('id'), str)}
         audit_files = self.audit.get('files', []) if isinstance(self.audit, dict) else []
+        if not isinstance(audit_files, list):
+            audit_files = []
         originals = {row['path']: row for row in audit_files
                      if isinstance(row, dict) and isinstance(row.get('path'), str)}
         sources = report.get('sources')
@@ -1118,7 +1142,7 @@ class Validator:
     def validate_service_independence(self):
         self.checks.append('service-independent capability boundary and supported UI successor')
         forbidden = re.compile(r'\u0063lerk|\u0070rime(?:vue|ui|uix)', re.I)
-        attribution = 'OpenVue 1.x and newer, a fork of \u0050rimeVue 4.5.5'
+        attribution = 'OpenVue 1.0.0, a fork of \u0050rimeVue 4.5.5'
         attribution_count = 0
         for path in self.packaged_paths():
             try:
@@ -1136,7 +1160,7 @@ class Validator:
             self.error(self.root / 'references/openvue.md',
                        'exactly one supported-successor fork attribution is required')
 
-    def validate_verification(self):
+    def validate_verification(self, refresh_footprint=False):
         self.checks.extend(['scoped recorded verification metadata',
                             'complete content-addressed packaged file footprint (not runtime certification)'])
         relative = 'assets/verification.json'
@@ -1144,6 +1168,7 @@ class Validator:
         report = self.evidence_report(relative)
         if report is None:
             return
+        self.verification = report
         recorded = report.get('recorded_at')
         try:
             timestamp = datetime.fromisoformat(recorded[:-1] + '+00:00' if isinstance(recorded, str) and recorded.endswith('Z') else recorded)
@@ -1193,6 +1218,8 @@ class Validator:
             self.error(path, 'snapshots.files must map packaged paths to SHA256 hashes')
             return
         current = {self.display(item): item for item in self.packaged_paths() if self.display(item) != relative}
+        if refresh_footprint:
+            self.checks.append('explicit footprint refresh only; no recorded checks or timestamps renewed')
         for name, digest in sorted(files.items()):
             target = self.safe_path(path, name, 'snapshots.files key')
             if target is None:
@@ -1204,24 +1231,318 @@ class Validator:
             if not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest):
                 self.error(path, f'invalid snapshot SHA256: {name}')
                 continue
-            if name not in current:
-                continue
+        for name, target in sorted(current.items()):
             try:
                 hasher = hashlib.sha256()
                 with target.open('rb') as stream:
                     for chunk in iter(lambda: stream.read(65536), b''):
                         hasher.update(chunk)
-                if hasher.hexdigest() != digest:
+                digest = hasher.hexdigest()
+                self.current_footprint[name] = digest
+                if not refresh_footprint and name in files and digest != files[name]:
                     self.error(path, f'stale packaged snapshot: {name}')
             except OSError as exc:
                 self.error(path, f'cannot hash {name}: {exc}')
-        for name in sorted(set(current) - set(files)):
-            self.error(path, f'missing packaged snapshot: {name}')
-        for name in sorted(set(files) - set(current)):
-            self.error(path, f'extra packaged snapshot: {name}')
+        if not refresh_footprint:
+            for name in sorted(set(current) - set(files)):
+                self.error(path, f'missing packaged snapshot: {name}')
+            for name in sorted(set(files) - set(current)):
+                self.error(path, f'extra packaged snapshot: {name}')
+
+    def refresh_footprint(self):
+        """Atomically replace only the current file map, never execution metadata."""
+        path = self.root / 'assets/verification.json'
+        report = self.verification
+        report['snapshots']['files'] = self.current_footprint
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent,
+                                             prefix='.verification-', suffix='.tmp', delete=False) as stream:
+                temporary = Path(stream.name)
+                stream.write(json.dumps(report, indent=2, ensure_ascii=True) + '\n')
+            os.chmod(temporary, path.stat().st_mode & 0o777)
+            os.replace(temporary, path)
+            return True
+        except (OSError, ValueError, UnicodeError) as exc:
+            self.error(path, f'cannot refresh packaged footprint: {exc}')
+            return False
+        finally:
+            if temporary is not None:
+                try:
+                    temporary.unlink(missing_ok=True)
+                except OSError as exc:
+                    self.error(path, f'cannot remove refresh temporary file: {exc}')
+
+    def validate_current_audit(self):
+        relative = 'assets/current-audit.json'
+        path = self.root / relative
+        if not path.exists() and not path.is_symlink():
+            return
+        self.checks.append('optional current audit inventory and evidence schema (not authenticity or runtime certification)')
+        report = self.load_json(relative)
+        if not isinstance(report, dict):
+            self.error(path, 'current audit must be a JSON object')
+            return
+
+        def nonempty(value):
+            return isinstance(value, str) and bool(value.strip())
+
+        def strings(value, label, allow_empty=False):
+            if (not isinstance(value, list) or (not value and not allow_empty)
+                    or any(not nonempty(item) for item in value)):
+                self.error(path, f'{label}: expected an array of nonempty strings')
+                return []
+            if len(value) != len(set(value)):
+                self.error(path, f'{label}: entries must be unique')
+            return value
+
+        if type(report.get('schema_version')) is not int or report['schema_version'] != 1:
+            self.error(path, 'current audit schema_version must be 1')
+        recorded = report.get('recorded_at')
+        try:
+            if not nonempty(recorded):
+                raise ValueError('missing timestamp')
+            datetime.fromisoformat(recorded[:-1] + '+00:00' if recorded.endswith('Z') else recorded)
+        except (ValueError, OverflowError):
+            self.error(path, 'current audit recorded_at must be an ISO timestamp')
+        if not nonempty(report.get('scope')):
+            self.error(path, 'current audit scope must be nonempty')
+        if not isinstance(report.get('rubric'), dict) or not report['rubric']:
+            self.error(path, 'current audit rubric must be a nonempty object')
+        strings(report.get('historical_limits'), 'historical_limits')
+        inventory = report.get('inventory')
+        if not isinstance(inventory, dict):
+            self.error(path, 'current audit inventory must be an object')
+            inventory = {}
+        count_fields = ('authored_files', 'audit_units', 'escalated_units', 'unflagged_units',
+                        'judge_errors', 'truncated_units')
+        for key in count_fields:
+            if type(inventory.get(key)) is not int or inventory[key] < 0:
+                self.error(path, f'inventory.{key}: expected a nonnegative integer')
+        for key in ('dispositions', 'prefilter_exclusions'):
+            counts = inventory.get(key)
+            if (not isinstance(counts, dict)
+                    or any(not nonempty(name) or type(value) is not int or value < 0
+                           for name, value in counts.items())):
+                self.error(path, f'inventory.{key}: expected nonnegative integer counts')
+        if all(type(inventory.get(key)) is int for key in count_fields):
+            if inventory['audit_units'] != inventory['escalated_units'] + inventory['unflagged_units']:
+                self.error(path, 'inventory escalated and unflagged totals must partition audit_units')
+            if inventory['judge_errors'] != 0 or inventory['truncated_units'] > inventory['audit_units']:
+                self.error(path, 'current audit requires no judge errors and bounded truncation')
+            counts = inventory.get('dispositions')
+            if isinstance(counts, dict) and all(type(value) is int for value in counts.values()):
+                if sum(counts.values()) != inventory['audit_units']:
+                    self.error(path, 'inventory dispositions must total audit_units')
+
+        files = report.get('files')
+        if not isinstance(files, list):
+            self.error(path, 'current audit files must be an array')
+            files = []
+        expected = {self.display(item) for item in self.packaged_paths() if self.display(item) != relative}
+        seen, units, reviewed = set(), set(), set()
+        evidence_types = {'official_docs', 'package_source', 'repository_source',
+                          'historical_invariant', 'manual_gpu_pending', 'navigation'}
+        for index, row in enumerate(files):
+            label = f'files[{index}]'
+            if not isinstance(row, dict):
+                self.error(path, f'{label}: expected a file record')
+                continue
+            name = row.get('path')
+            target = self.safe_path(path, name, f'{label}.path')
+            if target is None:
+                continue
+            if name not in expected or name in seen:
+                self.error(path, f'{label}: file must be packaged, non-self and unique')
+            seen.add(name)
+            owned = strings(row.get('unit_ids'), f'{label}.unit_ids')
+            selected = strings(row.get('reviewed_unit_ids'), f'{label}.reviewed_unit_ids', allow_empty=True)
+            prefix = f'skills/vue-kit/{name}'
+            if any(unit != prefix and not unit.startswith((prefix + ':', prefix + '#')) for unit in owned):
+                self.error(path, f'{label}: unit IDs must retain their owning file prefix')
+            if units.intersection(owned) or not set(selected).issubset(owned):
+                self.error(path, f'{label}: units must be globally unique and reviewed IDs must be owned')
+            units.update(owned)
+            reviewed.update(selected)
+            claims = row.get('claim_evidence')
+            if not isinstance(claims, list):
+                self.error(path, f'{label}.claim_evidence: expected an array')
+                claims = []
+            evidenced = set()
+            for claim_index, claim in enumerate(claims):
+                claim_label = f'{label}.claim_evidence[{claim_index}]'
+                if not isinstance(claim, dict):
+                    self.error(path, f'{claim_label}: expected an evidence record')
+                    continue
+                claim_units = strings(claim.get('unit_ids'), f'{claim_label}.unit_ids')
+                if not set(claim_units).issubset(selected):
+                    self.error(path, f'{claim_label}: evidence must identify reviewed units in this file')
+                evidenced.update(claim_units)
+                kind = claim.get('evidence_type')
+                if not isinstance(kind, str) or kind not in evidence_types:
+                    self.error(path, f'{claim_label}: invalid evidence_type')
+                for key in ('claim', 'source_url_or_pointer', 'version_scope', 'disposition'):
+                    if not nonempty(claim.get(key)):
+                        self.error(path, f'{claim_label}.{key}: expected a nonempty string')
+            if evidenced != set(selected):
+                self.error(path, f'{label}: every reviewed unit requires evidence')
+        if seen != expected or len(files) != len(expected):
+            self.error(path, 'current audit must inventory every non-self packaged file exactly once')
+        for key, actual in (('authored_files', len(files)), ('audit_units', len(units)),
+                            ('escalated_units', len(reviewed))):
+            if inventory.get(key) != actual:
+                self.error(path, f'inventory.{key}: must match file/unit records')
+
+        extension = report.get('source_extension')
+        extension_units = {unit for unit in units if '#workbench-graphics/' in unit}
+        if extension is None and extension_units:
+            self.error(path, 'workbench source units require their explicit source_extension')
+        if extension is not None:
+            if not isinstance(extension, dict):
+                self.error(path, 'source_extension must be an object')
+                extension = {}
+            if extension.get('id') != 'workbench-graphics':
+                self.error(path, 'source_extension must identify the workbench-graphics source review')
+            for key in ('scope', 'reviewer', 'method'):
+                if not nonempty(extension.get(key)):
+                    self.error(path, f'source_extension.{key}: expected a nonempty string')
+            timestamp = extension.get('reviewed_at')
+            try:
+                if not nonempty(timestamp):
+                    raise ValueError('missing timestamp')
+                datetime.fromisoformat(timestamp[:-1] + '+00:00' if timestamp.endswith('Z') else timestamp)
+            except (ValueError, OverflowError):
+                self.error(path, 'source_extension.reviewed_at must be an ISO timestamp')
+            strings(extension.get('limits'), 'source_extension.limits')
+            added = set(strings(extension.get('unit_ids'), 'source_extension.unit_ids'))
+            new_files = set(strings(extension.get('new_files'), 'source_extension.new_files'))
+            if added != extension_units or not added.issubset(reviewed):
+                self.error(path, 'source extension units must be namespaced and fully source-reviewed')
+            population, actual_new_files = {}, set()
+            for row in files:
+                if (not isinstance(row, dict) or not isinstance(row.get('path'), str)
+                        or not isinstance(row.get('unit_ids'), list)):
+                    continue
+                owned = [unit for unit in row['unit_ids'] if isinstance(unit, str)]
+                original = [unit for unit in owned if unit not in added]
+                if original:
+                    population[row.get('path')] = original
+                elif owned:
+                    actual_new_files.add(row.get('path'))
+                source_lines = None
+                if any(unit in added for unit in owned):
+                    source = self.safe_path(path, row['path'], 'extension source')
+                    if source is not None:
+                        try:
+                            source_lines = source.read_text(encoding='utf-8').splitlines()
+                        except (OSError, UnicodeError) as exc:
+                            self.error(path, f'cannot inspect extension source: {exc}')
+                claims = row.get('claim_evidence', [])
+                for claim in claims if isinstance(claims, list) else []:
+                    if not isinstance(claim, dict) or not isinstance(claim.get('unit_ids'), list):
+                        continue
+                    claim_units = {unit for unit in claim['unit_ids'] if isinstance(unit, str)}
+                    if claim_units.intersection(added) and (
+                            not claim_units.issubset(added)
+                            or claim.get('disposition') != 'source-reviewed'
+                            or claim.get('evidence_type') not in ('repository_source', 'package_source', 'official_docs')):
+                        self.error(path, 'extension evidence must be source-only and separate from original units')
+                    if claim_units.intersection(added):
+                        excerpts = claim.get('source_excerpts')
+                        if not isinstance(excerpts, list) or not excerpts:
+                            self.error(path, 'extension evidence requires current literal source excerpts')
+                            continue
+                        for excerpt in excerpts:
+                            if (not isinstance(excerpt, dict)
+                                    or type(excerpt.get('line')) is not int
+                                    or source_lines is None
+                                    or not 1 <= excerpt['line'] <= len(source_lines)
+                                    or excerpt.get('text') != source_lines[excerpt['line'] - 1]):
+                                self.error(path, 'extension excerpt must match its current file and line')
+            if actual_new_files != new_files:
+                self.error(path, 'source extension new_files must identify exactly the newly inventoried files')
+            original_inventory = extension.get('original_inventory')
+            frozen = {'inventory': original_inventory, 'files': population}
+            digest = hashlib.sha256(json.dumps(
+                frozen, ensure_ascii=True, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+            if digest != CURRENT_AUDIT_ORIGINAL_POPULATION:
+                self.error(path, 'source extension must preserve the original inventory and file/unit identities')
+            if isinstance(original_inventory, dict):
+                current = dict(original_inventory)
+                for key, extra in (('authored_files', len(new_files)), ('audit_units', len(added)),
+                                   ('escalated_units', len(added))):
+                    value = current.get(key)
+                    if type(value) is int:
+                        current[key] = value + extra
+                dispositions = dict(current.get('dispositions', {})) if isinstance(current.get('dispositions'), dict) else {}
+                dispositions['source_reviewed_extension'] = len(added)
+                current['dispositions'] = dispositions
+                if inventory != current:
+                    self.error(path, 'current inventory must add only the separately source-reviewed extension population')
+
+        executions = report.get('executions')
+        if not isinstance(executions, list):
+            self.error(path, 'current audit executions must be an array')
+            executions = []
+        execution_ids = set()
+        for index, execution in enumerate(executions):
+            label = f'executions[{index}]'
+            if not isinstance(execution, dict):
+                self.error(path, f'{label}: expected an execution record')
+                continue
+            identity = execution.get('id')
+            if not nonempty(identity) or identity in execution_ids:
+                self.error(path, f'{label}: execution id must be unique and nonempty')
+            else:
+                execution_ids.add(identity)
+            for key in ('command', 'scope'):
+                if not nonempty(execution.get(key)):
+                    self.error(path, f'{label}.{key}: expected a nonempty string')
+            if execution.get('outcome') not in ('passed', 'failed'):
+                self.error(path, f'{label}: only observed passed/failed outcomes may be recorded')
+            observations = execution.get('observations')
+            if not (nonempty(observations) or isinstance(observations, (dict, list)) and observations):
+                self.error(path, f'{label}: nonempty observations are required')
+        gpu = report.get('manual_gpu_confirmation')
+        if not isinstance(gpu, dict):
+            self.error(path, 'manual_gpu_confirmation must be an object')
+        else:
+            status = gpu.get('status')
+            if status not in ('pending_user', 'reviewed_with_limits'):
+                self.error(path, 'manual GPU confirmation must be pending_user or a scoped reviewed_with_limits receipt')
+            if gpu.get('bead_id') != 'vue-kit-skills-liu.27':
+                self.error(path, 'manual GPU confirmation must identify the final human gate')
+            for key in ('scope', 'limits'):
+                if not nonempty(gpu.get(key)):
+                    self.error(path, f'manual_gpu_confirmation.{key}: expected a nonempty string')
+            if status == 'reviewed_with_limits':
+                followup = gpu.get('followup')
+                if not isinstance(followup, dict):
+                    self.error(path, 'reviewed baseline evidence requires its corrected-source target-device gate')
+                    followup = {}
+                if (followup.get('status') not in ('pending_user', 'reviewed_with_limits')
+                        or followup.get('bead_id') != 'vue-kit-skills-liu.33.3'
+                        or not nonempty(followup.get('scope'))):
+                    self.error(path, 'corrected-source GPU evidence requires a scoped pending or reviewed gate')
+                receipts = [('reviewed_report', gpu.get('reviewed_report'))]
+                if followup.get('status') == 'reviewed_with_limits':
+                    receipts.append(('followup.reviewed_report', followup.get('reviewed_report')))
+                for label, receipt in receipts:
+                    if not isinstance(receipt, dict):
+                        self.error(path, f'{label}: reviewed GPU evidence requires its report receipt')
+                        receipt = {}
+                    for key in ('filename', 'exported_at'):
+                        if not nonempty(receipt.get(key)):
+                            self.error(path, f'manual_gpu_confirmation.{label}.{key}: expected a nonempty string')
+                    digest = receipt.get('sha256')
+                    if not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest):
+                        self.error(path, f'{label}: reviewed GPU report requires an exact SHA-256 identity')
+                    if type(receipt.get('bytes')) is not int or receipt['bytes'] <= 0:
+                        self.error(path, f'{label}: reviewed GPU report requires a positive byte count')
+                    strings(receipt.get('observations'), f'manual_gpu_confirmation.{label}.observations')
 
     def validate_package(self):
-        self.checks.append('example package pinned dependencies, Bun lockfile and runnable scripts')
+        self.checks.append('example package pinned dependencies, script declarations and Bun lockfile presence (not resolution)')
         path = self.root / 'assets/example-app/package.json'
         package = self.load_json('assets/example-app/package.json')
         if not isinstance(package, dict):
@@ -1253,11 +1574,14 @@ class Validator:
         if not isinstance(dependencies, dict) or not isinstance(development, dict):
             return
         required = {
-            'dependencies': {**BASELINE, 'pinia': '3.0.4', 'vue-router': '4.6.4'},
+            'dependencies': {
+                **BASELINE, 'pinia': '3.0.4', 'vue-router': '4.6.4',
+                '@tresjs/core': '5.9.3', 'three': '0.186.1',
+            },
             'devDependencies': {
                 '@vitejs/plugin-vue': '6.0.10', 'vite': '8.3.4',
                 'typescript': '5.9.3', 'vue-tsc': '3.3.13',
-                '@types/node': '24.19.2',
+                '@types/node': '24.19.2', '@types/three': '0.186.0',
             },
         }
         for group, versions in required.items():
@@ -1275,7 +1599,8 @@ class Validator:
             if scripts.get(name) != command:
                 self.error(path, f'scripts.{name} must be {command!r}')
 
-    def run(self):
+    def run(self, refresh_footprint=False):
+        refreshed = False
         if not self.root.is_dir():
             self.error(self.root, 'skill root is not a directory')
         else:
@@ -1286,16 +1611,24 @@ class Validator:
             self.validate_coverage()
             self.validate_openvue_coverage()
             self.validate_service_independence()
-            self.validate_verification()
-        return {'valid': not self.errors, 'checks': self.checks, 'errors': sorted(set(self.errors))}
+            self.validate_current_audit()
+            self.validate_verification(refresh_footprint)
+            if refresh_footprint and not self.errors:
+                refreshed = self.refresh_footprint()
+        result = {'valid': not self.errors, 'checks': self.checks, 'errors': sorted(set(self.errors))}
+        if refresh_footprint:
+            result['footprint_refreshed'] = refreshed
+        return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('root', nargs='?', type=Path, default=Path(__file__).resolve().parent.parent, help='skill directory (default: script parent.parent)')
     parser.add_argument('--json', action='store_true', help='emit deterministic JSON instead of human-readable diagnostics')
+    parser.add_argument('--refresh-footprint', action='store_true',
+                        help='replace only snapshots.files if structural and metadata checks pass; no runtime evidence is renewed')
     args = parser.parse_args()
-    result = Validator(args.root).run()
+    result = Validator(args.root).run(refresh_footprint=args.refresh_footprint)
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
     else:

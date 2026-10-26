@@ -20,6 +20,7 @@ const router = createRouter({
   routes: [
     { path: '/', name: 'tasks', component: TaskPage },
     { path: '/about', name: 'about', component: AboutPage },
+    { path: '/graphics', name: 'graphics', component: () => import('./GraphicsPage.vue') },
   ],
 })
 

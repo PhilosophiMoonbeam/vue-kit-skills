@@ -13,13 +13,16 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@tresjs/core": "5.9.3",
     "pinia": "3.0.4",
+    "three": "0.186.1",
     "vue": "3.5.44",
     "vue-router": "4.6.4",
     "vuetify": "4.3.0"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
+    "@types/three": "0.186.0",
     "@vitejs/plugin-vue": "6.0.10",
     "typescript": "5.9.3",
     "vite": "8.3.4",

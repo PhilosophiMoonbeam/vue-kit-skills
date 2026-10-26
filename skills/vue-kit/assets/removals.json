@@ -19,7 +19,7 @@
         "slidev-cli-skilld"
       ],
       "source_documents": 9,
-      "reason": "The exact current package combination reproduced a browser initialization compatibility defect in the coupled Twoslash/FloatingVue desktop drag and text-selection patch. Removal is a shipped capability boundary, not a claim that every package or ordinary type hover is obsolete or inoperative.",
+      "reason": "The exact recorded package combination reproduced a browser initialization compatibility defect in the coupled Twoslash/FloatingVue desktop drag and text-selection patch. Removal is a shipped capability boundary, not a claim that every package or ordinary type hover is obsolete or inoperative.",
       "evidence": {
         "primary_urls": [
           "https://unpkg.com/@slidev/cli@53.0.0/package.json",

@@ -133,7 +133,7 @@ The example's z-index pair belongs to this isolated surface, not a cross-framewo
 
 ### Portals, styling and collision failures
 
-- Portal defaults to `body`; `to` selects another existing container. `defer` supports late target resolution with Vue 3.5, not an indefinitely missing target. For SSR use a deliberate server/client Teleport target; see [SSR debugging](debugging-ssr.md).
+- Without a `ConfigProvider teleportTo` override, Portal defaults to `body`; an explicit per-Portal `to` takes precedence over both. `defer` supports late target resolution with Vue 3.5 in the **same mount/update tick**, not an indefinitely missing target. For SSR use a deliberate server/client Teleport target; see [SSR debugging](debugging-ssr.md) and [Vue's deferred-Teleport boundary](https://vuejs.org/guide/built-ins/teleport.html#deferred-teleport).
 - In **2.11.0**, the shared Teleport renders only after mounting unless `forceMount` is true: default Portal content is absent from the server output. Choosing a target alone does not server-render it. Force-mounting removes that gate; the SSR integration must then inject/hydrate the Teleport output into its dedicated target and preserve hidden/focus policy. Do not access `document` or create target nodes during server setup. [Exact Teleport gate and target precedence](https://unpkg.com/reka-ui@2.11.0/src/Teleport/Teleport.vue).
 - Direct scoped class selectors still match your own teleported nodes: Teleport does not erase Vue scope attributes. A selector requiring the old physical ancestor does not match after teleport. `:deep()` is for child internals, not a mandatory Teleport fix.
 - Portal content no longer inherits theme variables from a local DOM ancestor. Put required tokens on the target/common ancestor, or choose a target inside the theme boundary. Avoid targets inside `overflow: hidden` or transformed stacking contexts unless intentional.
@@ -174,14 +174,18 @@ import { CalendarDate, type DateValue } from '@internationalized/date'
 import { DateFieldInput, DateFieldRoot } from 'reka-ui'
 
 const labelId = useId()
-const value = shallowRef<DateValue | undefined>(new CalendarDate(2026, 10, 21))
+const value = shallowRef<DateValue | null>(new CalendarDate(2026, 10, 21))
 const minimum = new CalendarDate(2026, 1, 1)
+
+function updateValue(nextValue: DateValue | undefined) {
+  value.value = nextValue ?? null
+}
 </script>
 
 <template>
   <span :id="labelId">Local planning date</span>
   <DateFieldRoot
-    v-model="value" v-slot="{ segments, isInvalid }"
+    :model-value="value" @update:model-value="updateValue" v-slot="{ segments, isInvalid }"
     :aria-labelledby="labelId" :min-value="minimum"
     locale="en-GB" granularity="day"
   >
@@ -201,6 +205,8 @@ const minimum = new CalendarDate(2026, 1, 1)
 .date-segment:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 </style>
 ```
+
+In **2.11.0**, the controlled prop is `modelValue?: DateValue | null`, but `update:modelValue` emits `DateValue | undefined`. Keep the application’s empty state as `null` and normalize emitted `undefined` explicitly, rather than binding an `undefined` value to the prop under `exactOptionalPropertyTypes`. This preserves clearing and subsequent segment editing without converting date-only values into instants. The [exact DateFieldRoot source](https://unpkg.com/reka-ui@2.11.0/src/DateField/DateFieldRoot.vue) is authoritative for this prop/event distinction; generated event tables can omit the emitted `undefined`.
 
 Use matching DateValue objects for `minValue`, `maxValue`, placeholders and unavailable-date predicates; a placeholder is not a committed selection. Supply `weekStartsOn` explicitly when business rules require it rather than assuming locale changes it. DateFieldInput needs **every** slot segment, including literals; do not replace segment editing with an unbound text node. [DateField API](https://reka-ui.com/docs/components/date-field).
 
@@ -366,7 +372,7 @@ Named presets are `vega` (classic/Inter/Lucide), `nova` (compact/Geist Sans/Luci
 
 Current icon library choices are Lucide `@lucide/vue`, Tabler `@tabler/icons-vue`, Hugeicons `@hugeicons/vue` + core-free-icons, Phosphor `@phosphor-icons/vue`, and Remixicon `@remixicon/vue`. They have different render contracts (Hugeicons takes an icon object); use the CLI's transformations rather than replacing only import strings. `lucide-vue-next` is legacy; toast/toaster are superseded by Sonner. Tokens use OKLCH/CSS variables; generated `data-slot` is a fine-grained styling hook. Preserve `shadcn-vue/tailwind.css` animation/utilities (`scroll-fade`, `shimmer`) when maintaining generated CSS. [Exact icon declarations](https://unpkg.com/shadcn-vue@2.8.2/dist/icons/index.d.ts), [changelog](https://www.shadcn-vue.com/docs/changelog).
 
-For an incumbent Drawer upgrade, copied wrappers now use Reka Drawer, not vaul-vue: replace `direction` with `swipe-direction`, remove `should-scale-background`, merge the reviewed new source, and remove vaul-vue only when no callers remain. Data Table's documented newer wrappers use TanStack Table v9 (`useTable`, explicit features), not v8 `useVueTable`/`valueUpdater`; inspect installed table versions and migrate the **whole** wrapper/state contract using [data tables](data-tables.md), not a symbol-only rename. New chat/message-scroller/bubble/attachment/marker, questionnaire, typeset and field/item/empty/input-group/kbd/spinner/button-group registry items remain discoverable through `search`/`docs`/`view`; choose by the needed capability and inspect real dependencies rather than importing invented runtime exports. Chart's spelling is `showGradient`; NavigationMenuLink active styling uses `data-active`. [Current component changelog](https://www.shadcn-vue.com/docs/changelog).
+For an incumbent Drawer upgrade, copied wrappers now use Reka Drawer, not vaul-vue: replace `direction` with `swipe-direction`, remove `should-scale-background`, merge the reviewed new source, and remove vaul-vue only when no callers remain. Data Table's documented newer wrappers use TanStack Table v9 (`useTable`, explicit features), not v8 `useVueTable`/`valueUpdater`; inspect installed table versions and migrate the **whole** wrapper/state contract using [data tables](data-tables.md), not a symbol-only rename. New chat/message-scroller/bubble/attachment/marker, questionnaire, typeset and field/item/empty/input-group/kbd/spinner/button-group registry items remain discoverable through `search`/`docs`/`view`; choose by the needed capability and inspect real dependencies rather than importing invented runtime exports. Chart props belong to the **installed copied wrapper**: the [current chart guide](https://www.shadcn-vue.com/docs/components/chart) composes Unovis directly, so do not infer a universal `showGradient` prop from an older wrapper. NavigationMenuLink active styling uses `data-active`. [Current component changelog](https://www.shadcn-vue.com/docs/changelog), [current navigation wrapper](https://shadcn-vue.com/r/styles/new-york-v4/navigation-menu.json).
 
 #### Registry inspection API and errors
 

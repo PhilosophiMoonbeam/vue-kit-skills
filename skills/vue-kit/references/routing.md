@@ -112,7 +112,10 @@ const router = createRouter({
         { path: '', name: 'users', component: UserIndex },
         {
           path: ':id', name: 'user', component: UserPage,
-          props: to => ({ id: String(to.params.id), page: pageNumber(to.query.page) }),
+          props: to => {
+            if (to.name !== 'user') throw new Error('Expected the user route')
+            return { id: String(to.params.id), page: pageNumber(to.query.page) }
+          },
           meta: { title: 'User' },
         },
       ],
@@ -318,13 +321,13 @@ Custom `parseQuery`/`stringifyQuery` must be a matching pair across SSR/client a
 
 ### Manual map for an incumbent non-generated tree
 
-This complete declaration file matches the classic example's **named** records; keep it synchronized with that tree and do not also load a generated map. Parent layouts with no name do not need a named entry. The fourth generic models normalized URL params, not raw navigation inputs:
+This complete declaration file matches the classic example's **named** records; keep it synchronized with that tree and do not also load a generated map. Parent layouts with no name do not need a named entry. The fourth generic models normalized URL params, not raw navigation inputs. Use a closed object **type alias** here: Router **4.6.4** constrains the map to `Record<string | symbol, RouteRecordInfoGeneric>`, which accepts this alias's implicit index signature but rejects the equivalent augmentable interface. Adding a broad explicit index signature would lose the finite route-name inference:
 
 ```ts
 // src/routes.d.ts
 import type { RouteRecordInfo } from 'vue-router'
 
-interface RouteNamedMap {
+type RouteNamedMap = {
   home: RouteRecordInfo<'home', '/', Record<never, never>, Record<never, never>>
   users: RouteRecordInfo<'users', '/users', Record<never, never>, Record<never, never>>
   user: RouteRecordInfo<'user', '/users/:id', { id: string | number }, { id: string }>
@@ -337,7 +340,7 @@ declare module 'vue-router' {
 }
 ```
 
-`useRoute('user')` narrows for that name but does not prove the component is currently under that record. Runtime input checks remain necessary; inferred types must not hide unknown deep-link values.
+`useRoute('user')` narrows for that name but does not prove the component is currently under that record. Runtime input checks remain necessary; inferred types must not hide unknown deep-link values. A route-record `props` callback receives the union of named routes, not an automatically narrowed location for its enclosing record; the classic example checks `to.name` before accessing `id` and retains its normalized prop/query conversion.
 
 ### Complete minimal v5 generated-route alternative
 
@@ -367,6 +370,17 @@ app.use(router)
 await router.isReady()
 app.mount('#app')
 ```
+
+Keep app-consumer checking separate from the build-tool configuration when using the retained **5.4.0** package. Add `tsconfig.app.json`:
+
+```json
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/**/*.d.ts"]
+}
+```
+
+Run `vue-tsc --noEmit -p tsconfig.app.json` for that app scope, with the base configuration's `strict: true` and `skipLibCheck: false` unchanged. A single full-tree TypeScript project that includes both `vite.config.ts` and the app exposes an upstream **5.4.0 declaration-bundling collision**: `vue-router/vite` imports `dist/options-B1Pk0SIa.d.mts`, while the runtime/experimental exports import `dist/index-u4XkZVDG.d.ts`; both independently augment Vue's route guards, `$route`, `$router`, `RouterView`, and `RouterLink`. The generated route map augments the runtime's `TypesConfig`, not the plugin's duplicate copy. App-only checking does **not** certify that full-tree project: retain and report its seven duplicate-declaration diagnostics separately rather than patching vendor declarations or enabling `skipLibCheck`.
 
 ```vue
 <!-- src/pages/index.vue -->
@@ -430,7 +444,7 @@ This complete page uses an honest local, read-only catalog, not a fabricated bac
 import { defineBasicLoader, reroute } from 'vue-router/experimental'
 
 const catalog = new Map([['1', { id: '1', title: 'Vue routing' }]])
-export const useCatalogItem = defineBasicLoader(async to => {
+export const useCatalogItem = defineBasicLoader('/catalog/[id]', async to => {
   const item = catalog.get(String(to.params.id))
   if (!item) reroute('/')
   return item
@@ -462,6 +476,7 @@ async function reloadItem(): Promise<void> {
 ```
 
 - `defineBasicLoader` reruns on navigation; it is not an independent normalized entity cache. The loader receives `(to, { signal })`; pass `signal` to a real cancellable service. Cancellation occurs on superseding/failed navigation. Keep side effects out of loaders; injection/store lookup must occur before the first await.
+- Pass the generated route **name** as the first argument when a loader reads that route's params; here it is `'/catalog/[id]'`, not its URL pattern. The named overload preserves inferred result data and normalized `id: string`; omitting the name gives the union of every generated route's params. This is static narrowing, not runtime validation: the catalog lookup and `reroute('/')` still reject unknown item IDs.
 - Blocking loader errors abort navigation and reach `router.onError`; `reroute(location)` throws internal navigation control and stops execution. Do not swallow it. `new NavigationResult(...)` is deprecated.
 - `{ lazy: true }` makes a loader non-blocking: data can be undefined, errors live in its error ref, and it cannot control navigation. This differs from lazy-loading the page's JavaScript. Default staged data commits avoid exposing inconsistent partial navigation results; changing `commit` is an explicit UX decision.
 - Export loaders from lazy page modules, or explicitly declare `meta.loaders` for eager components. A loader merely imported inside setup is not automatic page discovery. Nested loaders must use the supported loader context, not start unrelated Vue reactive effects.
@@ -475,7 +490,7 @@ Call **and await** a nested loader at the start of its parent loader; within a l
 import { defineBasicLoader, reroute, withLoaderContext } from 'vue-router/experimental'
 
 const catalog = new Map([['1', { id: '1', title: 'Vue routing' }]])
-const useItem = defineBasicLoader(async to => {
+const useItem = defineBasicLoader('/catalog/[id]', async to => {
   const item = catalog.get(String(to.params.id))
   if (!item) reroute('/')
   return item
@@ -511,7 +526,7 @@ import { defineColadaLoader } from 'vue-router/experimental/pinia-colada'
 import { reroute } from 'vue-router/experimental'
 
 const catalog = new Map([['1', { id: '1', title: 'Vue routing' }]])
-export const useCatalogItem = defineColadaLoader({
+export const useCatalogItem = defineColadaLoader('/catalog/[id]', {
   key: to => ['catalog', String(to.params.id)],
   query: async to => {
     const item = catalog.get(String(to.params.id))
@@ -577,7 +592,7 @@ Migrate only when requested, across configuration, runtime imports, virtual modu
 - **External unplugin → bundled v5:** plugin import → `vue-router/vite` (or its matching unplugin adapter); utilities → `vue-router/unplugin`; generated records → `vue-router/auto-routes`; loaders → `vue-router/experimental` or `/experimental/pinia-colada`; Volar paths → `vue-router/volar/...`. Remove old `unplugin-vue-router/client` references, old generated-map inclusion when relocating it, and the obsolete dependency only after all callers migrate. Keep exactly one generated map/router registration. Deprecated `vue-router/auto` is not a compatibility plan.
 - **Experimental upgrades:** `reroute` replaces `NavigationResult`; removed `selectNavigationResult` has no current installation recipe. Keep this ESM-only opt-in surface separate from classic CJS consumers. Compare the exact pinned experimental declarations; do not treat old release-note features as additional new APIs to install.
 
-[Official v3 migration](https://router.vuejs.org/guide/migration/v3-to-v4.html), [official v5 migration](https://router.vuejs.org/guide/migration/v4-to-v5.md).
+[Official v3 migration](https://router.vuejs.org/guide/migration/index.html), [official v5 migration](https://router.vuejs.org/guide/migration/v4-to-v5.md).
 
 ## Verification boundary
 

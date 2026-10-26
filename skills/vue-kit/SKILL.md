@@ -3,7 +3,7 @@ name: vue-kit
 description: >-
   Build, debug, test, and modernize Vue applications with TypeScript, Composition
   API, Vuetify, OpenVue, Router, Pinia, forms, server-state queries, authentication,
-  accessible UI, charts, motion, SSR, Nuxt, and Vite tooling. Use for Vue SFCs,
+  accessible UI, charts, TresJS/Three.js graphics, WebGPU, motion, SSR, Nuxt, and Vite tooling. Use for Vue SFCs,
   Nuxt applications/modules/server routes, composables, ecosystem integrations,
   architecture, migrations, and Vue runtime or type errors. Routes to focused,
   version-aware references and runnable examples.
@@ -137,7 +137,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | Vuetify or TanStack Vue Table, sorting/filtering/pagination and row identity | [Data tables](references/data-tables.md) | Virtualization for measured large-list costs; selected query owner for server data |
 | TanStack Vue Virtual, list/window virtualizers, measurements and focus | [Virtualization](references/virtualization.md) | Accessibility; tables when virtualizing tabular data |
 | Unovis TS/Vue or Vue Data UI charts, tooltips and reactive data | [Visualization](references/visualization.md) | Accessibility; virtualization only for separate list rendering |
-| TresJS/Three.js scene, render loop, GPU resources and disposal | [TresJS](references/tresjs.md) | Composables for effect ownership; debugging SSR for client-only boundaries |
+| TresJS/Three.js scene, WebGPURenderer-first for new compatible scenes (experimental integration), explicit WebGLRenderer compatibility, render loop and GPU ownership | [TresJS](references/tresjs.md) | [Preferred factory recipe](references/tresjs.md#experimental-webgpu-and-custom-rendering); require every material/effect/dependency/feature on both WebGPU and its built-in WebGL2 backend for fallback; [bundled explicit-start route](references/tresjs.md#bundled-workbench-composition); debugging SSR for client-only boundaries |
 | Vue transitions, Motion for Vue, VueUse Motion and animation lifecycle | [Motion](references/motion.md) | Accessibility for reduced motion and focus preservation |
 
 ### Platform, quality, and specialized applications
@@ -174,11 +174,28 @@ to load every linked document. Combine owners only when the task crosses domains
 
 ## Runnable resources and honest verification
 
+- [Current bounded audit](assets/current-audit.json): original October 22–23, 2026
+  review plus a separately identified source-only workbench extension, observed execution profiles, known failures and bounded GPU receipts.
+  Bounded consumers are not clean full-declaration/UI trees: forms, visualization,
+  Router's combined plugin/runtime declarations and AI Vue full UI templates
+  retain distinct negative scopes. See [evidence boundaries](references/sources.md#current-authoring-and-negative-scopes).
+  This is not a publication or fresh remote-install claim, nor a renewal of old runs.
+
 - [Example dependency manifest](assets/example-app/package.json): exact versions
   for the local, in-memory Vue/Vuetify/Pinia/Router workbench. Follow
   [setup tooling](references/setup-tooling.md) for `bun install`,
   `bun run typecheck`, `bun run build`, and `bun run dev`. It has no backend,
-  authentication, persistence, or production deployment claim.
+  authentication, persistence, or production deployment claim. Its lazy `/graphics`
+  page loads GPU packages only after explicit Start: default experimental
+  WebGPURenderer or explicit WebGLRenderer compatibility, with real backend/status/errors and a DOM alternative.
+  Stop, backend changes, native loss and route exit retire the scene; reentry
+  requires Start. Hide/show uses a positive-size draw gate; rotation respects
+  reduced motion. No verification-lab runtime or collection is installed.
+  For new compatible scenes, WebGPURenderer is the modern standard default posture,
+  not a stability or speed guarantee. Its WebGL2 fallback requires the whole
+  pipeline on both backends. Use WebGLRenderer explicitly for incompatible GLSL
+  ShaderMaterial/onBeforeCompile, legacy EffectComposer or dependencies; it is
+  not an interchangeable automatic fallback. Keep the pinned lifecycle limits.
 - [Skill validator](scripts/validate.py): Python 3 standard-library structural
   validator. From the skill root, run `python3 scripts/validate.py` or add
   `--json`; an optional positional root selects another installed skill copy.
@@ -188,9 +205,9 @@ to load every linked document. Combine owners only when the task crosses domains
   and [coverage routing](assets/coverage-audit.json): retained historical input
   identities and current reference ownership, not semantic or runtime certification.
   Superseded vendor-bound reports remain in repository history, outside this skill.
-- [Scoped verification](assets/verification.json): exercised checks, exact versions,
-  limitations and content-addressed packaged files. Earlier checks do not certify
-  changed examples; consult [sources](references/sources.md) for evidence policy.
+- [Retained verification](assets/verification.json): stored checks, exact versions,
+  limitations and content-addressed packaged files. Stored hashes/commands cannot
+  authenticate unavailable original traces or certify changed examples.
 - [Fifth-pass audit](assets/fifth-pass-audit.json): native review dispositions,
   corrections and scoped evidence; risk labels are not confirmed defect totals.
 - [Support-boundary audit](assets/support-audit.json): registry triage, exact-release
@@ -205,3 +222,10 @@ cover relevant loading/error/empty/success states, keyboard/focus and responsive
 layout; for server code, cover request isolation and hydration. Report the exact
 commands and outcomes actually observed. If checks were not run, say so; list
 recommended commands separately rather than presenting them as evidence.
+
+Native-device evidence remains separate from autonomous consumer checks. Both
+original and corrected focused WebGPU/WebGL submissions are reviewed with limits
+in the current audit; the corrected gate and support decision are closed for the
+observed recipe configuration, not every manual criterion or device. The selected
+successor is the bundled workbench. Its new composition is source-reviewed here,
+not claimed to have inherited a native-hardware pass from the recipe reports.

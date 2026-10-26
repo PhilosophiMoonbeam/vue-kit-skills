@@ -114,17 +114,20 @@ Complete consumer `TitleEditor.vue`, colocated with `TitleInput.vue`:
 
 ```vue
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue'
+import { ref, useTemplateRef, type InputHTMLAttributes } from 'vue'
 import TitleInput from './TitleInput.vue'
 
 const title = ref('Release notes')
 const committedTitle = ref<string | null>(null)
 const field = useTemplateRef<InstanceType<typeof TitleInput>>('field')
+const titleAttrs: Pick<InputHTMLAttributes, 'autocomplete' | 'class' | 'style'> = {
+  autocomplete: 'off',
+}
 function commit(value: string) { committedTitle.value = value }
 </script>
 
 <template>
-  <TitleInput ref="field" v-model.trim="title" autocomplete="off" @commit="commit">
+  <TitleInput ref="field" v-model.trim="title" v-bind="titleAttrs" @commit="commit">
     <template #help="{ length }">{{ length }} characters. Press Enter to commit locally.</template>
   </TitleInput>
   <button type="button" @click="field?.focus()">Focus title</button>
@@ -132,7 +135,7 @@ function commit(value: string) { committedTitle.value = value }
 </template>
 ```
 
-The wrapper deliberately owns its generated `id` and `aria-describedby`; later bindings override conflicting entries in `$attrs`. If callers must own these, declare and compose explicit props instead. This example commits only in memory, not to a server.
+The `titleAttrs` bag checks native input attributes against Vue's `InputHTMLAttributes`; its optional `class`/`style` keys overlap the component's accepted native attributes under strict template checking. This does not widen `TitleInput`'s declared props or accept arbitrary component properties: the wrapper still forwards these undeclared attributes through `$attrs` to the actual input. The wrapper deliberately owns its generated `id` and `aria-describedby`; later bindings override conflicting entries in `$attrs`. If callers must own these, declare and compose explicit props instead. This example commits only in memory, not to a server.
 
 ### Contract edge cases
 
@@ -316,7 +319,7 @@ For web-component interoperability, `defineCustomElement()` is separate from ord
 
 ## Verification boundary
 
-The input SFC pair, generic list, progress SFC, context/plugin modules and directive SFC are complete definitions. Async and provider-consumer/bootstrap wiring explicitly marked contextual require the stated app files/placement. Executed compiler/type scopes are in the [verification record](../assets/verification.json); they do not establish every runtime outcome. An implementation should verify parent-driven updates, emitted payloads, generic slot inference, model modifiers, forwarded listeners/labels, null refs, missing providers, async error/fallback behavior, cached-view deactivation, reduced motion and overlay focus. See [testing](testing.md).
+The input SFC pair, generic list, progress SFC, context/plugin modules and directive SFC are complete definitions. Async and provider-consumer/bootstrap wiring explicitly marked contextual require the stated app files/placement. Historical compiler/type observations are in the [verification record](../assets/verification.json) under their original source scopes; this source audit did not rerun them, and they do not certify today's edited bytes or every runtime outcome. An implementation should verify parent-driven updates, emitted payloads, generic slot inference, model modifiers, forwarded listeners/labels, null refs, missing providers, async error/fallback behavior, cached-view deactivation, reduced motion and overlay focus. See [testing](testing.md).
 
 ## Sources
 

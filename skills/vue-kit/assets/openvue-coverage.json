@@ -6,6 +6,28 @@
   },
   "openvue": "1.0.0",
   "source_commit": "d064f02ac75c3aaeb60a676c70e5ee08e3e3042e",
+  "evidence_boundary": {
+    "canonical_source": "The 122 Markdown files under apps/showcase/server/assets/llms/{pages,components} at source_commit are the canonical discovery corpus, not a count of runtime components. source_kind and counts.pages/components name upstream directories; components/laravel, components/mcp and components/team are host/research/organization pages, not UI components.",
+    "source_reconciliation": {
+      "upstream_tree_sha": "a166f86cce846fe81eefa0a2f57971aa9758c56f",
+      "source_url": "https://api.github.com/repos/openvi-foundation/openvue/git/trees/d064f02ac75c3aaeb60a676c70e5ee08e3e3042e?recursive=1",
+      "scope": "All 122 local upstream snapshot files match the recorded UTF-8 byte lengths and SHA-256 hashes, and their Git blob SHA-1 identities match the public pinned tree. The canonical Markdown path set equals the ledger source set, including the single normalized exclusion. This reconciles source identity only; it does not execute documentation examples or certify their APIs.",
+      "normalized_exclusion": "The excluded row's Git blob identity and original inventory-ID hash reconcile against the pinned tree without restoring the excluded raw identity to the installed ledger."
+    },
+    "identity_layers": {
+      "source": "Per-row sha256 and bytes identify pinned official source bytes, never the current authored reference.",
+      "native": "Per-row native maps, native_fingerprint, rubric, input_cap, escalation and discovery identities preserve the historical discovery run; they are not fresh judgments.",
+      "authored": "final_reference, disposition, reason and release_conflicts are mutable authored semantic routing. Reference edits require a fresh routing/reason review and refreshed current packaged-file hashes, not replacement of source hashes or native fingerprints.",
+      "execution": "Only assets/verification.json owns bounded executed observations. Canonical source completeness, a documented disposition, an escalation closure or a hash match is not browser, GPU, SSR, hydration, accessibility, optional-peer or future-major certification."
+    },
+    "escalation_interpretation": "The frozen owner-probability threshold refers to native.owner.probabilities[native.owner.choice] < 0.75, not native.owner.confidence. Combined with owner=review/migration_only/background, risk=high/unknown, errors and truncation, it reproduces all 80 escalated IDs. Truncation is UTF-8-decoded source character length > input_cap and reproduces all 21 truncated IDs.",
+    "historical_limits": [
+      "The pinned canonical Markdown source is available and freshly identity-reconciled. The exact original native request payloads, model execution, capability-author handoffs and original review actions were not replayed or independently re-observed; the method and native maps remain historical provenance.",
+      "No deleted legacy .agents/skills input was read or reconstructed. A retained historical identity or native judgment must not be described as a fresh read of an inaccessible original input.",
+      "Release-conflict text and reasons can describe prior bounded observations or prepared examples; this source/routing reconciliation does not rerun those observations. Reconcile changed owner guidance with its primary release sources before refreshing authored coverage.",
+      "An empty unresolved array denotes authored routing closure for this corpus, not universal runtime acceptance. Actual browser/GPU-dependent outcomes remain subject to the final human gate."
+    ]
+  },
   "unresolved": [],
   "method": "Freeze every pinned official Markdown input identity and original native owner/risk map. Use the four capability-author handoffs for 72 final semantic dispositions; inspect the remaining 50 official documents and their setup, architecture and component references for final documented/context-only/excluded decisions. Reconcile conflicts recorded by authors against the reference contracts. Native hypotheses are routing inputs, never final ownership or API certification. Documented means substantive reference coverage, including deliberate limitations; context_only means research, history or an incumbent boundary without a complete positive implementation recipe; excluded means no implementation offering. Reasons describe reference content and prepared consumers, not executed checks. No native probability, label, reference example, proposed scenario or successful build certifies the complete component suite, accessibility, hydration, server isolation or future majors. Only assets/verification.json owns bounded executed evidence.",
   "rubric": {

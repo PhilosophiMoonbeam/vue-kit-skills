@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "recorded_at": "2026-10-22T03:38:23.042291Z",
-  "scope": "Fifth-pass native hypotheses, authored adjudication and parent-observed execution evidence for the packaged Vue Kit. Native risk labels are not confirmed defect counts.",
+  "scope": "Historical fifth-pass native hypotheses, authored adjudication and parent-reported execution observations for the then-packaged Vue Kit. Native risk labels are not confirmed defect counts; this record does not certify later working-tree revisions.",
   "packaged_ownership": {
     "root": "skills/vue-kit",
     "master": "SKILL.md",
@@ -96,7 +96,7 @@
         "sha256": "e7128d969e9f31f3322e4167a4e4df87583edd9d914b9e833dce4ae047d79d05"
       }
     ],
-    "working_records_boundary": "Record names and hashes identify authoring inputs embedded below; they are provenance labels, not installed dependencies. No original Markdown document body is embedded."
+    "working_records_boundary": "Record names and hashes identify historical authoring inputs whose selected judgments, dispositions and observations are retained below; they are provenance labels, not installed dependencies or complete embedded source files. The original frozen judge request bodies, Markdown bodies, diff hunks and raw handoff/report bytes are not embedded. Their hashes cannot reconstruct discarded inputs or authenticate execution. The base commit records lineage, not the exact post-base working tree; current recipes must not be substituted for those frozen inputs."
   },
   "native_summary": {
     "documents": 42,
@@ -14174,7 +14174,7 @@
   },
   "parent_execution_evidence": {
     "recorded_at": "2026-10-22T03:38:23.042291Z",
-    "time_boundary": "Packaging time for supplied observations; individual execution timestamps were not supplied and are not invented.",
+    "time_boundary": "Historical packaging time for supplied observations, not an execution timestamp or a freshness guarantee for current recipes. Individual execution timestamps were not supplied and are not invented; the observations below were not rerun by this evidence review.",
     "source_provenance": {
       "kind": "fifth-pass working-tree consumers",
       "base_commit": "e52888b",
@@ -14464,7 +14464,7 @@
       }
     },
     "verification_relationship": "The12 supplied scenario checks are retained after22 unchanged historical checks in assets/verification.json. A separate parent final-local-package record covers integrated gates and observed installation; diagnostic/discovery lineage is not an additional passed scenario.",
-    "final_install_boundary": "Parent subsequently observed source and two isolated local copy installs passing14 structural checks, official format and exact60-file payload equality. These are pre-publication local observations, not a fresh public-remote install or commit/push claim. Final metadata bytes are checked again at delivery.",
+    "final_install_boundary": "Parent reported source and two isolated local copy installs passing 14 structural checks, official format and exact 60-file payload equality at the fifth-pass integration boundary. These are historical pre-publication local observations, not a fresh public-remote install, commit/push claim or validation of later metadata bytes. See the separately retained final-local-package record for its exact before-append scope; no delivery-time rerun is implied here.",
     "final_acceptance_record": "assets/verification.json: checks/fifth-final-local-package"
   },
   "limits": [
@@ -14477,9 +14477,9 @@
     "Screenshots and current drawing-buffer readback can disagree. Inspect actual backend, live scene, raw errors and pixels rather than inferring unsupported hardware from an empty image.",
     "The structural validator checks schemas, retained identities, navigation, exclusions and snapshots; it cannot authenticate execution or certify semantic completeness.",
     "Retained checks identify their cutover source commit; older reports remain immutable in repository history at7bf433b98951918c694358e372d3b02cf6f982e5. Snapshot refresh is packaged integrity, not proof every earlier runtime check was repeated.",
-    "The fifth-pass syntax check covers 327 fences in the master and 40 references; it is not imported-type, universal runtime or exhaustive optional-integration verification.",
-    "Current strict and runtime observations cover only the named consumer profiles in parent_execution_evidence/checks. Source-only correction proposals and smoke scenarios in authored handoffs are not execution evidence.",
-    "Unexercised lazy-i18n/compiler-removal, rewritten generated-link, VueUse SSR/hydration and arbitrary optional-package runtime profiles remain outside the new observations. Existing bounded SSR and accessibility observations are not generalized.",
+    "The historical fifth-pass syntax observation covers 327 fences in the then-master and 40 references; it is not imported-type, universal runtime or exhaustive optional-integration verification, and does not cover later edits.",
+    "The historical strict and runtime observations cover only the named consumer profiles in parent_execution_evidence/checks at their reported source boundary. Source-only correction proposals and smoke scenarios in authored handoffs are not execution evidence; later source edits require separate observations.",
+    "Lazy-i18n/compiler-removal, rewritten generated-link, VueUse SSR/hydration and arbitrary optional-package runtime profiles were unexercised within these fifth-pass observations. Later evidence, if any, must be read from its own report rather than inferred from this historical limitation. Existing bounded SSR and accessibility observations are not generalized.",
     "Native probabilities, original input hashes and final packaged integrity snapshots are different evidence classes; none proves semantic completeness or that every historical runtime observation was repeated."
   ],
   "input_framing": {
@@ -15855,7 +15855,7 @@
     "generated_metadata_written_after_classification": [
       "skills/vue-kit/assets/verification.json"
     ],
-    "generated_metadata_validation": "Excluded by the same frozen path rule; historical check equality, observed-record equality, retained source fingerprints and complete current packaged snapshots are validated deterministically.",
+    "generated_metadata_validation": "The frozen path rule excluded generated evidence assets from native scope classification. Historical integration reported deterministic checks of retained records, fingerprints and then-current snapshots; this wording is not a new validation result. Retained JSON permits schema, count, identity and record-equality comparisons, but discarded judge requests, original diff hunks and raw authoring inputs cannot be reproduced or rehashed from their digests alone. Native belongs judgments concern task scope, not technical correctness, source authenticity or execution, and do not cover later edits.",
     "input_diff_sha256": {
       "README.md#hunk-1": "d8a24cc93b4dee1e8d2b6abcd6052b903fb2d927748042cd485177bc5f78aac0",
       "skills/vue-kit/CHANGELOG.md#hunk-1": "e106c2c9921a3780c102396b3d0454eea43586da60bc016030db7e6c7986b40a",

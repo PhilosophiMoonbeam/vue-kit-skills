@@ -99,20 +99,23 @@ separate app, configuration, and test globals.
    its matching `package-lock.json` and `npm ci` workflow.
 4. An explicitly requested migration may use Bun's automatic existing-lock import.
    Preserve the old lock until resolved package versions/integrities and direct
-   pins have been compared, then retain one authoritative lock. The bundled
-   fixture migrated from npm lockfile version 3 with Bun 1.4.3: all 88 package
-   name/version/integrity records and all nine direct pins were preserved before
-   the obsolete `package-lock.json` was removed. Do not hand-edit resolutions.
+   pins have been compared, then retain one authoritative lock. Earlier migration
+   notes recorded an npm lockfile-v3 → Bun 1.4.3 cutover preserving 88 package
+   name/version/integrity records and nine direct pins before removing the old
+   `package-lock.json`. That is historical evidence, not a fresh comparison:
+   the deleted npm lock is not available to this source review. Do not hand-edit
+   resolutions or certify another migration from those counts.
 5. Inspect engine/peer conflicts rather than hiding them with force flags. Bun
    dependency lifecycle scripts follow a trust policy, not npm's default behavior:
    inspect install output and `bun pm untrusted`. Review any required script before
    granting trust to that specific package; never trust all merely to make an
    install pass. Omitting `trustedDependencies` uses Bun's built-in default allowlist
    for npm packages; specifying the field replaces that default list. This fixture
-   leaves it omitted. Its Linux migration install reported no blocked scripts, and
-   `bun pm untrusted` reported zero. The old lock's only `hasInstallScript` package,
-   optional Darwin-only `fsevents`, was not applicable on Linux; this observation
-   does not establish its script behavior on macOS or that every ecosystem script runs.
+   leaves it omitted. Earlier Linux migration notes reported no blocked scripts
+   and zero entries from `bun pm untrusted`; they identified optional Darwin-only
+   `fsevents` as the old lock's only `hasInstallScript` package. These are historical
+   observations, not a newly executed install or a fresh inspection of the deleted
+   lock, and establish neither macOS behavior nor that every ecosystem script runs.
 6. Keep one intended Vue runtime per application. For lower-level compiler tools,
    prefer `vue/compiler-sfc`; if `@vue/compiler-sfc` is explicitly installed, match
    its version to `vue`. Also align `@vue/server-renderer` with Vue when used.
@@ -140,9 +143,26 @@ resolution/update workflow above. Bun resolves script binaries from local
 for example `bun run dev --host 127.0.0.1` (no npm-style `--` separator). `bunx`
 also honors Node shebangs by default; neither launcher removes Node prerequisites.
 The example needs no `.env`, API keys, backend, external font or icon service.
-It provides two routes, light/dark UI, validated task creation, completed-state toggling, and reset
-confirmation; all task state is memory-only and resets on reload. It is not a
-persistence, authorization, or deployment demonstration.
+It provides Tasks (`/`), About (`/about`) and a lazy Graphics (`/graphics`) route,
+light/dark UI, validated task creation, completed-state toggling and reset
+confirmation; all task state is memory-only and resets on reload. Graphics waits
+for explicit **Start scene** before importing renderer packages: default
+experimental WebGPURenderer or explicit WebGLRenderer compatibility, with its actual initialized backend shown
+separately from the renderer family. Stop, renderer change, native loss or leaving
+the page retires its scene; returning never starts it automatically. Its DOM
+description/errors remain available without graphics, and optional rotation
+respects reduced motion. See the [composition and evidence boundary](tresjs.md#bundled-workbench-composition).
+
+For new compatible scenes, use WebGPURenderer as the modern standard default
+posture and follow the [preferred factory recipe](tresjs.md#experimental-webgpu-and-custom-rendering).
+Every material, effect, dependency and enabled feature must support both WebGPU
+and its built-in WebGL2 backend to claim fallback. WebGLRenderer is an explicit
+compatibility choice for unported GLSL ShaderMaterial/onBeforeCompile, legacy
+EffectComposer or other incompatible pipelines, not an automatic interchangeable
+fallback. The pinned Tres 5.9.3 / Three 0.186.1 integration remains experimental
+with its documented lifecycle limits; this preference neither upgrades packages
+nor certifies hardware or promises that WebGPU is always faster.
+This is not a persistence, authorization, SSR, deployment or hardware-certification demonstration.
 
 | Script | Actual command | What success establishes |
 | --- | --- | --- |
@@ -219,6 +239,14 @@ choosing that is an alternative to duplicate alias ownership, not a required
 extra plugin. `target` in tsconfig does not configure Vite's browser support;
 choose Vite's production `build.target` from actual supported browsers.
 
+An explicit `compilerOptions.types` array restricts automatically included package
+globals: `types: []` excludes them, while the example above admits only
+`vite/client` and `node`. Imported modules still receive their normal types.
+Add genuine ambient prerequisites deliberately (for example the
+[VueUse Bluetooth/Temporal types](vueuse.md#authoring-globals-and-reproducible-typing-scope));
+do not replace missing declarations with invented globals or runtime polyfills.
+See [TypeScript `types`](https://www.typescriptlang.org/tsconfig/types.html).
+
 - `vue()` handles SFCs. Add `@vitejs/plugin-vue-jsx` only for actual JSX/TSX use;
   TypeScript's JSX options alone do not provide Vue's full JSX transform.
 - Respect each plugin's documented ordering. Vite groups `enforce: 'pre'`, normal,
@@ -239,6 +267,34 @@ choose Vite's production `build.target` from actual supported browsers.
   and Vue's `app.use` registration order solve different problems; neither is a
   universal alphabetical ordering rule. See [state](state.md) and
   [routing](routing.md) for injection and initial-navigation details.
+
+### Strict templates and native data attributes
+
+For the retained **vue-tsc / `@vue/language-core` 3.3.13** profile, the published
+defaults are **`dataAttributes: []`** and **`htmlAttributes: ["aria-*"]`**.
+When legitimate native `data-*` attributes are part of the application contract,
+this supported configuration can be merged into the existing tsconfig:
+
+```json
+{
+  "vueCompilerOptions": {
+    "strictTemplates": true,
+    "dataAttributes": ["data-*"]
+  }
+}
+```
+
+This option **skips attribute typechecking for matching names**; it does not
+validate their values, selector spelling, virtual-row indices, or measurement
+registration. Keep those application invariants in typed helpers and behavioral
+checks where required. It does not turn off unknown component-prop checks or
+permit unrelated undeclared props such as `unknownProp`; retain strict template
+checking and fix actual consumer defects. Prefer a narrower pattern when only a
+specific data-attribute namespace is intended. Do not broaden `htmlAttributes`
+to `["*"]` or disable strictness as a substitute.
+[Exact 3.3.13 option table](https://unpkg.com/@vue/language-core@3.3.13/README.md),
+[exact defaults/resolver](https://unpkg.com/@vue/language-core@3.3.13/lib/compilerOptions.js),
+[official option semantics](https://github.com/vuejs/language-tools/wiki/Vue-Compiler-Options#dataattributes).
 
 ### CSS, assets, and production boundaries
 
@@ -359,11 +415,17 @@ No `.env` file is required for this example: the fallback is an explicit UI titl
 not a fake service implementation. Declarations do not validate runtime env values.
 Parse numbers/booleans intentionally; `Boolean('false')` is `true`. Mode-specific
 files override generic files, while existing process env has highest priority.
-Restart Vite after env changes. Ignore local env files in version control;
-`*.local` alone does not prevent accidental client bundling. `--mode staging`
-selects env mode and does not itself make a development build. For browser runtime
-configuration, define a separately validated public delivery mechanism rather
-than assuming build-time env changes after deployment.
+Restart Vite after env changes. **Bun also preloads `.env` into `process.env`**,
+so those already-present values can prevent Vite's mode-specific files from
+overriding generic values. When Vite should own env-file selection, launch with
+`bun run --no-env-file dev --mode staging` (or the corresponding build script);
+explicitly supplied process variables still win. See [Vite's Bun caveat](https://vite.dev/guide/env-and-mode#env-files)
+and [Bun's env-file switch](https://bun.com/docs/runtime/environment-variables#disabling-automatic-env-loading).
+Ignore local env files in version control; `*.local` alone does not prevent
+accidental client bundling. `--mode staging` selects env mode and does not itself
+make a development build. For browser runtime configuration, define a separately
+validated public delivery mechanism rather than assuming build-time env changes
+after deployment.
 
 ## SSR is a different setup
 

@@ -166,7 +166,7 @@ Keep a real submit button and handle the form's `submit` event so keyboard Enter
 
 ## Verification boundary
 
-Executed compiler/type scopes are in the [verification record](../assets/verification.json). Exercise keyboard Enter, invalid submit/focus, duplicate submit, out-of-order async validation, save rejection, server field mapping, reset, background refetch while dirty, and record switching in the consuming app. See [testing](testing.md).
+Historical compiler/type scopes are recorded in the [verification record](../assets/verification.json); that record is not a fresh execution of the current examples. Exercise keyboard Enter, invalid submit/focus, duplicate submit, out-of-order async validation, save rejection, server field mapping, reset, background refetch while dirty, and record switching in the consuming app. See [testing](testing.md).
 
 ## Sources
 
@@ -175,3 +175,5 @@ Executed compiler/type scopes are in the [verification record](../assets/verific
 - [Vuetify 4.3.0 VForm](https://unpkg.com/vuetify@4.3.0/lib/components/VForm/VForm.js), [form](https://unpkg.com/vuetify@4.3.0/lib/composables/form.js), [input validation/reset](https://unpkg.com/vuetify@4.3.0/lib/composables/validation.js).
 - [vee-validate form metadata/reset](https://vee-validate.logaretm.com/v4/api/use-form/).
 - [TanStack 1.33.5 form state/reset source](https://unpkg.com/@tanstack/form-core@1.33.5/src/FormApi.ts).
+- [WAI accessible validation](https://www.w3.org/WAI/tutorials/forms/validation/) and [error/success notifications](https://www.w3.org/WAI/tutorials/forms/notifications/).
+- [OWASP validation and separate authorization boundaries](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html).

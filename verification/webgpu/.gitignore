@@ -1,5 +1,7 @@
 node_modules/
 dist/
+.generated/
 src/SceneHost.vue
 src/SceneCanvas.vue
+src/recipes/
 *.tsbuildinfo

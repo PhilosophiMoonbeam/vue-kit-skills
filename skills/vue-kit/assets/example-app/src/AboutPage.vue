@@ -20,6 +20,7 @@ import { RouterLink } from 'vue-router'
         <li>Cancel or confirm a reset to the two original tasks. Resetting keeps your unfinished title draft.</li>
         <li>Navigate between these pages without losing task-list changes, and switch between light and dark themes.</li>
         <li>Use the form, task controls, navigation, and reset dialog with a keyboard.</li>
+        <li>Open <RouterLink to="/graphics">Graphics</RouterLink> and explicitly start the recommended experimental, unlit WebGPURenderer baseline, or choose the lit WebGLRenderer compatibility scene. Try stop, hide/show, width changes, and optional rotation.</li>
       </ul>
     </section>
 
@@ -28,13 +29,27 @@ import { RouterLink } from 'vue-router'
       <p class="about-copy">
         State lives only in this app instance’s memory. Reloading or closing the tab
         discards changes; another tab has its own list. There is no database,
-        browser-storage persistence, network request, sign-in, synchronization,
+        browser-storage persistence, task-service request, sign-in, synchronization,
         or server-side validation. The theme choice is not saved either.
       </p>
       <p class="about-copy">
         The form reports a successful local state change, not a server save.
         A production application needs its own persistence and authorization
         contracts; this example does not simulate them.
+      </p>
+      <p class="about-copy">
+        Graphics loads its renderer packages only after you start a scene. WebGPURenderer
+        is the recommended starting point for new scenes and may select WebGPU or its
+        built-in WebGL 2 backend, so the actual initialized backend is reported separately.
+        Materials, effects, dependencies, and features must support both backends for
+        fallback to work. WebGLRenderer is an explicit compatibility choice for pipelines
+        requiring GLSL ShaderMaterial, onBeforeCompile, or legacy EffectComposer,
+        not an automatic interchangeable fallback. The experimental baseline is not a
+        hardware-support guarantee or a lighting, custom-shader, or postprocessing
+        demonstration. The pinned Tres 5.9.3 / Three 0.186.1 experimental path retains
+        known upstream failed-initialization teardown and in-flight unmount limits.
+        Leaving Graphics releases its scene; returning does not start it again.
+        Its text description and controls do not require a working canvas.
       </p>
     </section>
 

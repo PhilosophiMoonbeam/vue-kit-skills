@@ -235,13 +235,14 @@ export function useTweenedNumber(
           cancelAnimationFrame(frame)
         })
         const from = displayed.value
-        const start = performance.now()
+        let start: number | undefined
         function step(now: number) {
           if (!active) return
           if (toValue(source) !== target || toValue(reducedMotion) !== reduce) {
             frame = requestAnimationFrame(step)
             return
           }
+          start ??= now
           const fraction = Math.min(1, (now - start) / durationMs)
           displayed.value = fraction === 1
             ? target
@@ -260,7 +261,7 @@ export function useTweenedNumber(
 }
 ```
 
-Render the returned display ref, not a duplicate domain field; changes restart from the last displayed value. Same-sign endpoints use a bounded difference; opposite-sign endpoints use weighted terms so subtracting two finite extremes cannot overflow. Completion assigns the exact target. Use an installed animation library when its interpolation capabilities are needed, but kill its prior tween in the same watcher cleanup contract. Numbers outside JavaScript's safe precision are not made exact by tweening. See [component animation decisions](components.md#transition-and-persistent-element-animation-contracts) and [motion](motion.md).
+Render the returned display ref, not a duplicate domain field; changes restart from the last displayed value. The first frame's timestamp establishes the baseline: do not subtract an earlier `performance.now()` sample from a frame timestamp that can represent an earlier point in that frame. Same-sign endpoints use a bounded difference; opposite-sign endpoints use weighted terms so subtracting two finite extremes cannot overflow. Completion assigns the exact target. Use an installed animation library when its interpolation capabilities are needed, but kill its prior tween in the same watcher cleanup contract. Numbers outside JavaScript's safe precision are not made exact by tweening. See [animation-frame timestamp semantics](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame#timestamp), [component animation decisions](components.md#transition-and-persistent-element-animation-contracts), and [motion](motion.md).
 
 Each frame also checks the live inputs before committing, so a frame queued before a batched watcher reruns cannot write an obsolete target or ignore a newly enabled reduced-motion preference. Cleanup marks that run inactive as well as cancelling its queued frame. The disposal flag prevents a pending mounted hook from starting frames after its enclosing scope has already stopped. Intermediate input changes batched away do not create separate runs.
 

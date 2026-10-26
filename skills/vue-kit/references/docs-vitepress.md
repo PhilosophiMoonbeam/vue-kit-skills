@@ -168,7 +168,7 @@ To select it, import `Layout` in the theme entry and add `Layout` to its exporte
 
 ### Assets and content loaders
 
-- Relative Markdown image links and imported theme assets enter Vite's asset pipeline and receive rewritten/hashed URLs. Files in `docs/public/` are copied unchanged: reference them from root URL paths, never `/public/...`.
+- Relative Markdown image links and imported theme assets enter Vite's asset pipeline and receive rewritten URLs: emitted files are hashed, while sufficiently small assets may be inlined according to `vite.build.assetsInlineLimit`. Files in `docs/public/` are copied unchanged: reference them from root URL paths, never `/public/...`.
 - In component-generated URLs, use `withBase('/image.svg')` for public assets; hard-coded `'/image.svg'` ignores a subdirectory deployment. Static Markdown asset references get VitePress's processing, but arbitrary dynamic strings do not.
 - Navigation links use site paths such as `/guide`, not a manually duplicated `/handbook/guide` in every item. `base` owns the deployment prefix.
 - Rewrites change public route structure; relative links must target the rewritten URLs. Dynamic `[parameter].md` routes require a corresponding paths loader. Keep large content in `content` instead of bloating route params.

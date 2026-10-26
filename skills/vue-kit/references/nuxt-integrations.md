@@ -90,7 +90,13 @@ Replace `app/layouts/default.vue` completely. This layout owns the single `VMain
 
 ```vue
 <script setup lang="ts">
+import type { HTMLAttributes } from 'vue'
 import { VMain } from 'vuetify/components/VMain'
+
+const mainAttrs: Pick<HTMLAttributes, 'id' | 'tabindex' | 'class' | 'style'> = {
+  id: 'main-content',
+  tabindex: -1,
+}
 </script>
 
 <template>
@@ -101,7 +107,7 @@ import { VMain } from 'vuetify/components/VMain'
       <NuxtLink to="/catalog/1">Catalogue</NuxtLink>
       <NuxtLink to="/preferences">Preferences</NuxtLink>
     </nav>
-    <VMain id="main-content" tabindex="-1"><slot /></VMain>
+    <VMain v-bind="mainAttrs"><slot /></VMain>
   </div>
 </template>
 ```
@@ -138,6 +144,8 @@ There is one `VApp` and one `VMain`; do not put another app wrapper in a page/la
 
 Keep `VApp` at the app root and `VMain` around the default layout's page slot, not around the layout's navigation. `tabindex="-1"` makes the fragment target focusable without adding it to normal Tab order. Verify that activating “Skip to content” focuses `#main-content` and the next Tab reaches page content rather than returning to the skip link or primary navigation.
 
+These complete Nuxt consumers use the [checked native fallthrough bags](vuetify-setup.md#strict-template-checking-and-native-fallthrough) for Vuetify 4.3's undeclared HTML attributes/listeners. Keep the bags narrow, including optional shared `class`/`style` for strict component compatibility; keep declared Vuetify props such as `disabled` outside them. Static layout attributes and the refresh listener use stable bags. Reactive attributes use a computed snapshot: a changed boolean produces new props while Pinia's bound action stays stable. Do not reuse a plain bag with reactive getters: previous and next props can be the same object, or both getters can read the new value during comparison, leaving DOM attributes stale. [Vue 3.5.44 prop comparison](https://unpkg.com/@vue/runtime-core@3.5.44/dist/runtime-core.esm-bundler.js), [tagged VMain root](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VMain/VMain.tsx), [tagged VBtn root/emits](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/components/VBtn/VBtn.tsx).
+
 Vuetify 4 ships cascade layers; preserve their order before introducing an application layer. Unlayered CSS outranks normal layered CSS. The example intentionally uses system fonts and no icon-dependent UI, so it has no undeclared Roboto/icon-font dependency. If adding icons, configure a real SVG set or install the selected font stylesheet. The fixed `light` theme is deterministic for SSR; do not read browser storage or media queries to choose initial server markup. Vuetify 4.3's theme installer checks `app._context.provides.usehead`: when present it registers a stylesheet with `tagPosition: 'bodyOpen'`; otherwise its browser fallback updates or creates the stylesheet by ID and appends a newly created element to `document.head`. Do not promise a permanent head-only location: the selected Nuxt profile can emit the style in SSR head and retain a single applied `#vuetify-theme-stylesheet` in the body after hydration. Verify one stylesheet, applied theme variables and stable appearance rather than its parent element alone. `ssr: true` updates display values after Nuxt resolves suspense. Do not create a second head manager or manually duplicate the theme style. [Exact framework](https://unpkg.com/vuetify@4.3.0/lib/framework.js), [theme installer](https://unpkg.com/vuetify@4.3.0/lib/composables/theme.js), [layer declarations](https://unpkg.com/vuetify@4.3.0/lib/styles/main.css), [package exports/peers](https://registry.npmjs.org/vuetify/4.3.0).
 
 `vuetify-nuxt-module@1.0.0-rc.6` is an **opt-in prerelease**, even though its peer accepts `vuetify ^3.4.0 || ^4.0.0`. That range is not stable Nuxt/Vuetify 4 assurance. If deliberately selecting that module, replace the manual plugin/style/registration strategy with its documented ownership and verify that distinct configuration; never stack both installers. It is not installed by this guide. [Exact prerelease metadata](https://registry.npmjs.org/vuetify-nuxt-module/1.0.0-rc.6).
@@ -164,18 +172,24 @@ Complete `app/pages/preferences.vue`:
 ```vue
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
+import type { ButtonHTMLAttributes } from 'vue'
 import { VBtn } from 'vuetify/components/VBtn'
 import { usePreferencesStore } from '~/stores/preferences'
 
 const preferences = usePreferencesStore()
 const { compact } = storeToRefs(preferences)
+const compactAttrs = computed<Pick<ButtonHTMLAttributes, 'aria-pressed' | 'onClick' | 'class' | 'style'>>(() => ({
+  'aria-pressed': compact.value,
+  onClick: preferences.toggleCompact,
+}))
 </script>
 
 <template>
   <section>
     <h1>View preferences</h1>
     <p>Compact view: {{ compact ? 'on' : 'off' }}</p>
-    <VBtn :aria-pressed="compact" @click="preferences.toggleCompact()">
+    <VBtn v-bind="compactAttrs">
       Toggle compact view
     </VBtn>
   </section>
@@ -214,7 +228,7 @@ Complete replacement `app/pages/catalog/[id].vue`, requiring the core `CatalogIt
 
 ```vue
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, type ButtonHTMLAttributes } from 'vue'
 import { useQuery } from '@pinia/colada'
 import { VBtn } from 'vuetify/components/VBtn'
 import type { CatalogItem } from '#shared/types/catalog'
@@ -229,6 +243,12 @@ const { state, asyncStatus, refetch } = useQuery({
     { signal },
   ),
 })
+function refreshCatalog() {
+  if (asyncStatus.value !== 'loading') void refetch()
+}
+const refreshAttrs: Pick<ButtonHTMLAttributes, 'onClick' | 'class' | 'style'> = {
+  onClick: refreshCatalog,
+}
 useSeoMeta({ title: 'Query catalogue' })
 </script>
 
@@ -238,7 +258,7 @@ useSeoMeta({ title: 'Query catalogue' })
     <p v-if="state.status === 'pending'" role="status">Loading catalogue item</p>
     <p v-else-if="state.status === 'error'" role="alert">Unable to load this item.</p>
     <article v-else><h2>{{ state.data.title }}</h2></article>
-    <VBtn :disabled="asyncStatus === 'loading'" @click="refetch()">Refresh</VBtn>
+    <VBtn v-bind="refreshAttrs" :disabled="asyncStatus === 'loading'">Refresh</VBtn>
     <nav aria-label="Query catalogue items">
       <NuxtLink to="/catalog/1">Item 1</NuxtLink>
       <NuxtLink to="/catalog/2">Item 2</NuxtLink>
@@ -249,11 +269,11 @@ useSeoMeta({ title: 'Query catalogue' })
 
 `useQuery` registers server prefetch itself; no top-level `await` or extra manual prefetch is needed here. On client navigation the loading state may render immediately. Grouped `state` preserves discriminated-union narrowing; `asyncStatus` separately describes ongoing work, including background refresh. The reactive key includes the changing ID; the supplied abort signal reaches the transport. `useRequestFetch()` captures the current Nuxt SSR request, rather than assuming bare server `$fetch` forwards its cookies. A `public` prefix is a cache policy label, **not** a permission grant; this particular API returns identity-independent catalogue records.
 
-Error ownership differs by lifecycle. Colada 1.4.8's `ssrCatchError` defaults to `false`; `onServerPrefetch` calls `refresh(true)` in that case, so an initial server query rejection propagates to Nuxt's document error handling. In this fixture, a direct `/catalog/3` request produces Nuxt's 404 document, not this page's inline alert. Client navigation from the loaded `/catalog/1` page to `/catalog/3` instead displays the inline `Unable to load this item.` alert without the stale article; refreshing that missing item preserves the visible error state. Do not conflate these mounted client failures with the initial SSR path or the core native `useFetch` example's different error policy. The button explicitly calls `refetch()` with no event argument: its default `throwOnError = false` resolves the resulting error state for this visible error UI. `refetch(true)`/`refresh(true)` instead propagate rejection and require an explicit caller error policy. Do not enable `ssrCatchError` merely to conceal an unexpected SSR failure. [Exact error option and return contracts](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts), [server-prefetch and refetch implementation](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs).
+Error ownership differs by lifecycle. Colada 1.4.8's `ssrCatchError` defaults to `false`; `onServerPrefetch` calls `refresh(true)` in that case, so an initial server query rejection propagates to Nuxt's document error handling rather than this page's inline alert. An earlier fixture observation reported a 404 document for direct `/catalog/3` and an inline alert without the stale article when navigating there from `/catalog/1`; those are historical observations, not a fresh generated-Nuxt result. Verify the final document status/error policy and mounted client refresh behavior separately. Do not conflate mounted client failures with the initial SSR path or the core native `useFetch` example's different error policy. The button explicitly calls `refetch()` with no event argument: its default falsy `throwOnError` resolves the resulting error state for this visible error UI. `refetch(true)`/`refresh(true)` instead propagate rejection and require an explicit caller error policy. Do not enable `ssrCatchError` merely to conceal an unexpected SSR failure. [Exact error option and return contracts](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts), [server-prefetch and refetch implementation](https://unpkg.com/@pinia/colada@1.4.8/dist/index.mjs).
 
 The module depends on the Pinia plugin, installs Colada once, serializes/hydrates its query cache, disables server GC timers and clears the server cache after render. Keep all instances request-owned; do not add manual plugin installation or serialization copied from a plain-Vue SSR recipe. Cache contents enter the HTML/payload and must be safe for the current recipient. [Exact SSR plugin](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/runtime/plugin.js), [exact query/cache types](https://unpkg.com/@pinia/colada@1.4.8/dist/index.d.mts), [official Nuxt guide](https://pinia-colada.esm.dev/nuxt.html), [query design](pinia-colada.md).
 
-The static topic title is intentional for this version profile. The module serializes the query cache and then clears it in `app:rendered`; reactive query state is not a durable post-render head snapshot. In the selected runtime, deriving the title directly from that state produced the fallback SSR title even though the body contained the item and hydration reused its payload without an initial browser API read. Do not claim item-specific SSR SEO from that reactive getter or patch the module to retain a shared server cache. This demo keeps `Query catalogue` consistent across SSR/hydration/navigation. If item-specific SSR metadata is required, prefer the core [native Nuxt data owner](nuxt.md#local-catalogue-example), which awaits the read before deriving its title, instead of adding a second native read around Colada. Verify final HTML metadata separately from body/payload success. [Exact module lifecycle](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/runtime/plugin.js).
+The static topic title is intentional for this version profile. The module serializes the query cache and then clears it in `app:rendered`; reactive query state is not a durable post-render head snapshot. An earlier fixture observation reported a fallback SSR title when deriving it directly from that state, even though the body contained the item and hydration reused its payload without an initial browser API read. That observation is historical, not a fresh run of this profile. Do not claim item-specific SSR SEO from that reactive getter or patch the module to retain a shared server cache. This demo keeps `Query catalogue` as its fixed title across SSR/hydration/navigation. If item-specific SSR metadata is required, prefer the core [native Nuxt data owner](nuxt.md#local-catalogue-example), which awaits the read before deriving its title, instead of adding a second native read around Colada. Verify final HTML metadata separately from body/payload success. [Exact module lifecycle](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/runtime/plugin.js).
 
 ## Identity transitions and private caches
 
@@ -441,3 +461,5 @@ For the public app, regenerate Nuxt contexts, typecheck/build, request SSR and b
 For the contextual private boundary, use the real application's session mechanism and reader to verify unsigned server rejection, signed-in SSR/client navigation, sign-out, account/session/organization A → B → A transitions with pending reads, late mutation suppression, public-cache retention and private-cache teardown. Verify that an intentionally retained private consumer prevents acceptance of the next identity. Compiler success cannot prove server session verification or tenant authorization. These contracts require no hosted-service account or vendor SDK; no live authentication result is claimed.
 
 **Observed local contract exercise, 2026-10-21:** the unchanged three private components and shared interfaces also passed generated strict Nuxt 4.6.2/Vue 3.5.44 contexts and production SSR/browser execution with the official Pinia/Colada modules. A deliberately local allowlisted-cookie reader—not a production authentication service—returned caller-specific A/B identities; 24 concurrent A/B/invalid-cookie documents remained isolated with `private, no-store`, and an unsigned reader request returned a detail-free 401 with the same policy. Hydration reused the private query payload without an initial browser API read. Browser checks exercised sign-out, user/session/organization replacement, pending-read A → B → A cancellation, private eviction with public retention, reader-identity mismatch rejection, retained-consumer fail-closed behavior, client navigation and SSR refresh. These observations establish the displayed/cache contracts only: the host still owns real session verification, authorization, mutation guards and production response policy; no provider authentication or live tenant-authorization result is claimed.
+
+This dated paragraph preserves the original local observation, not a fresh execution or proof that every later consumer is unchanged. Its retained [verification record](../assets/verification.json) identifies the private-cache fixture and its limits; production session verification and final response policy still require the host's own evidence.

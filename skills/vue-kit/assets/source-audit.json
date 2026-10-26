@@ -3824,5 +3824,5 @@
     "commit": "7bf433b98951918c694358e372d3b02cf6f982e5",
     "policy": "Superseded audit bodies remain in repository history, not the installed skill. Retained native judgments describe historical inputs, not current semantic or runtime acceptance."
   },
-  "scope_note": "Filtered historical triage population: eight superseded source units are not part of the installed skill. Original per-file hashes, domains, migration labels, flags and native hypotheses for retained inputs are unchanged. This is not a fresh judgment or runtime result."
+  "scope_note": "Filtered historical triage population: eight superseded source units are not part of the installed skill. The 459 retained path/SHA-256/domain/migration/flag records and original rubric are preserved from the history commit; their native coverage hypotheses are preserved separately in coverage-audit.json. Paths identify historical inputs, not required installed files. Counts, including zero truncations/errors, describe the historical run, not a rerun; baseline records its authored version target, not a compatibility result. Current integrity gates can compare retained records, aggregates, routing and frozen native fingerprints, but cannot rehash absent source bytes, replay the original triage/escalation, or certify the old labels as current API or runtime evidence."
 }

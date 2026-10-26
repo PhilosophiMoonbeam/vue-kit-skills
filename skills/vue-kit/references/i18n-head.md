@@ -213,7 +213,7 @@ For a separately typed feature, derive `type MessageSchema = typeof en` from its
 
 ### Race-safe lazy loading
 
-This is a complete replacement `src/i18n.ts` for a text-only lazy-loading example. Supply the two JSON files shown below. The factory contains its caches and generation counter; SSR requests must not share mutable locale state. Vite sees a fixed import map, not arbitrary user-controlled paths.
+This is a complete replacement `src/i18n.ts` for a text-only lazy-loading example. Supply the two JSON files shown below. The factory contains its caches and generation counter; SSR requests must not share mutable locale state. Vite sees a fixed import map, not arbitrary user-controlled paths. Declare the full supported locale union in `createI18n`'s schema generics, then install the eager English catalog synchronously; inferring from `messages: { en }` alone narrows the Composer to English, while supplying a French placeholder would misrepresent its unloaded state.
 
 ```ts
 import { nextTick } from 'vue'
@@ -228,13 +228,13 @@ const loaders = {
 } satisfies Record<Locale, () => Promise<Messages>>
 
 export function createAppI18n() {
-  const i18n = createI18n({
+  const i18n = createI18n<[Messages], Locale, false>({
     legacy: false,
     globalInjection: false,
-    locale: 'en' as Locale,
+    locale: 'en',
     fallbackLocale: 'en',
-    messages: { en },
   })
+  i18n.global.setLocaleMessage('en', en)
   const loaded = new Set<Locale>(['en'])
   const pending = new Map<Locale, Promise<void>>()
   let generation = 0
@@ -435,7 +435,7 @@ Hydration entry uses `createSSRApp(App)`, the matching initialized i18n, and `cr
 | Low-level owner | `head.push()` creates an explicitly owned entry; `head.entries` is the map replacing removed `headEntries()`. Prefer Vue composables for automatic lifetime. `createUnhead` is the low-level core replacement for removed `createHeadCore`, not the normal Vue installation path. |
 | Route-transition flicker | One owner can gate synchronous `dom:beforeRender` by setting `ctx.shouldRender`, then call `renderDOMHead(head)` from `/client` when navigation settles. Release the gate on abort/error as well as success; this delays DOM updates, not entry computation or SSR output. |
 
-Other v3 migration boundaries: `DeprecationsPlugin` is **still exported but deprecated for v4 removal** in 3.4.3; migrate old props directly and remove it after callers are converted, rather than claiming it is already absent. `setHeadInjectionHandler` is removed; migrate `@unhead/addons` to the unified bundler entry; replace deprecated `resolveUnrefHeadInput` with `resolveTags` from `unhead/utils`. `MergeHead` is deprecated; use `VueHeadClient` generics. Removed entry `{ mode: 'server' }` does not select a server renderer: in standalone Vite use `if (import.meta.env.SSR)` around server-only entry creation, with the appropriate server installation. Removed `dom:renderTag`/`dom:rendered` hooks are not async extension points; use the documented entry `onRendered` contract. [3.4.3 exports](https://unpkg.com/@unhead/vue@3.4.3/dist/index.d.ts), [exact plugin exports](https://unpkg.com/unhead@3.4.3/dist/plugins.d.ts), [deprecated plugin declaration](https://unpkg.com/unhead@3.4.3/dist/shared/unhead.Fj9s3zvE.d.ts).
+Other v3 migration boundaries: `DeprecationsPlugin` is **still exported but deprecated for v4 removal** in 3.4.3; migrate old props directly and remove it after callers are converted, rather than claiming it is already absent. `setHeadInjectionHandler` is removed; migrate `@unhead/addons` to the unified bundler entry; replace deprecated `resolveUnrefHeadInput` with `resolveTags` from `unhead/utils`. `MergeHead` is deprecated; use `VueHeadClient` generics. Removed entry `{ mode: 'server' }` does not select a server renderer: in standalone Vite use `if (import.meta.env.SSR)` around server-only entry creation, with the appropriate server installation. `dom:renderTag` remains declared but is deprecated and never called internally; `dom:rendered` is deprecated **but still emitted synchronously**. Neither is an awaited extension point. Prefer the documented entry `onRendered` contract or run owner-controlled post-render work directly after `renderDOMHead()`. [Exact hook declarations](https://unpkg.com/unhead@3.4.3/dist/shared/unhead.BCbtEyRi.d.ts), [3.4.3 DOM renderer](https://unpkg.com/unhead@3.4.3/dist/shared/unhead.DD4N5B4k.mjs), [migration guide](https://unhead.unjs.io/docs/vue/head/guides/get-started/migration), [deprecated plugin declaration](https://unpkg.com/unhead@3.4.3/dist/shared/unhead.Fj9s3zvE.d.ts).
 
 ### Bundler and external-script workflows
 

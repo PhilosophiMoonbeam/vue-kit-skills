@@ -1,6 +1,6 @@
 # Selected Nuxt integrations
 
-Read after [Nuxt](nuxt.md) when adding Vuetify, domain state, or an optional query cache. These are selected self-hostable library integration contracts, not blanket support for every Nuxt module or authentication-service setup. Nuxt remains the only application/router/SSR owner; do not copy the plain-Vue bootstrap from the linked SPA guides.
+Read after [Nuxt](nuxt.md) when adding Vuetify, domain state, an optional query cache, or an optional TresJS scene. These are selected self-hostable library integration contracts, not blanket support for every Nuxt module or authentication-service setup. Nuxt remains the only application/router/SSR owner; do not copy the plain-Vue bootstrap from the linked SPA guides.
 
 OpenVue's separate official-module configuration, generated styles and SSR boundaries belong to [OpenVue setup](openvue-setup.md#official-nuxt-module-complete-separate-application), reached through [OpenVue selection](openvue.md). Do not copy this manual Vuetify integration into that profile or treat either profile as blanket certification of other modules.
 
@@ -13,6 +13,7 @@ Use **Bun 1.4.3** for a new application's package management and Node **24.15.0*
 | Material UI | `vuetify@4.3.0` | Stable manual universal plugin below; explicit component imports, SSR enabled |
 | Domain/UI state | `pinia@4.1.0`, `@pinia/nuxt@1.0.3`, `@vue/devtools-api@8.2.1` | Module creates the app/request instance and transfers its state |
 | Optional server-state cache | `@pinia/colada@1.4.8`, `@pinia/colada-nuxt@1.2.0`, `@pinia/colada-devtools@2.0.1` | Official module, after Pinia; one query owner per feature |
+| Optional browser 3D | `@tresjs/nuxt@5.8.0`, `@tresjs/core@5.10.0`, optionally `@tresjs/cientos@5.10.0`, `three@0.186.1` | Separate latest-release profile below; app-wide WebGPU entry selection, client canvas, SSR DOM alternative |
 
 Pinia's Vue peer is `^3.5.11`; its **required** devtools peer is `@vue/devtools-api ^8.2.1` (TypeScript `>=5.6.0` is optional). `@pinia/nuxt@1.0.3` requires Pinia `^4.1.0`. Colada requires Vue `^3.5.41` and admits Pinia `^2.2.6 || ^3.0.0 || ^4.0.2`; its Nuxt module requires Colada `>=1.4.5`. The module's `@pinia/colada-devtools ^2.0.0` peer is **optional** in both its published manifest and registry metadata; omit it when no panel is wanted. The devtools package's Vite/Devframe integration peers are optional too. The module only registers an installed panel with the Vite builder and compatible Nuxt DevTools 4 during development. These peer ranges admit the selected versions; they are not runtime proof. [Pinia metadata](https://registry.npmjs.org/pinia/4.1.0), [Pinia module metadata](https://registry.npmjs.org/@pinia/nuxt/1.0.3), [Colada metadata](https://registry.npmjs.org/@pinia/colada/1.4.8), [Colada module manifest](https://unpkg.com/@pinia/colada-nuxt@1.2.0/package.json), [registry metadata](https://registry.npmjs.org/@pinia/colada-nuxt/1.2.0), [devtools metadata](https://registry.npmjs.org/@pinia/colada-devtools/2.0.1), [module implementation](https://unpkg.com/@pinia/colada-nuxt@1.2.0/dist/module.mjs).
 
@@ -463,3 +464,118 @@ For the contextual private boundary, use the real application's session mechanis
 **Observed local contract exercise, 2026-10-21:** the unchanged three private components and shared interfaces also passed generated strict Nuxt 4.6.2/Vue 3.5.44 contexts and production SSR/browser execution with the official Pinia/Colada modules. A deliberately local allowlisted-cookie reader—not a production authentication service—returned caller-specific A/B identities; 24 concurrent A/B/invalid-cookie documents remained isolated with `private, no-store`, and an unsigned reader request returned a detail-free 401 with the same policy. Hydration reused the private query payload without an initial browser API read. Browser checks exercised sign-out, user/session/organization replacement, pending-read A → B → A cancellation, private eviction with public retention, reader-identity mismatch rejection, retained-consumer fail-closed behavior, client navigation and SSR refresh. These observations establish the displayed/cache contracts only: the host still owns real session verification, authorization, mutation guards and production response policy; no provider authentication or live tenant-authorization result is claimed.
 
 This dated paragraph preserves the original local observation, not a fresh execution or proof that every later consumer is unchanged. Its retained [verification record](../assets/verification.json) identifies the private-cache fixture and its limits; production session verification and final response policy still require the host's own evidence.
+
+## Optional TresJS module: Nuxt 4 and the 5.8.0 release
+
+This is a **separate optional application profile**, not a dependency migration of the bundled Tres 5.9.3/Three 0.186.1 SPA or its retained device receipts. Use this page's Nuxt 4.6.2/Vue 3.5.44/Node 24.15.0 host profile. Nuxt module **5.8.0** depends on core **5.10.0** exactly, accepts `nuxt >=3.16.0` in module metadata and peers on `three >=0.133`. Cientos **5.10.0** peers on core `^5.9.1`, Vue `>=3.5.17` and Three `>=0.133`. Those broad lower bounds do not prove that old Three releases provide today's `three/webgpu`/TSL APIs. Keep Three and its matching declarations aligned; the example selects Three 0.186.1 and `@types/three@0.186.0`. [Module manifest](https://registry.npmjs.org/@tresjs/nuxt/5.8.0), [Cientos manifest](https://registry.npmjs.org/@tresjs/cientos/5.10.0), [core manifest](https://registry.npmjs.org/@tresjs/core/5.10.0).
+
+Install in the **Nuxt application**, preserving its package manager and lockfile:
+
+```sh
+bun add --exact @tresjs/nuxt@5.8.0 @tresjs/core@5.10.0 @tresjs/cientos@5.10.0 three@0.186.1
+bun add -D --exact @types/three@0.186.0
+```
+
+Merge these fields into the existing `nuxt.config.ts`; retain its other modules, CSS, runtime config, route policy and Nitro ownership:
+
+```ts
+import { defineNuxtConfig } from 'nuxt/config'
+
+export default defineNuxtConfig({
+  modules: ['@tresjs/nuxt'], // append alongside existing modules
+  tres: {
+    renderer: 'webgpu',
+    modules: ['@tresjs/cientos'],
+    devtools: false,
+    glsl: false,
+  },
+})
+```
+
+### Renderer, catalogue and generated imports
+
+`renderer` is the module's **app-wide auto-import target**, not a per-page GPU capability check. Its default is `'webgl'`; explicitly choose `'webgpu'` for this skill's WebGPURenderer-first policy. In 5.8.0 this selects `@tresjs/core/webgpu`, the corresponding Nuxt client wrapper and each installed ecosystem package's declared `./webgpu` entry. Core's WebGPU entry registers `three/webgpu` constructors in the Tres catalogue and defaults its canvas to **WebGPURenderer**. Three can select its native WebGPU backend or WebGL2 fallback; both must support the **whole scene**. Falling back inside WebGPURenderer does not make legacy GLSL helpers or an EffectComposer pipeline compatible. Explicit `'webgl'` selects legacy **WebGLRenderer** and root package entries; use that only for a deliberately incompatible pipeline, not as a hidden failure fallback. [Published module](https://unpkg.com/@tresjs/nuxt@5.8.0/dist/module.mjs), [WebGPU canvas/catalogue](https://unpkg.com/@tresjs/core@5.10.0/dist/webgpu.js).
+
+The exact module setup:
+
+- Adds `@tresjs` packages to Nuxt's transpilation list, dedupes `three` through Vite defaults and adds optimization defaults for `three`, `three/webgpu`, `three/tsl` in WebGPU mode. Keep one resolved Three identity; this is not permission to install mismatched nested Three versions.
+- Reads the selected core entry's actual exports and auto-imports names beginning with `use`. It separately exposes `extend` as **`extendTres`**, plus the `TresObject` type, and adds the selected core entry to generated type references. For explicit imports in this profile use `import { useTres, useLoop, extend } from '@tresjs/core/webgpu'`; do not mix in a root-entry canvas accidentally.
+- Registers `TresCanvas` with separate client/server files. Three primitives such as `TresMesh` are **catalogue intrinsics**, not hundreds of Nuxt component imports. Add an extra constructor with `extendTres({ YourConstructor })` (or explicit `extend`) in client scene setup before using `TresYourConstructor`. Do not register a second Vue app/plugin.
+- Scans direct `dependencies` and `devDependencies` with `@tresjs/` names in the app and, if present, **one immediate parent** package manifest; unions those with `tres.modules`. This is not recursive workspace discovery. `tres.modules` supplies package IDs to inspect, **not** Nuxt modules to install or options objects. Packages must already resolve. Missing packages/builds can be skipped or warned about; explicit installation and generated-file inspection remain necessary.
+- Registers uppercase ecosystem exports as Nuxt components and other exports as imports. With Cientos installed, `<OrbitControls />`, `useGLTF`, etc. come from `@tresjs/cientos/webgpu` in this profile. Explicit equivalents must use that same entry: `import { OrbitControls, useGLTF } from '@tresjs/cientos/webgpu'`. Install/import `@tresjs/cientos/styles.css` only for a helper that actually needs its DOM styling.
+- For packages with `/webgpu`, compares uppercase root exports with WebGPU exports and writes `.nuxt/tres/webgpu-stubs.mjs` for missing components. Mounting one throws a named error explaining that the helper is not available for WebGPU; it is **not silently omitted or ported**. Lowercase/composable exports absent from `/webgpu` are not stubbed. `@tresjs/post-processing` is explicitly skipped with a warning in WebGPU mode; manual imports do not bypass its renderer limitation. Other packages without `/webgpu` can still use their root entry, so successful auto-import does not certify renderer safety. [Stub source](https://unpkg.com/@tresjs/nuxt@5.8.0/dist/runtime/webgpuStub.js), [Cientos WebGPU exports](https://unpkg.com/@tresjs/cientos@5.10.0/dist/webgpu.js).
+
+The module **assigns**, rather than composes, `vue.compilerOptions.isCustomElement` to Tres's predicate. That predicate recognizes `Tres[A-Z]…`, `tres-…` and `primitive`, with exceptions for Vue components including `TresCanvas`, `TresPortal` and `TresCanvasContext`. A host with unrelated custom elements must deliberately compose its predicate **after module setup**, for example in a `modules:done` hook capturing the installed Tres predicate and returning `isTres(tag) || tag.startsWith('company-')`. Do not mark every tag custom or mark `TresCanvas` custom; either breaks Vue component handling. [Exact predicate](https://unpkg.com/@tresjs/core@5.10.0/dist/template-compiler-options.mjs).
+
+`tres.glsl: true` installs `vite-plugin-glsl` with defaults to import shader text; it does not translate GLSL to TSL/WGSL or make `ShaderMaterial` work with WebGPURenderer. Leave it false unless the selected, verified pipeline requires it. `tres.devtools` defaults true; false above avoids registering the optional local iframe/tab. The published UI is served under `/__tres_nuxt_devtools` via Vite middleware; the source-development branch proxies that route to **localhost:3300**, not a hosted Tres service. This option does not turn all Nuxt DevTools off. Do not expose development servers or scene inspection to untrusted networks. [Exact options](https://unpkg.com/@tresjs/nuxt@5.8.0/dist/module.d.mts), [UI/module implementation](https://unpkg.com/@tresjs/nuxt@5.8.0/dist/module.mjs).
+
+### Client scene with an SSR-readable alternative
+
+The module's server `TresCanvas` returns only `<span />` and **does not render its default slot**. Its client wrapper forwards attributes/listeners and the scene slot to the selected core canvas. Consequently the module already provides a client-only canvas; another `<ClientOnly>` is not mandatory. The explicit boundary below also gives a useful loading fallback and makes it obvious which subtree must never own SSR content. Keep required instructions, names, links and data in normal DOM **outside** the scene. A `.client.vue` scene additionally prevents browser-only composables from executing during SSR; do not run `useTres` in the parent page or at module scope. [Server wrapper](https://unpkg.com/@tresjs/nuxt@5.8.0/dist/runtime/TresCanvas.server.vue), [WebGPU client wrapper](https://unpkg.com/@tresjs/nuxt@5.8.0/dist/runtime/TresCanvasWebGPU.client.vue).
+
+Add `app/components/LocalTresScene.client.vue`:
+
+```vue
+<template>
+  <TresPerspectiveCamera :position="[3, 2, 4]" :look-at="[0, 0, 0]" />
+  <OrbitControls />
+  <TresMesh>
+    <TresBoxGeometry :args="[1, 1, 1]" />
+    <TresMeshBasicNodeMaterial color="#82dbc5" />
+  </TresMesh>
+</template>
+```
+
+This uses generated Cientos imports and a catalogue material from `three/webgpu`, without models, fonts, HDRIs, decoders or CDN dependencies. Add `app/pages/scene.vue`:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const failed = ref(false)
+function onCanvasError(cause: unknown) {
+  console.error(cause)
+  failed.value = true
+}
+</script>
+
+<template>
+  <section>
+    <h1>Local cube</h1>
+    <p>A mint-coloured cube. Drag to orbit; scroll to zoom.</p>
+    <p>The description remains available without graphics support.</p>
+    <p v-if="failed" role="status">The 3D view is unavailable.</p>
+    <div v-else style="height: 24rem">
+      <ClientOnly>
+        <TresCanvas clear-color="#17202a" @error="onCanvasError">
+          <LocalTresScene />
+        </TresCanvas>
+        <template #fallback><p>Loading optional 3D view…</p></template>
+      </ClientOnly>
+    </div>
+  </section>
+</template>
+```
+
+The container has deterministic dimensions to avoid a zero-height canvas/layout jump. Scene objects are rendered by Tres's custom renderer, not by the DOM renderer: do not put `<p>`, Vuetify controls or an application layout inside its primitive tree. A DOM-overlay helper has its own mounting/accessibility contract; it is not an SSR alternative. Core's `error` event covers its initialization/render-manager errors; a Cientos unsupported-helper setup throw or an independent loader failure needs a Vue error boundary/that loader's error state, not a promise that this canvas handler catches every descendant exception. Never display raw asset URLs, private metadata or internal exception details to users.
+
+### Assets, teardown and privacy
+
+Nuxt owns routing, server rendering and request state; each mounted canvas owns its renderer/context and Tres scene lifetime. A descendant `useLoop` subscription belongs to the component scope; remove separately created timers, listeners and unmanaged GPU resources on teardown. Keep Three instances shallow/non-proxied; never serialize a renderer, geometry, material, texture or scene graph into `useState`, Pinia SSR payloads or `useAsyncData`. Server loaders may return serializable model metadata, but browser Three loaders and WebGPU initialization belong behind the client boundary.
+
+Nuxt `public/models/cube.glb` is served as `/models/cube.glb`, **not** `/public/models/cube.glb`; adjust URLs for the host's base/CDN deliberately. Anything in `public/` is public: no confidential models, session tokens or tenant-specific assets. For private models use the application's authorized asset delivery and identity lifecycle, not an obscured filename. Clear identity-scoped loader caches/resources when the session changes, in addition to the private query-cache contract above. A scene's retained/shared assets must not be disposed while another consumer still uses them; choose one owner for cache eviction, geometry/material/texture disposal and any blob URL revocation. See [Tres ownership and renderer limits](tresjs.md), including the preserved older-version caveats.
+
+The package/module setup requires no Tres account, API key, telemetry endpoint or hosted backend. Loading a remote model, font, HDRI or Draco/KTX decoder is still a browser request; configure local URLs/decoder paths and inspect the actual Network panel if self-hosting/no-egress is required. Installing a helper alone is not proof it has no external default assets. Do not feed signed URLs or secrets into generated component headers, committed configs, SSR payloads or developer screenshots.
+
+### Release transitions and acceptance recipes
+
+The full monorepo release inventory supplies **23 Nuxt entries** through 5.8.0; many are dependency-only releases, not new Nuxt APIs. The tagged package changelog also retains the pre-monorepo history. Relevant transitions:
+
+- Module 3.0.0 moved to core 4; 3.0.5 recorded a `useEnvironment` Nuxt fix. Do not copy that old module/core pairing into this profile.
+- Module 4.0.0 raised the Nuxt support baseline to 3.16.0. The 5.0 prerelease/stable transition adopted Nuxt 4/core 5 and new devtools; its RC fixed wrapper attribute forwarding, and 5.0.1 followed a core regression fix.
+- 5.1.5's GitHub release highlights a core canvas forwarding revert; the package changelog lists the core 5.3.1 bump. Do not infer a new module option from that release title. 5.7.3 selected core 5.9.3 and therefore is not the `/webgpu`-entry module recipe.
+- **5.8.0** adds renderer-aware `/webgpu` entry selection and updates core to 5.10.0. It also fixes the packaged devtools favicon/path; 5.4.0's earlier icon/dark-mode fix was not a renderer change. [Nuxt 5.8.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/nuxt%405.8.0), [5.1.5 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/nuxt%405.1.5), [tagged complete package changelog](https://github.com/Tresjs/tres/blob/%40tresjs/nuxt%405.8.0/packages/nuxt/CHANGELOG.md).
+
+**Source-backed smoke recipe, not an execution receipt:** in the separate Nuxt app with the files above, run `bunx nuxt prepare`, `bunx nuxt typecheck` and `bunx nuxt build`, then serve its normal Nitro output (`node .output/server/index.mjs`). Inspect generated `.nuxt/imports.d.ts` and component declarations: core imports/types must target `/webgpu`, `OrbitControls` must target Cientos `/webgpu`, and unsupported helpers must point at generated stubs. Request `/scene` before JavaScript: heading, description and optional-view fallback must exist, without browser globals or a serialized Three graph. Hydrate/navigate away/back: no mismatch, one canvas, usable orbit interaction, unmount cleanup and a retained DOM alternative on a deliberate initialization failure.
+
+Exercise the **same scene** in native WebGPU and WebGPURenderer's forced WebGL2 backend. For the latter, supply a client-only `renderer` factory importing `WebGPURenderer` from `three/webgpu` and returning `new WebGPURenderer({ canvas: toValue(ctx.canvas), forceWebGL: true })` (types `TresRendererSetupContext` from `@tresjs/core/webgpu`, `toValue` from `vue`); it is a test variation, not a permanent fallback switch. In a separate negative fixture render an absent helper such as `ContactShadows` and require its named “not available for WebGPU yet” error; do not hide it to make the positive scene pass. Review public-asset requests and private-route policy separately. Compiler/module compatibility alone proves none of these runtime obligations.

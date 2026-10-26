@@ -3,7 +3,7 @@ name: vue-kit
 description: >-
   Build, debug, test, and modernize Vue applications with TypeScript, Composition
   API, Vuetify, OpenVue, Router, Pinia, forms, server-state queries, authentication,
-  accessible UI, charts, TresJS/Three.js graphics, WebGPU, motion, SSR, Nuxt, and Vite tooling. Use for Vue SFCs,
+  accessible UI, charts, TresJS/Three.js, Cientos, Rapier physics, Leches controls, WebGPU, glTF tooling, motion, SSR, Nuxt, and Vite. Use for Vue SFCs,
   Nuxt applications/modules/server routes, composables, ecosystem integrations,
   architecture, migrations, and Vue runtime or type errors. Routes to focused,
   version-aware references and runnable examples.
@@ -137,7 +137,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | Vuetify or TanStack Vue Table, sorting/filtering/pagination and row identity | [Data tables](references/data-tables.md) | Virtualization for measured large-list costs; selected query owner for server data |
 | TanStack Vue Virtual, list/window virtualizers, measurements and focus | [Virtualization](references/virtualization.md) | Accessibility; tables when virtualizing tabular data |
 | Unovis TS/Vue or Vue Data UI charts, tooltips and reactive data | [Visualization](references/visualization.md) | Accessibility; virtualization only for separate list rendering |
-| TresJS/Three.js scene, WebGPURenderer-first for new compatible scenes (experimental integration), explicit WebGLRenderer compatibility, render loop and GPU ownership | [TresJS](references/tresjs.md) | [Preferred factory recipe](references/tresjs.md#experimental-webgpu-and-custom-rendering); require every material/effect/dependency/feature on both WebGPU and its built-in WebGL2 backend for fallback; [bundled explicit-start route](references/tresjs.md#bundled-workbench-composition); debugging SSR for client-only boundaries |
+| TresJS/Three.js, Cientos, Rapier physics, Leches controls, GPU/postprocessing, glTF CLI or Tres lint policy | [TresJS](references/tresjs.md) | [Released package map](references/tresjs.md#released-package-map), [5.10 WebGPU entry](references/tresjs.md#published-510-entry-points-not-a-baseline-upgrade); require whole-scene support on both backends; [Nuxt module](references/nuxt-integrations.md#optional-tresjs-module-nuxt-4-and-the-580-release); use WebGLRenderer only for incompatible pipelines |
 | Vue transitions, Motion for Vue, VueUse Motion and animation lifecycle | [Motion](references/motion.md) | Accessibility for reduced motion and focus preservation |
 
 ### Platform, quality, and specialized applications

@@ -111,13 +111,15 @@ class InstalledPackageIntegrity(unittest.TestCase):
     def test_frontmatter_requires_quotes_for_nonstring_yaml_numbers(self):
         path = self.root / 'SKILL.md'
         _, header, body = path.read_text(encoding='utf-8').split('---', 2)
+        insertion_line = header.count('\n') + 1
         audit = self.load(CURRENT_AUDIT)
         added = set(audit['source_extension']['unit_ids'])
         owner = next(row for row in audit['files'] if row['path'] == 'SKILL.md')
         for evidence in owner['claim_evidence']:
             if added.intersection(evidence['unit_ids']):
                 for excerpt in evidence['source_excerpts']:
-                    excerpt['line'] += 1
+                    if excerpt['line'] >= insertion_line:
+                        excerpt['line'] += 1
         self.write_json(CURRENT_AUDIT, audit)
         for value in ('0xFF', '0o17', '0b10', '.5', '-.5e2'):
             with self.subTest(scalar=value):

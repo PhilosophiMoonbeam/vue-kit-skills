@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### 2026-10-26 — release-backed Tres ecosystem coverage
+
+- Enumerated 260 official Tres releases and checked the eight current published package profiles: Core/Cientos 5.10.0, Nuxt 5.8.0, post-processing 3.11.0, Rapier 1.2.0, Leches 1.3.2, CLI 0.1.1 and ESLint-config 1.7.0.
+- Added dedicated WebGPU entries, node-prop recompilation, Cientos helper/loader/batching boundaries, Nuxt module/client/SSR behavior, legacy versus node postprocessing, physics, reactive controls and local model/lint workflows.
+- Corrected examples against strict consumers: positioned instances use scene-group owners; Rapier's missing event/position declarations have an explicit finite application boundary. Kept missing Leches stylesheet, composer teardown and Rapier world/EventQueue ownership limits visible.
+- Retained the tested 5.9.3 workbench/lab, original audit populations and device receipts. New release consumers are separately scoped; no baseline dependency upgrade or new native-hardware certification is implied.
+
+
 ### 2026-10-26 — WebGPURenderer-first authoring posture
 
 - Made WebGPURenderer the modern standard default for new compatible scenes and the workbench's explicit-start selection, while retaining the experimental Tres 5.9.3 / Three 0.186.1 boundary and known lifecycle limits.

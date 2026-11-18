@@ -31,7 +31,7 @@ function select(id: SelectionId, input: 'pointer' | 'keyboard-or-dom') {
   selected.value = id
   reportObservation('picking', 'Stable business ID selected.', { id, input })
 }
-// Core 5.9.3 retains changed Object3D listener functions. Keep these identities stable.
+// Core's pointer prop patch adds the new Object3D callback without removing the previous one. Keep these handlers stable.
 function pick(event: TresPointerEvent) {
   const id = event.currentObject.name as SelectionId
   if (stopAncestors.value) event.stopPropagation()

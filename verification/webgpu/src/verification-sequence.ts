@@ -80,7 +80,7 @@ const remainingReview: Record<CheckId, string[]> = {
   'gpu-02': ['Review actual backend/device and adapter evidence plus output. Normal APIs are untouched; no extra adapter probe or native-hardware certification is made. Masked, absent or software identity remains uncertain.'],
   'gpu-03': ['Review visible fallback output and raw teardown evidence separately for both injected profiles; a real adapter is necessary to exercise requestDevice rejection.'],
   'gpu-04': ['Review the actual host alert and useful alternative under explicit WebGL2 denial; no WebGL1 fallback is inferred.'],
-  'gpu-05': ['Both deliberate denial profiles retain initialization and late raw teardown errors. The known pinned async-dispose/init rejection is evidence, never a clean-recovery pass.'],
+  'gpu-05': ['Review the initialization error and any raw teardown errors from both deliberate denial profiles. No late error in a bounded window is not proof of clean recovery.'],
   'gpu-06': ['Review visible stopped/playing/paused/invalidated states. Counters and rotations are observations, not GPU completion. Scripted button.click is untrusted, not physical input.'],
   'gpu-07': ['Only the actual current OS preference is observed. Human/OS initial reduce and no-preference profiles, live transitions and post-unmount media-query listener release remain unproved; scripts never spoof matchMedia.'],
   'gpu-08': ['Review narrow/wide/hidden/shown captures for camera framing, overflow and DPR on the target display. DOM sizes and DPR metrics do not prove visual quality or absence of competing resize work.'],
@@ -370,7 +370,7 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
       await checkpoint(entry, 'double-denial DOM and initialization evidence')
       await step(entry, 'explicit unmount and raw late error retention', async () => {
         await unmount(entry)
-        const samples = await windowOf(entry, 'Bounded post-unmount raw teardown error timeline; known pinned failure is not clean recovery', 2_000)
+        const samples = await windowOf(entry, 'Bounded post-unmount raw teardown error timeline', 2_000)
         const run = samples.at(-1)!
         observe(entry, 'Raw teardown errors retained without suppression', run.events.filter(rawError))
         if (!run.events.some(event => event.category === 'unhandled-rejection' && event.message === 'Unhandled promise rejection after application unmount.')) observe(entry, 'No late unhandled rejection was observed in this bounded window; absence is not a clean-recovery certification.')

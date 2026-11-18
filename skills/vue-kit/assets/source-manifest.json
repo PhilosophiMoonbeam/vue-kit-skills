@@ -513,6 +513,22 @@
         "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
       ],
       "notes": "Application-owned client session boundaries, not an authentication provider or complete server login implementation."
+    },
+    {
+      "id": "tresjs-current-releases",
+      "references": [
+        "references/tresjs-webgpu.md",
+        "references/tresjs-post-processing.md"
+      ],
+      "primary_urls": [
+        "https://github.com/Tresjs/tres/releases/tag/%40tresjs%2Fcore%405.10.1",
+        "https://github.com/Tresjs/tres/releases/tag/%40tresjs%2Fcore%405.11.0",
+        "https://github.com/Tresjs/tres/releases/tag/%40tresjs%2Fcore%405.12.0",
+        "https://github.com/Tresjs/tres/releases/tag/%40tresjs%2Fcientos%405.12.0",
+        "https://github.com/Tresjs/tres/releases/tag/%40tresjs%2Fpost-processing%403.12.0",
+        "https://github.com/Tresjs/tres/releases/tag/%40tresjs%2Fpost-processing%403.13.0"
+      ],
+      "notes": "Current WebGPU and post-processing contracts at Core and Cientos 5.12.0 and post-processing 3.13.0. Release evidence does not certify consumer execution; archived 5.9.3 and 5.10 receipts retain their original scope."
     }
   ],
   "history": {

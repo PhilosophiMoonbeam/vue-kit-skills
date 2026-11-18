@@ -24,6 +24,9 @@ Do not downgrade an existing app to reproduce the fixture.
 | `vuetify` | `4.3.0` | UI components/styles |
 | `pinia` | `3.0.4` | Local in-memory task state |
 | `vue-router` | `4.6.4` | SPA navigation |
+| `@tresjs/core` | `5.12.0` | Graphics scene runtime; renderer selected by entry |
+| `three` | `0.187.0` | Three.js r187 rendering and scene primitives |
+| `@types/three` | `0.187.0` | Matching r187 development declarations |
 | `vite` | `8.3.4` | Dev server and production bundling |
 | `@vitejs/plugin-vue` | `6.0.10` | Vue SFC transform and HMR |
 | `typescript` | `5.9.3` | TypeScript language/compiler |
@@ -146,23 +149,28 @@ The example needs no `.env`, API keys, backend, external font or icon service.
 It provides Tasks (`/`), About (`/about`) and a lazy Graphics (`/graphics`) route,
 light/dark UI, validated task creation, completed-state toggling and reset
 confirmation; all task state is memory-only and resets on reload. Graphics waits
-for explicit **Start scene** before importing renderer packages: default
-experimental WebGPURenderer or explicit WebGLRenderer compatibility, with its actual initialized backend shown
-separately from the renderer family. Stop, renderer change, native loss or leaving
-the page retires its scene; returning never starts it automatically. Its DOM
-description/errors remain available without graphics, and optional rotation
-respects reduced motion. See the [composition and evidence boundary](tresjs.md#bundled-workbench-composition).
+for explicit **Start scene** before importing renderer packages. It mounts one
+renderer per scene: the default experimental WebGPURenderer uses
+`@tresjs/core/webgpu`, and the explicit compatibility WebGLRenderer uses
+`@tresjs/core`. The actual initialized backend is shown separately from the
+renderer family. The workbench does not switch families automatically.
+Stop, renderer change, native loss or leaving the page retires its scene;
+returning never starts it automatically. Hide/show and width changes retain the
+mount, with a positive-size draw gate that waits for the canvas buffer to match.
+The DOM description and errors remain available without graphics, and optional
+rotation respects reduced motion. See the [workbench composition](tresjs.md#bundled-workbench-composition).
+The [archived Core 5.9.3 renderer-factory recipe](tresjs.md#experimental-webgpu-and-custom-rendering)
+and its Three 0.186.1 device evidence are not the current workbench profile.
+This example does not certify native hardware or demonstrate persistence,
+authorization, SSR or deployment.
 
-For new compatible scenes, use WebGPURenderer as the modern standard default
-posture and follow the [preferred factory recipe](tresjs.md#experimental-webgpu-and-custom-rendering).
-Every material, effect, dependency and enabled feature must support both WebGPU
-and its built-in WebGL2 backend to claim fallback. WebGLRenderer is an explicit
-compatibility choice for unported GLSL ShaderMaterial/onBeforeCompile, legacy
-EffectComposer or other incompatible pipelines, not an automatic interchangeable
-fallback. The pinned Tres 5.9.3 / Three 0.186.1 integration remains experimental
-with its documented lifecycle limits; this preference neither upgrades packages
-nor certifies hardware or promises that WebGPU is always faster.
-This is not a persistence, authorization, SSR, deployment or hardware-certification demonstration.
+For new compatible Vite scenes, prefer WebGPURenderer and use the
+[current Core/Cientos WebGPU entry guide](tresjs-webgpu.md) for imports and
+compiler setup. Add Cientos only for its helpers. Claim WebGL2 fallback only
+when all scene materials, effects, dependencies and enabled features work
+on both WebGPURenderer backends. Use WebGLRenderer explicitly for unported
+GLSL ShaderMaterial/onBeforeCompile, legacy EffectComposer or other
+incompatible pipelines. It is not an interchangeable automatic fallback.
 
 | Script | Actual command | What success establishes |
 | --- | --- | --- |

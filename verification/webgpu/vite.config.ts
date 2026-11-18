@@ -2,17 +2,18 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { templateCompilerOptions } from '@tresjs/core'
+import templateCompilerOptions from '@tresjs/core/template-compiler-options'
 
 const installedVersion = (name: string) => JSON.parse(
   readFileSync(new URL(`./node_modules/${name}/package.json`, import.meta.url), 'utf8'),
 ).version as string
 
 export default defineConfig({
-  plugins: [vue({ ...templateCompilerOptions })],
+  plugins: [vue(templateCompilerOptions)],
   define: {
     __LAB_CORE_VERSION__: JSON.stringify(installedVersion('@tresjs/core')),
     __LAB_THREE_VERSION__: JSON.stringify(installedVersion('three')),
+    __LAB_THREE_TYPES_VERSION__: JSON.stringify(installedVersion('@types/three')),
   },
   build: {
     rolldownOptions: {

@@ -18,7 +18,7 @@ export const checkGuide: Record<CheckId, { title: string; steps: string[]; expec
       'Choose Run check in a secure context and wait for ready.',
       'Inspect live output and Diagnostics; record the backend, adapter and browser GPU details.',
     ],
-    expect: 'The recorded backend matches visible output and identifies whether rendering uses hardware or software.',
+    expect: 'The recorded backend matches visible output. Report hardware or software only when the device evidence identifies it.',
     caution: 'WebGL2 fallback, navigator.gpu and the WebGPU renderer family do not prove live WebGPU output. Software rendering is not native hardware.',
   },
   'gpu-03': {
@@ -45,8 +45,8 @@ export const checkGuide: Record<CheckId, { title: string; steps: string[]; expec
       'Run both cases: Adapter and WebGL2 denied, then Device and WebGL2 denied.',
       'Inspect the host alert and error details, choose Remove scene and retain late errors from both cases.',
     ],
-    expect: 'Both cases show the host alert, with initialization and teardown errors recorded separately.',
-    caution: 'These injected failures include a known asynchronous teardown rejection; do not record clean recovery.',
+    expect: 'Both cases show an initialization error in the host alert. Record any observed teardown errors separately.',
+    caution: 'No teardown error in the observation window does not establish clean recovery.',
   },
   'gpu-06': {
     title: 'Control rendering and motion',
@@ -145,7 +145,7 @@ export const checkGuide: Record<CheckId, { title: string; steps: string[]; expec
       'Choose Not applicable and note: the retained examples use no custom postprocessing or shadow pipeline.',
     ],
     expect: 'Not applicable records the absent pipeline; it does not establish frame callbacks, shadows or disposal behavior.',
-    caution: 'A real pipeline requires rendered output, notifySuccess once per successful frame, target/pass disposal and the r186 soft-to-PCFShadowMap result.',
+    caution: 'A real pipeline requires rendered output, notifySuccess once per successful frame and target/pass disposal. If requesting PCFSoftShadowMap, verify WebGPURenderer substitutes PCFShadowMap.',
   },
   'gpu-17': {
     title: 'Compare capture channels',

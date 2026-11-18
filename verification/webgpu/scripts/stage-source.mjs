@@ -60,9 +60,12 @@ for (const name of await filesBelow(resolve(root, 'src'))) {
     note: name.startsWith('consumers/') ? 'Authored diagnostic composition of the retained APIs, with real event/resource observations; not a verbatim guide fence and not a native-hardware pass.' : 'Lab code, not the retained recipe.',
   }))
 }
-for (const name of ['scripts/extract-source.mjs', 'scripts/stage-source.mjs', 'server.mjs', 'package.json']) {
+for (const name of ['scripts/extract-source.mjs', 'scripts/stage-source.mjs', 'server.mjs', 'package.json', 'vite.config.ts']) {
   sources.push(await stageSource(name, resolve(root, name), { kind: 'authored-build-or-server-helper' }))
 }
+const lockfile = await stageSource('bun.lock', resolve(root, 'bun.lock'), { kind: 'bun-dependency-lockfile' })
+if (lockfile.sha256 !== extraction.lockfileSha256) throw new Error('Bun lockfile changed after extraction; rerun the complete build.')
+sources.push(lockfile)
 for (const name of await filesBelow(resolve(root, 'fixtures'))) {
   sources.push(await stageSource(`fixtures/${name}`, resolve(root, 'fixtures', name), {
     kind: name === 'source-provenance.json' ? 'primary-content-acquisition-receipt' : 'vendored-primary-asset-source',
@@ -132,12 +135,14 @@ for (const name of await filesBelow(resolve(root, 'dist'))) {
   servedBuild.push({ name, sha256: sha256(content), bytes: content.length, url: `/${name}` })
 }
 await writeFile(resolve(output, 'provenance.json'), JSON.stringify({
+  schemaVersion: 2,
   reference: extraction.reference,
   referenceSha256: extraction.referenceSha256,
   referenceUrl: '/source/tresjs.md',
-  transformation: 'Experimental SceneCanvas and all three ordinary WebGL SFC fences are copied verbatim. Only the WebGPU SceneHost onMounted callback receives the exact replacement prescribed by the retained guide. Consumers are separately identified authored, source-matched diagnostics; no dependency patches or suppressed raw errors.',
+  transformation: 'All three archived WebGL SFC fences are copied verbatim and built with the current pins. The WebGPU SceneHost receives the archived guide’s documented onMounted replacement. The WebGPU SceneCanvas ports the archived fence to the dedicated Core entry and removes only its redundant pending-init retirement hook; the custom renderer factory and positive-size render guard remain. Authored diagnostics are not guide fences.',
   extraction,
-  versions: packageJson.dependencies,
+  versions: { ...packageJson.dependencies, ...packageJson.devDependencies },
+  lockfile,
   sources, fixtures, attribution, servedBuild,
   acceptance: 'These hashes establish byte identity, not GPU capability or correct visible output. Consult the scoped device-review receipts; a new collection does not assign manual verdicts or inherit hardware acceptance.',
 }, null, 2) + '\n')

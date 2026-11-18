@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef, watch, type Raw } from 'vue'
-import { manualChecks, modes, scenes, type Command, type FrameState, type Mode, type SceneId } from './lab-contract'
+import { labVersions, manualChecks, modes, scenes, type Command, type FrameState, type Mode, type SceneId } from './lab-contract'
 import { checkGuide } from './check-guide'
 import { createDisplayCapture, type DisplayEvidence } from './display-capture'
 import { runVerification, type RunEvidence, type VerificationBridge, type VerificationProfile, type VerificationReport } from './verification-sequence'
@@ -51,7 +51,8 @@ interface Run {
 
 const provenance = {
   source: 'skills/vue-kit/references/tresjs.md',
-  pins: { vue: '3.5.44', core: '5.9.3', three: '0.186.1' },
+  pins: labVersions,
+  recipePort: 'The recipes derive from the retained archive. The WebGL recipe is copied unchanged; the WebGPU host and renderer-factory port is recorded in the source metadata. Archived hardware results do not apply to this build.',
   isolation: 'Fresh same-origin case.html iframe on every run. Normal does not wrap native GPU/canvas APIs.',
   servedSources: {
     host: '/source/SceneHost.vue',
@@ -559,6 +560,7 @@ function isFrameState(value: unknown): value is FrameState {
     && typeof value.versions.vue === 'string'
     && typeof value.versions.core === 'string'
     && typeof value.versions.three === 'string'
+    && typeof value.versions.threeTypes === 'string'
     && typeof value.userAgent === 'string'
     && typeof value.deviceCreated === 'boolean'
     && ['webgpu', 'webgl2', 'pending', 'unknown', 'unavailable'].includes(String(value.backend))
@@ -966,12 +968,12 @@ onBeforeUnmount(() => {
 
           <details id="source-provenance" class="source-details">
             <summary>Source and versions</summary>
-            <p>Vue 3.5.44 · TresJS 5.9.3 · Three 0.186.1</p>
-            <p>The WebGL and WebGPU recipes are extracted unchanged. The other scenes are verification examples.</p>
+            <p>Vue {{ provenance.pins.vue }} · TresJS Core {{ provenance.pins.core }} · Three {{ provenance.pins.three }} · @types/three {{ provenance.pins.threeTypes }}</p>
+            <p>{{ provenance.recipePort }} The other scenes are verification examples.</p>
             <p v-if="provenanceFetch.status === 'loading'" role="status">Loading source details…</p>
             <p v-else-if="provenanceFetch.status === 'failed'" class="field-error" role="alert">Source details could not load: {{ provenanceFetch.error }}. The report includes this error.</p>
             <button class="button" type="button" :disabled="provenanceFetch.status === 'loading'" @click="fetchProvenance">Reload source details</button>
-            <nav class="source-links" aria-label="Source files"><a :href="provenance.servedSources.reference" target="_blank" rel="noopener noreferrer">Reference</a><a :href="provenance.servedSources.hashes" target="_blank" rel="noopener noreferrer">Source hashes</a><a v-for="source in servedSourceLinks" :key="source.url" :href="source.url" target="_blank" rel="noopener noreferrer">{{ source.name }}</a></nav>
+            <nav class="source-links" aria-label="Source files"><a :href="provenance.servedSources.reference" target="_blank" rel="noopener noreferrer">Retained reference archive</a><a :href="provenance.servedSources.hashes" target="_blank" rel="noopener noreferrer">Source hashes</a><a v-for="source in servedSourceLinks" :key="source.url" :href="source.url" target="_blank" rel="noopener noreferrer">{{ source.name }}</a></nav>
             <details v-if="provenanceFetch.metadata"><summary>Source metadata</summary><pre tabindex="0">{{ detailText(provenanceFetch.metadata) }}</pre></details>
           </details>
           <p class="privacy-note">Results stay in this page. Download the report before closing or reloading.</p>

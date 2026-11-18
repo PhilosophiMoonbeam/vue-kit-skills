@@ -14815,12 +14815,14 @@
     "references/openvue-data.md",
     "references/openvue-overlays.md",
     "references/openvue-navigation.md",
-    "references/openvue-components.md"
+    "references/openvue-components.md",
+    "references/tresjs-webgpu.md",
+    "references/tresjs-post-processing.md"
   ],
   "counts": {
     "sources": 459,
     "roots": 47,
     "historical_references": 38,
-    "active_references": 48
+    "active_references": 50
   }
 }

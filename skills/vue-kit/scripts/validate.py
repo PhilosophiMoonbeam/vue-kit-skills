@@ -63,11 +63,7 @@ OPENVUE_INPUT_FINGERPRINT = '0545c91984a36770067d15a862975eccd58c5a712ce89204ca1
 # Original current-audit population only; not source truth or execution authentication.
 CURRENT_AUDIT_ORIGINAL_POPULATION = '0c334b90bdbbcdd1a2195f56114c28569d53c935e3cdf0a3c50e049073bf2eb7'
 
-# Current additions are reviewed separately from the immutable 38-reference
-# native population. Declaring a new file here requires its own extension review.
-CURRENT_REFERENCE_EXTENSIONS = (
-    'references/nuxt.md',
-    'references/nuxt-integrations.md',
+OPENVUE_REFERENCE_EXTENSIONS = (
     'references/openvue.md',
     'references/openvue-setup.md',
     'references/openvue-theming.md',
@@ -76,6 +72,16 @@ CURRENT_REFERENCE_EXTENSIONS = (
     'references/openvue-overlays.md',
     'references/openvue-navigation.md',
     'references/openvue-components.md',
+)
+
+# Current additions are reviewed separately from the immutable 38-reference
+# native population. Declaring a new file here requires its own extension review.
+CURRENT_REFERENCE_EXTENSIONS = (
+    'references/nuxt.md',
+    'references/nuxt-integrations.md',
+    *OPENVUE_REFERENCE_EXTENSIONS,
+    'references/tresjs-webgpu.md',
+    'references/tresjs-post-processing.md',
 )
 HISTORICAL_REFERENCE_COUNT = 38
 ACTIVE_REFERENCE_COUNT = HISTORICAL_REFERENCE_COUNT + len(CURRENT_REFERENCE_EXTENSIONS)
@@ -600,8 +606,9 @@ class Validator:
                 elif path not in self.indexed:
                     self.error(manifest_path, f'{identity}: mapped reference is not indexed: {reference}')
         extensions = manifest.get('extensions')
-        if not isinstance(extensions, list) or len(extensions) != 2:
-            self.error(manifest_path, 'extensions must describe the two newly authored contracts')
+        expected_extension_ids = {'openvue', 'application-session-contract', 'tresjs-current-releases'}
+        if not isinstance(extensions, list) or len(extensions) != len(expected_extension_ids):
+            self.error(manifest_path, 'extensions must match the required source extension count')
             extensions = []
         extension_ids = set()
         for extension in extensions:
@@ -627,8 +634,8 @@ class Validator:
                     self.error(manifest_path, 'extension reference must be packaged and indexed')
                 else:
                     registered.add(target)
-        if extension_ids != {'openvue', 'application-session-contract'}:
-            self.error(manifest_path, 'required local-library and application-session extensions are missing')
+        if extension_ids != expected_extension_ids:
+            self.error(manifest_path, 'source extension identities must match the required inventory')
         history = manifest.get('history')
         if not isinstance(history, dict) or history.get('commit') != HISTORY_COMMIT:
             self.error(manifest_path, 'history must identify the immutable pre-cutover snapshot')
@@ -1072,7 +1079,7 @@ class Validator:
         if not isinstance(rows, list):
             self.error(path, 'OpenVue documents must be an array')
             return
-        owners = set(CURRENT_REFERENCE_EXTENSIONS[2:])
+        owners = set(OPENVUE_REFERENCE_EXTENSIONS)
         active = {self.display(reference) for reference in self.references}
         native, kinds, represented = {}, Counter(), set()
         source_metadata, dispositions, references = {}, Counter(), Counter()
@@ -1576,12 +1583,12 @@ class Validator:
         required = {
             'dependencies': {
                 **BASELINE, 'pinia': '3.0.4', 'vue-router': '4.6.4',
-                '@tresjs/core': '5.9.3', 'three': '0.186.1',
+                '@tresjs/core': '5.12.0', 'three': '0.187.0',
             },
             'devDependencies': {
                 '@vitejs/plugin-vue': '6.0.10', 'vite': '8.3.4',
                 'typescript': '5.9.3', 'vue-tsc': '3.3.13',
-                '@types/node': '24.19.2', '@types/three': '0.186.0',
+                '@types/node': '24.19.2', '@types/three': '0.187.0',
             },
         }
         for group, versions in required.items():

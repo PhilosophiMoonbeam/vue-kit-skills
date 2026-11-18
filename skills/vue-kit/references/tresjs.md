@@ -2,32 +2,34 @@
 
 Read for declarative 3D scenes, cameras/lights, render loops, asset loading, resource ownership, or WebGL/SSR failures. TresJS is a Vue custom renderer for Three.js, not an HTML UI kit. Keep accessible controls, descriptions, and errors in ordinary DOM outside the scene. See [accessibility.md](accessibility.md), [motion.md](motion.md), and [debugging-ssr.md](debugging-ssr.md).
 
+For a new compatible scene, start with the [WebGPU and Cientos guide](tresjs-webgpu.md). Choose [post-processing](tresjs-post-processing.md) by renderer entry. For Nuxt-owned setup, use the [Nuxt module](nuxt-integrations.md#optional-tresjs-module). Keep the root WebGLRenderer pipeline when required by an incumbent material, shader, effect, or dependency.
+
 ## Released package map
 
-The review captured **260 GitHub releases** across package-scoped and older unscoped tags, then checked the eight current package versions against npm's published `latest` manifests on **2026-10-26**. Historical/prerelease tags explain migration boundaries; they are not installation recommendations. A package's dependency-only release is not proof of a new rendering feature. [Official releases](https://github.com/tresjs/tres/releases), [paginated release API](https://api.github.com/repos/tresjs/tres/releases?per_page=100).
+Stable profile as of **2026-11-18**, with each package version selected independently. The links point to the exact published manifests; [release history](https://github.com/tresjs/tres/releases) includes prereleases and dependency-only updates, not just feature releases.
 
 | Package | Published profile | Choose it for |
 | --- | --- | --- |
-| `@tresjs/core` | **5.10.0** | Vue scene renderer, WebGPU/root entries, catalogue, context, loops, events and loaders |
-| `@tresjs/cientos` | **5.10.0** | Pipeline-qualified controls, model/texture helpers, staging, batching and picking helpers |
-| `@tresjs/nuxt` | **5.8.0** | Nuxt-owned auto-imports, client canvas and renderer entry selection; [Nuxt integration](nuxt-integrations.md#optional-tresjs-module-nuxt-4-and-the-580-release) |
-| `@tresjs/post-processing` | **3.11.0** | Legacy **WebGLRenderer** composer integrations; not WebGPURenderer's WebGL2 backend |
-| `@tresjs/rapier` | **1.2.0** | WASM physics world, bodies, colliders, sensors and step hooks, with the declaration/teardown limits below |
-| `@tresjs/leches` | **1.3.2** | Optional reactive development-control panel; not a production accessibility certification |
-| `@tresjs/cli` | **0.1.1** | Local glTF-to-Vue generation and optional model transformation |
-| `@tresjs/eslint-config` | **1.7.0** | Optional lint policy composed with the host's accepted flat config |
+| `@tresjs/core` | [**5.12.0**](https://registry.npmjs.org/@tresjs/core/5.12.0) | [Choose the canvas and renderer entry](tresjs-webgpu.md): `/webgpu` for WebGPURenderer, root for explicit WebGLRenderer compatibility |
+| `@tresjs/cientos` | [**5.12.0**](https://registry.npmjs.org/@tresjs/cientos/5.12.0) | [Choose helpers by pipeline](tresjs-webgpu.md): controls, assets, staging, batching, and picking |
+| `@tresjs/nuxt` | [**5.10.0**](https://registry.npmjs.org/@tresjs/nuxt/5.10.0) | [Configure the optional Nuxt module](nuxt-integrations.md#optional-tresjs-module): auto-imports, client canvas, and renderer entry selection |
+| `@tresjs/post-processing` | [**3.13.0**](https://registry.npmjs.org/@tresjs/post-processing/3.13.0) | [Choose an effect pipeline](tresjs-post-processing.md): `/webgpu` node effects or root WebGLRenderer composers |
+| `@tresjs/rapier` | [**1.4.0**](https://registry.npmjs.org/@tresjs/rapier/1.4.0) | [Add Rapier physics](#rapier-asynchronous-wasm-world-explicit-collider-contracts): WASM world, bodies, colliders, sensors, and step hooks |
+| `@tresjs/leches` | [**1.3.3**](https://registry.npmjs.org/@tresjs/leches/1.3.3) | [Add Leches DOM controls](#leches-reactive-dom-controls-not-a-tres-scene-component): optional reactive development panel |
+| `@tresjs/cli` | [**0.1.1**](https://registry.npmjs.org/@tresjs/cli/0.1.1) | [Generate Vue SFCs from glTF](#cli-setup-and-its-actual-command-surface): local generation and optional model transformation |
+| `@tresjs/eslint-config` | [**1.7.0**](https://registry.npmjs.org/@tresjs/eslint-config/1.7.0) | [Compose ESLint policy](#eslint-exports-engine-limits-and-incumbent-config-integration): opt in without replacing the host's accepted flat config |
 
-Do not install every package for a simple scene or infer matching version numbers across packages. The pinned **5.9.3** workbench/lab remains a separate tested consumer; the newer profiles below do not silently migrate it or inherit its native-device receipts.
+Install only what the scene needs. The runnable [workbench](#bundled-workbench-composition) and [repository lab](#evidence-and-proposed-verification) pin **Vue 3.5.44, Core 5.12.0, `three@0.187.0` and `@types/three@0.187.0`**. The standalone [TSL/Cientos](tresjs-webgpu.md), [Nuxt](nuxt-integrations.md#optional-tresjs-module), and [effects](tresjs-post-processing.md) examples keep their separate **Core 5.12.0 / `three@0.186.1` / `@types/three@0.186.0`** example pins. These are selected profiles, not minimums or evidence that the same features work on every backend.
 
 ## Exact version and rendering boundary
 
-**Two evidence tracks:** the existing recipes, bundled app and device receipts below remain pinned to **core 5.9.3 / Three 0.186.1**. Core and Cientos **5.10.0** were subsequently published on **2026-10-22**. Their new entry points and helpers are documented separately in [Published 5.10 entry points](#published-510-entry-points-not-a-baseline-upgrade); publication/source inspection is not execution of those versions and does not renew the archived hardware evidence.
+**Archive boundaries:** the compatibility, loader, and custom-renderer recipes below preserve the **Core 5.9.3 / Three 0.186.1** baseline. The former workbench/lab and its device receipts remain scoped to that version; the [October Core/Cientos 5.10 entry-point examples](#published-510-entry-points-not-a-baseline-upgrade) describe another archived source snapshot, not renewed hardware evidence for either current runnable consumer.
 
-Verified stable package releases: **`@tresjs/core@5.9.3`**, **`three@0.186.1`**, targeting Vue **3.5.44**. Core declares Vue peer `>=3.4`, Three peer `>=0.133`, and is ESM-only. A broad peer range does not guarantee every historical Three feature: examples deliberately use the specified modern pair. Install matching Three typings for the chosen Three release. **For new compatible scenes, prefer WebGPURenderer as the modern standard default posture**, using the [preferred renderer-factory recipe](#experimental-webgpu-and-custom-rendering). Tres's custom/WebGPU integration remains **experimental** on this pair; this recommendation is not an upstream stability or performance claim. [Core registry](https://registry.npmjs.org/@tresjs/core/5.9.3), [Three registry](https://registry.npmjs.org/three/0.186.1).
+The pinned **`@tresjs/core@5.9.3` / `three@0.186.1`** examples target **Vue 3.5.44** and **`@types/three@0.186.0`**. Core 5.9.3 is ESM-only and declares Vue peer `>=3.4` and Three peer `>=0.133`; those broad peer ranges do not establish support for each API used here. The historical custom-renderer integration remains experimental on this pair. [Core 5.9.3 manifest](https://registry.npmjs.org/@tresjs/core/5.9.3), [Three 0.186.1 manifest](https://registry.npmjs.org/three/0.186.1).
 
 The fallback contract requires the **whole scene**—materials, shaders, effects, dependencies and enabled features—to work on **both WebGPU and WebGPURenderer's built-in WebGL2 backend**. Backend selection stays within WebGPURenderer; it does not switch to WebGLRenderer. Choose **WebGLRenderer explicitly for compatibility** when the pipeline cannot use WebGPURenderer, such as unported GLSL `ShaderMaterial`/`RawShaderMaterial`, `onBeforeCompile`, legacy `EffectComposer` passes or renderer-specific dependencies. Its WebGL 2 requirement is not a WebGL 1 fallback. Preserve working incumbent pipelines during narrow work, and measure actual workloads rather than assuming WebGPU is always faster.
 
-For a Vite Vue host, merge Tres's compiler options with the existing Vue plugin; do not add a second Vue plugin or replace unrelated configuration. Complete minimal configuration, requiring `vite` and `@vitejs/plugin-vue` in the host:
+For the **5.9.3 recipes below**, merge Tres's compiler options with the Vite host's existing Vue plugin; do not add a second plugin or replace unrelated configuration. This complete minimal configuration requires `vite` and `@vitejs/plugin-vue` in the host:
 
 ```ts
 // vite.config.ts
@@ -40,7 +42,7 @@ export default defineConfig({
 })
 ```
 
-`@tresjs/core/template-compiler-options` is also exported for compiler-only consumers. Nuxt uses `@tresjs/nuxt`; do not paste Vite SPA bootstrapping into a Nuxt plugin. Version that module separately before adopting it. [Official installation](https://docs.tresjs.org/getting-started/installation), [pinned package exports](https://unpkg.com/@tresjs/core@5.9.3/package.json).
+`@tresjs/core/template-compiler-options` is also exported for compiler-only consumers. For current compiler setup, see the [focused WebGPU guide](tresjs-webgpu.md). Nuxt uses [its own module](nuxt-integrations.md#optional-tresjs-module); do not paste Vite SPA bootstrapping into a Nuxt plugin. [Official installation](https://docs.tresjs.org/getting-started/installation), [pinned package exports](https://unpkg.com/@tresjs/core@5.9.3/package.json).
 
 ## Scene ownership and API model
 
@@ -59,7 +61,7 @@ Declare a camera and its aim intentionally. The first registered camera is norma
 
 ## Complete WebGLRenderer compatibility example: client boundary, controls, and animated scene
 
-For a pipeline that explicitly requires **WebGLRenderer compatibility**, install `@tresjs/core@5.9.3 three@0.186.1` plus matching Three typings and use the Vite configuration above. New compatible scenes should instead use the [preferred WebGPURenderer factory recipe](#experimental-webgpu-and-custom-rendering), including its host adaptation. These three SFCs remain a complete focused compatibility example. `SceneHost.vue` is the ordinary DOM entry, `SceneCanvas.vue` owns controls/canvas, and `SpinningCube.vue` consumes the canvas context. Animation is opt-in, disabled under reduced-motion preference, and uses an on-demand renderer while stopped.
+This archived example shows an explicit **WebGLRenderer compatibility** pipeline on `@tresjs/core@5.9.3`, `three@0.186.1`, and `@types/three@0.186.0`, using the Vite configuration above. For a new compatible scene, start with the [current WebGPU guide](tresjs-webgpu.md). The three SFCs remain a complete focused example: `SceneHost.vue` is the DOM entry, `SceneCanvas.vue` owns controls and canvas, and `SpinningCube.vue` consumes the canvas context. Animation is opt-in, disabled under reduced-motion preference, and uses on-demand rendering while stopped.
 
 ```vue
 <!-- SceneHost.vue -->
@@ -318,11 +320,11 @@ The subtree opt-out affects renderer removal, **not** `useLoader`'s separate glT
 
 Bound DPR and FPS according to measured quality needs. Reuse geometry/materials, use instancing for repeated meshes, reduce draw calls and expensive shadows, and avoid per-frame allocation of vectors/materials/arrays. Do not turn ordinary constructor changes into an animation strategy. Renderer-creation props such as `antialias`, `alpha`, and WebGL context settings are mount-time decisions; changing them requires a deliberate renderer remount, not an assumed live patch.
 
-Size the canvas's **parent** explicitly; window-sized mode is a different layout choice. A zero-height parent is not a Three camera bug. Tres observes size and updates camera aspect; do not install an unrelated competing resize loop. Handle context loss and recovery deliberately: stop dependent work, retain an informative DOM alternative, and recreate/reload only resources whose owner requires it. The preferred WebGPURenderer path uses a supplied renderer and its own backend selection; WebGLRenderer compatibility is an explicit pipeline choice, not an automatic fallback after failure.
+Size the canvas's **parent** explicitly; window-sized mode is a different layout choice. A zero-height parent is not a Three camera bug. Tres observes size and updates camera aspect; do not install an unrelated competing resize loop. Handle context loss and recovery deliberately: stop dependent work, retain an informative DOM alternative, and recreate/reload only resources whose owner requires it. WebGPURenderer selects its own backend; explicit WebGLRenderer compatibility is a separate pipeline choice, not a fallback after failure.
 
 ## Experimental WebGPU and custom rendering
 
-**Preferred factory recipe for new compatible scenes.** WebGPURenderer is the modern default posture here, while the pinned Tres integration remains experimental. Claim WebGL2 fallback only when every scene material, effect, dependency and feature supports both of this renderer's backends. The unlit Basic-material baseline below is deliberately bounded, not a PBR/postprocessing certification or evidence that WebGPU is always faster.
+**Archived factory recipe for Core 5.9.3.** Use the [current dedicated entry](tresjs-webgpu.md) for new compatible scenes. Claim WebGL2 fallback only when every scene material, effect, dependency, and feature supports both WebGPURenderer backends. The unlit Basic-material baseline below is deliberately bounded, not a PBR or post-processing certification or evidence that WebGPU is always faster.
 
 For **core 5.9.3 / Three 0.186.1**, the `renderer` prop is a synchronous factory `(ctx: TresRendererSetupContext) => TresRenderer`, not a ready-made instance or Promise. Tres owns initialization of the returned renderer. This complete alternative `SceneCanvas.vue` reuses the earlier client host's async import, error listeners, preparation text, and DOM description (do not also mount the WebGL cube scene). **For this variant only**, replace that host's WebGL 2 probing `onMounted` callback with `onMounted(() => { ready.value = true })`: the selected renderer, not a mandatory WebGL probe, must decide WebGPU/backend availability. Keep `onErrorCaptured` for synchronous constructor failures and the forwarded `@error` for rejected renderer initialization. [Pinned backend selection](https://unpkg.com/three@0.186.1/src/renderers/webgpu/WebGPURenderer.js), [Tres construction and initialization](https://unpkg.com/@tresjs/core@5.9.3/dist/tres.js).
 
@@ -445,11 +447,11 @@ The same historical register records controlled runs that **deliberately denied 
 
 ## Published 5.10 entry points: not a baseline upgrade
 
-This section targets **`@tresjs/core@5.10.0`, `@tresjs/cientos@5.10.0`, `three@0.186.1`, `@types/three@0.186.0`, Vue `3.5.44`**. Core's peer remains Vue `>=3.4`, but Cientos requires **Vue `>=3.5.17`** and core `^5.9.1`; satisfy the stricter combined requirement. Do not infer that the broad Three peer `>=0.133` supplies modern node APIs. Pin a modern Three/typings pair explicitly. These are source-backed recipes, not claimed browser runs or a dependency migration of the bundled workbench. [Core manifest](https://unpkg.com/@tresjs/core@5.10.0/package.json), [Cientos manifest](https://unpkg.com/@tresjs/cientos@5.10.0/package.json), [5.10 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/core%405.10.0).
+**Archived October profile.** These source-backed examples target **`@tresjs/core@5.10.0`, `@tresjs/cientos@5.10.0`, `three@0.186.1`, `@types/three@0.186.0`, Vue `3.5.44`**. In this pair Core requires Vue `>=3.4`, while Cientos requires **Vue `>=3.5.17`** and Core `^5.9.1`. The broad Three peer `>=0.133` does not establish support for modern node APIs. This snapshot is neither a browser receipt nor a dependency migration. For new work, follow the [current WebGPU guide](tresjs-webgpu.md). [Archived Core manifest](https://unpkg.com/@tresjs/core@5.10.0/package.json), [archived Cientos manifest](https://unpkg.com/@tresjs/cientos@5.10.0/package.json), [Core 5.10.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/core%405.10.0).
 
 ### Entry selection, catalogue and types
 
-| Import boundary | Published 5.10 behavior |
+| Import boundary | Archived 5.10 behavior |
 | --- | --- |
 | `@tresjs/core/webgpu` | `TresCanvas` and `TresCanvasContext` create **WebGPURenderer by default**; no user factory is needed for ordinary setup. A supplied factory must synchronously return `WebGPURenderer`, not a Promise or WebGLRenderer. Tres initializes it. |
 | `useTres` from `@tresjs/core/webgpu` | Returns the renderer typed as `WebGPURenderer`. Use it only under that entry's canvas; it is a type promise about the owner, not a runtime renderer conversion. |
@@ -641,7 +643,7 @@ This recipe has no autonomous animation and deliberately disables controls dampi
 
 ## Cientos 5.10: choose helpers by pipeline and lifetime
 
-Cientos is optional, separately versioned convenience code, not automatically installed/registered by core. Use **`@tresjs/cientos/webgpu` with the WebGPU canvas** and **`@tresjs/cientos` with an explicit legacy WebGLRenderer pipeline**. The `/webgpu` entry deliberately does not export the entire root package. Its shared helpers internally consume the shared core context; seeing a root-core import inside the published bundle is not itself proof of an incompatible helper.
+**Archived Cientos 5.10.0 snapshot.** See the [current helper guide](tresjs-webgpu.md) for new work. Cientos is optional, separately versioned convenience code, not automatically installed by Core. In this snapshot use **`@tresjs/cientos/webgpu` with the WebGPU canvas** and **`@tresjs/cientos` with an explicit WebGLRenderer pipeline**. The `/webgpu` entry does not export the entire root package. Shared helpers internally consume the shared Core context; a root-Core import inside the bundle is not itself proof of an incompatible helper.
 
 ### Controls and scene composition
 
@@ -762,17 +764,17 @@ Primary history: [all releases](https://github.com/Tresjs/tres/releases), [core 
 
 ## Released ecosystem: post-processing 3.11.0, Rapier 1.2.0, Leches 1.3.2
 
-These are **separately version-qualified recipes**, not permission to upgrade a pinned application or replace its existing core 5.9.3 / Three 0.186.1 device receipts. The release inventory contains 43 releases for these three packages; the useful changes and dependency-only trains are distilled below. Published declarations and JavaScript were examined, including differences from the documentation. Examples need no models, texture CDN, API key, or external service.
+**Archived October recipes.** The dependency table and code below preserve the exact 3.11.0 / 1.2.0 / 1.3.2 fixture profile, separate from the archived 5.9.3 workbench and device receipts. For new effects use the [current effects guide](tresjs-post-processing.md); the Rapier and Leches sections open with current package guidance before their archived examples. The archived fixtures need no models, texture CDN, API key, or external service.
 
 ### Dependency and renderer boundary
 
-| Exact package | Published peers | Published runtime dependencies | Renderer boundary |
+| Exact archived package | Published peers | Published runtime dependencies | Renderer boundary at that version |
 | --- | --- | --- | --- |
 | `@tresjs/post-processing@3.11.0` | `@tresjs/core ^5.9.1`, `three >=0.169`, `vue >=3.4` | `postprocessing ^6.39.5`, `n8ao ^2.0.1`, `@vueuse/core ^15.0.0` | Both composer families require **legacy `WebGLRenderer`**. Not compatible with `WebGPURenderer`, including its WebGL2 backend. |
 | `@tresjs/rapier@1.2.0` | `@tresjs/core ^5.3.2`, `three >=0.169`, `vue >=3.4.0` | `@dimforge/rapier3d-compat ^0.20.0`, `@vueuse/core ^15.0.0` | CPU/WASM physics is renderer-independent. Every visual, material, helper, and effect in the scene must still support the chosen renderer. |
-| `@tresjs/leches@1.3.2` | `vue >=3.3.4` | `@unocss/core ^66.9.2`, `@vueuse/motion ^3.0.3`, `@vueuse/components ^15.0.0`, `unocss-preset-scrollbar ^4.0.0` | Vue **DOM** UI; no Three/core peer and no renderer requirement. Place outside the Tres scene graph. Published JS also imports `@vueuse/core`; this is not declared directly in this manifest. |
+| `@tresjs/leches@1.3.2` | `vue >=3.3.4` | `@unocss/core ^66.9.2`, `@vueuse/motion ^3.0.3`, `@vueuse/components ^15.0.0`, `unocss-preset-scrollbar ^4.0.0` | Vue **DOM** UI; no Three/Core peer and no renderer requirement. Place outside the Tres scene graph. Published JS also imports `@vueuse/core`, which the manifest does not declare as a runtime dependency. |
 
-For a **new isolated fixture**, rather than the bundled baseline:
+To reproduce the **archived isolated fixture**, not as a new-project install:
 
 ```sh
 pnpm add --save-exact vue@3.5.44 three@0.186.1 @tresjs/core@5.10.0 \
@@ -785,12 +787,12 @@ Primary manifests: [post-processing 3.11.0](https://registry.npmjs.org/@tresjs/p
 
 ### Post-processing: choose one complete rendering pipeline
 
-There are two distinct Vue component families, with different injection keys. They are not interchangeable:
+**Archived 3.11.0 composer recipes.** The two root Vue component families use different injection keys and are not interchangeable. For 3.13.0, including its separate `/webgpu` entry, see the [current effects guide](tresjs-post-processing.md).
 
 - **Three addons**: `EffectComposer` with `UnrealBloom`, `N8AO`, `Output`, `SMAA`, `Pixelation`, `Glitch`, or `Halftone`. The composer inserts a `RenderPass` unless `without-render-pass` is set. `render-target` accepts an externally created render target; establish its ownership explicitly.
 - **pmndrs**: `EffectComposerPmndrs` with suffixed components such as `BloomPmndrs`, `N8AOPmndrs`, `DepthOfFieldPmndrs`, `OutlinePmndrs`, `FXAAPmndrs`, `ToneMappingPmndrs`, or `VignettePmndrs`. It inserts its own render pass. Each effect component creates an `EffectPass`; do not assume adjacent Vue effects are automatically fused into a single pass. Controls include `multisampling` (default `0`), `frame-buffer-type` (default half float), `depth-buffer`, `stencil-buffer`, `disable-normal-pass`, `resolution-scale`, and `auto-clear`. `@render` receives the composer, not a DOM event.
 
-Both implementations directly construct WebGL composers and install a replacement Tres render function. Neither checks or adapts a `WebGPURenderer`. A fallback backend inside `WebGPURenderer` **does not turn it into `WebGLRenderer`**. This package is therefore an explicit incompatible-pipeline choice under a WebGPURenderer-first policy, not a reusable effect layer for both backends.
+Both **3.11.0 root families** directly construct WebGL composers and install a replacement Tres render function. Neither adapts a `WebGPURenderer`, including when that renderer uses its WebGL2 fallback. The following WebGL fixture is separate from the application-owned node pipeline further below; do not mount both under one canvas.
 
 **Minimal legacy WebGL N8AO + bloom fixture** (`App.vue`, Vue SFC compiler configured for Tres tags):
 
@@ -843,7 +845,7 @@ Import all three names from `@tresjs/post-processing`; retain the same explicit 
 
 **Loop and lifetime:** one composer owns the canvas render callback. Do not run a second RAF, call `renderer.render()` after the composer, or mount two composers in the same canvas. The package removes effect passes and disposes composers/effects on unmount, but its composer unmount handlers do **not restore the previous render callback**. `enabled=false` merely stops its replacement callback from drawing; it does not fall back to normal scene rendering. Mount/unmount the whole canvas as a rendering session, or explicitly restore the desired rendering function when changing pipelines. Camera/composer replacement deserves a smoke receipt: general effect helpers initialize once, unlike the N8AO helper's explicit recreation watcher. Resizing must include actual nonzero canvas dimensions. Animated effects still need an advancing render loop; an isolated prop invalidation does not create continuous on-demand animation.
 
-**WebGPURenderer alternative, not interoperability.** Use Three's node pipeline instead of importing either WebGL composer. In Three **0.186.1**, `PostProcessing` is a deprecated alias (since r183) for **`RenderPipeline`**. Older recipes naming `PostProcessing` describe the same node-pipeline direction, not `@tresjs/post-processing` support. The source-backed bloom core is:
+**Archived application-owned WebGPURenderer alternative.** This example uses Three's node pipeline instead of either 3.11.0 WebGL composer. In Three **0.186.1**, `PostProcessing` is a deprecated alias (since r183) for **`RenderPipeline`**. This app-owned pipeline predates the [current package's `/webgpu` composer](tresjs-post-processing.md); do not install both as owners of one canvas. The source-backed bloom core is:
 
 ```ts
 import { RenderPipeline } from 'three/webgpu'
@@ -928,11 +930,15 @@ Sources: [published declarations](https://unpkg.com/@tresjs/post-processing@3.11
 
 ### Rapier: asynchronous WASM world, explicit collider contracts
 
-The public provider component in **1.2.0 is `Physics`**, not `PhysicsWorld`. “Physics world” means its underlying Rapier `World`. `Physics` performs an async dynamic import of `@dimforge/rapier3d-compat`, awaits `RAPIER.init()`, then creates a world. Put it in Vue `Suspense` **inside** the Tres canvas, and keep loading/error DOM outside the 3D scene. Handle initialization rejection at an ancestor error boundary; a Suspense fallback is not an error handler. Use a client rendering session in SSR/Nuxt.
+**Current `@tresjs/rapier@1.4.0`.** For a compatible host, install with `bun add --exact @tresjs/rapier@1.4.0`. The [1.4.0 manifest](https://registry.npmjs.org/@tresjs/rapier/1.4.0) declares Core `^5.3.2`, Three `>=0.169`, and Vue `>=3.4.0` as peers, and `@dimforge/rapier3d-compat ^0.20.0` and `@vueuse/core ^15.0.0` as dependencies. It exposes the root entry, not `/webgpu`. CPU/WASM physics is independent of renderer choice; the scene's visuals still need renderer qualification.
+
+The public provider is **`Physics`**, not `PhysicsWorld`. Mount it in `Suspense` **inside** the canvas, call `useRapier()` below the initialized provider, and keep loading/error DOM outside the scene. The provider imports and initializes Rapier WASM asynchronously; handle rejection at an ancestor error boundary, not in the Suspense fallback. Use a client rendering session in SSR/Nuxt.
+
+Releases [1.2.1](https://github.com/Tresjs/tres/releases/tag/%40tresjs/rapier%401.2.1), [1.3.0](https://github.com/Tresjs/tres/releases/tag/%40tresjs/rapier%401.3.0), and [1.4.0](https://github.com/Tresjs/tres/releases/tag/%40tresjs/rapier%401.4.0) record Core updates to 5.10.1, 5.11.0, and 5.12.0 respectively, not new physics APIs or a higher peer floor. The published JS and declarations match 1.2.0 apart from their version banners. The archived fixture's limits still apply: `RigidBodyProps` omits `position` and `RigidBody`/`CuboidCollider` have empty emits declarations, so keep explicit typed application adapters. Initial solver placement reads the body's root **local** position/quaternion, not a parent transform. Event dispatch is asymmetric; do not promise mirrored events or stable source/target order. `useRapier().step()` bypasses the provider's EventQueue and drain. The provider frees neither its `World` nor its private `EventQueue` on teardown; child unregister is not proof of leak-free remounts, and children must not free the provider's world. [Release comparison](https://github.com/Tresjs/tres/compare/%40tresjs/rapier%401.2.0...%40tresjs/rapier%401.4.0), [1.4.0 declarations](https://unpkg.com/@tresjs/rapier@1.4.0/dist/tresrapier.d.ts), [published JS](https://unpkg.com/@tresjs/rapier@1.4.0/dist/tresrapier.js), [tagged provider](https://github.com/Tresjs/tres/blob/%40tresjs/rapier%401.4.0/packages/rapier/src/components/Physics.vue). This is source parity, not a new consumer receipt.
 
 `useRapier()` / `useRapierContext()` must execute in a **descendant of an initialized `Physics`**; they throw without a ready provider. They expose refs `rapier`, `world`, `isPaused`, `isDebug`, `timeStep`, `timeScale`, plus `onBeforeStep`, `step`, `init`, and `setWorld`. Do not call `init()` again from every body, or replace the world while bodies/joints still belong to the old one. `Physics` also exposes this context through a component ref.
 
-**Fixture layout:** an outer component owns the canvas and async provider; a child owns bodies/controllers. This example uses only ordinary geometry/materials so the **same bodies and visuals** can be exercised on both WebGPURenderer backend paths. Do not add WebGL-only effects to the fallback run.
+**Archived 1.2.0 fixture layout:** an outer component owns the canvas and async provider; a child owns bodies and controllers. The fixture uses ordinary geometry/materials so the same bodies and visuals can be exercised on both WebGPURenderer backends. Do not add WebGL-only effects to the fallback run.
 
 `App.vue`:
 
@@ -1098,11 +1104,22 @@ Sources: [published declarations](https://unpkg.com/@tresjs/rapier@1.2.0/dist/tr
 
 ### Leches: reactive DOM controls, not a Tres scene component
 
-The public entry exports **`TresLeches`, `useControls`, `useControlsProvider`**. Call the composable during Vue setup. `useControls({...})` registers controls in a shared UUID store and returns the **value refs themselves**. Read `size.value` in script and `size` in a template; do not copy a nonreactive primitive and do not add a second `.value` based on an outdated documentation example. Passing an existing Vue ref (or a config's `value: ref`) binds that same ref. A plain initial value becomes a new ref; a plain variable supplied once is not magically kept in sync.
+**Current `@tresjs/leches@1.3.3`.** Mount the development panel in ordinary DOM, not in the Tres scene. It needs Vue `>=3.3.4`, not Three or Core. Omit `@tresjs/leches/styles`: the manifest exports that path, but the published package has no CSS file there. The root JS injects CSS and imports `@vueuse/core`, which Leches lists only as a development dependency. Install `@vueuse/core@^15.0.0` directly in the consuming app; do not rely on hoisting or another Tres package. [1.3.3 manifest](https://registry.npmjs.org/@tresjs/leches/1.3.3), [package inventory](https://unpkg.com/@tresjs/leches@1.3.3/?meta), [published JS](https://unpkg.com/@tresjs/leches@1.3.3/dist/tresleches.js).
+
+```sh
+bun add --exact @tresjs/leches@1.3.3
+bun add '@vueuse/core@^15.0.0'
+```
+
+In setup, import `{ TresLeches, useControls }` from `@tresjs/leches` and register `const { size } = useControls({ size: 1 }, { uuid: 'scene-controls' })`. Render `<TresLeches uuid="scene-controls" :float="false" />` beside the canvas; read `size.value` in script. The root exports only `TresLeches`, `useControls`, and `useControlsProvider`, not the internal `dispose`.
+
+In **1.3.3**, a collapsed floating panel keeps computed dimensions of **36 × 36 px**, including on viewport resize; reopening restores expanded dimensions. `useResizeObserver` tracks slot height, including child margins via the `flow-root` wrapper. Recalculation uses that measured height as the slot or controls change, subject to viewport and max-height limits. These are source-confirmed changes, not new animation or layout receipts. [1.3.3 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/leches%401.3.3), [tagged panel](https://github.com/Tresjs/tres/blob/%40tresjs/leches%401.3.3/packages/leches/src/components/TresLeches.vue).
+
+`useControls({...})` registers controls in a shared UUID store and returns the **value refs themselves**. Use `size` in a template; do not copy a nonreactive primitive or add a second `.value` based on an outdated example. Passing an existing Vue ref (or a config's `value: ref`) binds that same ref. A plain initial value becomes a new ref; a plain variable supplied once is not kept in sync.
 
 **CSS packaging trap in 1.3.2:** the official guide documents `import '@tresjs/leches/styles'`, and the manifest exports it to `dist/tresleches.css`, but the exact published tarball contains **no such CSS file**. Its `dist/tresleches.js` injects the stylesheet in a guarded `document.createElement('style')` at module evaluation. Therefore the executable **1.3.2 fixture below deliberately does not import `/styles`**; adding that guide import is a resolver-negative fixture, not required setup. Do not invent a local empty stylesheet or claim that failed import is a working recipe. If CSP disallows inline styles, account for this injection and nonce/style policy explicitly; simply deleting the CSS import does not solve CSP.
 
-**Minimal scene + DOM controls fixture** (`App.vue`):
+**Archived 1.3.2 scene and DOM controls fixture** (`App.vue`):
 
 ```vue
 <script setup lang="ts">
@@ -1156,7 +1173,7 @@ Sources: [official getting started (compare CSS guidance to tarball)](https://tr
 
 ### Source-backed smoke acceptance (recipes, not execution receipts)
 
-Use a disposable Vue/Vite host with `@vitejs/plugin-vue` and Tres's `templateCompilerOptions` in `vue({ template: templateCompilerOptions })`; resolve it from `@tresjs/core`. Serve the chosen fixture with the host's local command, e.g. `pnpm exec vite --host 127.0.0.1 --port 4191`. Do not run these installs/checks against the bundled pinned application. The examples above are fixture code, **not claimed successful browser runs**.
+To reproduce the **archived ecosystem profile above**, use a disposable Vue/Vite host with `@vitejs/plugin-vue` and Tres's `templateCompilerOptions` in `vue({ template: templateCompilerOptions })`; resolve it from `@tresjs/core`. Serve the selected fixture with the host's local command, e.g. `pnpm exec vite --host 127.0.0.1 --port 4191`. Do not run these installs/checks against the bundled pinned app. These examples are not claimed successful browser runs or results for the November packages.
 
 1. **Legacy composer:** run the exact WebGL SFC. Wait for lazy N8AO `pass` readiness. Assert exactly one N8AO scene-rendering pass, no extra `RenderPass` with `without-render-pass`, visible contact AO/bloom, nonzero resize behavior and no duplicate-render warning. Test the pmndrs subtree separately with its own imports/injection family. Change AO intensity and confirm its pass configuration changes; confirm `BloomPmndrs.radius` with mipmap blur. Negative cases: deliberate WebGPURenderer use must be classified incompatible; `enabled=false` is not accepted as bypass-to-normal-render behavior.
 2. **Node pipeline:** wrap the provided RenderPipeline core in a child using `useTresContext` and `renderer.replaceRenderFunction(notify => { pipeline.render(); notify() })`, with scene/camera ready and the callback installed once per session. Use the same scene and compatible materials for WebGPU and forced-WebGL2 WebGPURenderer runs; record actual backend separately from the `isWebGPU` renderer-class flag. Confirm both produce a scene plus bloom, resize and session cleanup. Do not include any legacy composer components in this fixture.
@@ -1165,7 +1182,7 @@ Use a disposable Vue/Vite host with `@vitejs/plugin-vue` and Tres's `templateCom
 
 ## Released tooling: CLI 0.1.1 and ESLint config 1.7.0
 
-These are **optional local development tools**, not runtime plugins, renderer ports, hosted services or permission to migrate the bundled core 5.9.3/Three 0.186.1 app. Pin the tool version and keep the host lockfile/package-manager convention. Their latest release notes are easy to overread: CLI **0.1.1** only updates its development ESLint-config dependency; the substantive generator features shipped in **0.1.0**. ESLint-config **1.7.0**, **1.6.0**, **1.5.1** and **1.5.0** explicitly report version alignment with no code changes. A larger version number is not a new renderer-safety rule. [CLI 0.1.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.0), [CLI 0.1.1 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.1), [ESLint 1.7.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/eslint-config%401.7.0).
+These are **optional local development tools**, not runtime plugins, renderer ports, hosted services, or a reason to change a host's runtime dependencies. Pin the tool version and keep the host lockfile/package-manager convention. Their latest release notes are easy to overread: CLI **0.1.1** only updates its development ESLint-config dependency; the substantive generator features shipped in **0.1.0**. ESLint-config **1.7.0**, **1.6.0**, **1.5.1** and **1.5.0** explicitly report version alignment with no code changes. A larger version number is not a new renderer-safety rule. [CLI 0.1.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.0), [CLI 0.1.1 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.1), [ESLint 1.7.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/eslint-config%401.7.0).
 
 ### CLI setup and its actual command surface
 
@@ -1203,7 +1220,9 @@ The transform pipeline is dedup → optional material palette → flatten → de
 
 ### Generated SFC contracts: consume, do not hand-edit
 
-A generated model imports **`useGLTF` from `@tresjs/cientos`**, Vue utilities and asset-specific Three types; animation output adds `useAnimations`. The emitted template references catalogue primitives; the host still needs the normal Tres compiler/catalogue setup. The generator has **no WebGPU import selection**: in a WebGPURenderer app, review the actual generated imports/materials/helpers and use the compatible `/webgpu` runtime contracts deliberately. Nuxt's `tres.renderer` only selects **auto-imports**; it cannot rewrite explicit root imports in generated code. Type imports from `three` are not themselves a legacy-renderer choice, but runtime GLSL materials/helpers are. A compiled SFC is not proof the entire asset renders on native WebGPU **and** WebGPURenderer's WebGL2 backend.
+A generated model imports **`useGLTF` from `@tresjs/cientos`**, Vue utilities and asset-specific Three types; animation output adds `useAnimations`. The batch provider imports `Merged` and `useGLTF` from the same root entry. Use Core/Cientos **5.12.0** with Vue **`>=3.5.17`** and the [current guide's Three pair and compiler setup](tresjs-webgpu.md) for a new consumer. The emitter has **no renderer-selection flag**. In a WebGPURenderer app, own any adaptation of generated imports/materials/helpers to compatible `/webgpu` contracts. Nuxt's `tres.renderer` selects **auto-imports**; it cannot rewrite these explicit imports. Type imports from `three` do not select a renderer; runtime GLSL materials and renderer-specific helpers can constrain the pipeline. [Cientos 5.12.0 manifest](https://registry.npmjs.org/@tresjs/cientos/5.12.0), [tagged model emitter](https://github.com/Tresjs/tres/blob/%40tresjs/cli%400.1.1/packages/cli/src/emit/sfc.ts), [tagged provider emitter](https://github.com/Tresjs/tres/blob/%40tresjs/cli%400.1.1/packages/cli/src/emit/instances.ts).
+
+The emitter produces a single `TresGroup` root but does not declare public transform props on the generated Vue component. A transform on `<Robot>` relies on Vue attribute fallthrough, not a typed generator API. For visual placement, put transforms on a native parent `TresGroup`:
 
 ```vue
 <script setup lang="ts">
@@ -1212,7 +1231,9 @@ import Robot from './models/Robot.gen.vue'
 
 <template>
   <!-- Inside an existing TresCanvas scene, not a second application/root canvas. -->
-  <Robot :position="[0, 0, 0]" />
+  <TresGroup :position="[3, 0, 0]">
+    <Robot />
+  </TresGroup>
 </template>
 ```
 
@@ -1222,11 +1243,15 @@ The generator does **not** expose loader `error` or `execute()` on its component
 
 Generated roots use **`:dispose="null"`** because geometries/materials are shared from the loaded graph. Removing the SFC is not a promise that every referenced GPU asset/cache entry was released. Define the cache owner, eviction point and final-user disposal policy; never dispose shared materials while another model still renders them. Animation mixers/actions and manual cloned objects have their own cleanup contract. Resource lifetime matters on navigation, account switch and repeated previews, not just initial render.
 
-`--instance` emits **`Robot.gen.vue` and `Robot.instances.gen.vue`**. The provider owns the load, `Merged` batches and typed injection context; render instances **inside** it, e.g. `<RobotInstances><Robot /><Robot :position="[3, 0, 0]" /></RobotInstances>`, importing each file explicitly from `models/`. A generated model outside the provider throws. Provider `limit` defaults to 100 as initial per-batch allocation, not a fixed population cap. Skinned meshes and morph-target meshes remain unbatched. A batched override slot receives the real **`batch`** key; use the compatible `Instance` helper with that key instead of a second full geometry draw. Retained unbatched primitives can have the documented shared-object/reparenting restrictions; inspect generator warnings before rendering multiple copies.
+`--instance` emits **`Robot.gen.vue` and `Robot.instances.gen.vue`**. The provider owns the load, `Merged` batches and typed injection context. Import both files explicitly and put model children **inside** `<RobotInstances>`; models outside it throw. Use a native parent `TresGroup` for root placement inside that provider, but this does not fix undeclared transforms inside generated batch files. Provider `limit` defaults to 100 as initial per-batch allocation, not a fixed population cap. Skinned meshes and morph-target meshes remain unbatched. A batched override slot receives the real **`batch`** key; use the compatible `Instance` helper with that key instead of a second full geometry draw. Retained unbatched primitives can have shared-object/reparenting restrictions; inspect generator warnings before rendering multiple copies.
 
 `--physics rapier` emits `RigidBody` imports only where authored suffixes produce valid bodies. `-col` means fixed/trimesh, `-colonly` adds hidden rendering, `-convcol` means fixed/convexHull, `-convcolonly` hides it, `-rigid` means dynamic/convexHull, `-rb-fixed`/`-rb-dynamic`/`-rb-kinematic`/`-rb-kinematicvelocity` choose body type; `-sensor` can generate a hidden fixed convex sensor. Optional shape suffixes include cuboid/ball/capsule/cone/cylinder/hull/trimesh. Names are case-insensitive and support `-`, `_`, `$` separators and common duplicate counters. A typo, group without geometry, nested bodies or transformed ancestors produces diagnostic warnings, not a repaired physics scene. The host owns **one `<Physics>` world** from `@tresjs/rapier`; generated bodies outside it do not simulate. Batched bodies use invisible geometry proxies for collider derivation, not duplicate visual draws. Evaluate the physics shape/body choice rather than inferring artist intent from a suffix.
 
+Install `@tresjs/rapier@1.4.0` explicitly for a new physics consumer. The [tagged physics emitter](https://github.com/Tresjs/tres/blob/%40tresjs/cli%400.1.1/packages/cli/src/emit/physics.ts) uses its root import, moves position and rotation to the body, and keeps scale on the mesh. The host owns asset serving, the provider, and cleanup. Use [Rapier's body placement contract](#rapier-asynchronous-wasm-world-explicit-collider-contracts), not the visual parent-group transform above, to initialize solver position.
+
 **Observed generated-batch type boundary:** CLI **0.1.1** emits `Instance :position` in its `--instance` consumer, but Cientos **5.10.0** does not declare that native attribute on `Instance`. A separate strict-template consumer of the generated panel variants rejected that batch file with `TS2353`; CLI exit zero is not a clean compiler result. Keep plain generated models and the explicitly authored, positioned-group batching pattern above as separate accepted paths until this generator/declaration mismatch is resolved. Do not hide it with a cast, loose template checking, or a renderer switch: the declaration mismatch affects both backends.
+
+**Current source review:** Cientos **5.12.0** still declares only `batch`, `name`, and `color` on `InstanceProps`, not transforms. Its `/webgpu` entry exports the same implementation; Core's native-element types do not add props to this Vue component. The CLI's tagged assertions expect translated `Instance` output, but its compile tests check Vue parsing and script/template compilation, not strict consumer template types. The `TS2353` above is the archived **5.10.0** result, not a rerun on 5.12.0. For a new strict host, use plain output or [manual batching with positioned groups](#batching-and-picking-performance-with-explicit-owners); check generated files separately from parent placement. [5.12.0 declarations](https://unpkg.com/@tresjs/cientos@5.12.0/dist/index-LpMDuY3m.d.ts), [tagged `/webgpu` entry](https://github.com/Tresjs/tres/blob/%40tresjs/cientos%405.12.0/packages/cientos/src/webgpu.ts), [CLI batch assertions](https://github.com/Tresjs/tres/blob/%40tresjs/cli%400.1.1/packages/cli/src/emit/instances.test.ts), [CLI compile checks](https://github.com/Tresjs/tres/blob/%40tresjs/cli%400.1.1/packages/cli/src/emit/compiles.test.ts).
 
 ### ESLint exports, engine limits and incumbent-config integration
 
@@ -1272,7 +1297,7 @@ export default [
 ]
 ```
 
-Here `incumbent` denotes the **already existing** local array, not an export/file supplied by Tres or a new import path to create. Insert the scoped item in that app's existing export (or its Nuxt composer's supported append API), retaining its Vue plugin registration and parser. The extracted block has only `vue/*` rules; `tres:general` additionally needs Antfu's `style`, `node`, `perfectionist` and `jsdoc` namespaces and must not be copied into an unrelated config without those owners. If a host already uses a compatible Antfu instance, the full `tresLintConfig(options, ...existingItems)` composition API is available, but explicitly resolve duplicate plugin objects and rule precedence first. `...options` overrides the preset's top-level defaults shallowly, so replacing `ignores`/`formatters` means choosing a complete replacement for those option values, not a deep append.
+Here `incumbent` denotes the **already existing** local array, not an export/file supplied by Tres or a new import path to create. Insert the scoped item in that app's existing export (or its Nuxt composer's supported append API), retaining its Vue plugin registration and parser. The extracted block has only `vue/*` rules; [`tres:general`](https://github.com/Tresjs/tres/blob/%40tresjs/eslint-config%401.7.0/packages/eslint-config/src/rules/base.ts) also needs the `antfu`, `style`, `node`, `perfectionist`, and `jsdoc` namespaces. Do not copy it into an unrelated config without those owners. If a host already uses a compatible Antfu instance, the full `tresLintConfig(options, ...existingItems)` composition API is available, but explicitly resolve duplicate plugin objects and rule precedence first. `...options` overrides the preset's top-level defaults shallowly, so replacing `ignores`/`formatters` means choosing a complete replacement for those option values, not a deep append.
 
 Defaults enable stylistic rules, CSS/HTML formatters and ignores for dist, sponsorkit, node_modules, coverage and **public**. Vue overrides include max attributes (10 on one line, 1 per multiline line), no forced single-line content newline, HTML self-closing policy, no attribute hyphenation rule and an object-property-newline rule. They do **not** certify host DOM accessibility, Three catalogue registration, disposal, physics correctness, TSL shader compatibility, WebGPU/WebGL2 parity or model privacy. Run the real host compiler/browser/backend matrix in addition to lint. No rule sends models/source to a Tres service; package installation can still access registries, and the inherited formatter/toolchain has normal local code-execution trust boundaries.
 
@@ -1322,56 +1347,63 @@ bunx tres gltf public/models/panel.gltf -o app/models/PanelOptimized.gen.vue --t
 
 Require: JSON is parseable without decorative stdout; dry-run/JSON do not emit transformed assets; ordinary URL is `/models/panel.gltf`; instance generation creates a sibling provider and transformed GLB; physics output has a fixed trimesh `RigidBody` for the suffixed mesh and a note requiring `<Physics>`; `ready`/`isReady` and `Lift` action types exist. Also supply a separate clip file with one matching target and one unmatched target to exercise repeatable `--animations` warnings/binding; two files with the same clip name must follow the documented last-source order. The fixture's animated **fixed** body is an emission check, not a sensible moving-physics design. To exercise actual simulation use an intentionally authored dynamic collider and verify world ownership/collision behavior.
 
-Import the generated SFCs in an actual client scene, put batch consumers under their generated provider, and compile/render on **both WebGPURenderer backends** after resolving the explicit root-import issue; test the provider-missing negative case, a failed asset URL, navigation cleanup and ready timing. CLI success does not satisfy those runtime checks.
+In an actual client host, strict-check plain, generated batch, and physics variants separately, including parent root placement. Record new diagnostics separately from the archived `TS2353`; CLI exit zero does not pass the host compiler. After explicitly resolving import and typing boundaries, exercise any accepted WebGPURenderer consumer on both backends. Check the provider-missing negative case, a failed asset URL, navigation cleanup, and readiness timing. A generator receipt is not a browser receipt.
 
 For a complete isolated lint profile use the exact `eslint.config.mjs` composer above and a small `SceneFixture.vue` containing a valid `<script setup lang="ts">` and a Tres mesh template, then execute `bunx eslint --print-config SceneFixture.vue` followed by `bunx eslint SceneFixture.vue` without `--fix`. The config must load with named exports on Node 24/ESLint 10, include the expected `tres:vue` overrides, and preserve the incumbent app's unrelated policy when using the scoped adoption. Exercise `nuxt` extras only in a distinct Nuxt fixture; confirm generated autoimports still typecheck independently. No lint/runtime/build result is claimed by this source review.
 
 ## Bundled workbench composition
 
-The installed [workbench](../assets/example-app/package.json) includes a lazy
-`/graphics` route. [GraphicsPage.vue](../assets/example-app/src/GraphicsPage.vue)
-owns ordinary DOM controls, explicit Start/import, session identity, reduced-motion
-preference, errors and the text alternative.
-[GraphicsScene.vue](../assets/example-app/src/graphics/GraphicsScene.vue) owns the
-TresCanvas composition, native loss observation and initialized-backend reporting.
-[SpinningCube.vue](../assets/example-app/src/graphics/SpinningCube.vue) is its
-context-consuming child: static on-demand mode, opt-in delta-based rotation and
-explicit invalidation. Compiler-only Tres options are merged into the one Vue
-plugin; pins are core **5.9.3**, Three **0.186.1** and typings **0.186.0**.
+The bundled [workbench](../assets/example-app/package.json) pins **Vue 3.5.44,
+`@tresjs/core@5.12.0`, `three@0.187.0`, and `@types/three@0.187.0`**.
+Tasks/About do not import the lazy `/graphics` route. Within that route,
+[GraphicsPage.vue](../assets/example-app/src/GraphicsPage.vue) owns ordinary DOM
+controls, reduced-motion preference, errors, the text alternative, and session
+identity. The scene module is imported only on **Start scene**. Stop, changing
+pipeline, native loss, or leaving the route retires the session; returning
+requires Start again.
 
-This is **newly authored application composition**, not verbatim extraction of
-the three public example fences. Its public positive-size render callback and
-pending-init late-success disposal retain the experimental recipe's ownership
-contracts; the gate is applied to both selected renderers. Tres remains the sole
-size/camera/buffer and normal disposal owner. Native GPU/canvas and renderer
-methods are unchanged. No fake minimum buffer, injected diagnostics, lab runtime,
-custom shaders, postprocessing, asset loader or external service is added.
+[GraphicsScene.vue](../assets/example-app/src/graphics/GraphicsScene.vue) selects
+`TresCanvas` from `@tresjs/core/webgpu` for the default unlit Basic-material scene
+and from `@tresjs/core` for the explicit, lit WebGLRenderer compatibility scene.
+Each mount keeps its entry and uses its default renderer. Core owns initialization
+and normal disposal; the old factory's second, late-success disposal is not
+needed on r187. The workbench observes native loss and reports the initialized
+WebGPU or built-in WebGL2 backend separately from the renderer family. Its
+version-specific backend fields are not a general capability probe.
+[SpinningCube.vue](../assets/example-app/src/graphics/SpinningCube.vue) keeps
+rotation opt-in and explicitly invalidates in `on-demand` mode. The
+[Vite config](../assets/example-app/vite.config.ts) merges the compiler-only
+preset into the existing Vue plugin.
 
-Tasks/About do not import the graphics page; its GPU module is imported only by
-**Start scene**. WebGPURenderer is selected by default as the modern path for this
-compatible, experimental unlit Basic-material scene; it reports initialized
-backend flags as WebGPU or its built-in WebGL 2 fallback, not just its family name.
-The explicit WebGLRenderer compatibility option uses Standard material and lights.
-These exact-r186 backend fields are not a general capability API. Stop, switching
-renderer, native loss and route exit retire the owner; reentry requires Start.
-Hide/show and real zero width retain the same mounted scene and wait for matching
-positive dimensions before drawing. Rotation is opt-in and reduced-motion-aware.
-Initialization and a submitted frame are not pixel/readback proof.
+The workbench is application composition, not copied recipe fences. Its
+`PositiveSizeRender` in [GraphicsScene.vue](../assets/example-app/src/graphics/GraphicsScene.vue)
+uses the public [`useLoop().render()` callback](https://docs.tresjs.org/api/composables/use-loop#take-over-the-render-loop)
+for both selected renderers. Hide/show and real zero width keep the scene
+mounted. Draw only with a live, positive-size host and a matching positive
+drawing buffer; positive restoration invalidates the idle scene. Call
+`notifySuccess()` only after the actual draw. Tres still owns camera updates,
+DPR and buffer writes; the gate does not patch renderer methods, prevent native
+initialization, guard extra passes, or prove visible pixels/readback.
 
-The [current audit](../assets/current-audit.json) separately source-reviews all
-three new files and changed app contracts. Both retained device reports concern
-the recipe/lab revision, **not native-hardware execution of this workbench**.
-Closed recipe/support gates do not certify lighting/PBR, custom pipelines, every
-device, complete VRAM/listener release or trusted input/real OS-preference matrices.
-The pinned failed-initialization teardown limitation above remains observable;
-original errors are not suppressed. Consumer builds/browser checks must be
-reported by their actual runner rather than fabricated as archived audit runs.
+In [Three r187](https://github.com/mrdoob/three.js/blob/r187/src/renderers/common/Renderer.js#L3019-L3064),
+`dispose()` waits for an existing `init()` before cleanup. That removes the
+r186 late-success gap, not the need to test failure: the same await can reject
+and [Core 5.12.0 does not await `dispose()`](https://github.com/Tresjs/tres/blob/%40tresjs/core%405.12.0/packages/core/src/composables/useRenderer/useRendererManager.ts#L485-L489).
+This is a source distinction, not a new injected-failure or hardware receipt.
+The [audit](../assets/current-audit.json) retains the former workbench source
+review and separate recipe/lab device observations; none certifies native
+hardware execution of this r187 workbench, arbitrary effects, or complete GPU
+resource release.
 
 ## Evidence and proposed verification
 
-Exact registry metadata, **5.9.3** public declarations/runtime, official guides and the Khronos Box GLB are source-research evidence, not browser execution. The cube configuration/three SFCs and loader child are complete focused examples; the loader child requires the shown canvas context. [Scoped verification](../assets/verification.json) preserves historical compiler, software-rendering and injected-failure observations without renewing their dates or original trace provenance. The [current audit](../assets/current-audit.json) separately records bounded current consumers and the final rehearsal's render-budget and pointer-handler corrections.
+The November release guidance and the active runtime pins do not renew the archived 5.9.3 device reports or October consumer receipts. Verify the actual host, renderer backend, and enabled features before claiming support.
 
-The repository-only `verification/webgpu` lab extracts these recipes and adds bounded picking, real-asset and shared-owner consumers; it is not an installed-skill dependency. Both original and corrected target-device submissions have been reviewed with explicit limits in the current audit; the focused gate (`vue-kit-skills-liu.33.3`) is satisfied for the observed resize/readback regressions. **Run focused recheck** remains available for another configuration or changed source. Full verification covers broader diagnostics, not automatic acceptance. Neither sequence changes manual verdicts or certifies trusted input, real OS-preference transitions, every listener's release, VRAM reclamation or unused custom shaders/postprocessing. SSR isolation and strict typing remain separate checks.
+Exact registry metadata, the archived **5.9.3** public declarations/runtime, official guides, and the Khronos Box GLB are source-research evidence, not browser execution. The archived cube configuration/three SFCs and loader child are focused examples; the loader child requires the shown canvas context. The [verification register](../assets/verification.json) and [audit](../assets/current-audit.json) preserve historical compiler, software-rendering, injected-failure and device observations under their original scope.
+
+The repository-only `verification/webgpu` lab runs **Vue 3.5.44, `@tresjs/core@5.12.0`, `three@0.187.0`, and `@types/three@0.187.0`**. It extracts the [archived WebGLRenderer fences](#complete-webglrenderer-compatibility-example-client-boundary-controls-and-animated-scene) verbatim. Its [archived WebGPU variant](#experimental-webgpu-and-custom-rendering) substitutes `onMounted(() => { ready.value = true })` for the host's WebGL2 pre-probe, rewrites the canvas's `@tresjs/core` import to `@tresjs/core/webgpu`, and removes the r186-only late-success disposal hook. The extractor records the transformations and hashes of both the fences and generated sources; it does not copy the standalone TSL/Cientos guide. The lab adds bounded picking, real-asset and shared-owner consumers and is not an installed-skill dependency.
+
+The two earlier target-device reports and the closed focused gate (`vue-kit-skills-liu.33.3`) apply to the observed r186 resize/readback regressions. Use **Run focused recheck** for a changed source, package pair, or target device. Full verification covers broader diagnostics, not automatic acceptance. Neither sequence changes manual verdicts or certifies trusted input, real OS-preference transitions, every listener's release, VRAM reclamation, unused custom shaders, or postprocessing.
 
 ## Sources
 

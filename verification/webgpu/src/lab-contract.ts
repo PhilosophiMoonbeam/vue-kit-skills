@@ -1,3 +1,16 @@
+import { version as vueVersion } from 'vue'
+
+declare const __LAB_CORE_VERSION__: string
+declare const __LAB_THREE_VERSION__: string
+declare const __LAB_THREE_TYPES_VERSION__: string
+
+export const labVersions = {
+  vue: vueVersion,
+  core: __LAB_CORE_VERSION__,
+  three: __LAB_THREE_VERSION__,
+  threeTypes: __LAB_THREE_TYPES_VERSION__,
+}
+
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json }
 export type SceneId = 'webgpu' | 'webgl' | 'picking' | 'asset' | 'ownership'
 export type Mode = 'normal' | 'adapter-unavailable' | 'device-rejected' | 'both-unavailable' | 'device-and-fallback-unavailable' | 'webgl-unavailable' | 'asset-unavailable' | 'asset-delayed'
@@ -8,7 +21,7 @@ export interface FrameState {
   secureContext: boolean
   scene: SceneId
   mode: Mode
-  versions: { vue: string; core: string; three: string }
+  versions: typeof labVersions
   userAgent: string
   adapter?: Json
   deviceCreated: boolean
@@ -28,8 +41,8 @@ export function reportObservation(category: Category, message: string, detail?: 
 }
 
 export const scenes: { value: SceneId; label: string; description: string }[] = [
-  { value: 'webgpu', label: 'Experimental WebGPU cube', description: 'The verbatim retained alternative canvas and its prescribed client host.' },
-  { value: 'webgl', label: 'Ordinary WebGL cube', description: 'The three complete retained SFCs, including opt-in motion and reduced-motion handling.' },
+  { value: 'webgpu', label: 'Experimental WebGPU cube', description: 'The retained alternative recipe ported to the dedicated Core WebGPU entry; the host and renderer-factory changes are recorded in the source metadata.' },
+  { value: 'webgl', label: 'Ordinary WebGL cube', description: 'The three retained SFCs copied unchanged, including opt-in motion and reduced-motion handling.' },
   { value: 'picking', label: 'Picking and keyboard equivalents', description: 'A source-matched verification consumer for stable IDs, pointer propagation and labeled DOM controls.' },
   { value: 'asset', label: 'Box loader and late completion', description: 'A source-matched real Khronos Box loader consumer with observable resource retirement; controlled local missing/delayed asset profiles are explicit.' },
   { value: 'ownership', label: 'Shared resources and final ownership', description: 'A source-matched real two-consumer lifetime, explicit final resource disposal and comparable active-scene snapshots.' },
@@ -39,7 +52,7 @@ export const modes: { value: Mode; label: string; description: string; scenes: S
   { value: 'normal', label: 'Normal · no fault injection', description: 'Use actual browser capabilities. Native GPU/canvas methods remain unwrapped; source-derived consumer instrumentation is separately identified.', scenes: ['webgpu','webgl','picking','asset','ownership'] },
   { value: 'adapter-unavailable', label: 'Injected · adapter unavailable', description: 'GPU.requestAdapter resolves null; the real WebGL2 fallback remains available if supported.', scenes: ['webgpu'] },
   { value: 'device-rejected', label: 'Injected · device request rejected', description: 'A real adapter requestDevice is deliberately rejected; the real WebGL2 fallback remains available if supported.', scenes: ['webgpu'] },
-  { value: 'both-unavailable', label: 'Injected · adapter + fallback unavailable', description: 'Deliberately deny adapter and WebGL2 acquisition. Initialization and the pinned raw teardown rejection must be recorded, not hidden.', scenes: ['webgpu'] },
+  { value: 'both-unavailable', label: 'Injected · adapter + fallback unavailable', description: 'Deliberately deny adapter and WebGL2 acquisition. Record the initialization error and any observed raw teardown errors without suppression.', scenes: ['webgpu'] },
   { value: 'device-and-fallback-unavailable', label: 'Injected · device + fallback unavailable', description: 'Deliberately reject a real adapter device request and deny WebGL2. Record initialization and raw teardown errors separately.', scenes: ['webgpu'] },
   { value: 'webgl-unavailable', label: 'Injected · WebGL2 unavailable', description: 'Deny WebGL2 to exercise the ordinary host capability fallback. Do not invent a WebGL1 or WebGPU fallback.', scenes: ['webgl'] },
   { value: 'asset-unavailable', label: 'Controlled · missing Box asset', description: 'Request an intentionally absent local asset and observe the actual HTTP/loader error. This is not an asserted CORS or offline result.', scenes: ['asset'] },
@@ -63,8 +76,8 @@ export const manualChecks = [
   {
     "id": "gpu-02",
     "mode": "WebGPU normal, no API intervention",
-    "assertion": "In a secure context, record actual adapter/device and backend after initialization; WebGPU backend must actually render the cube before claiming native WebGPU support. navigator.gpu and isWebGPU alone are insufficient.",
-    "evidence_to_record": "Adapter vendor/architecture/software status, backend identity, ready event, live output; do not call SwiftShader native hardware.",
+    "assertion": "In a secure context, inspect actual adapter/device evidence and the initialized backend. To claim native hardware WebGPU, require visible output on the WebGPU backend and separate evidence of hardware identity; navigator.gpu and isWebGPURenderer are insufficient.",
+    "evidence_to_record": "Observed adapter identity, known software status or unknown, actual backend, ready event and live output; do not call SwiftShader native hardware.",
     "scenes": [
       "webgpu"
     ],
@@ -77,7 +90,7 @@ export const manualChecks = [
     "id": "gpu-03",
     "mode": "WebGPURenderer WebGL2 fallback",
     "assertion": "When WebGPU adapter is unavailable or device creation rejects but WebGL2 remains available, fallback produces visible output and normal unmount without unexpected raw errors.",
-    "evidence_to_record": "Separate named fault profiles; actual backend WebGL2; isWebGPU still indicates renderer family; errors/rejections retained.",
+    "evidence_to_record": "Separate named fault profiles; actual backend WebGL2; isWebGPURenderer identifies the renderer family only; errors/rejections retained.",
     "scenes": [
       "webgpu"
     ],
@@ -103,7 +116,7 @@ export const manualChecks = [
   {
     "id": "gpu-05",
     "mode": "double initialization denial",
-    "assertion": "Deliberately deny both WebGPU and WebGL2 fallback in a separate fault-injection profile; INITIALIZATION_FAILED must reach host DOM alert. Record all raw teardown rejections, including the known pinned async-dispose/init path; do not suppress or label the profile a clean-recovery pass.",
+    "assertion": "Deliberately deny both WebGPU and WebGL2 fallback in separate fault-injection profiles; INITIALIZATION_FAILED must reach the host DOM alert. Record any observed raw teardown rejections separately; absence in a bounded observation window does not establish clean recovery.",
     "evidence_to_record": "Intervention details, emitted code, alert text, pageerror/unhandledrejection and teardown timeline.",
     "scenes": [
       "webgpu"
@@ -251,7 +264,7 @@ export const manualChecks = [
   {
     "id": "gpu-16",
     "mode": "custom postprocessing/shadows, only if used by consumer",
-    "assertion": "Renderer-compatible node postprocessing or custom useLoop.render performs actual frame rendering and calls notifySuccess once per successful frame; target/pass disposal is explicit, and r186 shadow mode resolves to PCFShadowMap when soft is requested.",
+    "assertion": "Renderer-compatible node postprocessing or custom useLoop.render performs actual frame rendering and calls notifySuccess once per successful frame; target/pass disposal is explicit. If requesting PCFSoftShadowMap with WebGPURenderer, verify its PCFShadowMap substitution on the selected backend.",
     "evidence_to_record": "Pipeline/backend, success callback/frame behavior, rendered shadows and target/pass disposal.",
     "scenes": [
       "webgpu"

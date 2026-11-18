@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
         <div v-if="failure" class="failure-message" role="alert">
           <h4>{{ phase === 'lost' ? 'Scene retired after native loss' : 'Scene could not continue' }}</h4>
           <p class="raw-error">{{ failure }}</p>
-          <p>The text alternative is still available. Check browser graphics support, try another renderer explicitly, or start a fresh scene. Original failures remain in the browser console; the experimental version has a known upstream failed-initialization teardown limitation.</p>
+          <p>The text alternative is still available. Check browser graphics support, try another renderer explicitly, or start a fresh scene. Original failures remain in the browser console.</p>
         </div>
         <div class="scene-description">
           <h4>What the scene represents</h4>
@@ -244,7 +244,7 @@ onBeforeUnmount(() => {
           <p v-else>A blue cube viewed from above and to the side against a dark background. Its Basic material is intentionally unlit, so faces do not demonstrate directional lighting or PBR. Optional rotation turns it around its vertical axis; it conveys no additional information.</p>
           <details>
             <summary>Rendering and lifecycle limits</summary>
-            <p>Initialization identifies the renderer and backend, not visible pixels. Active means a positive-size frame was submitted, not a readback or a hardware-support guarantee. Stop, backend changes, native loss, and leaving this page retire the scene. Returning always requires Start. The pinned Tres 5.9.3 / Three 0.186.1 experimental path retains known upstream failed-initialization teardown and in-flight unmount limits.</p>
+            <p>Initialization identifies the renderer and backend, not visible pixels. Active means a positive-size frame was submitted, not a readback or a hardware-support guarantee. The draw guard does not prevent native initialization or resize work. Stop, backend changes, native loss, and leaving this page retire the scene. Returning always requires Start. In the experimental path, Three r187 waits for pending initialization during disposal rather than canceling it. If initialization rejects, disposal can reject before cleanup; Tres does not await it on unmount.</p>
           </details>
         </div>
       </section>

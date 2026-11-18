@@ -1,14 +1,12 @@
-import { cloneVNode, createApp, getCurrentInstance, isVNode, version as vueVersion, type VNodeChild } from 'vue'
-import { TresCanvas, type TresContext } from '@tresjs/core'
+import { cloneVNode, createApp, getCurrentInstance, isVNode, type VNodeChild } from 'vue'
+import { TresCanvas as WebGlCanvas, type TresContext } from '@tresjs/core'
+import { TresCanvas as WebGpuCanvas } from '@tresjs/core/webgpu'
 import WebGpuHost from './SceneHost.vue'
 import WebGlHost from './recipes/webgl/SceneHost.vue'
 import PickingHost from './consumers/PickingHost.vue'
 import AssetHost from './consumers/AssetHost.vue'
 import OwnershipHost from './consumers/OwnershipHost.vue'
-import { modes, observationChannel, scenes, type Category, type Command, type FrameState, type Json, type Mode, type SceneId } from './lab-contract'
-
-declare const __LAB_CORE_VERSION__: string
-declare const __LAB_THREE_VERSION__: string
+import { labVersions, modes, observationChannel, scenes, type Category, type Command, type FrameState, type Json, type Mode, type SceneId } from './lab-contract'
 
 interface AdapterInfo { vendor?: string; architecture?: string; device?: string; description?: string; isFallbackAdapter?: boolean }
 interface ObservedQueue { submit: (...args: unknown[]) => void }
@@ -35,7 +33,7 @@ const state: FrameState = {
   secureContext: window.isSecureContext,
   mode,
   scene,
-  versions: { vue: vueVersion, core: __LAB_CORE_VERSION__, three: __LAB_THREE_VERSION__ },
+  versions: labVersions,
   userAgent: navigator.userAgent,
   deviceCreated: false,
   backend: mode === 'normal' ? 'unknown' : 'pending',
@@ -273,13 +271,13 @@ function instrumentCanvas(): void {
     return context
   } as typeof getContext
 }
-// Diagnostic-only access to the initialized r186 backend. These internals are
-// version-pinned, not a portable Three API. See WebGPUBackend.js:92,115,296 and
-// WebGLBackend.js:59; renderer-family flags do not identify the active backend.
+// Diagnostic-only access to the initialized Three r187 backends, not a
+// portable API. WebGPUBackend exposes the device; WebGLBackend exposes the
+// existing GL context via getContext(). Renderer-family flags are separate.
 interface DiagnosticBackend {
   isWebGPUBackend?: boolean
   isWebGLBackend?: boolean
-  device?: ObservedDevice
+  device?: ObservedDevice | null
 }
 
 function backendOf(context: TresContext | undefined): DiagnosticBackend | undefined {
@@ -343,7 +341,7 @@ function observeCanvas(canvas: HTMLCanvasElement): void {
   })
 }
 
-function rendererReady(context: TresContext): void {
+function rendererReady(context: TresContext, canvasEntry: CanvasEntry): void {
   initializedContext = context
   const renderer = context.renderer.instance
   const flags = renderer as unknown as { isWebGLRenderer?: boolean; isWebGPURenderer?: boolean }
@@ -356,7 +354,7 @@ function rendererReady(context: TresContext): void {
   observeCanvas(renderer.domElement)
   if (ownerRetired) context.renderer.loop.stop()
   event('lifecycle', 'TresCanvas emitted its actual ready event.', {
-    rendererFamily: state.rendererFamily, backend: state.backend, afterUnmount: unmounted,
+    canvasEntry, rendererFamily: state.rendererFamily, backend: state.backend, afterUnmount: unmounted,
     backendFlags: backend ? { isWebGPUBackend: backend.isWebGPUBackend ?? null, isWebGLBackend: backend.isWebGLBackend ?? null } : null,
     limit: 'Ready reports renderer initialization, not GPU completion or pixel correctness. Ordinary WebGL2 is identified from its existing initialized context; WebGPURenderer family is distinct from its active backend.',
   })
@@ -368,20 +366,35 @@ function rendererReady(context: TresContext): void {
   inspect()
 }
 
-function rendererRendered(): void {
+function rendererRendered(canvasEntry: CanvasEntry): void {
   renderEvents += 1
   lastRenderTime = performance.now()
   if (renderEvents === 1) {
     event('lifecycle', 'TresCanvas emitted its actual render event.', {
+      canvasEntry,
       limit: 'This is the component render notification, not proof of GPU work completion or correct pixels. Inspect the real canvas capture.',
     })
     inspect()
   }
 }
 
+type CanvasEntry = '@tresjs/core' | '@tresjs/core/webgpu'
 
-// cloneVNode merges the observer after existing onError listeners, retaining
-// Vue's normal listener-array ordering, arguments and exception handling. No source
+function canvasObservers(entry: CanvasEntry) {
+  const errorSource = `TresCanvas (${entry}) emitted error.`
+  return {
+    onError: (cause: unknown) => componentError(cause, errorSource),
+    onReady: (context: TresContext) => rendererReady(context, entry),
+    onRender: () => rendererRendered(entry),
+  }
+}
+
+const webGlObservers = canvasObservers('@tresjs/core')
+const webGpuObservers = canvasObservers('@tresjs/core/webgpu')
+const observeEmittedError = (cause: unknown) => componentError(cause, 'Component emitted error; existing vnode listener was preserved.')
+
+// cloneVNode merges observers after existing listeners, retaining Vue's
+// normal listener-array ordering, arguments and exception handling. No source
 // template, listener, renderer factory, or component error boundary is replaced.
 function observeVNodes(child: VNodeChild): void {
   if (Array.isArray(child)) {
@@ -389,13 +402,12 @@ function observeVNodes(child: VNodeChild): void {
     return
   }
   if (!isVNode(child)) return
-  if (child.props?.onError) {
-    child.props = cloneVNode(child, {
-      onError: (cause: unknown) => componentError(cause, 'Component emitted error; existing vnode listener was preserved.'),
-    }).props
-  }
-  if (child.type === TresCanvas) {
-    child.props = cloneVNode(child, { onReady: rendererReady, onRender: rendererRendered }).props
+  if (child.type === WebGlCanvas) {
+    child.props = cloneVNode(child, webGlObservers).props
+  } else if (child.type === WebGpuCanvas) {
+    child.props = cloneVNode(child, webGpuObservers).props
+  } else if (child.props?.onError) {
+    child.props = cloneVNode(child, { onError: observeEmittedError }).props
   }
   // Retain each vnode's identity: compiler block dynamicChildren refer to these
   // same nodes. Only the new vnode's listener props are merged, never its children.
@@ -666,7 +678,7 @@ function loseContext(): void {
   if (state.backend === 'webgpu' && device && typeof device.destroy === 'function') {
     lossRequested = 'webgpu'
     event('capability', 'Calling GPUDevice.destroy() on the actual initialized renderer-owned device; awaiting its real device.lost settlement.', {
-      limit: 'Explicit device retirement is not a spontaneous hardware failure. This lab handles the real destroyed reason; r186 itself deliberately ignores that reason in its onDeviceLost path.',
+      limit: 'Explicit device retirement is not a spontaneous hardware failure. This lab observes the native destroyed reason, which Three r187 ignores in its own onDeviceLost path.',
     })
     device.destroy()
     return
@@ -713,7 +725,7 @@ if (gpuDenial) {
 }
 event('lifecycle', 'Mounting the selected real scene host.', {
   scene, mode, provenance: scenes.find(entry => entry.value === scene)?.description ?? null,
-  limit: 'Generated recipe SFCs preserve their retained source; bounded verification consumers explicitly report their real derived behavior. Human GPU acceptance remains pending.',
+  limit: 'The archive is retained and the WebGPU port is recorded separately. Bounded verification consumers report their actual behavior; this run inherits no hardware acceptance.',
 })
 app.mount(mount)
 event('lifecycle', 'Vue app.mount() returned; asynchronous renderer initialization may still be pending.')

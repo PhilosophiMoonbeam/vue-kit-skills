@@ -3,7 +3,8 @@ name: vue-kit
 description: >-
   Build, debug, test, and modernize Vue applications with TypeScript, Composition
   API, Vuetify, OpenVue, Router, Pinia, forms, server-state queries, authentication,
-  accessible UI, charts, TresJS/Three.js, Cientos, Rapier physics, Leches controls, WebGPU, glTF tooling, motion, SSR, Nuxt, and Vite. Use for Vue SFCs,
+  accessible UI, charts, TresJS/Three.js, Cientos, WebGPU, post-processing, Rapier
+  physics, Leches controls, glTF tooling, motion, SSR, Nuxt, and Vite. Use for Vue SFCs,
   Nuxt applications/modules/server routes, composables, ecosystem integrations,
   architecture, migrations, and Vue runtime or type errors. Routes to focused,
   version-aware references and runnable examples.
@@ -74,6 +75,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | --- | --- | --- |
 | Nuxt application, pages/layouts, middleware, useFetch/useAsyncData/useState, Nitro/server API, runtime config, rendering, deployment or Nuxt migration | [Nuxt](references/nuxt.md) | [Nuxt 3 → 4 migration](references/migration.md#nuxt-3-to-4-migration) only for that cutover; debugging SSR for a localized rendering failure |
 | Nuxt with Pinia, selected Colada cache, or Vuetify | [Nuxt integrations](references/nuxt-integrations.md) | Nuxt core remains the host owner; the selected library reference owns reusable library semantics, not a second app/bootstrap |
+| TresJS in Nuxt, renderer selection, generated scene imports or client-only canvas/SSR | [Nuxt module](references/nuxt-integrations.md#optional-tresjs-module) | Read Nuxt first for host ownership; add scene or effects guidance only for the feature being changed |
 
 ### Foundations and architecture
 
@@ -137,7 +139,10 @@ to load every linked document. Combine owners only when the task crosses domains
 | Vuetify or TanStack Vue Table, sorting/filtering/pagination and row identity | [Data tables](references/data-tables.md) | Virtualization for measured large-list costs; selected query owner for server data |
 | TanStack Vue Virtual, list/window virtualizers, measurements and focus | [Virtualization](references/virtualization.md) | Accessibility; tables when virtualizing tabular data |
 | Unovis TS/Vue or Vue Data UI charts, tooltips and reactive data | [Visualization](references/visualization.md) | Accessibility; virtualization only for separate list rendering |
-| TresJS/Three.js, Cientos, Rapier physics, Leches controls, GPU/postprocessing, glTF CLI or Tres lint policy | [TresJS](references/tresjs.md) | [Released package map](references/tresjs.md#released-package-map), [5.10 WebGPU entry](references/tresjs.md#published-510-entry-points-not-a-baseline-upgrade); require whole-scene support on both backends; [Nuxt module](references/nuxt-integrations.md#optional-tresjs-module-nuxt-4-and-the-580-release); use WebGLRenderer only for incompatible pipelines |
+| WebGPU scene setup, Core/Cientos `/webgpu` entries, node materials, experimental TSL APIs, loop ordering or WebGPU FBOs | [TresJS WebGPU](references/tresjs-webgpu.md) | Require whole-scene support on both WebGPURenderer backends before claiming fallback; add Cientos only when using its helpers |
+| Three.js scene effects, `defineEffect`, HDR/LDR stages or legacy composers | [TresJS post-processing](references/tresjs-post-processing.md) | Choose one render owner for the renderer in use; do not add a composer for a scene without effects |
+| TresJS package selection, WebGLRenderer scenes, root Cientos helpers, Rapier physics, Leches controls, glTF CLI or Tres lint policy | [TresJS package map](references/tresjs.md#released-package-map) | Add only the companion package that implements the requested feature |
+| Run or change the bundled Graphics workbench | [Setup tooling](references/setup-tooling.md#run-the-bundled-workbench) | [Workbench composition](references/tresjs.md#bundled-workbench-composition) for scene ownership; use [Sources](references/sources.md#tresjs-release-evidence) to distinguish present pins from archived device evidence |
 | Vue transitions, Motion for Vue, VueUse Motion and animation lifecycle | [Motion](references/motion.md) | Accessibility for reduced motion and focus preservation |
 
 ### Platform, quality, and specialized applications
@@ -175,7 +180,9 @@ to load every linked document. Combine owners only when the task crosses domains
 ## Runnable resources and honest verification
 
 - [Current bounded audit](assets/current-audit.json): original October 22–23, 2026
-  review plus a separately identified source-only workbench extension, observed execution profiles, known failures and bounded GPU receipts.
+  review, the separately identified source-only workbench port review and other
+  source extensions, observed execution profiles, known failures and
+  version-scoped GPU receipts.
   Bounded consumers are not clean full-declaration/UI trees: forms, visualization,
   Router's combined plugin/runtime declarations and AI Vue full UI templates
   retain distinct negative scopes. See [evidence boundaries](references/sources.md#current-authoring-and-negative-scopes).
@@ -186,16 +193,16 @@ to load every linked document. Combine owners only when the task crosses domains
   [setup tooling](references/setup-tooling.md) for `bun install`,
   `bun run typecheck`, `bun run build`, and `bun run dev`. It has no backend,
   authentication, persistence, or production deployment claim. Its lazy `/graphics`
-  page loads GPU packages only after explicit Start: default experimental
-  WebGPURenderer or explicit WebGLRenderer compatibility, with real backend/status/errors and a DOM alternative.
-  Stop, backend changes, native loss and route exit retire the scene; reentry
-  requires Start. Hide/show uses a positive-size draw gate; rotation respects
-  reduced motion. No verification-lab runtime or collection is installed.
-  For new compatible scenes, WebGPURenderer is the modern standard default posture,
-  not a stability or speed guarantee. Its WebGL2 fallback requires the whole
-  pipeline on both backends. Use WebGLRenderer explicitly for incompatible GLSL
-  ShaderMaterial/onBeforeCompile, legacy EffectComposer or dependencies; it is
-  not an interchangeable automatic fallback. Keep the pinned lifecycle limits.
+  route pins Core **5.12.0**, Three **0.187.0** and `@types/three` **0.187.0**. GPU
+  packages wait for explicit Start. Each mount uses one renderer: experimental
+  WebGPURenderer via the [dedicated entry](references/tresjs-webgpu.md), or
+  WebGLRenderer via the root entry only by explicit choice. The page reports the
+  initialized backend, status and errors and retains a DOM alternative.
+  Stop, renderer changes, native loss and route exit retire the scene; reentry
+  requires Start. Hide/show keeps the mount and gates drawing on matching positive
+  size; rotation respects reduced motion. No lab runtime or collection is installed.
+  The [5.9.3 renderer-factory example](references/tresjs.md#experimental-webgpu-and-custom-rendering)
+  is runnable on its archived profile, not the new-scene route on 5.12.0.
 - [Skill validator](scripts/validate.py): Python 3 standard-library structural
   validator. From the skill root, run `python3 scripts/validate.py` or add
   `--json`; an optional positional root selects another installed skill copy.
@@ -223,9 +230,10 @@ layout; for server code, cover request isolation and hydration. Report the exact
 commands and outcomes actually observed. If checks were not run, say so; list
 recommended commands separately rather than presenting them as evidence.
 
-Native-device evidence remains separate from autonomous consumer checks. Both
-original and corrected focused WebGPU/WebGL submissions are reviewed with limits
-in the current audit; the corrected gate and support decision are closed for the
-observed recipe configuration, not every manual criterion or device. The selected
-successor is the bundled workbench. Its new composition is source-reviewed here,
-not claimed to have inherited a native-hardware pass from the recipe reports.
+Native-device evidence remains separate from autonomous consumer checks. The
+original and corrected WebGPU/WebGL submissions in the audit cover the archived
+Core 5.9.3 / Three 0.186.1 lab; their decisions are closed only for the observed
+recipe configuration. The repository-only lab now pins Core 5.12.0, Three
+0.187.0 and `@types/three` 0.187.0 and needs fresh evidence for that revision.
+A reviewed lab report covers the exercised scenarios and device, not the
+workbench or general GPU support.

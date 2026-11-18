@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { defineComponent, onBeforeUnmount, onErrorCaptured, onMounted, toValue, useTemplateRef } from 'vue'
+import { defineComponent, onBeforeUnmount, onErrorCaptured, useTemplateRef, watchPostEffect } from 'vue'
 import {
-  isPerspectiveCamera, isWebGLRenderer, isWebGPURenderer, TresCanvas, useLoop, useTresContext,
-  type TresContext, type TresRendererSetupContext,
+  isPerspectiveCamera, isWebGLRenderer, isWebGPURenderer, TresCanvas as WebGLCanvas, useLoop, useTresContext,
+  type TresContext,
 } from '@tresjs/core'
-import { WebGPURenderer } from 'three/webgpu'
+import { TresCanvas as WebGPUCanvas } from '@tresjs/core/webgpu'
 import SpinningCube from './SpinningCube.vue'
 
 const props = defineProps<{ choice: 'webgl' | 'experimental'; playing: boolean }>()
+// The page keys this owner by session and unmounts it before another choice can start.
+const Canvas = props.choice === 'webgl' ? WebGLCanvas : WebGPUCanvas
 const emit = defineEmits<{
   ready: [backend: string]
   draw: []
   error: [cause: unknown]
   lost: [message: string]
 }>()
-const sceneHost = useTemplateRef<HTMLDivElement>('sceneHost')
+const canvasOwner = useTemplateRef<{ readonly context?: TresContext }>('canvasOwner')
 let ownerRetired = false
 let activeContext: TresContext | undefined
 let observedCanvas: HTMLCanvasElement | undefined
@@ -53,39 +55,38 @@ function observeCanvas(canvas: HTMLCanvasElement): void {
   canvas.addEventListener('webglcontextlost', onContextLost)
 }
 
-const createExperimentalRenderer = (context: TresRendererSetupContext) => {
-  const canvas = toValue(context.canvas)
-  observeCanvas(canvas)
-  const renderer = new WebGPURenderer({ canvas, antialias: true, alpha: false })
-  onBeforeUnmount(() => {
-    // Tres owns normal disposal. r186's early dispose skips pending init resources.
-    // init() returns the existing native promise; no adapter/device is probed here.
-    if (!renderer.initialized) {
-      void renderer.init().then(
-        () => renderer.dispose(),
-        cause => reportError(cause),
-      )
-    }
-  })
-  return renderer
-}
-
 // Backend flags/device are read only after native initialization. These fields are
-// pinned to Three r186, not a portable backend-introspection or capability API.
+// pinned to Three r187, not a portable backend-introspection or capability API.
 interface InitializedBackend {
   isWebGPUBackend?: boolean
   isWebGLBackend?: boolean
   device?: { lost: Promise<{ reason: string; message: string }> }
 }
 
+watchPostEffect(() => {
+  const context = canvasOwner.value?.context
+  if (!context || ownerRetired) return
+  activeContext = context
+  const { instance, isInitialized } = context.renderer
+  observeCanvas(instance.domElement)
+  if (!isWebGPURenderer(instance) || !isInitialized.value) return
+  const { device } = instance.backend as unknown as InitializedBackend
+  if (!device) return
+
+  // Observe native loss without waiting for Tres's positive-buffer ready event.
+  // The already-owned device reports 'destroyed' too; Three's callbacks stay intact.
+  void device.lost.then(info => {
+    if (activeContext !== context) return
+    retireAfterLoss(`Native WebGPU device lost (${info.reason}): ${info.message || 'No additional message.'}`)
+  }, reportError)
+})
+
 function onReady(context: TresContext): void {
   if (ownerRetired) {
     context.renderer.loop.stop()
     return
   }
-  activeContext = context
   const instance = context.renderer.instance
-  observeCanvas(instance.domElement)
   if (isWebGLRenderer(instance)) {
     emit('ready', 'WebGL 2 · WebGLRenderer')
   } else if (isWebGPURenderer(instance)) {
@@ -95,14 +96,6 @@ function onReady(context: TresContext): void {
       : backend.isWebGLBackend === true
         ? 'WebGL 2 fallback · WebGPURenderer (experimental)'
         : 'Unconfirmed backend · WebGPURenderer (experimental)')
-    if (backend.device) {
-      // Observe the already-owned device, including its native 'destroyed' reason.
-      // Keep Three's own onDeviceLost/onError callbacks completely unchanged.
-      void backend.device.lost.then(info => {
-        if (ownerRetired || activeContext?.renderer.instance !== instance) return
-        retireAfterLoss(`Native WebGPU device lost (${info.reason}): ${info.message || 'No additional message.'}`)
-      }, reportError)
-    }
   } else {
     emit('ready', 'Unconfirmed renderer and backend')
   }
@@ -114,8 +107,8 @@ function onDraw(): void {
   emit('draw')
 }
 
-// Public custom-render gate retained from references/tresjs.md. This owns draw
-// eligibility only: Tres still owns camera, logical sizing, DPR and buffer writes.
+// This gate controls submission only. Tres still owns logical size, DPR and buffer
+// writes, and Three can initialize or resize backend resources before this guard.
 const PositiveSizeRender = defineComponent({
   setup() {
     const { renderer, scene, camera } = useTresContext()
@@ -175,26 +168,23 @@ const PositiveSizeRender = defineComponent({
   },
 })
 
-onMounted(() => {
-  const canvas = sceneHost.value?.querySelector('canvas')
-  if (canvas) observeCanvas(canvas)
-})
 onBeforeUnmount(() => {
   ownerRetired = true
   activeContext?.renderer.loop.stop()
   observedCanvas?.removeEventListener('webglcontextlost', onContextLost)
+  // Core invokes dispose once. Three r187 waits for pending init; it cannot cancel it.
 })
 </script>
 
 <template>
   <div
-    ref="sceneHost"
     class="scene"
     role="img"
     :aria-label="props.choice === 'webgl' ? 'Blue cube shaded by ambient and directional lights' : 'Experimental blue cube with an unlit Basic material'"
   >
-    <TresCanvas
-      :renderer="props.choice === 'experimental' ? createExperimentalRenderer : undefined"
+    <component
+      :is="Canvas"
+      ref="canvasOwner"
       render-mode="on-demand"
       :dpr="1"
       :fps-limit="30"
@@ -210,7 +200,7 @@ onBeforeUnmount(() => {
       <TresAmbientLight v-if="props.choice === 'webgl'" :intensity="0.8" />
       <TresDirectionalLight v-if="props.choice === 'webgl'" :position="[3, 4, 2]" :intensity="2" />
       <SpinningCube :playing="props.playing" :unlit="props.choice === 'experimental'" />
-    </TresCanvas>
+    </component>
   </div>
 </template>
 

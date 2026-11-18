@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 const sourceUrl = new URL('../../../skills/vue-kit/references/tresjs.md', import.meta.url)
 const outputUrl = new URL('../src/', import.meta.url)
 const source = await readFile(sourceUrl, 'utf8')
+const lockfile = await readFile(new URL('../bun.lock', import.meta.url))
 
 function exactlyOne(values, description) {
   if (values.length !== 1) {
@@ -42,6 +43,19 @@ const explicitCanvasNames = allFences.filter(body => /^<!-- SceneCanvas\.vue -->
 if (explicitCanvasNames.length > 1 || /^<!-- (?!SceneCanvas\.vue -->)[^\r\n]+ -->/.test(canvas)) {
   throw new Error('Ambiguous SceneCanvas.vue fence names. No recipe was generated.')
 }
+const coreImport = exactlyOne(
+  [...canvas.matchAll(/^import \{[^}]*\} from (['"])@tresjs\/core\1(?=\r?$)/gm)],
+  'root Core import in the archived WebGPU SceneCanvas.vue fence',
+)
+const webgpuImport = coreImport[0].replace('@tresjs/core', '@tresjs/core/webgpu')
+const retirement = exactlyOne(
+  [...canvas.matchAll(/^  onBeforeUnmount\(\(\) => \{\r?\n    \/\/ Tres disposes normally\. If init is still pending, release its late result too\.\r?\n[\s\S]*?^  \}\)\r?\n/gm)],
+  'archived renderer factory retirement hook',
+)
+// Three r187 dispose() waits for init, and Core 5.12 already calls it on unmount.
+const webgpuCanvas = canvas
+  .replace(coreImport[0], () => webgpuImport)
+  .replace(retirement[0], '')
 const replacement = exactlyOne(
   [...experimental.matchAll(/`(onMounted\(\(\) => \{ ready\.value = true \}\))`/g)].map(match => match[1]),
   'documented WebGPU onMounted replacement',
@@ -64,7 +78,13 @@ const webgl = ['SceneHost.vue', 'SceneCanvas.vue', 'SpinningCube.vue'].map(name 
 const sha256 = content => createHash('sha256').update(content).digest('hex')
 const generatedSources = [
   { name: 'SceneHost.vue', kind: 'prescribed-host-transformation', body: webgpuHost, sourceFence: host, section: 'Complete WebGLRenderer compatibility example: client boundary, controls, and animated scene', transformation: { prescribedBy: 'Experimental WebGPU and custom rendering', removed: mounted[0], replacement } },
-  { name: 'SceneCanvas.vue', kind: 'verbatim-source-fence', body: canvas, sourceFence: canvas, section: 'Experimental WebGPU and custom rendering' },
+  {
+    name: 'SceneCanvas.vue', kind: 'archived-webgpu-fence-migration', body: webgpuCanvas, sourceFence: canvas, section: 'Experimental WebGPU and custom rendering',
+    transformations: [
+      { kind: 'core-webgpu-entry', removed: coreImport[0], replacement: webgpuImport },
+      { kind: 'remove-redundant-renderer-retirement', removed: retirement[0], replacement: '', reason: 'Core 5.12 calls dispose() on unmount; Three r187 dispose() waits for pending init.' },
+    ],
+  },
   ...webgl.map(([name, body]) => ({ name, kind: 'verbatim-source-fence', body, sourceFence: body, section: 'Complete WebGLRenderer compatibility example: client boundary, controls, and animated scene' })),
 ]
 await mkdir(outputUrl, { recursive: true })
@@ -83,8 +103,10 @@ for (const { name, body: content } of generatedSources) {
 const metadataUrl = new URL('../.generated/recipe-provenance.json', import.meta.url)
 await mkdir(new URL('.', metadataUrl), { recursive: true })
 await writeFile(metadataUrl, JSON.stringify({
+  schemaVersion: 2,
   reference: 'skills/vue-kit/references/tresjs.md',
   referenceSha256: sha256(source),
+  lockfileSha256: sha256(lockfile),
   generatedSources: generatedSources.map(({ body, sourceFence, ...entry }) => ({
     ...entry,
     sourceStartLine: source.slice(0, source.indexOf(sourceFence)).split('\n').length,

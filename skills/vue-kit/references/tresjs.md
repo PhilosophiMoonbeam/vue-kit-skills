@@ -6,7 +6,7 @@ For a new compatible scene, start with the [WebGPU and Cientos guide](tresjs-web
 
 ## Released package map
 
-Stable profile as of **2026-11-18**, with each package version selected independently. The links point to the exact published manifests; [release history](https://github.com/tresjs/tres/releases) includes prereleases and dependency-only updates, not just feature releases.
+Stable profile as of **2026-11-22**, with each package version selected independently. The links point to the exact published manifests; [release history](https://github.com/tresjs/tres/releases) includes prereleases and dependency-only updates, not just feature releases.
 
 | Package | Published profile | Choose it for |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ Stable profile as of **2026-11-18**, with each package version selected independ
 | `@tresjs/cli` | [**0.1.1**](https://registry.npmjs.org/@tresjs/cli/0.1.1) | [Generate Vue SFCs from glTF](#cli-setup-and-its-actual-command-surface): local generation and optional model transformation |
 | `@tresjs/eslint-config` | [**1.7.0**](https://registry.npmjs.org/@tresjs/eslint-config/1.7.0) | [Optional release history](#tres-eslint-config-release-history-not-recommended), not the kit's lint setup |
 
-Install only what the scene needs. The runnable [workbench](#bundled-workbench-composition) and [repository lab](#evidence-and-proposed-verification) pin **Vue 3.5.44, Core 5.12.0, `three@0.187.0` and `@types/three@0.187.0`**. The standalone [TSL/Cientos](tresjs-webgpu.md), [Nuxt](nuxt-integrations.md#optional-tresjs-module), and [effects](tresjs-post-processing.md) examples keep their separate **Core 5.12.0 / `three@0.186.1` / `@types/three@0.186.0`** example pins. These are selected profiles, not minimums or evidence that the same features work on every backend.
+Install only what the scene needs. The runnable [workbench](#bundled-workbench-composition) and [repository lab](#evidence-and-proposed-verification) pin **Vue 3.5.46, Core 5.12.0, [Three r187](https://github.com/mrdoob/three.js/releases/tag/r187) (`three@0.187.0`) and [`@types/three@0.187.0`](https://registry.npmjs.org/@types/three/0.187.0)**. The standalone [TSL/Cientos](tresjs-webgpu.md), [Nuxt](nuxt-integrations.md#optional-tresjs-module), and [effects](tresjs-post-processing.md) examples retain their separate **Core 5.12.0 / `three@0.186.1` / `@types/three@0.186.0`** source profiles. They are not covered by the active r187 pins or by older r186 device receipts.
 
 ## Exact version and rendering boundary
 
@@ -1188,6 +1188,8 @@ The generator is an **optional local development tool**, not a runtime plugin, r
 
 `@tresjs/cli@0.1.1` exports the **`tres`** executable and is ESM. Use Bun 1.4.5 with the exact locally installed CLI: `--bun` overrides the executable's Node shebang and `--no-install` prevents fetching a different tool. Upstream Node requirements still matter for Node users: the CLI manifest says Node `>=20`, but Commander 15 requires **Node >=22.12.0**. Native `sharp` binaries/libvips matter when transforming textures; a successful parse does not verify native transform support. The published CLI has only `gltf <input>` and the registry smoke command `banana` (`-c, --count <n>`, default 1), plus Commander help/version. It is **not** the separate project scaffolder: do not invent `tres init`, `create`, `add`, `--renderer`, `--webgpu`, `--typescript`, `--draco` or `--telemetry` flags. [Manifest](https://registry.npmjs.org/@tresjs/cli/0.1.1), [Commander requirement](https://registry.npmjs.org/commander/15.0.0), [published command registration](https://unpkg.com/@tresjs/cli@0.1.1/dist/index.mjs).
 
+The [CLI manifest](https://registry.npmjs.org/@tresjs/cli/0.1.1) depends on `three: ^0.186.0`, which excludes the workbench's r187. Keep it a generation-only tool; do not force it to share the application's r187 resolution or import it into the browser bundle.
+
 ```sh
 bun add -D --exact @tresjs/cli@0.1.1
 bunx --bun --no-install tres gltf public/models/robot.glb --dry-run
@@ -1319,7 +1321,7 @@ The Bun 1.4.5 compatibility check without Node covered `@tresjs/cli@0.1.1` parsi
 
 ## Bundled workbench composition
 
-The bundled [workbench](../assets/example-app/package.json) pins **Vue 3.5.44,
+The bundled [workbench](../assets/example-app/package.json) pins **Vue 3.5.46,
 `@tresjs/core@5.12.0`, `three@0.187.0`, and `@types/three@0.187.0`**.
 Tasks/About do not import the lazy `/graphics` route. Within that route,
 [GraphicsPage.vue](../assets/example-app/src/GraphicsPage.vue) owns ordinary DOM
@@ -1367,7 +1369,7 @@ The November release guidance and the active runtime pins do not renew the archi
 
 Exact registry metadata, the archived **5.9.3** public declarations/runtime, official guides, and the Khronos Box GLB are source-research evidence, not browser execution. The archived cube configuration/three SFCs and loader child are focused examples; the loader child requires the shown canvas context. The [verification register](../assets/verification.json) and [audit](../assets/current-audit.json) preserve historical compiler, software-rendering, injected-failure and device observations under their original scope.
 
-The repository-only `verification/webgpu` lab runs **Vue 3.5.44, `@tresjs/core@5.12.0`, `three@0.187.0`, and `@types/three@0.187.0`**. It extracts the [archived WebGLRenderer fences](#complete-webglrenderer-compatibility-example-client-boundary-controls-and-animated-scene) verbatim. Its [archived WebGPU variant](#experimental-webgpu-and-custom-rendering) substitutes `onMounted(() => { ready.value = true })` for the host's WebGL2 pre-probe, rewrites the canvas's `@tresjs/core` import to `@tresjs/core/webgpu`, and removes the r186-only late-success disposal hook. The extractor records the transformations and hashes of both the fences and generated sources; it does not copy the standalone TSL/Cientos guide. The lab adds bounded picking, real-asset and shared-owner consumers and is not an installed-skill dependency.
+The repository-only `verification/webgpu` lab runs **Vue 3.5.46, `@tresjs/core@5.12.0`, `three@0.187.0`, and `@types/three@0.187.0`**. It extracts the [archived WebGLRenderer fences](#complete-webglrenderer-compatibility-example-client-boundary-controls-and-animated-scene) verbatim. Its [archived WebGPU variant](#experimental-webgpu-and-custom-rendering) substitutes `onMounted(() => { ready.value = true })` for the host's WebGL2 pre-probe, rewrites the canvas's `@tresjs/core` import to `@tresjs/core/webgpu`, and removes the r186-only late-success disposal hook. The extractor records the transformations and hashes of both the fences and generated sources; it does not copy the standalone TSL/Cientos guide. The lab adds bounded picking, real-asset and shared-owner consumers and is not an installed-skill dependency.
 
 The two earlier target-device reports and the closed focused gate (`vue-kit-skills-liu.33.3`) apply to the observed r186 resize/readback regressions. Use **Run focused recheck** for a changed source, package pair, or target device. Full verification covers broader diagnostics, not automatic acceptance. Neither sequence changes manual verdicts or certifies trusted input, real OS-preference transitions, every listener's release, VRAM reclamation, unused custom shaders, or postprocessing.
 

@@ -1,6 +1,6 @@
 # Product-specific design and continuous systems
 
-Read when composing a Vue surface, refining a Vuetify application, extending shared UI, or reviewing visual/interaction quality. This is implementation guidance, not a command framework or authorization to redesign unrelated screens. API baseline: **Vue 3.5.44; Vuetify 4.3.0**, stable releases. Design recommendations below are authored judgments; accessibility thresholds belong to [accessibility.md](accessibility.md), not aesthetic preferences. Use [vuetify-theme.md](vuetify-theme.md) for theme APIs and [vuetify-components.md](vuetify-components.md) for component contracts.
+Read when composing a Vue surface, refining a Vuetify application, extending shared UI, or reviewing visual/interaction quality. This is implementation guidance, not a command framework or authorization to redesign unrelated screens. API baseline: **Vue 3.5.46; Vuetify 4.3.4**, stable releases. Design recommendations below are authored judgments; accessibility thresholds belong to [accessibility.md](accessibility.md), not aesthetic preferences. Use [vuetify-theme.md](vuetify-theme.md) for theme APIs and [vuetify-components.md](vuetify-components.md) for component contracts.
 
 ## 1. Establish the task and authority
 
@@ -98,7 +98,7 @@ export const vuetify = createVuetify({
 })
 ```
 
-Vuetify 4.3.0 generates RGB channel variables such as `--v-theme-surface`; use `rgb(var(--v-theme-surface))`, not `var(--v-theme-surface)` as a complete color. It can derive unspecified on-colors, but derivation is not rendered contrast evidence. `defaultTheme: 'light'` above is explicit; the upstream default is `system`. [Theme documentation](https://vuetifyjs.com/en/features/theme/), [exact 4.3.0 implementation](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/theme.ts).
+Vuetify 4.3.4 generates RGB channel variables such as `--v-theme-surface`; use `rgb(var(--v-theme-surface))`, not `var(--v-theme-surface)` as a complete color. It can derive unspecified on-colors, but derivation is not rendered contrast evidence. `defaultTheme: 'light'` above is explicit; the upstream default is `system`. [Theme documentation](https://vuetifyjs.com/en/features/theme/), [exact 4.3.4 implementation](https://github.com/vuetifyjs/vuetify/blob/v4.3.4/packages/vuetify/src/composables/theme.ts).
 
 ## 4. Typography, layout, and density
 
@@ -258,8 +258,8 @@ Before using captures, confirm the intended route/state is shown, not an inciden
 
 ## Sources
 
-- [Vue 3.5.44 registry metadata](https://registry.npmjs.org/vue/3.5.44); [Vue accessibility guidance](https://vuejs.org/guide/best-practices/accessibility.html).
-- [Vuetify 4.3.0 registry metadata](https://registry.npmjs.org/vuetify/4.3.0); [theme docs](https://vuetifyjs.com/en/features/theme/); [4.3.0 theme source/types](https://github.com/vuetifyjs/vuetify/blob/v4.3.0/packages/vuetify/src/composables/theme.ts).
+- [Vue 3.5.46 registry metadata](https://registry.npmjs.org/vue/3.5.46); [Vue accessibility guidance](https://vuejs.org/guide/best-practices/accessibility.html).
+- [Vuetify 4.3.4 registry metadata](https://registry.npmjs.org/vuetify/4.3.4); [theme docs](https://vuetifyjs.com/en/features/theme/); [4.3.4 theme source/types](https://github.com/vuetifyjs/vuetify/blob/v4.3.4/packages/vuetify/src/composables/theme.ts).
 - [WCAG 2.2 Recommendation](https://www.w3.org/TR/WCAG22/), with criterion-specific evidence in [accessibility.md](accessibility.md).
 - [Google Web Vitals: metrics, thresholds and field interpretation](https://web.dev/articles/vitals).
 - [CSS Color 4 color spaces and gamut handling](https://www.w3.org/TR/css-color-4/); [responsive image descriptors and selection](https://web.dev/learn/images/descriptive); [font delivery, display and fallback metrics](https://web.dev/articles/font-best-practices).

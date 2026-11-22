@@ -2,6 +2,14 @@
 
 Use with [OpenVue selection and architecture](openvue.md) and [Vite/Nuxt setup](openvue-setup.md). This reference targets `openvue` and `@openvue/themes` **1.0.0**, Vue 3.5, and the published styling engine **1.0.0** implementation. The theme package declares `@openuxkit/styled: ^1.0.0` and `@openuxkit/themes: ^1.1.0`, so preserve the lockfile: pinning the facade alone does not pin its engine or presets. Current documentation can describe later exports. Do not add another theme-engine package alongside `@openvue/themes` merely because a documentation example uses a different distribution. [Exact facade metadata](https://registry.npmjs.org/@openvue/themes/1.0.0).
 
+## Adopt 1.1.1: Nide and the Theme Builder
+
+In 1.1.0 upstream added **Nide**, a fifth preset, layered on Aura. With `@openvue/themes@1.1.1`, use `import Nide from '@openvue/themes/nide'` and set the existing plugin or Nuxt module's `theme.preset` to `Nide` (or `definePreset(Nide, overrides)`). Do not import it as a named root export. The facade depends on `@openuxkit/themes:^1.2.0` and `@openuxkit/styled:^1.0.0`; retain the lockfile rather than adding or assuming a separately pinned engine. [Exact facade](https://registry.npmjs.org/@openvue/themes/1.1.1), [Nide runtime](https://unpkg.com/@openvue/themes@1.1.1/nide/index.mjs), [Nide declarations](https://unpkg.com/@openvue/themes@1.1.1/nide/index.d.ts). The latter contain token interfaces but no explicit default declaration, so check the installed Vite/Nuxt TypeScript profile instead of patching declarations or claiming a compiler failure.
+
+Nide's neutral primary, compact dimensions, segmented controls and card-style feedback change the visual baseline. Recheck contrast, focus and touch targets in both schemes, and remeasure virtual rows rather than carrying over Aura sizes. Starting in 1.1.0 the RadioButton dot centers at fractional scaling; enlarge a custom dot with `radiobutton.icon.size` or `font-size`, not extra width/height on `.p-radiobutton-icon` alone.
+
+Use the [Theme Builder](https://openvue.dev/theme) for a quick styled starting point, and the Theme Designer for token-level changes. The builder previews all five bases in light/dark, exports a preset diff, host setup and typography CSS, and offers share links and an agent prompt. Review/commit only the chosen source and integrate into the application's existing theme owner; importing an export is not a dependency on the tool. Per the [tagged changelog](https://github.com/openvi-foundation/openvue/blob/1.1.1/CHANGELOG.md#110---2026-10-29), the builder runs in-browser but can request Google Fonts; remove or self-host font imports if your network/privacy/CSP policy requires it, and treat the theme embedded in a share URL as public. No 1.1.1 browser or compiler result is implied here.
+
 ## Choose the styling owner
 
 | Requirement | Use | Ownership boundary |

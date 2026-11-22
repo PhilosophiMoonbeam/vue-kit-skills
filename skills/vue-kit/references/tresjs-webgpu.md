@@ -6,7 +6,7 @@ Choose `@tresjs/core/webgpu` for a new scene whose materials, effects, dependenc
 
 ## Install and compile
 
-The [workbench](tresjs.md#bundled-workbench-composition) and [repository lab](tresjs.md#evidence-and-proposed-verification) pin **Core 5.12.0 / `three@0.187.0` / `@types/three@0.187.0`**. The standalone TSL and optional Cientos FBO examples below keep **Core 5.12.0 / `three@0.186.1` / `@types/three@0.186.0`**, like the separately pinned [Nuxt](nuxt-integrations.md#optional-tresjs-module) and [effects](tresjs-post-processing.md) examples. Use the following pins in an existing Vue/Vite app; they are not minimum requirements. Install Cientos only for the FBO variant.
+The [workbench](tresjs.md#bundled-workbench-composition) and [repository lab](tresjs.md#evidence-and-proposed-verification) pin **Vue 3.5.46 / Core 5.12.0 / `three@0.187.0` / `@types/three@0.187.0`**. The standalone TSL and optional Cientos FBO examples below retain their separate source profile: **Vue 3.5.44 / Core 5.12.0 / `three@0.186.1` / `@types/three@0.186.0`**. The [Nuxt](nuxt-integrations.md#optional-tresjs-module) and [effects](tresjs-post-processing.md) examples also retain r186 source pins. Use the following exact versions to reproduce this example in an existing Vue/Vite app; they are not minimum requirements. Install Cientos only for the FBO variant.
 
 ```sh
 bun add --exact vue@3.5.44 three@0.186.1 @tresjs/core@5.12.0

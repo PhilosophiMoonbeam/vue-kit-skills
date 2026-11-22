@@ -4,7 +4,7 @@ Read for `@formkit/core`, `FormKitNode`, node/plugin lifecycle, schema-generated
 
 ## Exact packages and boundaries
 
-Verified current stable **`@formkit/core@2.1.2`** and **`@formkit/vue@2.1.2`**. Core depends on `@formkit/utils ^2.1.2`; it is framework-independent, not literally dependency-free. The Vue adapter declares Vue `^3.4.0` and depends on the matching FormKit 2.1.2 package family. Vue 3.5.44 satisfies that Vue peer. [Core manifest](https://unpkg.com/@formkit/core@2.1.2/package.json), [Vue manifest](https://unpkg.com/@formkit/vue@2.1.2/package.json).
+Current standalone examples use **`@formkit/core@2.9.0`**, **`@formkit/vue@2.9.0`**, and, where imported directly, **`@formkit/inputs@2.9.0`**. Core depends on `@formkit/utils ^2.9.0`; it is framework-independent, not dependency-free. The Vue adapter declares Vue `^3.4.0` (Vue **3.5.46** satisfies it) and `^2.9.0` for its FormKit family dependencies. Keep directly used family packages on **2.9.0**, including rules, validation, i18n, themes or addons when needed. [Core metadata](https://registry.npmjs.org/@formkit/core/2.9.0), [Vue metadata](https://registry.npmjs.org/@formkit/vue/2.9.0), [inputs metadata](https://registry.npmjs.org/@formkit/inputs/2.9.0).
 
 | Need | Package and responsibility |
 | --- | --- |
@@ -25,7 +25,7 @@ A core node type is only **`input`**, **`group`**, or **`list`**. An input/UI ty
 5. Use `node.at('profile.email')` or `node.at('people.0.name')` to traverse; it may return `undefined`. Core addresses use the configured delimiter (default dot), not vee-validate bracket-path semantics.
 6. Release listeners and owned nodes on teardown. Do not retain a module-global node graph across users, requests, or component instances.
 
-Complete TypeScript function using only core. It creates a real nested object/list graph, demonstrates middleware, captures committed events, returns a detached snapshot, and destroys every node it manually owns. Run it in an environment with `@formkit/core@2.1.2`; no Vue plugin or backend is implied.
+Complete TypeScript function using only `@formkit/core@2.9.0`. It creates a nested object/list graph, demonstrates middleware, captures committed events, returns a detached snapshot, and destroys the manually owned nodes. No Vue plugin or backend is implied.
 
 ```ts
 import { createNode } from '@formkit/core'
@@ -71,7 +71,7 @@ export async function collectProfile() {
 }
 ```
 
-Group writes require objects and list writes require arrays; do not feed them arbitrary scalar data. `node.input(value, false)` commits synchronously, but use the ordinary async path unless implementing a deliberate adapter/internal operation. `_value` and `_c` are internal escape hatches, not application state APIs. [Architecture](https://formkit.com/essentials/architecture), [pinned node declarations](https://unpkg.com/@formkit/core@2.1.2/dist/index.d.mts).
+Group writes require objects and list writes require arrays. `node.input(value, false)` commits synchronously, but use the ordinary async path unless implementing a deliberate adapter/internal operation. `_value` and `_c` are internal escape hatches, not application state APIs. [Architecture](https://formkit.com/essentials/architecture), [pinned node declarations](https://unpkg.com/@formkit/core@2.9.0/dist/index.d.mts).
 
 ## Events, middleware, plugins, and destruction
 
@@ -83,13 +83,13 @@ Group writes require objects and list writes require arrays; do not feed them ar
 - Hooks are middleware, e.g. `node.hook.commit((value, next) => next(value))`. Register meaningful transformations once. Always continue the chain for middleware intended to transform/pass through; skipping `next` interrupts downstream work. Save functions do not belong in value hooks.
 - Use inherited `config` for defaults, instance `props` for overrides. A config change can propagate through the graph. Do not walk the whole tree on every keystroke; `node.walk()` excludes the node itself and is a lifecycle-level operation.
 
-These details are established by the [2.1.2 runtime](https://unpkg.com/@formkit/core@2.1.2/dist/index.mjs), including important cleanup and false-return behavior not obvious from the short API descriptions.
+The [2.9.0 runtime](https://unpkg.com/@formkit/core@2.9.0/dist/index.mjs) retains the cleanup and false-return behavior. Recorded plugins are idempotent under repeated `.use()` with the **same function identity**; a fresh closure is a different plugin, and a plugin returning `false` must make repeated setup safe itself.
 
 ### Configuration, definitions, and core-only traversal
 
 `createConfig({ locale: 'en' })` creates a shared root-config proxy; attach it through `config: { rootConfig }` when creating each independently owned tree, then set `rootConfig.locale` to notify inheriting nodes. A node's explicit prop wins over config; local config wins over parent/root defaults. `delay` defaults to 20 ms for input nodes. Change `delimiter` before creating addresses when field names contain dots. These are core configuration objects, not Vue's `defaultConfig()` installer.
 
-For unavoidable same-name siblings, set the parent's `config: { mergeStrategy: { fieldName: 'synced' } }`; 2.1.2 supports only `'synced'`. Otherwise use unique names: two controls fighting over one object slot are not separate fields. `node.resetConfig()` reconnects inherited config after deliberate graph changes; do not mutate private `_add`/`_rm` bookkeeping.
+For unavoidable same-name siblings, set the parent's `config: { mergeStrategy: { fieldName: 'synced' } }`; 2.9.0 supports only `'synced'`. Otherwise use unique names: two controls fighting over one object slot are not separate fields. `node.resetConfig()` reconnects inherited config after deliberate graph changes; do not mutate private `_add`/`_rm` bookkeeping.
 
 For custom input libraries, `node.define({ type, family, props, schema, features })` supplies a structural definition; `component` is the alternative to schema rendering. `node.addProps(['currency'])` promotes a matching attribute from `node.props.attrs` into the pseudo-prop namespace. Definition-map entries can supply `default`, `boolean`, `getter`, and `setter`. Prefer a plugin feature for reusable behavior; reserve `node.extend(key, { get, set })` traps for a genuine core extension, never a duplicate writable `value`.
 
@@ -99,10 +99,11 @@ For custom input libraries, `node.define({ type, family, props, schema, features
 | `node.walk(callback, stopOnFalse?, skipSubtreeOnFalse?)` | Descendants, not self; avoid repeated whole-tree scans during input. |
 | `node.at('$root.profile.email')`, `$parent`, `$self` | Known address traversal; handle missing results. |
 | `node.find('email', 'name')`, `bfs(root, 'email', 'name')` | Search when the address is not known; not a substitute for retaining an owned reference. |
+| `node.closest('address')`, `node.closest('list', 'type')` | Search self then ancestors; returns `undefined` on no match. A custom searcher is the second argument. Address syntax also accepts `$self.closest(list, type).0.price`. [2.7.0 release](https://github.com/formkit/formkit/releases/tag/v2.7.0), [exact traversal](https://github.com/formkit/formkit/blob/v2.9.0/packages/core/src/node.ts#L3022-L3056). |
 | `isNode(candidate)`, `isList(context)`, `isPlaceholder(child)` | Narrow an extension/adapter value before treating it as a node/list. Placeholders are settled stand-ins for list synchronization, not inputs to validate or destroy. |
 | `sync: true` on a core list | Synchronizes child structure with array values; use only when implementing a core list owner. Vue-rendered lists already have an adapter owner. |
 
-`disturb`, `calm`, and `hydrate` are exposed machinery for adapters, not normal application writes; use `input` and settlement. `useIndex`/`valueInserted`/`valueMoved`/`valueRemoved` are internal sentinels despite being exported. `node.root` walks ancestors on every access; retain it outside hot loops. [Pinned core declarations and implementation](https://unpkg.com/@formkit/core@2.1.2/dist/index.d.mts).
+`disturb`, `calm`, and `hydrate` are adapter machinery, not normal application writes; use `input` and settlement. `useIndex`/`valueInserted`/`valueMoved`/`valueRemoved` are internal sentinels despite being exported. `node.root` walks ancestors on access; retain it outside hot loops. [Pinned core declarations](https://unpkg.com/@formkit/core@2.9.0/dist/index.d.mts).
 
 ### Event and hook selection
 
@@ -114,7 +115,7 @@ Hook payloads differ: `input`/`commit` carry values; `init` carries the node; `p
 
 ## Vue installation boundary
 
-Declare `@formkit/vue@2.1.2`, `@formkit/core@2.1.2`, and `@formkit/inputs@2.1.2` as direct dependencies of the consuming Vue app. Both complete SFCs below import types directly from `@formkit/core` and `@formkit/inputs`; those imports need explicit package prerequisites even though the Vue adapter also depends on them. Do not rely on hoisted transitive visibility, including for type-only imports. Keep this package family aligned at the pinned **2.1.2** release. [Vue package manifest](https://unpkg.com/@formkit/vue@2.1.2/package.json), [core package manifest](https://unpkg.com/@formkit/core@2.1.2/package.json), [inputs package manifest](https://unpkg.com/@formkit/inputs@2.1.2/package.json).
+Declare `@formkit/vue@2.9.0`, `@formkit/core@2.9.0`, and `@formkit/inputs@2.9.0` as direct dependencies of the consuming app. Both complete SFCs import types directly from core and inputs; do not rely on transitive hoisting, including for type-only imports.
 
 The following is an **entry-point integration fragment**: `app` is the existing Vue app before `.mount()`, not a second app to create inside a component.
 
@@ -124,7 +125,7 @@ import { plugin, defaultConfig } from '@formkit/vue'
 app.use(plugin, defaultConfig())
 ```
 
-`defaultConfig()` supplies input, validation, and message behavior; importing the component alone is not equivalent to installing that configuration. Apply the application's theme separately; no Vuetify styling is inherited automatically. Use the Vue adapter's pinned exports when the public site displays React examples. [Vue declarations](https://unpkg.com/@formkit/vue@2.1.2/dist/index.d.mts).
+`defaultConfig()` supplies input, validation, and message behavior; importing the component alone is not equivalent to installing that configuration. Apply the application's theme separately; no Vuetify styling is inherited automatically. Use the Vue adapter's pinned exports when the public site displays React examples. [Vue declarations](https://unpkg.com/@formkit/vue@2.9.0/dist/index.d.mts).
 
 ## Complete Vue field, async validation, and async save
 
@@ -132,7 +133,7 @@ Complete embeddable SFC after the installation above. Required callbacks are exp
 
 ```vue
 <script setup lang="ts">
-import { nextTick, ref, shallowRef, useTemplateRef, type FormHTMLAttributes, type InputHTMLAttributes } from 'vue'
+import { nextTick, ref, shallowRef, type FormHTMLAttributes, type InputHTMLAttributes } from 'vue'
 import { FormKit, reset } from '@formkit/vue'
 import type { FormKitNode, FormKitSectionsSchema } from '@formkit/core'
 import type { FormKitInputs } from '@formkit/inputs'
@@ -148,7 +149,6 @@ const props = defineProps<{
 const errorSemantics: FormKitSectionsSchema = {
   input: { attrs: { 'aria-invalid': '$state.invalid || $state.errors || undefined' } },
 }
-const region = useTemplateRef<HTMLElement>('region')
 const emailNode = shallowRef<FormKitNode | null>(null)
 const saving = ref(false)
 const status = ref('')
@@ -173,7 +173,8 @@ const validationMessages = {
 
 async function focusEmail() {
   await nextTick()
-  region.value?.querySelector<HTMLInputElement>('input[name="email"]')?.focus()
+  const input = emailNode.value?.context?.refs?.input
+  if (input instanceof HTMLInputElement) input.focus()
 }
 
 async function submit(data: Draft, node: FormKitNode) {
@@ -221,7 +222,7 @@ const emailAttrs: Pick<InputHTMLAttributes, 'autocomplete' | 'class' | 'style'> 
 </script>
 
 <template>
-  <section ref="region" aria-label="Profile editor">
+  <section aria-label="Profile editor">
     <FormKit
       v-bind="formBindings"
       :value="initialValues"
@@ -245,27 +246,27 @@ const emailAttrs: Pick<InputHTMLAttributes, 'autocomplete' | 'class' | 'style'> 
 </template>
 ```
 
-The complete SFC uses narrow checked bindings for the **2.1.2 declaration boundary**, rather than weakening `strictTemplates`. The adapter exports a callable generic intersected with a runtime component whose props are a union; a literal `type="form"` does not reliably narrow direct form event bindings in strict template tooling. `FormBindings` selects the published `form` member, checking its `onSubmit`/`onSubmitInvalid` props while retaining the application's exact callback signatures. Its sole local extension, `submitLabel?: string`, describes a real runtime pseudo-prop: the pinned form definition registers `submitLabel` and renders it as the built-in submit button's label, but omits it from `FormKitInputProps['form']`. This is a local checked binding, not a global module augmentation or a claim that the package declares that property.
+The complete SFC uses narrow checked bindings without weakening `strictTemplates`. **2.9.0** exports `FormKit` as the generic callable only, unlike the **2.1.2** callable/`DefineComponent` intersection. Keep the typed `FormBindings` bag for the form callbacks and runtime `submitLabel`: the form registers and renders it but omits it from `FormKitInputProps['form']`. This local bag is not module augmentation. For incumbent `InstanceType`, `extends`, or dynamic `h()` requiring a constructor-style component, use **`FormKitRuntimeComponent`**. Do not substitute it in templates just to bypass stronger inference.
 
-`autocomplete` is likewise a real native input attribute absent from that props union. `emailAttrs` checks it against Vue's native attribute type; optional shared `class`/`style` keys avoid an all-native weak-type mismatch without creating runtime values. Keep the form and input bags on their respective components exactly as shown; do not put callbacks in the native bag or replace the collected node value with a second model. [Published Vue component types](https://unpkg.com/@formkit/vue@2.1.2/dist/index.d.mts), [input/form/event declarations](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.d.mts), [registered form pseudo-props and submit schema](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs), [Vue attribute routing](https://unpkg.com/@formkit/vue@2.1.2/dist/index.mjs).
+`autocomplete` is a native input attribute, not a declared FormKit input prop. `emailAttrs` checks it against Vue's native attribute type; optional shared `class`/`style` keys avoid an all-native weak-type mismatch without creating runtime values. Keep form and input bags on their respective components. [Vue types](https://unpkg.com/@formkit/vue@2.9.0/dist/index.d.mts), [input/form/event declarations](https://unpkg.com/@formkit/inputs@2.9.0/dist/index.d.mts), [form definition](https://unpkg.com/@formkit/inputs@2.9.0/dist/index.mjs), [Vue attribute routing](https://unpkg.com/@formkit/vue@2.9.0/dist/index.mjs).
 
-`novalidate` is checked against Vue's native `FormHTMLAttributes` and forwarded to the actual form through `$attrs`. It prevents the browser's `type="email"` constraint gate from intercepting submission before FormKit can run its own validation and invalid-submit callback. The pinned form section does not add it automatically; keep it on both complete forms here. Labels, email input semantics, `aria-required`, and error descriptions remain intact. [Pinned form/input sections](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs), [native `novalidate`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#novalidate).
+`novalidate` is checked against Vue's native `FormHTMLAttributes` and forwarded to the form through `$attrs`. It prevents native email constraints from intercepting submission before FormKit can validate and call its invalid-submit callback. FormKit does not add it automatically; keep it on both forms here. Labels, email semantics, `aria-required`, and error descriptions remain intact. [Pinned form sections](https://unpkg.com/@formkit/inputs@2.9.0/dist/index.mjs), [native `novalidate`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#novalidate).
 
-The 2.1.2 default input exposes required state and error descriptions but does not set native `aria-invalid`. The typed section extension projects existing visible-validation or explicit-error state onto that attribute; it adds no validator or submit gate and leaves pristine inputs unmarked. [Pinned Vue state bindings](https://unpkg.com/@formkit/vue@2.1.2/dist/index.mjs), [section overrides](https://formkit.com/essentials/inputs#sections-schema).
+The default input still exposes required state and error descriptions without setting native `aria-invalid`. The typed section extension projects visible-validation or explicit-error state onto that attribute, without adding a validator or marking pristine inputs. [Pinned Vue bindings](https://unpkg.com/@formkit/vue@2.9.0/dist/index.mjs), [section overrides](https://formkit.com/essentials/inputs#sections-schema).
 
 Custom rules return **boolean or Promise<boolean>**, not vee-validate's message-string convention. `required|email` runs before the debounced remote rule; rules normally bail and skip empty values. The generic remote-rule message deliberately does not mislabel a network outage as “email taken.” If the product needs distinct outage/unavailable messages, represent that distinction explicitly in application state and messages.
 
-The form waits for committed input values **and its validating ledger**, marks fields submitted, rejects blocking failures, then calls `@submit` with an unbound copy of collected data plus the core node. Do not submit an independently bound `v-model` snapshot instead. Returning the save promise keeps loading active; an `async` handler is suitable. In 2.1.2 the disabled feature normalizes `false` to `undefined`, so `:disabled="saving"` alone does **not** opt out of automatic disabling. The example sets `submitBehavior: 'live'` to leave disabled state to `saving` and its synchronous write guard; this disables neither validation nor loading and is not a persistence guarantee. [2.1.2 form/disabled features](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs), [boolean normalization](https://unpkg.com/@formkit/utils@2.1.2/dist/index.mjs).
+The form waits for committed values and its validating ledger, marks fields submitted, rejects blocking failures, then calls `onSubmit` with a copy of collected values plus the node. Return the save promise to keep loading active; do not submit a second `v-model` snapshot. The disabled feature normalizes `false` to `undefined`, so `:disabled="saving"` alone does not opt out of automatic disabling. `submitBehavior: 'live'` leaves disabled state to the `saving` guard without disabling validation/loading. That guard and FormKit's latest-submit tracking do not make a server write idempotent. [2.9.0 form/disabled features](https://unpkg.com/@formkit/inputs@2.9.0/dist/index.mjs).
 
 ### Async race and failure boundaries
 
-The 2.1.2 validation engine records a run token and ignores a stale promise result when a newer validation run supersedes it. It does **not** give a custom rule an AbortSignal or cancel an arbitrary request for you. Keep async rules free of side effects; return their result, do not manually set errors after awaiting an obsolete request. Debounce reduces calls but does not cancel one already sent. If cancellation is required, own controllers per field/node and dispose them with that node's lifecycle. Always catch expected request rejection: the validation engine consumes promise fulfillment, so an uncaught rejection can leave validation unresolved. [Pinned validation engine](https://unpkg.com/@formkit/validation@2.1.2/dist/index.mjs).
+The 2.9.0 validator records a run token and ignores a stale result when superseded. It does not give a custom rule an `AbortSignal` or cancel requests. Return a result rather than publishing errors after awaiting an obsolete request. Debounce reduces requests but does not cancel one already sent. When cancellation is needed, own and dispose controllers per field/node. [Pinned validation engine](https://unpkg.com/@formkit/validation@2.9.0/dist/index.mjs).
 
-**Excluded rule contracts:** an unhandled rejected promise and a vee-validate-style message string are not supported alternatives. In the exact 2.1.2 engine, `run()` attaches only a fulfillment handler, and only its completion callback removes the `validating` message. A rejection therefore has no failure/cleanup continuation in that run; it must not be described as a normal validation failure. The supplied `emailAvailable` catches the application rejection and resolves `false`, allowing the ledger to settle and the configured failure message to appear. The same implementation uses `!!result` for passing state and `result === false` for a failed message, so a nonempty error string can be interpreted as success. Preserve boolean results and configure text through `validationMessages`; never port a vee-validate rule unchanged. These are published-source findings, not executed reproductions. [Exact validation continuation](https://unpkg.com/@formkit/validation@2.1.2/dist/index.mjs).
+**Excluded rule contracts:** 2.9.0 `run()` attaches only a fulfillment handler, and only completion removes the `validating` message. Unhandled rejection can leave validation unresolved; `emailAvailable` catches application rejection and resolves `false`. The engine uses `!!result` for passing state and `result === false` for a failed message, so a nonempty error string can count as success. Return booleans and provide text through `validation-messages`. The branches are source-checked in 2.9.0; the earlier 2.1.2 engine was separately exercised.
 
 An availability result can become stale before save. Expected authoritative save rejection uses `node.setErrors(formErrors, childErrors)` with allowlisted child paths. By default manually assigned input errors clear when that input changes; `preserve-errors`/inherited `preserveErrors` changes that policy. `node.clearErrors(true)` clears descendant errors assigned by that form too. Do not erase a failed draft or reset on a rejected save. For the nonempty form object shown above, `reset(node, canonicalValue)` makes that accepted value the new initial/reset state; `reset(node)` restores the current initial state, not necessarily empty strings.
 
-**Pinned reset limit:** 2.1.2 updates the baseline only when `Boolean(resetTo && !empty(resetTo))` is true. Direct scalar resets to `false`, `0`, `''`, `null`, or `undefined` restore the previous initial value instead; `{}`/`[]` do not establish a new baseline either. Reset the owning form with an explicit nonempty object such as `{ email: '' }` or `{ consent: false }` when those values must become the new baseline. Do not generalize this example into an unrestricted scalar/empty-container reset contract. [Pinned reset](https://unpkg.com/@formkit/core@2.1.2/dist/index.mjs), [empty-value predicate](https://unpkg.com/@formkit/utils@2.1.2/dist/index.mjs).
+**Pinned reset limit:** 2.9.0 still updates the baseline only when `Boolean(resetTo && !empty(resetTo))` is true. Scalar resets to `false`, `0`, `''`, `null`, or `undefined` restore the previous initial value; `{}`/`[]` do not establish a new baseline either. Reset the owning form with a nonempty object such as `{ email: '' }` or `{ consent: false }`. [Pinned reset](https://github.com/formkit/formkit/blob/v2.9.0/packages/core/src/reset.ts#L66-L114), [empty-value predicate](https://unpkg.com/@formkit/utils@2.9.0/dist/index.mjs).
 
 Returned field errors request focus only after `finally` clears `saving` and `focusEmail()` awaits the DOM flush. Calling it inside the save branch would focus a still-disabled input. The invalid-submit callback has no application save lock to release; it can use the helper directly. This sequencing requires both `submitBehavior: 'live'` and `:disabled="saving"` as shown, not a second automatic disabled owner. [Disabled control focus](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled), [Vue `nextTick`](https://vuejs.org/api/general.html#nexttick).
 
@@ -293,7 +294,7 @@ node.destroy()
 
 ### Registry lifetime and diagnostics
 
-In the **published 2.1.2 runtime**, an explicit creation-time `props.id` registers a node, including a non-root node; a generated ID alone is not registered by `nodeInit`. The declaration comment about “root nodes or alias” is not the runtime condition. `register(node)` explicitly registers its current ID; `deregister(node)` removes it and publishes `payload: null`. IDs are registry-wide, so keep them unique across mounted trees. A watcher observes future changes, not the already-present node: combine an initial `getNode(id)` with `watchRegistry`.
+An explicit creation-time `props.id` registers a node, including a non-root node; a generated ID alone is not registered by `nodeInit`. IDs are registry-wide; keep them unique. Since **2.2.1**, duplicate registration warns in development and replaces the lookup, and deregistering the old node does not remove the newer entry. Deregistering the registered owner publishes `payload: null`; it does not restore a displaced owner. Use `getNode(id)` for existing state and `watchRegistry` for future changes. [Exact registry](https://github.com/formkit/formkit/blob/v2.9.0/packages/core/src/registry.ts).
 
 Complete setup-only core registry lifetime; the watcher is active before creation, observes the actual registration/removal, and is always removed:
 
@@ -321,7 +322,7 @@ try {
 
 `resetRegistry()` is global test/isolated-runtime teardown, not a component unmount operation; it deregisters nodes and removes watchers belonging to other trees too. `resetCount()` resets generated-name/ID counters for deterministic isolated tests, not user-facing identity.
 
-For debugging, core `error(code, data)` throws, while `warn(code, data)` reports through `warningHandler`. Register `errorHandler`/`warningHandler` middleware to enrich/report and continue with `next(payload)`; do not convert malformed values into success. Codes 107/108 mean wrong group/list value shape; 103/104 concern compiler syntax; 151 means `submitForm` did not find an HTML form. `submitForm(id, shadowRoot)` accepts an alternate document/shadow root; do not invoke its DOM contract during SSR. The published runtime exports `FORMKIT_VERSION = "2.1.2"`; a prepared-source `"__FKV__"` placeholder is not evidence about the distributed package.
+Core `error(code, data)` throws, while `warn(code, data)` reports through `warningHandler`. Use `errorHandler`/`warningHandler` middleware to enrich/report and continue with `next(payload)`; do not turn malformed values into success. Codes 107/108 indicate wrong group/list shape; 103/104 concern compiler syntax; 151 means `submitForm` did not find an HTML form. `submitForm(id, shadowRoot)` accepts an alternate document/shadow root; do not invoke its DOM contract during SSR. Read the published `FORMKIT_VERSION`, not the `"__FKV__"` source placeholder.
 
 ### Bulk messages, counters, and class composition
 
@@ -381,7 +382,9 @@ const formBindings = {
 
 Use `__raw__sectionsSchema` here: the outer renderer must pass the section object unparsed so its `$state` expressions run in the email input's context, not the outer schema's data scope. The prefix is removed before passing `sectionsSchema` to `FormKit`. [Raw schema values](https://formkit.com/essentials/schema#raw-values).
 
-The raw prefix is a **scope boundary**, not an escape from trust policy: allow it only on known local props such as this `sectionsSchema`. Removing the prefix makes `parseAttrs` recursively interpret nested `$state` strings in the outer schema context. Likewise, a false-returning core plugin is neither inherited nor recorded; a repeated explicit registration can repeat its side effects. Keep such plugins side-effect-free/idempotent or use a normal recorded plugin with explicit node-type guards. Neither schema raw values nor plugin return values are validation-schema adapters. [Exact Vue `parseAttrs`](https://unpkg.com/@formkit/vue@2.1.2/dist/index.mjs), [exact core `use`](https://unpkg.com/@formkit/core@2.1.2/dist/index.mjs).
+The raw prefix is a **scope boundary**, not an escape from trust policy: allow it only on known local props. Removing it makes `parseAttrs` interpret nested `$state` in the outer context. **`__deep__` is the opposite opt-in:** `__deep__options: [{ label: 'Banana', value: 'b', attrs: { disabled: '$outOfStock' } }]` evaluates expressions in nested objects and arrays. Ordinary option arrays keep literal strings such as `'$10'`. Neither prefix is a validation adapter. [2.8.0 release](https://github.com/formkit/formkit/releases/tag/v2.8.0), [exact parser](https://github.com/formkit/formkit/blob/v2.9.0/packages/vue/src/FormKitSchema.ts#L393-L462).
+
+In 2.9.0 a `$cmp` node also accepts `slots: { header: [{ $el: 'h2', children: '$title' }] }` when the allowlisted component supplies a `header` slot with a `title` prop. Each slot sees its own scoped props. `children` supplies the default unless `slots.default` supplies a replacement. These are outgoing component slots, unlike `$slots.name`, which reads slots supplied to `FormKitSchema`. [2.9.0 release](https://github.com/formkit/formkit/releases/tag/v2.9.0), [exact renderer](https://github.com/formkit/formkit/blob/v2.9.0/packages/vue/src/FormKitSchema.ts#L594-L637).
 
 Expressions begin with `$` (or `$:` when the first token is not a reference) and use FormKit's limited expression language, not arbitrary JavaScript. Supply data/functions deliberately. Complete compiler example:
 
@@ -395,7 +398,7 @@ count = -1
 const after = positive()
 ```
 
-The provider receives required token names and returns a **map of token → getter function**. Returning one getter directly, despite a misleading declaration comment, does not match the 2.1.2 provider type. Getters allow subsequent evaluations to observe current values. Conditional/loop schema nodes need explicit stable `key` values. For external schemas, allowlist `$cmp`, exposed functions, and permitted attributes; do not treat a serializable UI schema as an authorization or sanitization boundary.
+The provider receives required token names and returns a **map of token → getter function**. Returning one getter directly, despite a misleading declaration comment, does not match the published type. Getters track current values across evaluations. Conditional/loop nodes need stable keys. Allowlist `$cmp`, exposed functions and attributes for external schema; serializable UI is not authorization or sanitization.
 
 For a schema-processing tool, narrow nodes with `isDOM`/`isComponent`/`isConditional`/`isSugar`; `sugar(node)` converts `$formkit` into a FormKit component node rather than validating data. String nodes are text. `{ if, then, else }` selects a schema branch (also usable as an attribute value); `if` on a DOM/component node controls that node's presence. A `for: [valueName, keyName, '$items']` tuple provides loop aliases; `bind: '$attrs'` binds a data-supplied attribute map. Pass the corresponding data to `FormKitSchema`, keep stable `key` values on conditional/repeated nodes, and allowlist bound attributes too.
 
@@ -409,17 +412,28 @@ A raw `VTextField` inside a FormKit form is not collected or validated automatic
 
 ## Upgrading incumbent core integrations
 
-Keep the FormKit package family compatible; the pinned core requires `@formkit/utils ^2.1.2`, while the Vue adapter brings its matching input/validation packages. The 2.0 release added React without listing core API removals; that is **not** a guarantee that every 1.x application compiles unchanged. Inspect the installed peer/dependency manifests and custom input definitions before upgrading.
+Keep the family aligned as above. The 2.0 release added React without listing core API removals; that does not guarantee every 1.x app compiles unchanged.
 
 The [2.1.0 release](https://github.com/formkit/formkit/releases/tag/v2.1.0) fixed buffered reset-event loss, repeated reset input hooks, invalid-state preservation, explicit reset values for all node types, and prototype-member compiler tail access. Remove application workarounds that depended on those bugs only after exercising explicit input/group/list resets and listener ordering. The [2.1.1 release](https://github.com/formkit/formkit/releases/tag/v2.1.1) changed Vue SSR node cleanup, not the core API; [2.1.2](https://github.com/formkit/formkit/releases/tag/v2.1.2) fixed parentless registry cleanup and repeated config removal. Preserve teardown and request isolation even on the fixed release; a patch is not permission to retain a graph across requests.
 
+| Release | What matters to incumbent Vue/Core apps |
+| --- | --- |
+| [2.2.0](https://github.com/formkit/formkit/releases/tag/v2.2.0) / [2.2.1](https://github.com/formkit/formkit/releases/tag/v2.2.1) | Vue ignores late DOM input on destroyed nodes; duplicate IDs preserve the newer registry owner; input normalization no longer mutates caller-provided options. Nynorsk (`nn`) is opt-in in FormKit i18n. |
+| [2.3.0](https://github.com/formkit/formkit/releases/tag/v2.3.0) | Generic callable `FormKit` restores SFC inference; constructor consumers use `FormKitRuntimeComponent`. After mount, section DOM refs are on `node.context?.refs` and exposed as component `refs`. Group/list skip `input`/`inputRaw` when nothing listens; attach a listener when testing that event contract. |
+| [2.4.0](https://github.com/formkit/formkit/releases/tag/v2.4.0) | `validation-visibility="blur dirty"` shows validation after blur or once dirty; it does not change whether submit validates. |
+| [2.5.0](https://github.com/formkit/formkit/releases/tag/v2.5.0) | Empty Vue groups/forms start with `context.state.empty === true`; do not use the old false-until-first-commit behavior as readiness. Schema replacement cleans the old memo entry. The optional localStorage control suppresses saving/restoration when off, not necessarily purging storage. |
+| [2.6.0](https://github.com/formkit/formkit/releases/tag/v2.6.0) | Literal input types enforce their own props; `onInput`, `onInputRaw`, and `onUpdate:modelValue` are typed with the input's value including `undefined`. Fix callers rather than widening them; some required-at-runtime props remain optional in the declarations. |
+| [2.7.0](https://github.com/formkit/formkit/releases/tag/v2.7.0)–[2.9.0](https://github.com/formkit/formkit/releases/tag/v2.9.0) | `closest`, deep props and named schema slots are described above; 2.8.0 also fixes moved `FormKitMessages` IDs to match `aria-describedby`. Inspect actual DOM relationships when moving messages. |
+
+CLI and addons are not prerequisites. For an incumbent Tailwind theme, 2.7.0 adds persisted prefixes (v4 `--prefix tw`, v3 `--prefix tw-`); use pinned `bunx formkit@2.9.0` only for an explicitly requested CLI task. The [2.8.1 installer change](https://github.com/formkit/formkit/releases/tag/v2.8.1) defaults to no project instruction-file edits. Optional `@formkit/addons@2.9.0` provides `describeForm` (opt-in values, never password/hidden values) and `fillForm` (can change values and optionally submit; no echoed filled values). Its manifest pulls `@formkit/auto-animate: latest` (currently **0.10.3**); review its actual lock resolution if adopting it. No experimental WebMCP/browser-agent registration is used. Nuxt setup is separate: [`@formkit/nuxt@2.9.0`](https://registry.npmjs.org/@formkit/nuxt/2.9.0) peers on `@nuxt/kit ^3.10.3 || ^4.0.0`, not a verified host combination. [Exact addon manifest](https://registry.npmjs.org/@formkit/addons/2.9.0), [addon declarations](https://unpkg.com/@formkit/addons@2.9.0/dist/index.d.mts).
+
 ## Verification boundary and sources
 
-No execution/typecheck/browser verification is claimed. The graph function and compiler/message fences are core-only; the two SFCs require installed Vue adapter configuration; the async SFC has explicit required application callbacks; installation is contextual. Both complete SFCs include the locally checked form bindings described above; their suitability for strict template checking is based on the inspected declarations/runtime, not an executed pass. Assemble each complete `vue` fence verbatim as its own SFC, with no omitted bags or direct `submit-label`/submit-event substitutions. Exercise rapid edit/submit before debounce, out-of-order checks, rejected check promises, authoritative save errors, reset baseline, list detach/reorder, repeated plugin registration, and teardown/unmount in the consuming app.
+These 2.9.0 examples are source-checked, not newly typechecked or executed. The [historical record](../assets/verification.json) (`support-form-core-and-graphs`, `support-form-production-consumers`) used FormKit **2.1.2**. It witnessed the rejected-rule stall, boolean/message distinction, repeated false-return plugin setup, and separate production Vue **3.5.44** / Vite **8.3.5** scenarios for caught availability failure and native schema error semantics. The old intersection could reject direct form event and `submit-label` bindings under `strictTemplates`; the 2.3.0 type change does not establish a new strict or [full-declaration](forms.md#verification-boundary) pass. Keep the checked bags and explicit app-owned callbacks. Exercise rapid edits/submission, reversed async results, save rejection, reset baselines, list ownership and repeated plugin registration/teardown in the consuming app. No provider key or hosted service is assumed.
 
 - [Architecture, nodes, settlement, configuration](https://formkit.com/essentials/architecture).
 - [Form submission, errors, reset](https://formkit.com/inputs/form).
 - [Custom validation and rule hints](https://formkit.com/essentials/validation).
 - [Schema and renderer](https://formkit.com/essentials/schema).
-- [2.1.2 core declarations](https://unpkg.com/@formkit/core@2.1.2/dist/index.d.mts), [runtime](https://unpkg.com/@formkit/core@2.1.2/dist/index.mjs), [Vue exports](https://unpkg.com/@formkit/vue@2.1.2/dist/index.d.mts).
-- [2.1.2 input form state machine](https://unpkg.com/@formkit/inputs@2.1.2/dist/index.mjs), [validation engine](https://unpkg.com/@formkit/validation@2.1.2/dist/index.mjs).
+- [2.9.0 core declarations](https://unpkg.com/@formkit/core@2.9.0/dist/index.d.mts), [runtime](https://unpkg.com/@formkit/core@2.9.0/dist/index.mjs), [Vue exports](https://unpkg.com/@formkit/vue@2.9.0/dist/index.d.mts).
+- [2.9.0 form state machine](https://unpkg.com/@formkit/inputs@2.9.0/dist/index.mjs), [validation engine](https://unpkg.com/@formkit/validation@2.9.0/dist/index.mjs).

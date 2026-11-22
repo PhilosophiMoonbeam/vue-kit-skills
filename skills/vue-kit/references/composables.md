@@ -1,6 +1,6 @@
 # Composables: reactive inputs, ownership, and current results
 
-Read when extracting stateful behavior, accepting values/refs/getters, adapting external state, or preventing stale asynchronous writes. Target: **Vue 3.5.44**. `MaybeRefOrGetter`, `toValue`, and getter normalization with `toRef` are stable since 3.3; `onWatcherCleanup` is 3.5+. See [core Vue](core-vue.md) for tracking/scheduling and [components](components.md) for public component contracts.
+Read when extracting stateful behavior, accepting values/refs/getters, adapting external state, or preventing stale asynchronous writes. Target: **Vue 3.5.46**. `MaybeRefOrGetter`, `toValue`, and getter normalization with `toRef` are stable since 3.3; `onWatcherCleanup` is 3.5+. See [core Vue](core-vue.md) for tracking/scheduling and [components](components.md) for public component contracts.
 
 ## Define the contract before extracting
 
@@ -103,7 +103,7 @@ Why the pieces matter:
 - `shallowRef` is intentional here: results are externally owned snapshots. Consumers must not mutate nested `data` and expect Vue to observe it. The returned computed protects assignment to `.value`, not deep runtime immutability of arbitrary `T`.
 - Stopping disposes work but is not a reload API. If cache identity, background refetch, retries, deduplication, pagination, or SSR data transfer is required, use the incumbent [TanStack Query](tanstack-query.md), [Pinia Colada](pinia-colada.md), or framework data layer rather than expanding this primitive silently.
 
-In an SSR component, start this primitive after mount rather than using it for server data. Vue 3.5.44 immediately stops an eager default-flush watcher created during server setup; it does not await that callback's promise. Here that cleanup aborts the run and prevents its result from committing. Use `onServerPrefetch` with request-owned data transfer or the framework data layer for server-rendered results. [Pinned SSR watcher branch](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiWatch.ts).
+In an SSR component, start this primitive after mount rather than using it for server data. Vue 3.5.46 immediately stops an eager default-flush watcher created during server setup; it does not await that callback's promise. Here that cleanup aborts the run and prevents its result from committing. Use `onServerPrefetch` with request-owned data transfer or the framework data layer for server-rendered results. [Pinned SSR watcher branch](https://github.com/vuejs/core/blob/v3.5.46/packages/runtime-core/src/apiWatch.ts).
 
 ## DOM effects: create on the client, follow target replacement
 
@@ -141,7 +141,8 @@ The disposal flag also covers an enclosing effect scope stopped **before** mount
 ## Ownership beyond components
 
 - Synchronously created setup effects stop automatically on component unmount. Non-Vue resources still require cleanup. Use `onScopeDispose` for a scope-oriented composable; use mount/unmount hooks when resources are specifically tied to rendered DOM.
-- `effectScope()` owns watch/watchEffect effects created synchronously in `run()`. A detached scope (`effectScope(true)`) is independent; its creator must stop it. Async continuations do not automatically remain inside a prior `scope.run`. In **3.5.44**, retained computed refs are not disposed/frozen by scope stop; a later read can still evaluate their pure getter. Scope disposal must terminate side effects and resources, not rely on making derived values unreadable. [Pinned scope](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/effectScope.ts), [computed implementation](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/computed.ts).
+- `effectScope()` owns watch/watchEffect effects created synchronously in `run()`. A detached scope (`effectScope(true)`) is independent; its creator must stop it. Async continuations do not automatically remain inside a prior `scope.run`. In **3.5.46**, retained computed refs are not disposed/frozen by scope stop; a later read can still evaluate their pure getter. Scope disposal must terminate side effects and resources, not rely on making derived values unreadable. [Pinned scope](https://github.com/vuejs/core/blob/v3.5.46/packages/reactivity/src/effectScope.ts), [computed implementation](https://github.com/vuejs/core/blob/v3.5.46/packages/reactivity/src/computed.ts).
+- Since [3.5.45](https://github.com/vuejs/core/commit/21dd33c61c6e26d15c1893dad899f1187a77dc03), if the current scope is already stopped, `onScopeDispose` runs its callback immediately. This can happen when a compiler-restored top-level `<script setup>` await resumes after unmount. It does not attach cleanup to a continuation with no current scope or make it safe to start new work after the owner has ended. Register cleanup before awaiting and keep the guards on hooks that could still run later.
 - Do not suppress missing-scope warnings to conceal a lifetime bug. For utilities usable outside setup, accept explicit disposal ownership or return a disposer and document when it must run.
 - Do not create a watcher in every event handler or timer tick. Create one watcher synchronously and gate it on readiness; otherwise stop each dynamically created watcher.
 - `onWatcherCleanup` can be used by nested synchronous helpers within a watcher. It does not replace `onScopeDispose`, nor can it be registered after `await`. Prefer whichever explicit cleanup API matches the resource's real owner.
@@ -275,9 +276,9 @@ All TypeScript fences are complete modules with application-owned contracts stat
 
 ## Sources
 
-- [Vue 3.5.44 reactive declarations](https://unpkg.com/@vue/reactivity@3.5.44/dist/reactivity.d.ts), [reactivity utilities](https://vuejs.org/api/reactivity-utilities.html), [type utilities](https://vuejs.org/api/utility-types.html).
+- [Vue 3.5.46 reactive declarations](https://unpkg.com/@vue/reactivity@3.5.46/dist/reactivity.d.ts), [reactivity utilities](https://vuejs.org/api/reactivity-utilities.html), [type utilities](https://vuejs.org/api/utility-types.html).
 - [Official composable conventions and side effects](https://vuejs.org/guide/reusability/composables.html), [watcher cleanup and scheduling](https://vuejs.org/guide/essentials/watchers.html).
 - [Effect scopes and shallow boundaries](https://vuejs.org/api/reactivity-advanced.html), [external state integration](https://vuejs.org/guide/extras/reactivity-in-depth.html#integration-with-external-state-systems).
-- [Vue 3.5.44 watcher invalidation and stop cleanup](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/watch.ts), [value/ref/getter normalization](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/ref.ts).
-- [Vue 3.5.44 mounted-hook instance ownership](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiLifecycle.ts), [effect-scope disposal](https://github.com/vuejs/core/blob/v3.5.44/packages/reactivity/src/effectScope.ts), [SSR watcher handling](https://github.com/vuejs/core/blob/v3.5.44/packages/runtime-core/src/apiWatch.ts).
+- [Vue 3.5.46 watcher invalidation and stop cleanup](https://github.com/vuejs/core/blob/v3.5.46/packages/reactivity/src/watch.ts), [value/ref/getter normalization](https://github.com/vuejs/core/blob/v3.5.46/packages/reactivity/src/ref.ts).
+- [Vue 3.5.46 mounted-hook instance ownership](https://github.com/vuejs/core/blob/v3.5.46/packages/runtime-core/src/apiLifecycle.ts), [effect-scope disposal](https://github.com/vuejs/core/blob/v3.5.46/packages/reactivity/src/effectScope.ts), [SSR watcher handling](https://github.com/vuejs/core/blob/v3.5.46/packages/runtime-core/src/apiWatch.ts).
 - [Custom refs](https://vuejs.org/api/reactivity-advanced.html#customref), [Vue animation techniques](https://vuejs.org/guide/extras/animation.html), [animation frame scheduling](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame).

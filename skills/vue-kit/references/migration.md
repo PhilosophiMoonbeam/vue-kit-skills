@@ -1,20 +1,22 @@
 # Vue version boundaries and incumbent migration
 
-Read before copying an older Vue example, upgrading runtime/compiler tooling, or changing an incumbent Options API/JSX integration. Baseline: **Vue 3.5.44** and its matching `@vue/*` runtime/compiler packages; preferred UI target **Vuetify 4.3.0**. Vue 3.6/Vapor APIs are **outside this skill's target**. This is a targeted cutover guide, not a mandate to rewrite working Options API components or swap an incumbent application framework during an unrelated fix.
+Read before copying an older Vue example, upgrading runtime/compiler tooling, or changing an incumbent Options API/JSX integration. Baseline: **Vue 3.5.46** and its matching `@vue/*` runtime/compiler packages; preferred UI target **Vuetify 4.3.4**. Vue 3.6/Vapor APIs are **outside this skill's target**. This is a targeted cutover guide, not a mandate to rewrite working Options API components or swap an incumbent application framework during an unrelated fix.
 
 ## Establish the installed contract first
 
 1. Inspect package manifest, lockfile, bundler plugins, `tsconfig`, Vue language tooling, test environment, and framework ownership. Distinguish a Vue SPA, Nuxt, SSR app, custom-element library, and embedded widget.
 2. Identify the actual old API and its callers. Choose a migration slice that preserves observable behavior, including listener forwarding, form contracts, component refs, pending work, and server/client state ownership.
-3. Align Vue runtime, compiler, and server renderer to **3.5.44**. The `vue@3.5.44` registry dependencies pin `@vue/compiler-sfc`, `@vue/compiler-dom`, `@vue/runtime-dom`, `@vue/server-renderer`, and `@vue/shared` to that version. Do not reuse a cached 3.6 declaration export catalog as evidence for 3.5.
+3. Align Vue runtime, compiler, and server renderer to **3.5.46**. The `vue@3.5.46` registry dependencies pin `@vue/compiler-sfc`, `@vue/compiler-dom`, `@vue/runtime-dom`, `@vue/server-renderer`, and `@vue/shared` to that version. Do not reuse a cached 3.6 declaration export catalog as evidence for 3.5.
 4. Migrate the slice's callers and tests to one public contract; remove obsolete aliases/imports/config rather than leaving accidental dual behavior. Preserve application-selected libraries unless the assignment explicitly includes their migration.
 5. Have the owning implementation run type checking, behavior tests, and production-build verification using the repo's toolchain. These are required migration evidence, not claims that this reference has executed them. See [setup/tooling](setup-tooling.md), [testing](testing.md), and [SSR/debugging](debugging-ssr.md).
 
-Registry and declaration evidence: [3.5.44 metadata](https://registry.npmjs.org/vue/3.5.44), [pinned entry declarations](https://unpkg.com/vue@3.5.44/dist/vue.d.ts).
+Registry and declaration evidence: [3.5.46 metadata](https://registry.npmjs.org/vue/3.5.46), [pinned ESM entry declarations](https://unpkg.com/vue@3.5.46/dist/vue.d.mts). The [3.5.45 and 3.5.46 changelog](https://github.com/vuejs/core/blob/v3.5.46/CHANGELOG.md#3546-2026-11-20) includes fixes for async setup/Suspense and KeepAlive, SFC type analysis (generic scopes and relative tsconfig paths), Teleport hydration and transition callbacks. Keep affected regressions localized; node lifetime and matching server/client input still matter. Previous observations on **3.5.44** are not reruns on the new patch.
 
-Alignment to 3.5.44 above applies to an **explicitly authorized adoption of this baseline**, not an instruction to downgrade or upgrade an incumbent framework during diagnosis. Keep its mutually compatible runtime/compiler/renderer until that migration is in scope. Vue's release policy warns that newer-minor compiler output may require the newer runtime; beta/RC/edge exports are not evidence for a stable 3.5 API. Test a deliberately selected prerelease in a separate exactly pinned integration, not by mixing a 3.6 compiler into this target. [Official compiler compatibility and prerelease policy](https://vuejs.org/about/releases.html#compiled-code-compatibility-with-older-runtime).
+Alignment to 3.5.46 above applies to an **explicitly authorized adoption of this baseline**, not an instruction to downgrade or upgrade an incumbent framework during diagnosis. Keep its mutually compatible runtime/compiler/renderer until that migration is in scope. Vue's release policy warns that newer-minor compiler output may require the newer runtime; beta/RC/edge exports are not evidence for a stable 3.5 API. Test a deliberately selected prerelease in a separate exactly pinned integration, not by mixing a 3.6 compiler into this target. [Official compiler compatibility and prerelease policy](https://vuejs.org/about/releases.html#compiled-code-compatibility-with-older-runtime).
 
 For an explicitly authorized UI-library cutover, [OpenVue setup](openvue-setup.md) owns its **1.0.0** package/host boundary and complete Vite/Nuxt profiles; the [capability index](openvue.md) routes deeper contracts. Do not rename imports mechanically: Select retains its label-ID behavior, Carousel is data-driven with an item slot, and Dialog models `visible`. These are the pinned profile's contracts, not a compatibility promise for all 1.x releases. Keep Quasar and unrelated incumbent integrations unchanged.
+
+For an explicitly authorized standalone app upgrade, [routing](routing.md#incumbent-migrations) owns the classic Router **4.6.5 → 5.5.1** boundary. Keep `createRouter({ routes })` and the existing history; the workbench adds no generated routes, experimental resolvers, or loaders. For a [Pinia 3 → 4.1.0 cutover](state.md#version-and-selection-boundary), use the ESM package and install `@vue/devtools-api@8.2.1` as a runtime peer; keep store contracts and app/request isolation, and check other plugins against their own peers. Neither change authorizes replacing Nuxt's host lifecycle.
 
 ## What is and is not a Vue 3.5 API
 
@@ -28,13 +30,13 @@ For an explicitly authorized UI-library cutover, [OpenVue setup](openvue-setup.m
 | Experimental in 3.5 | `<Suspense>` and async setup integration | Explicitly accept API risk; boundary behavior and error handling in [components](components.md). |
 | 3.6/Vapor, excluded | Vapor app/component factories, interop plugins, Vapor directives and runtime helpers, Vapor SFC compilation markers | Do not import, configure, or teach them as 3.5 APIs. |
 
-Historical source notes recorded Vue **3.6.0-beta.17** alongside later RC statements; the deleted source corpus has not been freshly re-read. Those notes do not establish availability in 3.5.44 or a stable production compatibility guarantee. Specifically excluded: `createVaporApp`, `createVaporSSRApp`, `defineVaporComponent`, `defineVaporAsyncComponent`, `vaporInteropPlugin`, `renderEffect`, Vapor built-ins, `<script setup vapor>`, and Vapor-only event-delegation options/modifiers. Keep the ordinary `createApp`/`createSSRApp`, SFC compiler, and VDOM directives for this target. Do not copy beta-specific Options API restrictions into ordinary Vue 3.5.
+Historical source notes recorded Vue **3.6.0-beta.17** alongside later RC statements; the deleted source corpus has not been freshly re-read. Those notes do not establish availability in 3.5.46 or a stable production compatibility guarantee. Specifically excluded: `createVaporApp`, `createVaporSSRApp`, `defineVaporComponent`, `defineVaporAsyncComponent`, `vaporInteropPlugin`, `renderEffect`, Vapor built-ins, `<script setup vapor>`, and Vapor-only event-delegation options/modifiers. Keep the ordinary `createApp`/`createSSRApp`, SFC compiler, and VDOM directives for this target. Do not copy beta-specific Options API restrictions into ordinary Vue 3.5.
 
 Release context: [Vue 3.4](https://blog.vuejs.org/posts/vue-3-4), [Vue 3.5](https://blog.vuejs.org/posts/vue-3-5). Prefer the API reference to release-post snippets when their spelling conflicts: the deferred Teleport prop is **`to`**, not `target`; custom-element creation is **`defineCustomElement`**, singular.
 
 ### Package entry points and runtime-compiler diagnosis
 
-| Host | Vue 3.5.44 choice |
+| Host | Vue 3.5.46 choice |
 | --- | --- |
 | SFC bundler | Default `vue` resolves to runtime-only `vue.runtime.esm-bundler.js`; the Vue plugin precompiles `.vue` templates. A template-string component needs the full `vue/dist/vue.esm-bundler.js` alias **only if runtime compilation is intentionally required**. Never compile untrusted templates to fix this warning. |
 | Browser without a bundler | Use pinned `vue.global(.prod).js` for a `Vue` global or `vue.esm-browser(.prod).js` for native ESM. The `.runtime` variants require precompiled render functions. Global builds are IIFEs, not UMD. Import all Vue APIs from the same browser build to avoid separate reactivity instances. |
@@ -46,9 +48,9 @@ The bundler flags `__VUE_OPTIONS_API__` (default true), `__VUE_PROD_DEVTOOLS__`
 (false), and `__VUE_PROD_HYDRATION_MISMATCH_DETAILS__` (false) are compile-time
 booleans, not browser runtime settings. Set them through the owning build plugin/
 config for tree shaking; enabling diagnostic details does not repair hydration.
-Source authority: [pinned package exports](https://unpkg.com/vue@3.5.44/package.json),
-[build selection](https://unpkg.com/vue@3.5.44/README.md),
-[compiler CJS entry](https://unpkg.com/vue@3.5.44/compiler-sfc/index.js).
+Source authority: [pinned package exports](https://unpkg.com/vue@3.5.46/package.json),
+[build selection](https://unpkg.com/vue@3.5.46/README.md),
+[compiler CJS entry](https://unpkg.com/vue@3.5.46/compiler-sfc/index.js).
 
 ### Reactive props destructure is not the removed Reactivity Transform
 
@@ -268,8 +270,9 @@ For an actual Nuxt 3 → **4.6.2** migration:
 1. Inventory the current Nuxt release, Node engine, modules, layers, `srcDir`,
    `serverDir` and lockfile. Check each module's current peer/runtime contract
    before upgrading; Nuxt compatibility is not guaranteed by Vue compatibility.
-   The target requires Node `^22.22.3 || ^24.15.0 || >=26.0.0` and this track pins
-   Vue 3.5.44. Upgrade the existing package-manager manifest/lockfile deliberately,
+   The target requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`; the separate
+   [Nuxt 4.6.2 track](nuxt.md) pins Vue **3.5.44**, not the standalone workbench's
+   Vue version. Upgrade the existing package-manager manifest/lockfile deliberately,
    without opting into Nuxt 5's `future.compatibilityVersion: 5`.
 2. Adopt the Nuxt 4 `app/` directory only as a reviewed move: app assets,
    components, composables, layouts, middleware, pages, plugins, utils and root
@@ -324,25 +327,46 @@ entry resolution. [Vite production SSR](https://vite.dev/guide/ssr#building-for-
 ### Incumbent mobile, Capacitor and PWA workflow
 
 Do not replace an existing Quasar/native host during a Vue fix. The following
-contracts use **@capacitor/core and CLI 8.5.3**, **@capacitor/app 8.1.2**,
-**camera 8.2.6**, **geolocation 8.2.4**, **push-notifications 8.1.3**. Plugin
-releases are independent; check platform/plugin peers before changing versions.
-Capacitor CLI 8.5.3 requires Node >=22; native SDK/Xcode/Android requirements and
-device permissions are additional, not proven by a web build.
+contracts use **@capacitor/core and CLI 8.6.2**, **@capacitor/app 8.1.2**,
+**camera 8.2.6**, **geolocation 8.2.5**, and **push-notifications 8.1.3**.
+Keep selected `@capacitor/android`/`@capacitor/ios` aligned at **8.6.2** when
+adopting this profile; plugins release independently and have separate peers.
+Capacitor CLI still requires Node >=22. Native builds need the
+[Capacitor 8 platform tools](https://capacitorjs.com/docs/getting-started/environment-setup):
+on iOS, macOS, Xcode 26.0+ and its command-line tools (retain CocoaPods if the
+incumbent uses it); on Android, Android Studio 2025.2.1+ and the project's SDK.
+A web build proves neither native tooling nor permission behavior.
+
+[8.6.0](https://github.com/ionic-team/capacitor/releases/tag/8.6.0) fixes
+Android R8 retention of plugin annotations and callbacks; check the release
+variant when a callback works only in debug. The CLI's new blocked-install-script
+diagnostics are for npm 12, not Bun's trust policy.
+[8.6.1](https://github.com/ionic-team/capacitor/releases/tag/8.6.1) releases
+listener callbacks on removal; still own and remove every listener handle.
+[8.6.2](https://github.com/ionic-team/capacitor/releases/tag/8.6.2) is a version
+bump with no additional migration step.
 
 1. Inspect whether Quasar CLI or plain Vue/Vite owns bootstrap and native output.
    A Quasar Vite plugin alone does not add Quasar CLI mobile/PWA build modes.
    For a new mode in an existing CLI project use `quasar mode add capacitor`
-   (or `pwa`); retain its generated `src-capacitor`/`src-pwa` ownership. The current
-   CLI evidence is **@quasar/app-vite 3.10.3**, not a reason to migrate an older
-   Router/UI during this task. [Alternative UI](alternative-ui.md) owns Quasar
-   layout/Notify/Dialog/Loading plugin setup; always hide loading UI in `finally`.
+   (or `pwa`); retain its generated `src-capacitor`/`src-pwa` ownership. The
+   current [@quasar/app-vite 3.10.4](https://github.com/quasarframework/quasar/releases/tag/%40quasar%2Fapp-vite-v3.10.4)
+   profile declares `vue-router >= 5`; keep the incumbent app's compatible stack
+   unless that migration is in scope. This patch corrects generated `.quasar`
+   inclusion of `.vue` files; regenerate config rather than hand-editing it.
+   For an existing Hono SSR project, the release's static-file cache fix must
+   also be applied to the already copied `src-ssr/server` and stale shared HTML
+   purged: a CLI bump alone does not update the application template.
+   [Alternative UI](alternative-ui.md) owns layout/Notify/Dialog/Loading setup;
+   always hide loading UI in `finally`.
 2. For a plain existing web app, configure `appId`, `appName`, and `webDir` from the
    **actual** built directory containing `index.html` (Vite commonly `dist`, not a
    universal `dist/spa`). Initialize Capacitor, install matching Android/iOS
    packages, `cap add` each target once, then build web assets → `cap sync` →
-   `cap open android|ios` for native work. Do not ship development `server.url`,
-   cleartext exceptions, localhost services or signing secrets in release config.
+   `cap open android|ios`. In a Bun-managed host, use the installed CLI through
+   `bun run cap …` without `--bun`, retaining its Node runtime. Do not ship
+   development `server.url`, cleartext exceptions, localhost services or signing
+   secrets in release config.
 3. Use responsive CSS for layout; `$q.platform` identifies capabilities/platform,
    `$q.screen` supplies reactive sizing. A setup-time copy of `$q.screen.width`
    or `.lt.md` is a snapshot. Platform detection is not an authorization check,
@@ -363,6 +387,9 @@ device permissions are additional, not proven by a web build.
    ID arriving after teardown. `clearWatch({ id })` is asynchronous; report release
    failures. `requestPermissions` is native-only, accuracy is not guaranteed, and
    background geolocation is not supplied by this plugin.
+   [Geolocation 8.2.5](https://github.com/ionic-team/capacitor-geolocation/releases/tag/v8.2.5)
+   changes iOS authorization scheduling, not its JavaScript permissions or
+   watch/cleanup signatures; test on the actual platform.
 6. For push, install native platform credentials/capabilities (FCM config on
    Android, APNs capability/delegate wiring on iOS), attach `registration`,
    `registrationError`, receive and action listeners **before** calling
@@ -414,12 +441,17 @@ export function createLocationWatch() {
 
 ### PWA cache, installation and update contracts
 
-For Quasar CLI **3.10.3** PWA mode, use `src-pwa/manifest.json`,
-`src-pwa/register-sw` and `pwa.workboxMode`. With **workbox-build 7.4.1**,
+For the source-checked **@quasar/app-vite 3.10.4** PWA mode, use `src-pwa/manifest.json`,
+`src-pwa/register-sw` and `pwa.workboxMode`. The optional `workbox-build >=7`
+peer admits **7.4.1**.
 `GenerateSW` suits generated precache/simple runtime routing; `InjectManifest`
 requires the owned custom worker for advanced routing/push. Configure generated
 options via `extendPWAGenerateSWOptions` or injected options via
 `extendPWAInjectManifestOptions`, not an obsolete blanket `workboxOptions` object.
+
+Keep older Quasar **3.10.3** / Workbox **7.4.1** observations scoped to that
+incumbent profile. Reviewing 3.10.4's PWA configuration is not a rerun or proof
+of offline, install, update, or native behavior.
 
 | Concern | Contract |
 | --- | --- |
@@ -447,21 +479,23 @@ late-setup cleanup obligation as native handles. [Quasar PWA configuration](http
 
 ## Modern Vuetify 3 → 4 boundary
 
-For the preferred **Vuetify 4.3.0**, use the current Vuetify **3→4** upgrade guide and the verified [Vuetify setup](vuetify-setup.md), [components](vuetify-components.md), and [theme](vuetify-theme.md) references. Do not treat an old Vuetify 2→3 tutorial as a 3→4 migration. Inspect changed props/events/slots, form validation results, theme/default configuration, Sass settings, and removed/deprecated components in the actual app; migrate wrappers and their callers together. A Vue 3.5 update alone does not justify replacing a working Vuetify 3 application during a narrow change. [Official upgrade guide](https://vuetifyjs.com/en/getting-started/upgrade-guide/).
+For the preferred **Vuetify 4.3.4**, use the current Vuetify **3→4** upgrade guide and the [Vuetify setup](vuetify-setup.md), [components](vuetify-components.md), and [theme](vuetify-theme.md) references. Do not treat an old Vuetify 2→3 tutorial as a 3→4 migration. Inspect changed props/events/slots, form validation results, theme/default configuration, Sass settings, and removed/deprecated components in the actual app; migrate wrappers and their callers together. A Vue 3.5 update alone does not justify replacing a working Vuetify 3 application during a narrow change. [Official upgrade guide](https://vuetifyjs.com/en/getting-started/upgrade-guide/).
 
 ## Verification boundary and source corrections
 
 The replacement/Options SFCs, TSX component, typed Options module and location-owner module are complete for their stated hosts/contracts; none is claimed built, mounted or typechecked here. The Nuxt migration checklist delegates runnable host examples to [Nuxt](nuxt.md); it supplies no replacement Nuxt entrypoint. JSON is a contextual merge fragment, and the worker fence is a contextual message handler, not a standalone worker. Review template/model/listener behavior, TSX and generic inference, independent Options instances, permission denial, late native-handle disposal, SSR payload/parameter navigation, authenticated cache isolation, worker activation before reload, and the actual migrated UI contracts with the owning tests.
 
+The Capacitor **8.5.3** / Geolocation **8.2.4** reference snapshot remains historical. The 8.6.2 / 8.2.5 guidance above uses published metadata, declarations and release notes, not device verification.
+
 Corrections incorporated from older/mixed guidance: no universal shallow-ref-for-primitives rule; no state mutation in `updated` presented as safe optimization; no 3.6 Vapor import in a 3.5 example; no universal Composition-inject ref unwrapping; no reactive/getter argument accepted as a template-ref key; no blanket prohibition of supported incumbent Options API; no mandatory hydration strategy, arbitrary loading-delay table, or guaranteed FPS. [Core Vue](core-vue.md) and [components](components.md) own the replacement decisions.
 
 ## Sources
 
-- [Vue 3.5.44 registry](https://registry.npmjs.org/vue/3.5.44), [pinned declarations](https://unpkg.com/vue@3.5.44/dist/vue.d.ts), [Vue release policy](https://vuejs.org/about/releases.html).
+- [Vue 3.5.46 registry](https://registry.npmjs.org/vue/3.5.46), [pinned ESM declarations](https://unpkg.com/vue@3.5.46/dist/vue.d.mts), [Vue release policy](https://vuejs.org/about/releases.html).
 - [3.4 release/removals](https://blog.vuejs.org/posts/vue-3-4), [3.5 release](https://blog.vuejs.org/posts/vue-3-5), [removed Reactivity Transform](https://vuejs.org/guide/extras/reactivity-transform.html), [SFC macros](https://vuejs.org/api/sfc-script-setup.html).
 - [Options TypeScript](https://vuejs.org/guide/typescript/options-api.html), [setup interop](https://vuejs.org/api/composition-api-setup.html), [JSX/render functions](https://vuejs.org/guide/extras/render-function.html), [Vue 2 migration](https://v3-migration.vuejs.org/breaking-changes/).
 - [SSR](https://vuejs.org/guide/scaling-up/ssr.html), [Nuxt](https://nuxt.com/docs), [Vuetify upgrade](https://vuetifyjs.com/en/getting-started/upgrade-guide/).
-- [Pinned Vue build/entry selection](https://unpkg.com/vue@3.5.44/README.md), [exports](https://unpkg.com/vue@3.5.44/package.json), [compiler entry](https://unpkg.com/vue@3.5.44/compiler-sfc/index.js).
+- [Pinned Vue build/entry selection](https://unpkg.com/vue@3.5.46/README.md), [exports](https://unpkg.com/vue@3.5.46/package.json), [compiler entry](https://unpkg.com/vue@3.5.46/compiler-sfc/index.js).
 - [Nuxt 4.6.2 metadata](https://registry.npmjs.org/nuxt/4.6.2), [data declarations](https://unpkg.com/nuxt@4.6.2/dist/app/composables/asyncData.d.ts), [server declarations](https://unpkg.com/nuxt@4.6.2/dist/server/index.d.ts), [data fetching](https://nuxt.com/docs/4.x/getting-started/data-fetching), [upgrade/directory contract](https://nuxt.com/docs/4.x/getting-started/upgrade).
-- [Capacitor 8 setup](https://capacitorjs.com/docs/getting-started), [CLI 8.5.3 metadata](https://registry.npmjs.org/@capacitor/cli/8.5.3), [app 8.1.2 declarations](https://unpkg.com/@capacitor/app@8.1.2/dist/esm/definitions.d.ts), [camera 8.2.6 declarations](https://unpkg.com/@capacitor/camera@8.2.6/dist/esm/definitions.d.ts), [geolocation 8.2.4 declarations](https://unpkg.com/@capacitor/geolocation@8.2.4/dist/esm/definitions.d.ts), [push 8.1.3 declarations](https://unpkg.com/@capacitor/push-notifications@8.1.3/dist/esm/definitions.d.ts).
-- [Quasar CLI 3.10.3 metadata](https://registry.npmjs.org/@quasar/app-vite/3.10.3), [PWA configuration](https://quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa/), [Workbox strategies](https://developer.chrome.com/docs/workbox/modules/workbox-strategies), [Workbox build 7.4.1 metadata](https://registry.npmjs.org/workbox-build/7.4.1), [browser install prompt](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent).
+- [Capacitor 8 environment](https://capacitorjs.com/docs/getting-started/environment-setup), [CLI 8.6.2 metadata](https://registry.npmjs.org/@capacitor/cli/8.6.2), [app 8.1.2 declarations](https://unpkg.com/@capacitor/app@8.1.2/dist/esm/definitions.d.ts), [camera 8.2.6 declarations](https://unpkg.com/@capacitor/camera@8.2.6/dist/esm/definitions.d.ts), [geolocation 8.2.5 declarations](https://unpkg.com/@capacitor/geolocation@8.2.5/dist/esm/definitions.d.ts), [push 8.1.3 declarations](https://unpkg.com/@capacitor/push-notifications@8.1.3/dist/esm/definitions.d.ts).
+- [Quasar CLI 3.10.4 metadata](https://registry.npmjs.org/@quasar/app-vite/3.10.4), [PWA configuration](https://quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa/), [exact PWA configuration types](https://unpkg.com/@quasar/app-vite@3.10.4/types/configuration/pwa-conf.d.ts), [Workbox strategies](https://developer.chrome.com/docs/workbox/modules/workbox-strategies), [Workbox build 7.4.1 metadata](https://registry.npmjs.org/workbox-build/7.4.1), [browser install prompt](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent).

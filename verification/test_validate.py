@@ -246,17 +246,31 @@ class InstalledPackageIntegrity(unittest.TestCase):
         package['dependencies']['vue'] = '^' + package['dependencies']['vue']
         self.write_json(relative, package)
         self.assert_rejected()
+        for name, stale, expected in (('vue', '3.5.44', '3.5.46'), ('vuetify', '4.3.0', '4.3.4')):
+            with self.subTest(stale_pin=name):
+                package = copy.deepcopy(original)
+                package['dependencies'][name] = stale
+                self.write_json(relative, package)
+                self.assertIn(f'{relative}: dependencies.{name} must be {expected}',
+                              self.assert_rejected()['errors'])
         package = copy.deepcopy(original)
         package['scripts']['build'] = 'echo skipped'
         self.write_json(relative, package)
         self.assert_rejected()
         for group, name in (('dependencies', '@tresjs/core'), ('dependencies', 'three'),
-                            ('devDependencies', '@types/three')):
+                            ('devDependencies', '@types/three'), ('dependencies', '@vue/devtools-api'),
+                            ('devDependencies', '@types/bun')):
             package = copy.deepcopy(original)
             package[group].pop(name)
-            with self.subTest(missing_graphics_contract=name):
+            with self.subTest(missing_dependency=name):
                 self.write_json(relative, package)
-                self.assert_rejected()
+                self.assertTrue(any(error.startswith(f'{relative}: {group}.{name} must be ')
+                                    for error in self.assert_rejected()['errors']))
+        package = copy.deepcopy(original)
+        package['devDependencies']['@types/node'] = '24.19.2'
+        self.write_json(relative, package)
+        self.assertIn(f'{relative}: devDependencies.@types/node must not be a direct dependency',
+                      self.assert_rejected()['errors'])
 
     def test_footprint_detects_changed_unlisted_and_missing_files(self):
         path = self.root / 'assets/example-app/index.html'

@@ -4,7 +4,7 @@ Read this before adding validation, editing server records, or connecting a form
 
 For an existing or explicitly selected OpenVue application, continue to [OpenVue forms and input contracts](openvue-forms.md) for its optional Form/FormField owner, resolver semantics, model shapes and native-input forwarding. Keep the cross-library draft/submission boundaries here; do not layer a second validation owner over an existing form.
 
-Baseline: Vue **3.5.44**, Vuetify **4.3.0**. Recommendations about ownership and conflict policy below are application architecture, not guarantees made by a form library.
+Current examples target Vue **3.5.46** and Vuetify **4.3.4**. For optional owners use the exact releases in [FormKit](formkit.md), [vee-validate](vee-validate.md), or [TanStack Vue Form](tanstack-form.md); do not install them all. Recommendations about ownership and conflict policy below are application architecture, not guarantees made by a form library.
 
 ## Pick one validation owner
 
@@ -54,7 +54,7 @@ Separate the authoritative write from subsequent cache invalidation/refetch. If 
 
 ## Vuetify: one validation pass
 
-In **4.3.0**, `VForm` starts validation before emitting `submit`. The emitted `SubmitEventPromise` is thenable: **await the event** in a `@submit` handler. Calling `form.validate()` there starts a second pass. For an explicit Validate button or non-submit imperative action, **await `form.validate()`** instead. Both results have `{ valid, errors }`; a Promise or result object is always truthy and is not the validity flag. [Pinned VForm source](https://unpkg.com/vuetify@4.3.0/lib/components/VForm/VForm.js), [form implementation](https://unpkg.com/vuetify@4.3.0/lib/composables/form.js).
+In **4.3.4**, `VForm` starts validation before emitting `submit`. The emitted `SubmitEventPromise` is thenable: **await the event** in a `@submit` handler. Calling `form.validate()` there starts a second pass. For an explicit Validate button or non-submit imperative action, **await `form.validate()`** instead. Both results have `{ valid, errors }`; a Promise or result object is always truthy and is not the validity flag. [Pinned VForm source](https://unpkg.com/vuetify@4.3.4/lib/components/VForm/VForm.js), [form implementation](https://unpkg.com/vuetify@4.3.4/lib/composables/form.js).
 
 Complete SFC for an installed Vuetify app; it applies a title only in component memory. It has no network service or artificial delay. The input stays readonly during validation; the synchronous guard prevents duplicate writes. `novalidate` is provided by `VForm`.
 
@@ -141,9 +141,9 @@ async function checkDraft() {
 }
 ```
 
-`VForm.reset()` clears input models (typically to `null`); it does not restore the accepted server baseline. Assign that baseline yourself and call `resetValidation()` when that is the intended operation. `resetValidation()` retains values. `validate-on="blur lazy"` skips initial validation and validates on blur; **lazy does not mean “only after the first submit.”** Rule functions should return `true` or a message, or a promise of either; reject/catch infrastructure failures deliberately. Plain functions need no rules plugin. If adopting Vuetify's builders, **4.3.0 exports `useRules`/`createRulesPlugin` from `vuetify`, not the old labs path**; see [Vuetify components](vuetify-components.md).
+`VForm.reset()` clears input models (typically to `null`); it does not restore the accepted server baseline. Assign that baseline yourself and call `resetValidation()` when that is the intended operation. `resetValidation()` retains values. `validate-on="blur lazy"` skips initial validation and validates on blur; **lazy does not mean “only after the first submit.”** Rule functions should return `true` or a message, or a promise of either; reject/catch infrastructure failures deliberately. Plain functions need no rules plugin. For the stable `useRules`/`createRulesPlugin` imports from `vuetify`, not the old labs path, see [Vuetify components](vuetify-components.md).
 
-Vuetify **4.3.0 does not cancel or latest-gate overlapping rule promises**: each completed `validate()` assigns its errors, and later rules read the then-current model. For remote rules, serialize validation and hold a stable draft, or choose an external owner with a documented stale-result policy; debounce alone is insufficient. Catch expected request failures inside the rule and return an honest checking-failed message. An uncaught rejection bypasses the pinned runtime's normal pending-flag cleanup; catching only the submit handler reports the exception but does not repair that field's validation lifecycle. A handler guard blocks duplicate writes, not the validation `VForm` already starts before emitting another submit.
+Vuetify **4.3.4 does not cancel or latest-gate overlapping rule promises**: each completed `validate()` assigns its errors, and later rules read the then-current model. For remote rules, serialize validation and hold a stable draft, or choose an external owner with a documented stale-result policy; debounce alone is insufficient. Catch expected request failures inside the rule and return an honest checking-failed message. An uncaught rejection bypasses the pinned runtime's normal pending-flag cleanup; catching only the submit handler reports the exception but does not repair that field's validation lifecycle. A handler guard blocks duplicate writes, not the validation `VForm` already starts before emitting another submit.
 
 Ordinary `type`/`@click` on `VBtn` and native attributes on `VTextField` above are runtime fallthrough, not necessarily declared component props/emits. For consumers enabling `strictTemplates`, see [strict template checking and native fallthrough](vuetify-setup.md#strict-template-checking-and-native-fallthrough) for the Vue-native checked attribute-bag recipe; do not suppress template checks or augment Vuetify's component API.
 
@@ -166,13 +166,13 @@ Keep a real submit button and handle the form's `submit` event so keyboard Enter
 
 ## Verification boundary
 
-Historical compiler/type scopes are recorded in the [verification record](../assets/verification.json); that record is not a fresh execution of the current examples. Exercise keyboard Enter, invalid submit/focus, duplicate submit, out-of-order async validation, save rejection, server field mapping, reset, background refetch while dirty, and record switching in the consuming app. See [testing](testing.md).
+The current Vuetify contracts are source-checked, not newly executed. The [historical verification record](../assets/verification.json) distinguishes bounded consumer checks from the [original full-declaration forms graph](vuetify-setup.md#failure-modes-and-evidence-boundary): `skipLibCheck: false` with TypeScript **5.9.3** and resolved vue-tsc **3.1.8** failed with **85 dependency-declaration diagnostics** (including optional adapter SDK and generated component declarations), not extracted consumer-file diagnostics. The bounded `strict` / `strictTemplates` pass with `skipLibCheck: true` did not repair that graph or certify a full-declaration pass. Preserve the consuming project's gate and the no-provider-key/no-hosted-SDK scope; do not add services, unused SDKs or declaration shims to make a service-independent example appear to pass. Exercise keyboard Enter, invalid submit/focus, duplicate submit, out-of-order async validation, save rejection, server field mapping, reset, background refetch while dirty, and record switching in the consuming app. See [testing](testing.md).
 
 ## Sources
 
 - [Vue forms and component v-model](https://vuejs.org/guide/components/v-model.html).
 - [Vuetify forms](https://vuetifyjs.com/en/components/forms/).
-- [Vuetify 4.3.0 VForm](https://unpkg.com/vuetify@4.3.0/lib/components/VForm/VForm.js), [form](https://unpkg.com/vuetify@4.3.0/lib/composables/form.js), [input validation/reset](https://unpkg.com/vuetify@4.3.0/lib/composables/validation.js).
+- [Vuetify 4.3.4 VForm](https://unpkg.com/vuetify@4.3.4/lib/components/VForm/VForm.js), [form](https://unpkg.com/vuetify@4.3.4/lib/composables/form.js), [input validation/reset](https://unpkg.com/vuetify@4.3.4/lib/composables/validation.js).
 - [vee-validate form metadata/reset](https://vee-validate.logaretm.com/v4/api/use-form/).
 - [TanStack 1.33.5 form state/reset source](https://unpkg.com/@tanstack/form-core@1.33.5/src/FormApi.ts).
 - [WAI accessible validation](https://www.w3.org/WAI/tutorials/forms/validation/) and [error/success notifications](https://www.w3.org/WAI/tutorials/forms/notifications/).

@@ -46,8 +46,9 @@ import { RouterLink } from 'vue-router'
         requiring GLSL ShaderMaterial, onBeforeCompile, or legacy EffectComposer,
         not an automatic interchangeable fallback. The experimental baseline is not a
         hardware-support guarantee or a lighting, custom-shader, or postprocessing
-        demonstration. The pinned Tres 5.9.3 / Three 0.186.1 experimental path retains
-        known upstream failed-initialization teardown and in-flight unmount limits.
+        demonstration. In the pinned Tres 5.12.0 / Three 0.187.0 experimental path,
+        disposal waits for pending initialization rather than canceling it. If
+        initialization fails, disposal can reject before cleanup.
         Leaving Graphics releases its scene; returning does not start it again.
         Its text description and controls do not require a working canvas.
       </p>

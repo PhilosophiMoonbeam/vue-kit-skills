@@ -9,7 +9,7 @@
 
 **3.12.0** adds the `/webgpu` entry with exactly two runtime exports, `EffectComposer` and `defineEffect`. It chains effects in slot order before output conversion. **3.13.0** retains those exports and adds the definition-level `stage` option and exported `EffectStage` type. Both versions export the effect definition, component, state, prop and uniform types and `EffectComposerProps`. Neither entry exports prebuilt WebGPU effect components. Do not put root-exported passes, including `Output`, into this composer.
 
-The `/webgpu` API needs **Core 5.11+ and Three r183+** (`RenderPipeline`), not just the manifest’s broad Core `^5.9.1` and Three `>=0.169` peer ranges. These are API floors, not proof that an arbitrary effect or version pairing works. The example targets **Vue 3.5.44, Core 5.12.0, post-processing 3.13.0, Three 0.186.1 and `@types/three` 0.186.0**. Use the [Tres compiler configuration](tresjs-webgpu.md) and mount client-side. `WebGPURenderer` using its WebGL2 backend still is not `WebGLRenderer`.
+The `/webgpu` API needs **Core 5.11+ and Three r183+** (`RenderPipeline`), not just the manifest’s broad Core `^5.9.1` and Three `>=0.169` peer ranges. These are API floors, not proof that an arbitrary effect or version pairing works. The example retains its separate source profile: **Vue 3.5.44, Core 5.12.0, post-processing 3.13.0, Three 0.186.1 and `@types/three` 0.186.0**. The [active r187 workbench and lab](tresjs.md#released-package-map) do not establish effects compatibility. Use the [Tres compiler configuration](tresjs-webgpu.md) and mount client-side. `WebGPURenderer` using its WebGL2 backend still is not `WebGLRenderer`.
 
 ## HDR bloom and display-space FXAA
 

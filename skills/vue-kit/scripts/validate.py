@@ -1581,6 +1581,8 @@ class Validator:
             if not isinstance(values, dict):
                 self.error(path, f'{group} must be an object')
                 continue
+            if '@types/node' in values:
+                self.error(path, f'{group}.@types/node must not be a direct dependency')
             for name, version in sorted(values.items()):
                 if not isinstance(version, str) or not SEMVER.fullmatch(version):
                     self.error(path, f'{group}.{name} must use an exact pinned version')
@@ -1590,13 +1592,14 @@ class Validator:
             return
         required = {
             'dependencies': {
-                **BASELINE, 'pinia': '3.0.4', 'vue-router': '4.6.4',
+                'vue': '3.5.46', 'vuetify': '4.3.4', 'pinia': '4.1.0', 'vue-router': '5.5.1',
+                '@vue/devtools-api': '8.2.1',
                 '@tresjs/core': '5.12.0', 'three': '0.187.0',
             },
             'devDependencies': {
-                '@vitejs/plugin-vue': '6.0.10', 'vite': '8.3.4',
-                'typescript': '5.9.3', 'vue-tsc': '3.3.14',
-                '@types/node': '24.19.2', '@types/three': '0.187.0',
+                '@vitejs/plugin-vue': '6.0.11', 'vite': '8.3.8',
+                'typescript': '6.0.3', 'vue-tsc': '3.3.14',
+                '@types/bun': '1.4.5', '@types/three': '0.187.0',
             },
         }
         for group, versions in required.items():

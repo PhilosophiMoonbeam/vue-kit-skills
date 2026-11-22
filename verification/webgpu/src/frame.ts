@@ -9,19 +9,13 @@ import OwnershipHost from './consumers/OwnershipHost.vue'
 import { labVersions, modes, observationChannel, scenes, type Category, type Command, type FrameState, type Json, type Mode, type SceneId } from './lab-contract'
 
 interface AdapterInfo { vendor?: string; architecture?: string; device?: string; description?: string; isFallbackAdapter?: boolean }
-interface ObservedQueue { submit: (...args: unknown[]) => void }
+type ObservedQueue = Pick<GPUQueue, 'submit'>
 interface ObservedDevice extends EventTarget {
   queue: ObservedQueue
   lost: Promise<{ reason: string; message: string }>
   adapterInfo?: AdapterInfo
   destroy?: () => void
 }
-interface ObservedAdapter {
-  info?: AdapterInfo
-  isFallbackAdapter?: boolean
-  requestDevice: (...args: unknown[]) => Promise<ObservedDevice>
-}
-interface ObservedGpu { requestAdapter: (...args: unknown[]) => Promise<ObservedAdapter | null> }
 interface ObservedCanvasContext { configure: (...args: unknown[]) => void }
 const params = new URLSearchParams(location.search)
 const requestedScene = params.get('scene') ?? 'webgpu'
@@ -57,7 +51,7 @@ let initializedContext: TresContext | undefined
 let ownerRetired = false
 let lossRequested: 'webgl' | 'webgpu' | null = null
 const observedCanvases = new WeakSet<HTMLCanvasElement>()
-const seenAdapters = new WeakSet<ObservedAdapter>()
+const seenAdapters = new WeakSet<GPUAdapter>()
 const seenDevices = new WeakSet<ObservedDevice>()
 const seenContexts = new WeakSet<object>()
 
@@ -171,8 +165,8 @@ function observeDevice(device: ObservedDevice, observeQueue: boolean, source: st
     return
   }
   const submit = device.queue.submit
-  device.queue.submit = function (this: ObservedQueue, ...args: unknown[]): void {
-    Reflect.apply(submit, this, args)
+  device.queue.submit = function (this: ObservedQueue, ...args: Parameters<GPUQueue['submit']>): void {
+    submit.apply(this, args)
     submissions += 1
     if (unmounted) submissionsAfterUnmount += 1
     if (submissions === 1 || (unmounted && submissionsAfterUnmount === 1)) {
@@ -187,18 +181,18 @@ function observeDevice(device: ObservedDevice, observeQueue: boolean, source: st
   sendState()
 }
 
-function observeAdapter(adapter: ObservedAdapter): void {
+function observeAdapter(adapter: GPUAdapter & { isFallbackAdapter?: boolean }): void {
   state.adapter = adapterInfo(adapter.info, adapter.isFallbackAdapter)
   if (seenAdapters.has(adapter)) return
   seenAdapters.add(adapter)
   event('capability', 'Native GPU.requestAdapter resolved with a real adapter.', state.adapter)
   const requestDevice = adapter.requestDevice
-  adapter.requestDevice = function (this: ObservedAdapter, ...args: unknown[]): Promise<ObservedDevice> {
+  adapter.requestDevice = function (this: GPUAdapter, ...args: Parameters<GPUAdapter['requestDevice']>): ReturnType<GPUAdapter['requestDevice']> {
     if (deniedDevice) {
       intervention('GPUAdapter.requestDevice returns a rejected NotAllowedError promise instead of calling the native method. This is an injected denial, not evidence of hardware failure.')
       return Promise.reject(new DOMException('Diagnostic intervention: GPUAdapter.requestDevice deliberately denied.', 'NotAllowedError'))
     }
-    const promise = Reflect.apply(requestDevice, this, args) as Promise<ObservedDevice>
+    const promise = requestDevice.apply(this, args)
     // Return the original promise, preserving the renderer's own error path.
     void promise.then(device => observeDevice(device, true, 'Native GPUAdapter.requestDevice resolved with a real GPUDevice.'), cause => event('capability', 'Native GPUAdapter.requestDevice rejected.', detailOf(cause)))
     return promise
@@ -207,7 +201,7 @@ function observeAdapter(adapter: ObservedAdapter): void {
 }
 
 function instrumentGpu(): void {
-  const gpu = (navigator as Navigator & { gpu?: ObservedGpu }).gpu
+  const gpu: GPU | undefined = navigator.gpu
   if (!gpu) {
     event('capability', 'navigator.gpu is absent in this browser/context. No adapter or device result can be inferred.', { secureContext: state.secureContext })
     if (deniedAdapter || deniedDevice) {
@@ -216,14 +210,14 @@ function instrumentGpu(): void {
     return
   }
   const requestAdapter = gpu.requestAdapter
-  gpu.requestAdapter = function (this: ObservedGpu, ...args: unknown[]): Promise<ObservedAdapter | null> {
+  gpu.requestAdapter = function (this: GPU, ...args: Parameters<GPU['requestAdapter']>): ReturnType<GPU['requestAdapter']> {
     if (deniedAdapter) {
       intervention('GPU.requestAdapter resolves null instead of calling the native method. This is an injected adapter denial, not a measurement of the real adapter.')
       state.adapter = null
       sendState()
       return Promise.resolve(null)
     }
-    const promise = Reflect.apply(requestAdapter, this, args) as Promise<ObservedAdapter | null>
+    const promise = requestAdapter.apply(this, args)
     void promise.then(adapter => {
       if (adapter) observeAdapter(adapter)
       else {

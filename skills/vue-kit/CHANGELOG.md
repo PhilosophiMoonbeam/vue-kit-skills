@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### 2026-11-22 — Compatible dependency refresh and Bun-native paths
+
+- Updated the [workbench pins](references/setup-tooling.md#exact-example-baseline-and-api-status) to Vue **3.5.46**, Vuetify **4.3.4**, classic Vue Router **5.5.1** and ESM Pinia **4.1.0** with its explicit `@vue/devtools-api` **8.2.1** peer. The workbench and lab share Vue, Vite **8.3.8**, plugin-vue **6.0.11** and `@types/bun` **1.4.5**; Core/Three r187 graphics pins are unchanged. The owning references separate [Router 4→5 migration](references/routing.md#versions-and-api-status), [Pinia 3→4 compatibility](references/state.md#version-and-selection-boundary) and opt-in profiles from the bundled graph.
+- Moved both apps to **TypeScript 6.0.3** with **vue-tsc 3.3.14**. The isolated checker accepted a valid SFC and rejected a deliberate template error. TypeScript **7.0.2** lacks the compiler entry this checker needs, and `bun check` did not resolve the real `.vue` import. The earlier TypeScript 5 pin and its observations remain historical.
+- Kept Bun **1.4.5** and Biome **2.6.8**. The lab now uses `Bun.serve`, Bun file I/O and hashing, and `bun test`. The archived recipe fingerprints and fixture identities stay distinct from current build provenance. The Bun-first install path pins [Skills CLI **1.9.0**](https://github.com/vercel-labs/skills/releases/tag/v1.9.0); a Bun-only `PATH` exercised the launcher and a project-local Codex copy, not remote installation or publication.
+- Routed [OpenVue **1.1.1** adoption](references/openvue.md#release-and-evidence-boundary) to tagged upstream and published package evidence. The **1.0.0** corpus, recipe contracts and runtime checks remain separate; newer and optional integrations do not inherit a pass.
+- Recorded the [bounded verification](assets/verification.json) for `vue-kit-skills-3y5`: frozen installs, both SFC checks and builds, workbench behavior, lab HTTP provenance and an injected software WebGL 2 fallback. The standalone Nuxt catalogue and the Vitest threads recipe have separate checks. None certifies native hardware or every optional integration. Earlier execution records and device receipts remain unchanged.
+
 ### 2026-11-22 — Bun runtime and Biome linting
 
 - Pinned the Skills install launcher to **1.7.4** under Bun, and made **Bun 1.4.5** the install and execution baseline for the workbench and WebGPU lab. The change does not override an incumbent project's runtime or package-manager policy.

@@ -2,7 +2,7 @@
 
 ## When to read and version boundary
 
-Read when a screen combines Vuetify, design tokens, forms, overlays, tables/charts, motion, or localization. This is **authored synthesis**: it chooses responsibility and interaction protocols; library guarantees are linked separately. Baseline **Vue 3.5.44** and **Vuetify 4.3.0**. Additional libraries are conditional capabilities, not a default installation list; use their specialist reference's exact version/status before importing them. Do not migrate an incumbent UI framework during a narrow feature task.
+Read when a screen combines Vuetify, design tokens, forms, overlays, tables/charts, motion, or localization. This is **authored synthesis**: it chooses responsibility and interaction protocols; library guarantees are linked separately. Baseline **Vue 3.5.46** and **Vuetify 4.3.4**. Additional libraries are conditional capabilities, not a default installation list; use their specialist reference's exact version/status before importing them. Do not migrate an incumbent UI framework during a narrow feature task.
 
 Start with [application architecture](architecture.md) for feature/deployment boundaries; [data architecture](architecture-data.md) owns server-state and save concurrency. Here the unit of design is a complete user interaction, including focus, interrupted work, reduced motion, and narrow layouts—not a collection of component demos.
 
@@ -55,7 +55,7 @@ For every modal or popup, record: opener, semantic name, initial focus, keyboard
 - Keep popups from selects/date pickers inside the chosen overlay's supported composition model. Check portal ancestry, clipping, z-index, scroll lock, inertness, outside-click and focus retention together. A z-index increase cannot fix broken ownership.
 - On close, return focus to the opener when it still exists and is usable. If the save removed its row or changed the page, choose a surviving row action, list heading, or toolbar action consistent with the task. Never restore focus to hidden/retired tenant content.
 
-These behavior goals follow the [WAI-ARIA modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/). Vuetify **4.3.0** supplies dialog focus capture/retention defaults and activator return-focus behavior in its [distributed VDialog implementation](https://unpkg.com/vuetify@4.3.0/lib/components/VDialog/VDialog.js); it cannot choose the application's fallback when the original row disappears. A library's default focus action is not evidence that the whole workflow was exercised.
+These behavior goals follow the [WAI-ARIA modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/). Vuetify **4.3.4** supplies dialog focus capture/retention defaults and activator return-focus behavior in its [distributed VDialog implementation](https://unpkg.com/vuetify@4.3.4/lib/components/VDialog/VDialog.js); it cannot choose the application's fallback when the original row disappears. The [4.3.4 Back fix](https://github.com/vuetifyjs/vuetify/releases/tag/v4.3.4) covers the previous browser-history entry being the landing page with Vue Router. Check this path as well as Escape with simultaneous snackbar and dialog; application guards still own dirty or pending work. A library's default focus or dismissal action is not evidence that the whole workflow was exercised.
 
 ## Worked design: support inbox, editor, chart, and localized table
 
@@ -141,7 +141,7 @@ Async validation remains form-owned while the interaction is `editing`. If close
 
 ## Focused component example: real local selection clearing
 
-This **complete SFC** is runnable inside an already configured Vue 3.5.44/Vuetify 4.3.0 application with `vuetify/styles` and a `VApp` ancestor; [Vuetify setup](vuetify-setup.md) supplies that context. It implements only in-memory selection and confirmation—no backend, persistence, or case-management integration. It demonstrates one dialog owner, bound activator props, stable accessible IDs, explicit Cancel, and truthful local success. Its opener remains mounted/enabled after clearing, so ordinary dialog return focus has a surviving target.
+This **complete SFC** is intended for an already configured Vue 3.5.46/Vuetify 4.3.4 application with `vuetify/styles` and a `VApp` ancestor; [Vuetify setup](vuetify-setup.md) supplies that context. It implements only in-memory selection and confirmation—no backend, persistence, or case-management integration. It demonstrates one dialog owner, bound activator props, stable accessible IDs, explicit Cancel, and truthful local success. Its opener remains mounted/enabled after clearing, so ordinary dialog return focus has a surviving target.
 
 ```vue
 <script setup lang="ts">
@@ -272,7 +272,7 @@ Responsive behavior includes long translations, RTL, zoom, touch targets, virtua
 
 ## Sources
 
-- [Vue 3.5.44 package metadata](https://registry.npmjs.org/vue/3.5.44), [Vue 3.5.44 runtime-core declarations](https://unpkg.com/@vue/runtime-core@3.5.44/dist/runtime-core.d.ts), [Vue stable IDs](https://vuejs.org/api/composition-api-helpers.html#useid).
-- [Vuetify 4.3.0 metadata](https://registry.npmjs.org/vuetify/4.3.0), [dialog documentation](https://vuetifyjs.com/en/components/dialogs/), [4.3.0 dialog implementation](https://unpkg.com/vuetify@4.3.0/lib/components/VDialog/VDialog.js), [4.3.0 declarations](https://unpkg.com/vuetify@4.3.0/lib/components/VDialog/VDialog.d.ts).
+- [Vue 3.5.46 package metadata](https://registry.npmjs.org/vue/3.5.46), [Vue 3.5.46 runtime-core declarations](https://unpkg.com/@vue/runtime-core@3.5.46/dist/runtime-core.d.ts), [Vue stable IDs](https://vuejs.org/api/composition-api-helpers.html#useid).
+- [Vuetify 4.3.4 metadata](https://registry.npmjs.org/vuetify/4.3.4), [dialog documentation](https://vuetifyjs.com/en/components/dialogs/), [4.3.4 dialog implementation](https://unpkg.com/vuetify@4.3.4/lib/components/VDialog/VDialog.js), [4.3.4 declarations](https://unpkg.com/vuetify@4.3.4/lib/components/VDialog/VDialog.d.ts).
 - [WAI-ARIA modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), [WAI complex data-image alternatives](https://www.w3.org/WAI/tutorials/images/complex/), [WCAG 2.3.3 motion disablement](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html).
 - [Vue SSR hydration and platform boundaries](https://vuejs.org/guide/scaling-up/ssr.html#writing-ssr-friendly-code).

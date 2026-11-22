@@ -9,8 +9,8 @@ description: >-
   architecture, migrations, and Vue runtime or type errors. Routes to focused,
   version-aware references and runnable examples.
 metadata:
-  vue-baseline: "3.5.44"
-  vuetify-baseline: "4.3.0"
+  vue-baseline: "3.5.46"
+  vuetify-baseline: "4.3.4"
   style: "Composition API; script setup; TypeScript"
 ---
 
@@ -23,10 +23,11 @@ Prefer **Bun 1.4.5** for new projects and equivalent workflows: `bun install`,
 `bun add`, and `bun run <script>`. The bundled workbench uses Bun for both package
 management and execution. For a CLI known to work under Bun, `--bun` overrides
 a Node shebang even when Node is installed; use `bun --bun <bin>` for a local
-binary or `bunx --bun` for a package executable. Bun supports `node:*`
-compatibility imports, and `@types/node` supplies declarations without a
-separate Node runtime. Preserve an incumbent project's declared manager, runtime
-and authoritative lockfile unless migration is requested. Prefer
+binary or `bunx --bun` for a package executable. Use direct `@types/bun` and
+an explicit `compilerOptions.types` list in Bun tooling; transitive
+`@types/node` declarations and Bun-supported `node:*` imports do not require a
+separate Node executable. Preserve an incumbent project's declared manager,
+runtime and authoritative lockfile unless migration is requested. Prefer
 [Biome 2.6.8](references/setup-tooling.md#biome-linting) for new Vue app linting;
 keep lint, Vue typechecking and bundling separate.
 
@@ -46,14 +47,19 @@ keep lint, Vue typechecking and bundling separate.
    [architecture](references/architecture.md) for the ownership decision.
    Otherwise go directly to the relevant task reference.
 3. Default new Vue code to Composition API and `<script setup lang="ts">`.
-   The documented baseline is [Vue 3.5.44](https://github.com/vuejs/core/releases/tag/v3.5.44)
-   with [Vuetify 4.3.0](https://github.com/vuetifyjs/vuetify/releases/tag/v4.3.0)
+   The documented baseline is [Vue 3.5.46](https://github.com/vuejs/core/releases/tag/v3.5.46)
+   with [Vuetify 4.3.4](https://github.com/vuetifyjs/vuetify/releases/tag/v4.3.4)
    as the pinned authoring baseline and **Vuetify 4.3.x** preferred for a new
    general-purpose UI. These are preferences, not permission to replace an
    incumbent alternative or require Vuetify for headless/3D work.
    Preserve Options API and JSX where the application requires them.
-   The example's Router/Pinia/tooling pins are a bounded runnable snapshot, not
-   ecosystem-wide version ceilings or instructions to downgrade newer incumbents.
+   The [standalone snapshot](references/setup-tooling.md#exact-example-baseline-and-api-status)
+   uses Router **5.5.1**, Pinia **4.1.0** with `@vue/devtools-api` **8.2.1**,
+   Vite **8.3.8**, `@vitejs/plugin-vue` **6.0.11**, TypeScript **6.0.3**,
+   `vue-tsc` **3.3.14**, and `@types/bun` **1.4.5**. These pins bound this example;
+   they do not override incumbent recipes or renew historical receipts.
+   Keep `vue-tsc --noEmit` for the full Vue check; neither Vite bundling nor
+   the native Bun checker substitutes for checking Vue templates.
 4. Write the smallest complete change. Keep state ownership and lifetime explicit;
    derive state with `computed`, use watchers for effects, and clean up resources.
    Give substantial independent responsibilities useful boundaries, not arbitrary

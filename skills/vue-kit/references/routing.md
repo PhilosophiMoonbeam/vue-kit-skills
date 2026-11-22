@@ -6,20 +6,23 @@ Read for Vue Router setup, route-driven components, guards, typed routes, file g
 
 | Contract | Exact researched version | Boundary |
 | --- | --- | --- |
-| Current Vue Router | `vue-router@5.4.0` | Vue/compiler peer `^3.5.34 || ^4.0.0`; Vue `3.5.44` satisfies it. Vite `^7.3.0 || ^8.0.0` is optional. Includes the file-routing plugin. |
-| Incumbent Router 4 / bundled workbench | `vue-router@4.6.4` | Vue peer `^3.5.0`. Classic route-record examples below work on this line and current 5.4.0. Do not use v5 plugin imports in this fixture. |
-| Opt-in APIs in 5.4.0 | `vue-router/experimental` | Data loaders and resolver/param-parser experiments are not made stable by the package major. The resolver router is explicitly **not production-ready** upstream. |
+| Current Vue Router / bundled workbench | `vue-router@5.5.1` | The workbench uses classic `createRouter({ routes })` from `vue-router`, with explicit records. Vue peer `^3.5.34 \|\| ^4.0.0`; Vue `3.5.46` satisfies it. No file generation, loaders, or resolver. |
+| Incumbent Router 4 | `vue-router@4.6.5` | Vue peer `^3.5.0`. Use the classic examples; the bundled v5 Vite plugin is not a Router 4 export. |
+| Opt-in Router 5 build tooling | `vue-router/vite` | File generation is independent of resolver and loader adoption. Optional package peers: Vite `^7.3.0 \|\| ^8.0.0` and `@vue/compiler-sfc` `^3.5.34 \|\| ^4.0.0`. |
+| Opt-in Router 5 runtime APIs | `vue-router/experimental` | Loaders and the resolver are experimental, separate choices. Only the Colada loader path needs the optional Pinia `^3.0.4 \|\| ^4.0.2` and Colada `>=0.21.2` Router peers. |
 
-Sources: [5.4.0 metadata](https://registry.npmjs.org/vue-router/5.4.0), [4.6.4 metadata](https://registry.npmjs.org/vue-router/4.6.4), [v4→v5 migration](https://router.vuejs.org/guide/migration/v4-to-v5.html), [experimental router warning](https://router.vuejs.org/experimental/router-resolver.md). The prepared source's 5.3.1 is not the current baseline. Do not silently upgrade an incumbent during an unrelated task.
+Sources: [5.5.1 metadata](https://registry.npmjs.org/vue-router/5.5.1), [4.6.5 metadata](https://registry.npmjs.org/vue-router/4.6.5), [v4→v5 migration](https://router.vuejs.org/guide/migration/v4-to-v5.html), [experimental resolver warning](https://github.com/vuejs/router/blob/v5.5.1/packages/docs/experimental/router-resolver.md). Do not upgrade an incumbent during an unrelated task.
 
 Choose one installation, retaining the application's existing toolchain:
 
 ```sh
-# Current application
-bun add --exact vue@3.5.44 vue-router@5.4.0
-# Instead, for the explicitly Router-4 application
-bun add --exact vue@3.5.44 vue-router@4.6.4
+# Current application: classic Router 5
+bun add --exact vue@3.5.46 vue-router@5.5.1
+# Instead, for an explicitly Router-4 application
+bun add --exact vue@3.5.46 vue-router@4.6.5
 ```
+
+The [4.6.5](https://github.com/vuejs/router/releases/tag/v4.6.5) and [5.5.1](https://github.com/vuejs/router/releases/tag/v5.5.1) patches both fix escaping literal `(` in static path tokens and refine parameter-separator matching. Check existing custom paths and bookmark/deep-link behavior rather than changing URL patterns merely to upgrade.
 
 ## Histories and request lifetime
 
@@ -191,7 +194,7 @@ Use `component: () => import(...)` for lazy route components, not `defineAsyncCo
 
 ## URL normalization and reuse
 
-- Stable-router path params normalize to strings, or arrays for repeatable segments (`:parts+`, `:parts*`); optional params need an explicit absent-value policy. A `\d+` match is still a string, not a number. Validate domain constraints separately.
+- Classic-router path params normalize to strings, or arrays for repeatable segments (`:parts+`, `:parts*`). Pass an array for every repeatable named-navigation param, even one item; use `[]` or `null` to remove an optional repeatable param. [5.5.1](https://github.com/vuejs/router/releases/tag/v5.5.1) warns on explicitly supplied scalars. A `\d+` match is still a string, not a number. Validate domain constraints separately.
 - Query values are `string | null | (string | null)[]`; missing keys are `undefined` at runtime. `?flag` is `null`; `?flag=` is `''`. Decide whether repeated scalar input uses first/last value or is rejected. The example intentionally takes the first and defaults invalid page numbers to 1; that is application policy, not router validation.
 - Navigate with `{ name, params }` for URL encoding. A `path` plus `params` ignores the params. Pass numbers/strings, not objects; keep secrets and non-serializable state out of URLs. `undefined` removes a query entry, `null` writes a bare key. Use `replace` for canonicalization or high-frequency filter changes when back-history entries are not wanted.
 - `router.currentRoute` is a ref outside setup (`.value`); `useRoute()` is reactive inside setup. Do not capture `const id = route.params.id` and expect updates. Watch only inputs you use, or map them through reactive route props.
@@ -309,19 +312,21 @@ For plugin/permission-provided **classic** routes, `addRoute(record)` returns a 
 
 Custom `parseQuery`/`stringifyQuery` must be a matching pair across SSR/client and navigation; preserve a documented null/repetition/encoding policy and avoid double encoding. `strict` and `sensitive` control trailing-slash/case matching globally or per record; do not rely on deprecated `end: false` for subtree layouts. Use nested records instead.
 
+Keep `scrollBehavior` explicit when the product needs a particular top/anchor/back-forward policy. For Router 5, [5.4.0](https://github.com/vuejs/router/releases/tag/v5.4.0) added the optional prebuilt matcher to classic `createRouter`; explicit `routes` needs neither it nor the experimental resolver. [5.5.0](https://github.com/vuejs/router/releases/tag/v5.5.0) moved saved scroll positions from `history.state` to `sessionStorage` with an in-memory fallback. Use the `savedPosition` argument, not private storage; verify back/forward and reload when changing a custom scroll integration. The RouterView `route` override now supplies `useRoute()` to descendants; ordinary RouterView use does not need that override.
+
 [Active links](https://router.vuejs.org/guide/essentials/active-links.html), [custom links](https://router.vuejs.org/guide/advanced/extending-router-link.html), [dynamic routes](https://router.vuejs.org/guide/advanced/dynamic-routing.md).
 
 ## Typed and file-based routes: do not mix major versions
 
 - Manual typed route maps (`RouteRecordInfo` + `TypesConfig.RouteNamedMap`) exist since **4.4.0**. Raw params can accept numbers while normalized params remain strings. Types are not runtime URL validation.
 - In Router 4, automatic generation comes from the separately installed `unplugin-vue-router`, whose exact installed version must be checked. `vue-router/vite` is **not** a Router-4 export.
-- In **5.4.0**, use `vue-router/vite` and `vue-router/auto-routes`; remove the old external plugin only as an intentional migration. Avoid deprecated `vue-router/auto`. Generated route names are not necessarily hand-written names: read the generated map. Include it in TypeScript; never hand-edit generated output.
+- In **5.5.1**, use `vue-router/vite` and `vue-router/auto-routes`; remove the old external plugin only as an intentional migration. Avoid deprecated `vue-router/auto`. Generated route names are not necessarily hand-written names: read the generated map. Include it in TypeScript; never hand-edit generated output.
 
 [Typed-route introduction at v4.6.4](https://github.com/vuejs/router/blob/v4.6.4/packages/docs/guide/advanced/typed-routes.md), [v5 file setup](https://router.vuejs.org/file-based-routing.md).
 
 ### Manual map for an incumbent non-generated tree
 
-This complete declaration file matches the classic example's **named** records; keep it synchronized with that tree and do not also load a generated map. Parent layouts with no name do not need a named entry. The fourth generic models normalized URL params, not raw navigation inputs. Use a closed object **type alias** here: Router **4.6.4** constrains the map to `Record<string | symbol, RouteRecordInfoGeneric>`, which accepts this alias's implicit index signature but rejects the equivalent augmentable interface. Adding a broad explicit index signature would lose the finite route-name inference:
+This complete declaration file matches the classic example's **named** records; keep it synchronized with that tree and do not also load a generated map. Parent layouts with no name do not need a named entry. The fourth generic models normalized URL params, not raw navigation inputs. Use a closed object **type alias** to preserve the finite route names. The Router **4.6.4** declaration check previously found that its `Record<string | symbol, RouteRecordInfoGeneric>` constraint accepts the closed alias, not an equivalent augmentable interface; a broad explicit index signature would lose finite route-name inference:
 
 ```ts
 // src/routes.d.ts
@@ -344,7 +349,7 @@ declare module 'vue-router' {
 
 ### Complete minimal v5 generated-route alternative
 
-Replace the classic entry with these files, not a second router. Use the existing Vite Vue toolchain; configure `moduleResolution: "Bundler"`, include `src`, and optionally add `vue-router/volar/sfc-route-blocks` and `vue-router/volar/sfc-typed-router` under `vueCompilerOptions.plugins`. The plugin generates `src/route-map.d.ts`; initial generation is a prerequisite for route-aware type checks.
+Use these files instead of the classic entry, not alongside it. This optional **5.5.1** profile still calls classic `createRouter`: Vite supplies its records through the virtual `vue-router/auto-routes` module. Use `moduleResolution: "Bundler"` and include `src`; optionally add `vue-router/volar/sfc-route-blocks` and `vue-router/volar/sfc-typed-router` under `vueCompilerOptions.plugins`. Start Vite once (`bun run dev` with the existing Vite script) before the route-aware type check. The explicit `dts` path below generates `src/route-map.d.ts`, wiring the generated `RouteNamedMap` to `vue-router`'s `TypesConfig`. Do not keep the old generated file or legacy `unplugin-vue-router/client` reference. [Exact virtual-module declaration](https://unpkg.com/vue-router@5.5.1/vue-router-auto-routes.d.mts).
 
 ```ts
 // vite.config.ts
@@ -371,7 +376,7 @@ await router.isReady()
 app.mount('#app')
 ```
 
-Keep app-consumer checking separate from the build-tool configuration when using the retained **5.4.0** package. Add `tsconfig.app.json`:
+Keep app-consumer checking separate from build-tool configuration. Add `tsconfig.app.json`:
 
 ```json
 {
@@ -380,7 +385,11 @@ Keep app-consumer checking separate from the build-tool configuration when using
 }
 ```
 
-Run `vue-tsc --noEmit -p tsconfig.app.json` for that app scope, with the base configuration's `strict: true` and `skipLibCheck: false` unchanged. A single full-tree TypeScript project that includes both `vite.config.ts` and the app exposes an upstream **5.4.0 declaration-bundling collision**: `vue-router/vite` imports `dist/options-B1Pk0SIa.d.mts`, while the runtime/experimental exports import `dist/index-u4XkZVDG.d.ts`; both independently augment Vue's route guards, `$route`, `$router`, `RouterView`, and `RouterLink`. The generated route map augments the runtime's `TypesConfig`, not the plugin's duplicate copy. App-only checking does **not** certify that full-tree project: retain and report its seven duplicate-declaration diagnostics separately rather than patching vendor declarations or enabling `skipLibCheck`.
+Run `bun run vue-tsc --noEmit -p tsconfig.app.json` for that app scope, with the base configuration's `strict: true` and `skipLibCheck: false` unchanged. This covers app consumers and the generated declaration, not type checking of `vite.config.ts`.
+
+**Historical Router 5.4.0 observation:** a full-tree TypeScript project including both the Vite config and app reported seven duplicate-declaration diagnostics. `vue-router/vite` loaded `dist/options-B1Pk0SIa.d.mts`; runtime/experimental exports loaded `dist/index-u4XkZVDG.d.ts`. Both augmented Vue's route guards, `$route`, `$router`, `RouterView`, and `RouterLink`, while the generated map augmented the runtime's `TypesConfig` only. This was distinct from the app-only check.
+
+**5.5.1 declaration inspection, not a rerun:** the Vite plugin's [options bundle](https://unpkg.com/vue-router@5.5.1/dist/options-C4lhTY1l.d.mts) and the [runtime/experimental bundle](https://unpkg.com/vue-router@5.5.1/dist/index-D2jnW06w.d.ts) still carry separate Vue augmentations for those names. Do not claim a clean combined type check or transfer the exact 5.4.0 diagnostic count to 5.5.1. Keep that optional build-tool boundary separate rather than patching vendor declarations or enabling `skipLibCheck`. The classic workbench never imports the Router Vite plugin.
 
 ```vue
 <!-- src/pages/index.vue -->
@@ -394,7 +403,22 @@ import { RouterLink } from 'vue-router'
 </template>
 ```
 
-Add the catalog page below to complete that link. `index.vue` maps to `/`; nested directories and parent pages form layouts; `[id].vue` adds a dynamic segment; `[...path].vue` is a catch-all. Check the actual [file conventions](https://router.vuejs.org/file-based-routing/file-based-routing.md) for optional/repeatable parameters and named views. Changing generated routes at runtime does not regenerate static types; use plugin build-time extension hooks when generation must describe additional routes.
+The second page completes the generated-route example without a data loader:
+
+```vue
+<!-- src/pages/catalog/[id].vue -->
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+
+const route = useRoute('/catalog/[id]')
+</script>
+
+<template>
+  <h1>Catalog item {{ route.params.id }}</h1>
+</template>
+```
+
+`index.vue` maps to `/`; nested directories and parent pages form layouts; `[id].vue` adds a dynamic segment; `[...path].vue` is a catch-all. Check the actual [file conventions](https://router.vuejs.org/file-based-routing/file-based-routing.md) for optional/repeatable parameters and named views. Changing generated routes at runtime does not regenerate static types; use plugin build-time extension hooks when generation must describe additional routes.
 
 ### Generated conventions and customization
 
@@ -430,13 +454,13 @@ export default defineConfig({
 
 For non-Vite incumbents use the exported `vue-router/unplugin/{webpack,rollup,esbuild,rolldown}` adapter appropriate to that build tool; do not rewrite its toolchain. `VueRouterAutoImports` from `vue-router/unplugin` is an optional configuration map for an **already installed** auto-import plugin, not another router or a prerequisite. Declare `definePage` as a readonly lint global when using the macro without imports. If routes do not generate, inspect `routesFolder`/extensions/filter scope; if navigation works but types fail, inspect the generated map's inclusion and restart the language server after generation.
 
-[File conventions](https://router.vuejs.org/file-based-routing/file-based-routing.md), [extension hooks and macro limitations](https://router.vuejs.org/file-based-routing/extending-routes.md), [exact plugin utilities](https://unpkg.com/vue-router@5.4.0/dist/unplugin/index.d.mts).
+[File conventions](https://router.vuejs.org/file-based-routing/file-based-routing.md), [extension hooks and macro limitations](https://router.vuejs.org/file-based-routing/extending-routes.md), [exact plugin utilities](https://unpkg.com/vue-router@5.5.1/dist/unplugin/index.d.mts). [5.5.0](https://github.com/vuejs/router/releases/tag/v5.5.0) added experimental typed route props and the `definePage({ props: true })` transform/Volar integration; those are not required for ordinary classic props or the example above. [5.5.1](https://github.com/vuejs/router/releases/tag/v5.5.1) fixes reading quoted `definePage` keys at build time.
 
-## Experimental data loaders in 5.4.0
+## Experimental data loaders in 5.5.1
 
 Use loaders only after explicitly accepting their experimental API. They work with the stable router; adopting them does **not** require the experimental resolver. Install `DataLoaderPlugin` before the router. In the generated entry above add `import { DataLoaderPlugin } from 'vue-router/experimental'` and `app.use(DataLoaderPlugin, { router })` immediately before `app.use(router)`.
 
-This complete page uses an honest local, read-only catalog, not a fabricated backend. Export the loader from the normal `<script>` so the lazy page module exposes it to discovery. Use the returned composable without `await` in setup.
+To opt in, replace the catalog page with the complete page below. It uses a local, read-only catalog, not a fabricated backend. Export the loader from the normal `<script>` so the lazy page module exposes it to discovery. Use the returned composable without `await` in setup.
 
 ```vue
 <!-- src/pages/catalog/[id].vue -->
@@ -512,11 +536,17 @@ For stricter application error handling, augment `TypesConfig.Error` on **`'vue-
 
 For loaders defined in separate files, explicit page re-exports are simplest. The Vite-only `experimental.autoExportsDataLoaders` plugin option accepts loader-path globs to generate those exports; it is opt-in and experimental, not discovery of every setup import.
 
-[Nested loaders](https://router.vuejs.org/data-loaders/nested-loaders.md), [error policy](https://router.vuejs.org/data-loaders/error-handling.md), [exact helper/result declarations](https://unpkg.com/vue-router@5.4.0/dist/index-u4XkZVDG.d.ts).
+[Nested loaders](https://router.vuejs.org/data-loaders/nested-loaders.md), [error policy](https://router.vuejs.org/data-loaders/error-handling.md), [exact helper/result declarations](https://unpkg.com/vue-router@5.5.1/dist/experimental/index.d.ts).
 
 ### Colada cache alternative
 
-Use `defineColadaLoader` instead of the basic loader when [Pinia Colada](pinia-colada.md) owns server state. For the researched compatible stack: `pinia@4.1.0`, `@pinia/colada@1.4.8`, Vue `3.5.44`; install Pinia's required devtools peer as described in [state](state.md). Install Pinia → `PiniaColada` with options → `DataLoaderPlugin` → router. Do not install two data-loader implementations for the same result.
+Use `defineColadaLoader` instead of the basic loader when [Pinia Colada](pinia-colada.md) owns server state. The optional profile's published peer ranges intersect at Router **5.5.1**, Vue **3.5.46**, Pinia **4.1.0**, and Colada **1.4.9**. [Colada's metadata](https://registry.npmjs.org/@pinia%2fcolada/1.4.9) requires Vue `^3.5.41` and Pinia `^2.2.6 || ^3.0.0 || ^4.0.2`; Pinia requires its own `@vue/devtools-api` peer. For this profile only, add the cache and its peers to the Vue/Router installation:
+
+```sh
+bun add --exact pinia@4.1.0 @vue/devtools-api@8.2.1 @pinia/colada@1.4.9
+```
+
+Install Pinia → `PiniaColada` with options → `DataLoaderPlugin` → router. Do not install two data-loader implementations for the same result. These pins and imports are source-checked, not a runtime/SSR compatibility result.
 
 The following **replacement normal-script block** for the catalog page reuses its setup/template. The key is passed to Colada; cache invalidation must use the same key. Real server-state use replaces the explicitly local query with an application-owned decoded service call.
 
@@ -542,9 +572,9 @@ Colada owns freshness/deduplication/invalidation; `refresh` observes staleness, 
 
 ## Experimental resolver and param parsers
 
-Separate opt-in: `experimental_createRouter` from `vue-router/experimental` plus generated `resolver` from `vue-router/auto-resolver`. Enable `experimental: { paramParsers: true }` in the **5.4.0** VueRouter plugin. This replaces the stable `createRouter({ routes })` matching layer; do not mount both. Explicitly register/import `RouterLink` and `RouterView`; this router does not install them globally. Its fixed resolver has no stable-router dynamic `addRoute`/`removeRoute` API. Upstream limits it to testing/feedback, not production.
+Separate opt-in: use `experimental_createRouter` and its own `RouterLink`/`useLink` from `vue-router/experimental`, generated `resolver` from `vue-router/auto-resolver`, and `RouterView` from `vue-router`. Enable `experimental: { paramParsers: true }` in the **5.5.1** VueRouter plugin. This replaces the classic `createRouter({ routes })` matching layer; do not mount both. Import the components locally (replace the sample index page's classic `RouterLink` import), or register them explicitly; this router does not install them globally. Its fixed resolver has no classic `addRoute`/`removeRoute` API. Upstream limits it to testing/feedback, not production.
 
-Contextual replacement for the generated entry (same `createApp`, `h`, `RouterView`, `createWebHistory` imports and pages; remove the stable `createRouter`/`routes` imports):
+Contextual replacement for the generated entry (keep `createApp`, `h`, `RouterView`, `createWebHistory`, and the app bootstrap; remove the classic `createRouter` and `vue-router/auto-routes` imports):
 
 ```ts
 import { experimental_createRouter } from 'vue-router/experimental'
@@ -561,8 +591,9 @@ declare module 'vue-router' {
 
 - `[id=int].vue` parses an integer to `number`; native `bool`/`string` also exist. Unlike stable-router regexes, this changes normalized parameter types. `definePage({ params: { query: { page: { parser: 'int', default: 1 } } } })` exposes the parsed query input under `route.params.page`.
 - Custom parser modules in `src/params` export `parser = defineParamParser<T>({ get, set })`. `get` validates, `set` serializes. `miss()` rejects the match and can let a catch-all match; it is not an auth redirect. `defineParamParserRaw` owns null/array handling; `defineHashParamParser` owns the single hash value. Standard Schema parsing is one-way; provide an explicit reversible `set` for values not correctly serialized by `String(value)`.
-- Query shape **differs** from the stable router: all raw query values are arrays; a bare key is `[null]`, an absent key is undefined. Navigate with arrays. Query `format: 'value'` selects the last repeated entry; `'array'` preserves entries. Do not reuse the classic first-value policy accidentally.
+- Query shape **differs** from the classic router: [5.4.0](https://github.com/vuejs/router/releases/tag/v5.4.0) normalized all default query values to arrays. A bare key is `[null]`, an absent key is `undefined`; navigate with arrays. Query `format: 'value'` selects the last repeated entry; `'array'` preserves entries. [5.5.0](https://github.com/vuejs/router/releases/tag/v5.5.0) warns if a declared query param in `params` overrides a conflicting raw `query` value. Supply a declared value through `params`, not both.
 - Keep parser defaults, requiredness, named-navigation validation, query/hash behavior, and generated type augmentation aligned. `definePage` is a build-time macro; it cannot close over setup-local runtime variables. Treat generated types and resolver as a versioned pair.
+- [5.5.1](https://github.com/vuejs/router/releases/tag/v5.5.1) resolves relative object locations against the current route and warns if used before initial navigation. Start with an absolute/named location. It also stops creating full stacks for ordinary match misses; use `miss(reason?)` for rejected input, not generic exceptions or stack inspection.
 
 For example, this complete `src/params/date.ts` module supports `[day=date].vue` on the experimental resolver. The filename registers parser `date`; automatic wrappers handle optional/repeated values, while raw parsers must implement those shapes themselves:
 
@@ -581,14 +612,14 @@ export const parser = defineParamParser<Date>({
 
 This accepts JavaScript date parsing and canonicalizes to an ISO timestamp; a date-only/calendar domain needs a stricter codec. Named navigation must pass `Date` values for this parser, not a string merely cast to that type. Keep `_ParamParsers`/`_RouteFileInfoMap` generated rather than hand-editing internal configuration slots.
 
-[Experimental resolver](https://router.vuejs.org/experimental/router-resolver.md), [param-parser contract](https://router.vuejs.org/experimental/param-parsers.md), [exact experimental declarations](https://unpkg.com/vue-router@5.4.0/dist/experimental/index.d.ts).
+[Experimental resolver at v5.5.1](https://github.com/vuejs/router/blob/v5.5.1/packages/docs/experimental/router-resolver.md), [param-parser contract](https://github.com/vuejs/router/blob/v5.5.1/packages/docs/experimental/param-parsers.md), [exact experimental declarations](https://unpkg.com/vue-router@5.5.1/dist/experimental/index.d.ts).
 
 ## Incumbent migrations
 
 Migrate only when requested, across configuration, runtime imports, virtual modules, generated declarations, and editor plugins together:
 
 - **Router 3 → 4/5:** replace `new VueRouter`/`mode` with `createRouter` plus explicit history; `*` with `/:pathMatch(.*)*`; `onReady` with `isReady`; `currentRoute` reads with `.value`; `x/y` scroll coordinates with `left/top`; `addRoutes` with `addRoute`. Removed `router.app` requires explicitly passing the app/provider. Revisit RouterView transition/KeepAlive slots and legacy `RouterLink` APIs rather than mechanically preserving removed props.
-- **Router 4 classic → 5:** upstream describes no breaking classic-route change except the IIFE devtools bundle limitation. Verify peer/runtime/tooling requirements; do not force file generation or the resolver.
+- **Router 4 classic → 5:** [5.0.0](https://github.com/vuejs/router/releases/tag/v5.0.0) merged the file-routing plugin into the package while preserving classic route records and history APIs. Its IIFE build no longer bundles `@vue/devtools-api`; do not infer that the ordinary bundler build lost devtools. Check peers and the later matcher/scroll changes above, but do not add file generation, loaders, or the resolver to a classic app just to upgrade.
 - **External unplugin → bundled v5:** plugin import → `vue-router/vite` (or its matching unplugin adapter); utilities → `vue-router/unplugin`; generated records → `vue-router/auto-routes`; loaders → `vue-router/experimental` or `/experimental/pinia-colada`; Volar paths → `vue-router/volar/...`. Remove old `unplugin-vue-router/client` references, old generated-map inclusion when relocating it, and the obsolete dependency only after all callers migrate. Keep exactly one generated map/router registration. Deprecated `vue-router/auto` is not a compatibility plan.
 - **Experimental upgrades:** `reroute` replaces `NavigationResult`; removed `selectNavigationResult` has no current installation recipe. Keep this ESM-only opt-in surface separate from classic CJS consumers. Compare the exact pinned experimental declarations; do not treat old release-note features as additional new APIs to install.
 
@@ -596,13 +627,13 @@ Migrate only when requested, across configuration, runtime imports, virtual modu
 
 ## Verification boundary
 
-The classic entry and generated-route files are standalone alternatives within a configured Vite app; service-injected async UI, access installer, replacement loader script, and resolver replacement are explicitly contextual. The bundled [workbench](../assets/example-app/package.json) remains Router 4.6.4, not runtime proof of experimental v5 routing. Compiler/type success does not establish browser navigation, request isolation, or server authorization.
+The classic entry and generated-route files are standalone alternatives within a configured Vite app. Service-injected async UI, access installer, and loader/resolver alternatives are explicitly contextual. The bundled [workbench](../assets/example-app/package.json) targets Router **5.5.1** only on the classic route-record path. The [October 2026 historical verification register](../assets/verification.json) records the previous workbench on Vue **3.5.44** / Router **4.6.4**, and scoped **5.4.0** runtime exercises; those and the standalone 5.4.0 declaration findings are not reruns on 5.5.1. The prepared source's **5.3.1** was not the active baseline. The optional 5.5.1 examples are source-checked; compiler/type success would not establish browser navigation, request isolation, or server authorization.
 
 An integrating agent should check direct/deep-link reloads and base paths; initial SSR/client URL agreement; param/query changes on a reused page; repeatable/invalid inputs; guard loops, denial and injected readiness; rapid A→B navigation and stale results; aborted/duplicated navigation; missing chunks; back/forward/hash scroll; focus and announcements; generated types after page renames; cache invalidation/auth-scope changes; and per-request isolation.
 
 ## Sources
 
-- [Vue Router 5.4.0 registry contract](https://registry.npmjs.org/vue-router/5.4.0), [4.6.4 registry contract](https://registry.npmjs.org/vue-router/4.6.4).
+- [Vue Router 5.5.1 registry contract](https://registry.npmjs.org/vue-router/5.5.1), [4.6.5 registry contract](https://registry.npmjs.org/vue-router/4.6.5), [historical 5.4.0 registry contract](https://registry.npmjs.org/vue-router/5.4.0).
 - [Versioned Router-4 guards](https://github.com/vuejs/router/blob/v4.6.4/packages/docs/guide/advanced/navigation-guards.md), [typed routes](https://github.com/vuejs/router/blob/v4.6.4/packages/docs/guide/advanced/typed-routes.md), [navigation](https://github.com/vuejs/router/blob/v4.6.4/packages/docs/guide/essentials/navigation.md).
 - [Current migration](https://router.vuejs.org/guide/migration/v4-to-v5.html), [file routing](https://router.vuejs.org/file-based-routing.md), [meta](https://router.vuejs.org/guide/advanced/meta.html), [navigation failures](https://router.vuejs.org/guide/advanced/navigation-failures.html).
-- [Experimental loader setup](https://router.vuejs.org/data-loaders.md), [cancellation](https://router.vuejs.org/data-loaders/load-cancellation.md), [Colada declarations](https://unpkg.com/vue-router@5.4.0/dist/experimental/pinia-colada.d.ts).
+- [Experimental loader setup](https://router.vuejs.org/data-loaders.md), [cancellation](https://router.vuejs.org/data-loaders/load-cancellation.md), [5.5.1 Colada declarations](https://unpkg.com/vue-router@5.5.1/dist/experimental/pinia-colada.d.ts).

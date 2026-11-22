@@ -2,7 +2,7 @@
 
 ## When to read and version boundary
 
-Read when route state, remote data, a form, and access scope touch the same workflow; neither Pinia nor a dedicated query cache is required. This is **authored synthesis** of coordination boundaries, not a substitute for one library's API reference. Baseline **Vue 3.5.44**; query-specific factual contracts below refer to **@tanstack/vue-query 5.104.5**, with **Pinia 4.1.0** for application-state context. Preserve the resource's existing read owner. In Nuxt that can be native data; when a dedicated cache is selected, use [Query](tanstack-query.md) or [Colada](pinia-colada.md), never two owners for the same resource. Their adapters, hydration APIs, and defaults are not interchangeable. [Package versions](https://registry.npmjs.org/@tanstack/vue-query/5.104.5).
+Read when route state, remote data, a form, and access scope touch the same workflow; neither Pinia nor a dedicated query cache is required. This is **authored synthesis**, not a substitute for one library's API reference. Baseline **Vue 3.5.46**, with classic **Vue Router 5.5.1** for navigation, **Pinia 4.1.0** for application state, and **@tanstack/vue-query 5.108.3** with exact **@tanstack/query-core 5.108.3** for the Query contracts below. Preserve the resource's existing read owner. In Nuxt that can be native data; if a dedicated cache is selected, use [Query](tanstack-query.md) or [Colada](pinia-colada.md), never two owners for the same resource. Their adapters, hydration APIs, and defaults are not interchangeable. [Query package metadata](https://registry.npmjs.org/@tanstack/vue-query/5.108.3).
 
 Start with [application architecture](architecture.md) if deployment and ownership are undecided. In Nuxt, [Nuxt core](nuxt.md#data-payload-and-cancellation) owns request context, native data and payloads; [Nuxt integrations](nuxt-integrations.md) owns selected store/query setup and a provider-neutral private-cache contract. Otherwise continue to [forms](forms.md), [state](state.md), [auth](auth.md), or [routing](routing.md) only for the mechanism being implemented.
 
@@ -23,6 +23,8 @@ The application's real session mechanism owns identity readiness. The applicatio
 ## Make cache identity match response identity
 
 TanStack Query requires serializable array keys unique to the returned data and instructs including changing variables used by the query function. That is an [upstream contract](https://tanstack.com/query/latest/docs/framework/vue/guides/query-keys). Choosing the application's access-scope fields is synthesis.
+
+[Query core 5.108.3](https://github.com/TanStack/query/releases/tag/%40tanstack/query-core%405.108.3) no longer partial-matches an array element against a plain object. Use the actual key shape in removal and invalidation filters; do not rely on loosely similar shapes. The same patch fixes stale `useQueries` `combine` results and retention of replaced queries, and avoids several placeholder/selector loops. These fixes do not replace scope-aware keys or make previous-user placeholder data appropriate.
 
 For a private support inbox, use a scope containing tenant plus principal identity (or another stable permission-sensitive cache partition), then resource family and normalized arguments. Include locale when the server actually localizes the response; do not fragment data keys for purely client-side formatting. Include a permission/session generation only when its lifetime is deliberately defined. Never put raw bearer tokens in keys.
 
@@ -85,6 +87,8 @@ These follow the [Vue SSR isolation contract](https://vuejs.org/guide/scaling-up
 
 ## Navigation, cancellation, and concurrency are different protocols
 
+Classic route records, file generation, and route data loaders are separate choices. The workbench uses explicit records: use the router to identify the view, and the selected watcher or query cache to own reads. An experimental loader can coordinate readiness with navigation, but does not replace cache ownership, authorize access, undo writes, or make standalone SSR data transfer automatic. See [routing boundaries](routing.md#versions-and-api-status).
+
 | Concurrent activity | Owner and policy (synthesis) | What cancellation does not prove |
 | --- | --- | --- |
 | Search/filter changes | Route/query owner derives a new key; consume query signal when cancellation is desired | A route change alone does not abort every request |
@@ -95,7 +99,7 @@ These follow the [Vue SSR isolation contract](https://vuejs.org/guide/scaling-up
 | Unknown write outcome | Preserve command identity/draft and reconcile through the real server contract | Retrying a non-idempotent mutation may duplicate effects |
 | Optimistic updates | Resource-specific mutation coordinator owns snapshot/rollback and overlapping-write policy | A captured old snapshot cannot safely roll back unrelated later writes |
 
-TanStack Query supplies an `AbortSignal`, but unmount does not universally cancel its reads. In **5.104.5**, removing the last observer cancels with state reversion when the signal was consumed **or** an initial query is paused (`fetchStatus: 'paused'`, `status: 'pending'`); otherwise it stops retries but lets the current fetch continue. See the [release-matched observer-removal implementation](https://unpkg.com/@tanstack/query-core@5.104.5/src/query.ts) and [cancellation guide](https://tanstack.com/query/latest/docs/framework/vue/guides/query-cancellation). Forward the signal to the real transport when transport abortion is required. Do not generalize read cancellation into mutation rollback. Vue watcher cleanup has its own lifecycle; `onWatcherCleanup` must be registered synchronously in Vue 3.5. See [composables](composables.md).
+TanStack Query supplies an `AbortSignal`, but unmount does not universally cancel its reads. In **5.108.3**, removing the last observer cancels with state reversion when the signal was consumed **or** an initial query is paused (`fetchStatus: 'paused'`, `status: 'pending'`); otherwise it stops retries but lets the current fetch continue. See the [release-matched observer-removal implementation](https://unpkg.com/@tanstack/query-core@5.108.3/src/query.ts) and [cancellation guide](https://tanstack.com/query/latest/docs/framework/vue/guides/query-cancellation). Forward the signal to the real transport when transport abortion is required. Do not generalize read cancellation into mutation rollback. Vue watcher cleanup is a distinct lifecycle; `onWatcherCleanup` must be registered synchronously in Vue 3.5. See [composables](composables.md).
 
 For an editor, a pessimistic save is usually the smallest honest design: hold the draft until the server confirms, then reconcile. Add optimistic behavior only when latency and reversibility justify its conflict/rollback policy. Do not invent idempotency keys, revision support, autosave ordering, or mutation-cancellation guarantees absent from the actual backend contract.
 
@@ -116,7 +120,7 @@ For an editor, a pessimistic save is usually the smallest honest design: hold th
 
 Returning/awaiting invalidation in mutation success callbacks can extend pending state; detached invalidation does not do the same. This is the [Query mutation sequencing contract](https://tanstack.com/query/latest/docs/framework/vue/guides/invalidations-from-mutations), not a guarantee that refetch succeeded or that all inactive queries were fetched. If accepting a canonical detail result cancels an older detail read, do so through the chosen library's actual cancellation API before it can overwrite the accepted value. Define list membership changes: after closing a case it may disappear from an `open` list; the focus fallback and count reconciliation must reflect that.
 
-**Adapter postcondition:** in Query **5.104.5**, `invalidateQueries` defaults to active-query refetching; `refetchQueries` catches individual fetch errors unless `throwOnError: true`, excludes disabled/static queries, and resolves paused fetches without waiting for their eventual result. These are [release-matched implementation facts](https://unpkg.com/@tanstack/query-core@5.104.5/src/queryClient.ts), not synthesis. Thus `acceptAndRefresh` must define which visible queries require successful refresh, propagate errors for those reads, and inspect their completion state. A resolved invalidation promise alone cannot justify the example's `view: 'refreshed'`; inactive/paused data may remain stale.
+**Adapter postcondition:** in Query **5.108.3**, `invalidateQueries` defaults to active-query refetching; `refetchQueries` excludes disabled and static queries. A query is static here only when it already has data and has an observer configured with `staleTime: 'static'`. The promise does not wait for initially paused refetches or propagate their eventual failures, even with `throwOnError: true`. With that flag it propagates failures only for refetches that were not initially paused. Thus `acceptAndRefresh` must define which visible queries require successful refresh and inspect their completion state; a resolved invalidation promise alone cannot justify `view: 'refreshed'`. [Exact client](https://unpkg.com/@tanstack/query-core@5.108.3/src/queryClient.ts), [static test](https://unpkg.com/@tanstack/query-core@5.108.3/src/query.ts).
 
 ### Typed save coordinator without fabricated transport
 
@@ -224,12 +228,14 @@ Do not let the form's generic catch handler turn `committed/stale` into “Save 
 
 **Proposed checks, not observed results:** reverse read completion order; tenant switch during read/save/refetch; logout with a kept-alive dirty editor; two edits with the same revision; save confirmed then refresh rejected; missing/expired credentials and forged tenant/resource IDs; browser Back during validation/save; reload after an unknown write outcome; two concurrent SSR requests. Assert user-visible state, actual server authorization, private-cache removal, and absence of stale navigation/announcements. A frontend unit test cannot prove backend isolation or atomic conditional writes.
 
+The [earlier installed-cache receipt](../assets/verification.json) for Query **5.104.5** and Colada **1.4.8** remains scoped to those versions. The 5.108.3 behavior above is from release and source inspection, not a rerun of that exercise.
+
 ## Sources
 
-- [Vue 3.5.44 metadata](https://registry.npmjs.org/vue/3.5.44), [Pinia 4.1.0 metadata](https://registry.npmjs.org/pinia/4.1.0), [@tanstack/vue-query 5.104.5 metadata](https://registry.npmjs.org/@tanstack/vue-query/5.104.5).
+- [Vue 3.5.46 metadata](https://registry.npmjs.org/vue/3.5.46), [Pinia 4.1.0 metadata](https://registry.npmjs.org/pinia/4.1.0), [Vue Query 5.108.3 metadata](https://registry.npmjs.org/@tanstack/vue-query/5.108.3), [Vue adapter release](https://github.com/TanStack/query/releases/tag/%40tanstack/vue-query%405.108.3), [Query core release](https://github.com/TanStack/query/releases/tag/%40tanstack/query-core%405.108.3).
 - [Query keys and dependencies](https://tanstack.com/query/latest/docs/framework/vue/guides/query-keys), [cancellation behavior](https://tanstack.com/query/latest/docs/framework/vue/guides/query-cancellation), [mutation invalidation sequencing](https://tanstack.com/query/latest/docs/framework/vue/guides/invalidations-from-mutations).
-- [Query core 5.104.5 invalidation/refetch implementation](https://unpkg.com/@tanstack/query-core@5.104.5/src/queryClient.ts).
-- [Query core 5.104.5 last-observer cancellation and signal consumption](https://unpkg.com/@tanstack/query-core@5.104.5/src/query.ts).
+- [Query core 5.108.3 invalidation/refetch implementation](https://unpkg.com/@tanstack/query-core@5.108.3/src/queryClient.ts).
+- [Query core 5.108.3 last-observer cancellation and signal consumption](https://unpkg.com/@tanstack/query-core@5.108.3/src/query.ts).
 - [Vue watcher side-effect cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [Vue SSR isolation](https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution), [Pinia SSR and hydration](https://pinia.vuejs.org/ssr/).
 - [OWASP authorization, server-side enforcement and every-request checks](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html).
 - [HTTP conditional writes and lost-update prevention (`If-Match`)](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1), [non-idempotent automatic retry boundary](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2).

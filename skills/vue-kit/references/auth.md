@@ -4,7 +4,7 @@ Read when an existing application's session, navigation, private cache, or ident
 
 ## Ownership and readiness
 
-Baseline: Vue **3.5.44**. The following are application contracts, not APIs exported by Vue:
+Baseline: Vue **3.5.46**. The following are application contracts, not APIs exported by Vue:
 
 | Concern | Authority / owner | Client responsibility |
 | --- | --- | --- |

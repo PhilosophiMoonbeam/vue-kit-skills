@@ -2,6 +2,10 @@
 
 Use [OpenVue selection/architecture](openvue.md) first; use [setup](openvue-setup.md) for the app plugin and theme. This reference targets **openvue 1.0.0**, Vue 3.5, explicit component imports, and strict templates. Examples use real local data; none represents a remote service.
 
+## Adopt 1.1.1: filtered lazy Tree
+
+Starting in [1.1.0](https://github.com/openvi-foundation/openvue/blob/1.1.1/CHANGELOG.md#110---2026-10-29), `Tree` looks up the original node in `value` on `node-expand` and `node-collapse` while filtering, falling back to the projected node if no key matches. Load and commit children by stable canonical key; preserve stale-request guards and unrelated state. Before removing an old projection workaround, verify expanding a filtered branch, clearing the filter, and collapsing/re-expanding, including newly loaded children and retained selection. This fix is specific to `Tree`, not evidence for TreeTable or TreeSelect. The [published 1.1.1 Tree runtime](https://unpkg.com/openvue@1.1.1/tree/index.mjs) still puts single/multiple selection in `aria-checked` and checkbox selection in `aria-selected`; the accessibility limit below still applies.
+
 ## Choose the data owner before the widget
 
 | Need | Composition | State the application owns |

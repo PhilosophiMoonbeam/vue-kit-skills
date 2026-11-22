@@ -4,7 +4,7 @@ Read when an existing app needs Vue bindings around Axios, focus-trap, universal
 
 ## Exact package and import contract
 
-Baseline: **`@vueuse/integrations@15.0.0`**, **Vue 3.5.44**, Node **>=22**, ESM. The package declares Vue `^3.5.0`, depends on core/shared **15.0.0**, and declares each underlying utility as an **optional peer**. Optional means other integrations need not install it; importing a wrapper still requires that wrapper's peer at runtime. Import the function subpath, not the root barrel, to avoid unnecessarily resolving unrelated peers:
+Current source-backed profile: **`@vueuse/integrations@15.0.0`** with **Vue 3.5.46**; Node **>=22** is the upstream engine floor, and the package is ESM. It declares Vue `^3.5.0`, depends on core/shared **15.0.0**, and declares each underlying utility as an **optional peer**. Optional means other integrations need not install it; importing a wrapper still requires that wrapper's peer at runtime. Import the function subpath, not the root barrel, to avoid unnecessarily resolving unrelated peers:
 
 ```ts
 import { useAxios } from '@vueuse/integrations/useAxios'
@@ -18,8 +18,8 @@ The following exact peer releases were registry-confirmed and fit the declared r
 
 | Wrapper/subpath | Declared optional peer range | Exact researched release | Use and material boundary |
 | --- | --- | --- | --- |
-| `useAxios` | `axios ^1` | **1.20.0** | Existing Axios interceptors/adapters; local request state, not query caching. |
-| `useFocusTrap` | `focus-trap ^7 \|\| ^8` | **8.2.3** | Custom focus-managed region; not a complete modal system. |
+| `useAxios` | `axios ^1` | **1.21.1** | Existing Axios interceptors/adapters; local request state, not query caching. |
+| `useFocusTrap` | `focus-trap ^7 \|\| ^8` | **8.2.6** | Custom focus-managed region; not a complete modal system. |
 | `useCookies` | `universal-cookie ^7 \|\| ^8` | **8.1.2** | Reactive script-visible cookies; server response persistence is separate. |
 | `useAsyncValidator` | `async-validator ^4` | **4.2.5** | Validation-only wrapper; no touched state or submission ownership. |
 | `useChangeCase` | `change-case ^5` | **5.4.4** | Reactive casing, not a unique URL slug/security normalizer. |
@@ -31,13 +31,15 @@ The following exact peer releases were registry-confirmed and fit the declared r
 | `useQRCode` | `qrcode ^1.5` | **1.5.4** | Client data-URL rendering; not a trusted-destination validator. |
 | `useSortable` | `sortablejs ^1` | **1.15.7** | DOM-assisted reordering; application owns stable keys and keyboard alternatives. |
 
-Install only selected peers. Commands for the three principal examples:
+Install only selected peers. Use native `fetch` for new local HTTP work that does not need an existing Axios policy; `useAxios` is not a Bun prerequisite. Example install commands, one per wrapper:
 
 ```sh
-bun add --exact @vueuse/integrations@15.0.0 axios@1.20.0 focus-trap@8.2.3 universal-cookie@8.1.2
+bun add --exact @vueuse/integrations@15.0.0 axios@1.21.1
+bun add --exact @vueuse/integrations@15.0.0 focus-trap@8.2.6
+bun add --exact @vueuse/integrations@15.0.0 universal-cookie@8.1.2
 ```
 
-For TypeScript, inspect whether the peer ships declarations; `nprogress`, `qrcode`, and `sortablejs` may also require their corresponding `@types` package in the consuming project. Do not install every peer or bypass missing types with `any` by default.
+Axios and focus-trap provide their own declarations. The published `useNProgress`, `useQRCode`, and `useSortable` declarations name types from peers that do not ship them; install only the matching dev package: [`@types/nprogress@0.2.3`](https://registry.npmjs.org/@types/nprogress/0.2.3), [`@types/qrcode@1.5.6`](https://registry.npmjs.org/@types/qrcode/1.5.6), or [`@types/sortablejs@1.15.9`](https://registry.npmjs.org/@types/sortablejs/1.15.9). QRCode's types reference `node` and declare `@types/node: "*"` even when the app uses only the browser data-URL function. Keep Node declaration resolution consistent with the consuming checker; that is not a Node browser runtime dependency. `UseSortable` also uses SortableJS types; switching to its `/component` import does not eliminate that requirement.
 
 ## `useFocusTrap`: activate only after a real target exists
 
@@ -47,7 +49,9 @@ The v15 target watcher is **not immediate**: a static selector or already-popula
 
 With `v-if`, set visibility, await Vue `nextTick`, then activate. `immediate: true` means activate when a valid target becomes available; it does not make an unrendered element exist. `nextTick` proves Vue has patched, not that a CSS enter animation has finished. For animated regions, use focus-trap's `checkCanFocusTrap` readiness contract with the real transition lifecycle.
 
-A trap needs a tabbable element or a valid `fallbackFocus`; a fallback element must be programmatically focusable, usually `tabindex="-1"`. Escape deactivates by default, but deactivation alone does not remove application markup. Keep visible state synchronized. Return focus defaults to the element focused before activation; preserve that trigger or provide an appropriate `setReturnFocus`. `allowOutsideClick` and `clickOutsideDeactivates` have different semantics. [Published focus-trap 8.2.3 documentation](https://cdn.jsdelivr.net/npm/focus-trap@8.2.3/README.md).
+A trap needs a tabbable element or a valid `fallbackFocus`; a fallback element must be programmatically focusable, usually `tabindex="-1"`. Escape deactivates by default, but deactivation alone does not remove application markup. Keep visible state synchronized. Return focus defaults to the element focused before activation; preserve that trigger or provide an appropriate `setReturnFocus`. `allowOutsideClick` and `clickOutsideDeactivates` have different semantics. [Published focus-trap 8.2.6 declarations](https://unpkg.com/focus-trap@8.2.6/index.d.ts) and [README](https://cdn.jsdelivr.net/npm/focus-trap@8.2.6/README.md).
+
+The [8.2.4 release](https://github.com/focus-trap/focus-trap/releases/tag/v8.2.4) fixes multi-container tab wrapping when a container has no tabbable children; [8.2.5](https://github.com/focus-trap/focus-trap/releases/tag/v8.2.5) guards canceled/superseded activation and unpause and updates the `tabbable` dependency to `^6.5.2`; [8.2.6](https://github.com/focus-trap/focus-trap/releases/tag/v8.2.6) prevents a delayed return from overriding a newer trap interaction in the same document and library copy. These fixes are in the peer, not the Vue wrapper: the non-immediate target watcher and empty-target limitation remain. Keep one owner and deactivate before removal rather than relying on delayed return or subtree isolation to implement the dialog's lifecycle.
 
 ### Runnable SFC: custom modal with a scoped trap
 
@@ -111,6 +115,8 @@ The no-custom-options branch uses `immediate: !!url`, `shallow: true`, and abort
 Both the composable shell and `execute()` are thenable and **reject on error**. Rendering `error` does not handle the rejected promise from an awaited execute; catch it. Conversely, constructing a request does not require top-level await or a Suspense boundary. Without a URL, pass one to execute; a request config alone must resolve a URL through the supported overload, not a guessed positional argument.
 
 Do not transfer `useFetch`'s stale-result guarantee to `useAxios`: the v15 execute counter guards loading completion, not every success/error commit. With `abortPrevious: false`, overlapping requests can overwrite each other; even abort-aware overlaps need care around stale error callbacks. Serialize this controller's actions, give independent operations separate instances, or use an existing query owner when keyed concurrency is required. The wrapper does not install scope-abort; register it if that is the desired lifetime. [Axios cancellation](https://axios-http.com/docs/cancellation), [VueUse source](https://github.com/vueuse/vueuse/blob/v15.0.0/packages/integrations/useAxios/index.ts).
+
+[Axios 1.21.0](https://github.com/axios/axios/releases/tag/v1.21.0) no longer treats arbitrary class instances as common/method header-default maps: use a plain map or compatible `AxiosHeaders` for those defaults, especially inside an incumbent credential-bearing instance. It adds optional adapter execution timing (`response.duration`), not full latency or time to consume a stream. [1.21.1](https://github.com/axios/axios/releases/tag/v1.21.1) corrects timing and `getAdapter`'s config typing and raises the Node HTTP adapter's `follow-redirects` floor to `^1.16.2` for a credential-handling security fix. The [published types](https://unpkg.com/axios@1.21.1/index.d.ts) retain the wrapper's request/AbortSignal and `isCancel` surfaces; this peer upgrade does not change VueUse's request-ownership guards.
 
 ### Complete integration SFC: explicit execution and failure handling
 
@@ -263,7 +269,7 @@ These are observed source contracts, not browser results: [focus adapter](https:
 
 ### Excluded `UseAsyncValidator`: options are not forwarded
 
-Do not select the **15.0.0 component adapter** for validation. Its published runtime declares `options` but calls only `useAsyncValidator(props.form, props.rules)`, so `manual: true` silently becomes automatic deep validation. Captured form/rules props also lose whole-object replacement tracking. This is not repaired by a caveat on the positive selection table or by remounting the adapter. Use the function subpath and real reactive inputs; no package patch or wrapper shim is required. [Published defective adapter](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAsyncValidator/component.js), [supported composable](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAsyncValidator.js).
+Do not select the component adapter in the latest published **15.0.0**. Its runtime declares `options` but calls only `useAsyncValidator(props.form, props.rules)`, so `manual: true` silently becomes automatic deep validation. Captured form/rules props also lose whole-object replacement tracking. This is not repaired by a caveat on the positive selection table or by remounting the adapter. Use the function subpath and real reactive inputs; no package patch or wrapper shim is required. [Published defective adapter](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAsyncValidator/component.js), [supported composable](https://cdn.jsdelivr.net/npm/@vueuse/integrations@15.0.0/dist/useAsyncValidator.js).
 
 Complete `ManualValidation.vue`, with `async-validator@4.2.5`. This validates local fields only; “valid” is not a saved/submitted backend result. The owner serializes executions and disables editing while a validation snapshot is pending:
 
@@ -313,10 +319,10 @@ For asynchronous remote rules, the application must supply their real service co
 
 v15 raises the Node floor to 22 and changes IndexedDB state/tab-sync behavior. Core/shared changes such as removed `templateRef`, scheduler options, and throttle trailing defaults also apply transitively; see [VueUse migration notes](vueuse.md#v15-migration-and-specialized-browser-apis). Do not assume a peer-range expansion is a request to migrate the entire app.
 
-Research covers registry releases, exports, declarations and implementations. Previously recorded production Chromium/local-HTTP checks exercised the then-current Axios reader with integrations 15.0.0 and Axios 1.20.0: success, HTTP failure, settled-promise serialization, cancellation, unmount abort and remount isolation. That historical reader rendered raw errors; the generic-error correction above has not been executed in this audit. Previously recorded checks also confirmed the excluded manual-validator adapter's unwanted eager validation and the manual-composable replacement's explicit invalid/valid transitions without typing-triggered validation; its Node SSR defaults rendered. See [scoped historical evidence](../assets/verification.json). Focus-trap, cookies, IndexedDB and other unlisted adapters remain source-only, not whole-reference runtime/SSR certification. Verify focus entry/Tab/Escape/return, absent peers, independent Axios controllers, same-path cookie deletion, request isolation, IndexedDB denial/tab sync and keyboard reorder in the consuming app; use [testing](testing.md).
+Previously recorded production Chromium/local-HTTP checks exercised the then-current reader with integrations 15.0.0 and **Axios 1.20.0**: success, HTTP failure, settled-promise serialization, cancellation, unmount abort and remount isolation. That reader rendered raw errors; neither the generic-error correction above nor 1.21.1 was exercised in that run. Historical checks also confirmed the excluded manual-validator adapter's unwanted eager validation and the manual-composable replacement's explicit invalid/valid transitions without typing-triggered validation; its Node SSR defaults rendered. See [scoped historical evidence](../assets/verification.json). Focus-trap 8.2.6, cookies, IndexedDB and other unlisted adapters remain source-only. In the consuming app, verify focus entry/Tab/Escape/return, absent peers, independent Axios controllers, same-path cookie deletion, request isolation, IndexedDB denial/tab sync and keyboard reorder; use [testing](testing.md).
 
 ## Sources
 
 - [VueUse v15 integration manifest](https://registry.npmjs.org/@vueuse/integrations/15.0.0), [release](https://github.com/vueuse/vueuse/releases/tag/v15.0.0), and [all versioned wrappers](https://github.com/vueuse/vueuse/tree/v15.0.0/packages/integrations).
-- [Axios 1.20.0 registry](https://registry.npmjs.org/axios/1.20.0), [cancellation documentation](https://axios-http.com/docs/cancellation), [focus-trap 8.2.3 registry](https://registry.npmjs.org/focus-trap/8.2.3), [published README](https://cdn.jsdelivr.net/npm/focus-trap@8.2.3/README.md), [universal-cookie 8.1.2 registry](https://registry.npmjs.org/universal-cookie/8.1.2), and [cookie API](https://github.com/reactivestack/cookies/tree/v8.1.2/packages/universal-cookie).
+- [Axios 1.21.1 registry](https://registry.npmjs.org/axios/1.21.1), [cancellation documentation](https://axios-http.com/docs/cancellation), [focus-trap 8.2.6 registry](https://registry.npmjs.org/focus-trap/8.2.6), [universal-cookie 8.1.2 registry](https://registry.npmjs.org/universal-cookie/8.1.2), and [cookie API](https://github.com/reactivestack/cookies/tree/v8.1.2/packages/universal-cookie).
 - Exact other peers: [async-validator 4.2.5](https://registry.npmjs.org/async-validator/4.2.5), [change-case 5.4.4](https://registry.npmjs.org/change-case/5.4.4), [drauu 1.0.0](https://registry.npmjs.org/drauu/1.0.0), [Fuse 7.5.0](https://registry.npmjs.org/fuse.js/7.5.0), [idb-keyval 6.3.0](https://registry.npmjs.org/idb-keyval/6.3.0), [jwt-decode 4.0.0](https://registry.npmjs.org/jwt-decode/4.0.0), [NProgress 0.2.0](https://registry.npmjs.org/nprogress/0.2.0), [qrcode 1.5.4](https://registry.npmjs.org/qrcode/1.5.4), and [Sortable 1.15.7](https://registry.npmjs.org/sortablejs/1.15.7).

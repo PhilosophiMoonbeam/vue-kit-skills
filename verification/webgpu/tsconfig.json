@@ -6,7 +6,7 @@
     "strict": true,
     "skipLibCheck": true,
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
+    "types": ["bun", "vite/client"],
     "noEmit": true
   },
   "vueCompilerOptions": { "strictTemplates": true },

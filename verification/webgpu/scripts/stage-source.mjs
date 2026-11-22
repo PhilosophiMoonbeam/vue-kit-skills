@@ -1,16 +1,16 @@
-import { createHash } from 'node:crypto'
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
+import { mkdir, readdir } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const root = resolve(import.meta.dir, '..')
 const reference = resolve(root, '../../skills/vue-kit/references/tresjs.md')
-const packageJson = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'))
+const decoder = new TextDecoder('utf-8', { ignoreBOM: true })
+const packageBytes = await Bun.file(resolve(root, 'package.json')).bytes()
+const packageJson = JSON.parse(decoder.decode(packageBytes))
 const output = resolve(root, 'dist/source')
-const sha256 = content => createHash('sha256').update(content).digest('hex')
+const sha256 = content => new Bun.CryptoHasher('sha256').update(content).digest('hex')
 await mkdir(output, { recursive: true })
-const extraction = JSON.parse(await readFile(resolve(root, '.generated/recipe-provenance.json'), 'utf8'))
-const referenceBytes = await readFile(reference)
+const extraction = JSON.parse(decoder.decode(await Bun.file(resolve(root, '.generated/recipe-provenance.json')).bytes()))
+const referenceBytes = await Bun.file(reference).bytes()
 if (sha256(referenceBytes) !== extraction.referenceSha256) throw new Error('Reference changed after extraction; rerun the complete build.')
 
 async function filesBelow(directory, prefix = '') {
@@ -23,12 +23,11 @@ async function filesBelow(directory, prefix = '') {
   }
   return files
 }
-async function stageSource(name, path, identity) {
-  const content = await readFile(path)
+async function stageSource(name, content, identity, digest = sha256(content)) {
   const destination = resolve(output, name)
   await mkdir(dirname(destination), { recursive: true })
-  await writeFile(destination, content)
-  return { ...identity, name, sha256: sha256(content), bytes: content.length, url: `/source/${name}` }
+  await Bun.write(destination, content)
+  return { ...identity, name, sha256: digest, bytes: content.length, url: `/source/${name}` }
 }
 const authoredEvidenceSources = {
   'check-guide.ts': {
@@ -50,35 +49,34 @@ const authoredEvidenceSources = {
 const sources = []
 for (const name of await filesBelow(resolve(root, 'src'))) {
   const generated = extraction.generatedSources.find(entry => entry.name === name)
-  const content = await readFile(resolve(root, 'src', name))
-  if (generated && generated.sha256 !== sha256(content)) throw new Error(`Generated source changed after extraction: ${name}`)
-  sources.push(await stageSource(name, resolve(root, 'src', name), generated ?? authoredEvidenceSources[name] ?? {
+  const content = await Bun.file(resolve(root, 'src', name)).bytes()
+  const digest = sha256(content)
+  if (generated && generated.sha256 !== digest) throw new Error(`Generated source changed after extraction: ${name}`)
+  sources.push(await stageSource(name, content, generated ?? authoredEvidenceSources[name] ?? {
     kind: name.startsWith('consumers/') ? 'authored-source-matched-diagnostic-consumer' : 'authored-lab-infrastructure',
     referenceSections: name.startsWith('consumers/') ? [
       'Picking, propagation, and selection', 'Assets: current loader API and ownership', 'Disposal, performance, and browser failure modes',
     ] : [],
     note: name.startsWith('consumers/') ? 'Authored diagnostic composition of the retained APIs, with real event/resource observations; not a verbatim guide fence and not a native-hardware pass.' : 'Lab code, not the retained recipe.',
-  }))
+  }, digest))
 }
 for (const name of ['scripts/extract-source.mjs', 'scripts/stage-source.mjs', 'server.mjs', 'package.json', 'vite.config.ts']) {
-  sources.push(await stageSource(name, resolve(root, name), { kind: 'authored-build-or-server-helper' }))
+  const content = name === 'package.json' ? packageBytes : await Bun.file(resolve(root, name)).bytes()
+  sources.push(await stageSource(name, content, { kind: 'authored-build-or-server-helper' }))
 }
-const lockfile = await stageSource('bun.lock', resolve(root, 'bun.lock'), { kind: 'bun-dependency-lockfile' })
+const lockfileBytes = await Bun.file(resolve(root, 'bun.lock')).bytes()
+const lockfile = await stageSource('bun.lock', lockfileBytes, { kind: 'bun-dependency-lockfile' })
 if (lockfile.sha256 !== extraction.lockfileSha256) throw new Error('Bun lockfile changed after extraction; rerun the complete build.')
 sources.push(lockfile)
-for (const name of await filesBelow(resolve(root, 'fixtures'))) {
-  sources.push(await stageSource(`fixtures/${name}`, resolve(root, 'fixtures', name), {
-    kind: name === 'source-provenance.json' ? 'primary-content-acquisition-receipt' : 'vendored-primary-asset-source',
-    storage: name.endsWith('.base64') ? 'Base64 representation of unchanged primary binary bytes.' : 'Primary text bytes or their separately identified acquisition receipt.',
-  }))
-}
-await writeFile(resolve(output, 'tresjs.md'), referenceBytes)
-await writeFile(resolve(output, 'recipe-provenance.json'), `${JSON.stringify(extraction, null, 2)}\n`)
+await Bun.write(resolve(output, 'tresjs.md'), referenceBytes)
+await Bun.write(resolve(output, 'recipe-provenance.json'), `${JSON.stringify(extraction, null, 2)}\n`)
 
 // Stage the vetted primary bytes offline; the receipt preserves their immutable upstream identity.
 const assetRevision = '4995a638c96dbc94376d3d6164e70fee3ac7f7a2'
 const assetBase = `https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/${assetRevision}/Models/Box/`
-const assetReceipt = JSON.parse(await readFile(resolve(root, 'fixtures/source-provenance.json'), 'utf8'))
+const receiptBytes = await Bun.file(resolve(root, 'fixtures/source-provenance.json')).bytes()
+const assetReceipt = JSON.parse(decoder.decode(receiptBytes))
+const fixtureSources = new Map([['source-provenance.json', { content: receiptBytes }]])
 if (assetReceipt.revision !== assetRevision) throw new Error('Vendored Box revision does not match the vetted primary source.')
 const fixtureDirectory = resolve(root, 'dist/fixtures')
 await mkdir(fixtureDirectory, { recursive: true })
@@ -93,10 +91,11 @@ for (const [name, primaryPath] of [
   const receipt = assetReceipt.files.find(entry => entry.name === name && entry.primaryPath === primaryPath)
   if (!receipt || receipt.primaryUrl !== primaryUrl) throw new Error(`Missing immutable primary receipt for ${name}.`)
   const storedName = name === 'Box.glb' ? `${name}.base64` : name
-  const storedBytes = await readFile(resolve(root, 'fixtures', storedName))
-  const bytes = name === 'Box.glb' ? Buffer.from(storedBytes.toString('utf8'), 'base64') : storedBytes
-  const gitBlobSha = createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex')
-  if (bytes.length !== receipt.bytes || sha256(bytes) !== receipt.sha256 || gitBlobSha !== receipt.gitBlobSha) {
+  const storedBytes = await Bun.file(resolve(root, 'fixtures', storedName)).bytes()
+  const bytes = name === 'Box.glb' ? Buffer.from(decoder.decode(storedBytes), 'base64') : storedBytes
+  const gitBlobSha = new Bun.CryptoHasher('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex')
+  const digest = sha256(bytes)
+  if (bytes.length !== receipt.bytes || digest !== receipt.sha256 || gitBlobSha !== receipt.gitBlobSha) {
     throw new Error(`Vendored primary bytes do not match their source receipt: ${name}.`)
   }
   if (name === 'Box.glb') {
@@ -108,11 +107,20 @@ for (const [name, primaryPath] of [
       throw new Error('The primary Box is not the expected self-contained visible model; stage its real dependencies instead of fabricating any.')
     }
   }
-  await writeFile(resolve(fixtureDirectory, name), bytes)
-  fixtures.push({ name, primaryUrl, revision: assetRevision, gitBlobSha, sha256: sha256(bytes), bytes: bytes.length, url: `/fixtures/${name}` })
+  fixtureSources.set(storedName, { content: storedBytes, digest: bytes === storedBytes ? digest : sha256(storedBytes) })
+  await Bun.write(resolve(fixtureDirectory, name), bytes)
+  fixtures.push({ name, primaryUrl, revision: assetRevision, gitBlobSha, sha256: digest, bytes: bytes.length, url: `/fixtures/${name}` })
+}
+for (const name of await filesBelow(resolve(root, 'fixtures'))) {
+  const source = fixtureSources.get(name)
+  const content = source?.content ?? await Bun.file(resolve(root, 'fixtures', name)).bytes()
+  sources.push(await stageSource(`fixtures/${name}`, content, {
+    kind: name === 'source-provenance.json' ? 'primary-content-acquisition-receipt' : 'vendored-primary-asset-source',
+    storage: name.endsWith('.base64') ? 'Base64 representation of unchanged primary binary bytes.' : 'Primary text bytes or their separately identified acquisition receipt.',
+  }, source?.digest))
 }
 const asset = fixtures.find(fixture => fixture.name === 'Box.glb')
-const assetMetadata = JSON.parse(await readFile(resolve(fixtureDirectory, 'Box-metadata.json'), 'utf8'))
+const assetMetadata = JSON.parse(decoder.decode(fixtureSources.get('Box-metadata.json').content))
 const attribution = {
   title: 'Box', creator: assetMetadata.legal,
   source: `https://github.com/KhronosGroup/glTF-Sample-Assets/tree/${assetRevision}/Models/Box`,
@@ -123,18 +131,18 @@ const attribution = {
     { url: '/fixtures/missing.glb', status: 404, note: 'Intentionally absent; no fake loader error and no network-abort claim.' },
   ],
 }
-const attributionBytes = Buffer.from(`${JSON.stringify(attribution, null, 2)}\n`)
-await writeFile(resolve(fixtureDirectory, 'attribution.json'), attributionBytes)
+const attributionBytes = new TextEncoder().encode(`${JSON.stringify(attribution, null, 2)}\n`)
+await Bun.write(resolve(fixtureDirectory, 'attribution.json'), attributionBytes)
 fixtures.push({ name: 'attribution.json', kind: 'authored-primary-source-attribution', sha256: sha256(attributionBytes), bytes: attributionBytes.length, url: '/fixtures/attribution.json' })
 
 // Hash the actual built HTML/JS/CSS bytes served beside the source copies, not only input SFCs.
 const servedBuild = []
 for (const name of await filesBelow(resolve(root, 'dist'))) {
   if (name.startsWith('source/') || name.startsWith('fixtures/')) continue
-  const content = await readFile(resolve(root, 'dist', name))
+  const content = await Bun.file(resolve(root, 'dist', name)).bytes()
   servedBuild.push({ name, sha256: sha256(content), bytes: content.length, url: `/${name}` })
 }
-await writeFile(resolve(output, 'provenance.json'), `${JSON.stringify({
+await Bun.write(resolve(output, 'provenance.json'), `${JSON.stringify({
   schemaVersion: 2,
   reference: extraction.reference,
   referenceSha256: extraction.referenceSha256,

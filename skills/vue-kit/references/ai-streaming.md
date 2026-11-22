@@ -4,29 +4,35 @@ Read when adding TanStack AI chat, tools, or generation UI to an existing local/
 
 ## Version and entry-point boundary
 
-Verified baseline: Vue **3.5.44**, `@tanstack/ai-vue` **0.27.0**, `@tanstack/ai-client` **0.40.0**, `@tanstack/ai` **0.70.0**. The Vue package peers on Vue `>=3.5.0` and AI `^0.70.0`; its client dependency is `^0.40.0`. These are **pre-1.0 releases**, not npm prerelease-tag versions; pin the coordinated versions and review release changes before upgrades. Do not borrow React hooks, React state access, or another AI SDK's message/tool names. [Package metadata](https://unpkg.com/@tanstack/ai-vue@0.27.0/package.json), [published exports](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/index.d.ts).
+Current source-backed pins for an optional browser consumer: Vue **3.5.46**, **`@tanstack/ai-vue@1.1.1`**, **`@tanstack/ai-client@1.2.1`**, **`@tanstack/ai@1.8.0`**. Vue peers on Vue `>=3.5.0` and AI `^1.7.0`; its client dependency is `^1.2.1`, and the client depends on AI `^1.7.0`. Core's `@opentelemetry/api >=1.9.0` peer is optional; the browser examples do not opt into telemetry. These are stable 1.x releases, not a rerun of the earlier Vue/browser/compiler profiles. [Vue manifest](https://registry.npmjs.org/@tanstack/ai-vue/1.1.1), [client manifest](https://registry.npmjs.org/@tanstack/ai-client/1.2.1), [core manifest](https://registry.npmjs.org/@tanstack/ai/1.8.0).
 
-The complete chat pane uses `Array.prototype.findLastIndex`: include `ES2023` or newer in TypeScript's `lib` and target a runtime that implements it, or supply the application's supported polyfill. Compilation libraries do not polyfill the browser. Observed root-hook consumer checks used TypeScript **5.9.3**, vue-tsc **3.3.13**, `strict`/`strictTemplates`, and the established `skipLibCheck` boundary; this does **not** establish `/ui` template compatibility. A stronger `exactOptionalPropertyTypes`/full dependency-declaration check exposed an upstream adapter declaration conflict; TypeScript 7 was incompatible with this vue-tsc release. These are recorded toolchain limits, not permission to weaken an incumbent application's checks.
+```sh
+bun add --exact @tanstack/ai-vue@1.1.1 @tanstack/ai-client@1.2.1 @tanstack/ai@1.8.0
+```
 
-| Need | Verified Vue API / decision |
+Upgrade any TanStack backend alongside its client, or implement the corresponding 1.x transport in the host; do not assume 0.x event or saved-data compatibility. [Core 1.0.0](https://github.com/TanStack/ai/releases/tag/@tanstack/ai@1.0.0), [client 1.0.0](https://github.com/TanStack/ai/releases/tag/@tanstack/ai-client@1.0.0), and the [1.0 migration guide](https://tanstack.com/ai/latest/docs/migration/v1) cover removed aliases, wire events, and storage readers. Do not borrow React hooks or another SDK's message names.
+
+The complete chat pane uses `Array.prototype.findLastIndex`: include `ES2023` or newer in TypeScript's `lib` and target a runtime that implements it, or supply the application's supported polyfill. Compilation libraries do not polyfill the browser. Historical root-hook checks used Vue **3.5.44**, Vue adapter **0.27.0**, client **0.40.0**, AI **0.70.0**, TypeScript **5.9.3**, and vue-tsc **3.3.13**, with `strict`/`strictTemplates` and the established `skipLibCheck` boundary. A stronger `exactOptionalPropertyTypes`/full dependency-declaration check exposed an upstream adapter declaration conflict; TypeScript 7 was incompatible with that vue-tsc release. Those observations are not claims about 1.x or permission to weaken an incumbent application's checks.
+
+| Need | Source-checked Vue API / decision |
 | --- | --- |
 | Chat | `useChat` from `@tanstack/ai-vue`; return values are readonly refs and action methods. |
-| Transport | Root re-exports include `fetchServerSentEvents`, `fetchHttpStream`, `xhrServerSentEvents`, `xhrHttpStream`, `stream`, `rpcStream`, `webSocket`, `fetchJson`, and `ConnectionAdapter`. Choose the server's actual protocol; arbitrary token text is not a TanStack AI event stream. |
-| Reusable chat configuration | Root `createChatHook(options)` returns `{ useChat }`; call the bound composable in setup. Per-instance overrides: `threadId`, `live`, `forwardedProps`, deprecated `body`, `initialMessages`; not transport, schema, or tool definitions. |
+| Transport | Root re-exports `fetchServerSentEvents`, `fetchHttpStream`, `xhrServerSentEvents`, `xhrHttpStream`, `stream`, `rpcStream`, `webSocket`, `fetchJson`, and `ConnectionAdapter`. Start with native-fetch SSE for an existing TanStack SSE endpoint; NDJSON, durable JSON polling and WebSocket require matching server protocols. Arbitrary token text is not a TanStack AI event stream. |
+| Reusable chat configuration | Root `createChatHook(options)` returns `{ useChat }`. Pass required `threadId` on each bound call, never in factory options. Other supported per-instance overrides: `live`, `forwardedProps`, `initialMessages`; not transport, schema, or tool definitions. |
 | Typed client tools | Root re-exports `clientTools`, `createChatClientOptions`, `InferChatMessages`. Define shared schemas with `toolDefinition` from `@tanstack/ai`; implement browser-safe behavior with `.client()`. |
 | Headless chat UI | `@tanstack/ai-vue/ui` exports its own `createChatHook`, `createChatUI`, and renderless `UIChat`, `UIProvider`, `UIMessages`, `UIMessage`, `UIPart`, `UIInterrupts`, `UIInterrupt`, `UIQueue`. Do not confuse its factory with the root factory. |
 
-The `/ui` entry ships `.ts`/`.vue` source, requiring Vue SFC tooling and compatibility with the consumer's TypeScript settings. Its factory takes `{ options, components, partsComponents, toolsComponents, interruptsComponents }` and returns `{ useAppChat, ui, useChatContext }`; chrome needs layout/message components. Prefer this factory over deprecated prebuilt `Chat`, `ChatInput`, `ChatMessage`, `ChatMessages`, `ThinkingPart`, `TextPart`, and `ToolApproval`. A markdown/highlighter component is not permission to insert untrusted HTML. [Vue UI source](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/ui.ts), [UI guide](https://tanstack.com/ai/latest/docs/ui/vue).
+The `/ui` entry still ships `.ts`/`.vue` source. Its factory takes `{ options, components, partsComponents, toolsComponents, interruptsComponents }` and returns `{ useAppChat, ui, useChatContext }`; chrome needs layout/message components. `TextPart` and `ThinkingPart` remain; the 0.x `Chat`, `ChatInput`, `ChatMessage`, `ChatMessages`, `ToolApproval`, and top-level `useChatContext` do not. A markdown/highlighter component is not permission to insert untrusted HTML. [Current Vue UI exports](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/ui.ts), [UI guide](https://tanstack.com/ai/latest/docs/ui/vue).
 
-**Compiler compatibility is separate from API availability.** The actual full strict `/ui` run, with the supported `vueCompilerOptions.dataAttributes: ['data-*']` option, retained two diagnostics: published `chat-message.vue:58` passes a `string | number` loop index where a helper expects `number`, and the consumer passed a typed boolean-response generic interrupt directly to `UIInterrupt`'s broad `ChatUIInterrupt` prop. The latter is an avoidable consumer-boundary mismatch: the corrected consumer validates the UI's `unknown` response against the registered boolean schema before calling the original typed resolver, as described below. That correction is not yet a full-template pass; the upstream index diagnostic remains a separate known incompatibility. The data-attribute option permits legitimate native `data-chat-*`/`data-*` attributes without disabling `strictTemplates` or unknown-prop/component/action checks. `skipLibCheck: true` does **not** skip imported `.vue` source. [Compiler option definitions](https://unpkg.com/@vue/language-core@3.3.13/lib/compilerOptions.js), [published message template](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/chat-message.vue), [renderer prop contracts](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/create-ui.ts).
+**Historical full-template negative, not a current pass.** The full strict `/ui` run on **0.27.0** with `vueCompilerOptions.dataAttributes: ['data-*']` retained two diagnostics: published `chat-message.vue:58` passed a `string | number` loop index where a helper expected `number`, and the consumer passed a typed boolean-response interrupt to `UIInterrupt`'s broad prop. The old message renderer is absent from the 1.1.1 entry; that does not establish full strict-template compatibility of its replacements. The generic interrupt boundary still exists in current source (see below). The data-attribute option permits legitimate native `data-*` attributes; `skipLibCheck: true` does **not** skip imported `.vue` source. [Old renderer](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/chat-message.vue), [current renderer prop contracts](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/chat-ui/create-ui.ts).
 
-The audit keeps two distinct proof IDs: `current-audit/contracts/strict-ui` includes the full consumer and imported templates, while `current-audit/contracts/strict-ui-script-api` explicitly uses `skipTemplateCodegen: true`. The initial script/API-only run passed; a later generic-boundary correction exposed another fixture mismatch in **both** profiles: its unchanged tool-approval return still had schema-specific option tuples incompatible with the renderer's broad approval type. The current consumer therefore keeps tool approvals in the explicitly typed approval widget rather than sending them through the broad renderer. This latest correction still requires execution. SCRIPT/API-only checks retain factory options, widget props, schema inference and negative data/action assertions, but check **neither consumer nor vendor templates**, renderer prop bindings, slots, or runtime behavior. Do not turn an earlier script/API pass into corrected-consumer or broad template success. Separate runtime/compiler matrices do not remove the full-template diagnostic. No vendor patch, cast or global shim is an acceptable substitute for compiler compatibility.
+The historical proof IDs `current-audit/contracts/strict-ui` and `current-audit/contracts/strict-ui-script-api` are distinct. The first included the full consumer and imported templates; the second explicitly used `skipTemplateCodegen: true`. The initial script/API-only run passed; a later generic-boundary correction exposed a schema-specific approval tuple mismatch in **both** profiles. Keeping approvals in the explicitly typed widget was not followed by an observed full-template pass. SCRIPT/API-only does not check consumer/vendor templates, bindings, slots or runtime behavior. Neither the old narrower pass nor this source review certifies `/ui`, dependency declarations, or SSR. Do not patch, cast, or shim vendor code to manufacture compatibility.
 
 ## Ownership before implementation
 
 1. Identify the existing local/self-hosted backend, authentication mechanism, stream format, and whether a conversation is ephemeral or persisted. Do not create an imaginary `/api/chat` and describe it as functioning.
 2. Give each mounted chat one identity: authenticated principal + tenant + conversation + transport/configuration revision. Remount on identity changes; do not mutate a connection's identity underneath an active client.
-3. Require exactly one `connection` **or** `fetcher` in `UseChatOptions`. A fetcher receives the full transcript plus `threadId`/`runId` and `{ signal, headers? }`, returning `Response` or `AsyncIterable<StreamChunk>` (possibly asynchronously). It must forward abort and request headers. Prefer a standard adapter when the backend implements its protocol.
+3. Pass a stable `threadId` and exactly one `connection` **or** `fetcher` in `UseChatOptions`. `ChatFetcher` receives `(input, { signal, headers? })`; `input` includes the full `messages`, `threadId`, `runId`, and optional `data`, `parentRunId`, and `resume`. Return a `Response` with SSE or an `AsyncIterable<StreamChunk>`, synchronously or asynchronously. Forward the signal, applicable request headers, and run identity to the real service. Prefer the built-in adapter when the backend implements the corresponding protocol.
 4. Keep server credentials and privileged inference configuration on the server. Never place secrets in `VITE_*`, client modules, rendered props, URLs, or browser storage. This guide does not collect or relay hosted-service keys.
 5. Treat messages, `forwardedProps`, tool advertisements/results, resume payloads, and IDs from a browser as untrusted. A `threadId` is a lookup key, not proof of ownership.
 
@@ -34,21 +40,21 @@ The audit keeps two distinct proof IDs: `current-audit/contracts/strict-ui` incl
 
 ## Chat state and commands
 
-[Exact return/options declarations](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/types.d.ts), [client states and persistence](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/types.d.ts).
+[Exact Vue return/options declarations](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/types.d.ts), [client states, transport input and persistence](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/types.d.ts).
 
 | Surface | Meaning and required handling |
 | --- | --- |
-| `messages` | Full `UIMessage[]`, each with `id`, `role`, `parts`; text is `{ type: 'text', content }`, not a message-wide `content` string. Render stable message IDs and explicitly handle supported parts. Do not expose internal `thinking` content by default. |
+| `messages` | Readonly transcript array; each `UIMessage` has `id`, `role`, `parts`. Text is `{ type: 'text', content }`, not a message-wide `content` string. Render stable message IDs and explicitly handle supported parts. Do not expose internal `thinking` content by default. |
 | `status` | `'ready' \| 'submitted' \| 'streaming' \| 'error'`; ready does not certify a saved conversation or completed server work after cancellation. |
 | `isLoading` | Request-local generation activity. Guard submissions and allow cancellation. `sessionGenerating` is shared-session activity; `connectionStatus` (`disconnected/connecting/connected/error`) and `isSubscribed` describe subscription lifecycle, not generation success. |
 | `isHydrating` | Transcript restoration still in progress. Show loading rather than an empty-state claim; prevent sending against an unfinished restoration. |
 | `sendMessage(textOrMultimodal, options?)` | Async send. `options.whenBusy` is `queue`, `drop`, or `interrupt`; queue only when the UI exposes queued items and `cancelQueued(id)`. A resolved dropped send does not mean delivery. The example disables concurrent sends instead. |
 | `reload()` | Regenerates from the last user message, removes subsequent messages, and discards pending queued sends. This is a new model invocation, not a harmless read or guaranteed replay. |
-| `stop()` | Aborts the local request, drops queued sends/resume state, and resets interrupts. A durable server run can continue. Capture `runId` before stopping if an authorized application cancellation service needs it. Never claim server work stopped solely because this method returned. |
+| `stop()` | Aborts the local request, drops queued sends/resume state, and resets interrupts. With a configured `cancelRun` it also attempts a best-effort server cancel for the active local run. Capture `runId` before stopping when the app must correlate or confirm server cancellation independently. |
 | `clear()` / `setMessages()` | Client transcript changes, not a server deletion API or a business-data commit. `clear()` also cancels local work and removes client-adapter persistence when configured. Server data needs an explicit authorized deletion workflow. |
 | `onChunk` / `onFinish` / `onError` | Lifecycle callbacks; avoid token-by-token analytics, secret/transcript logging, and business mutations on finish. Handle action rejection and the error ref without rendering raw backend errors. |
 
-Use `.value` **in script**. Destructured top-level refs auto-unwrap **in Vue templates**: `v-for="message in messages"`, `:disabled="isLoading"`. If keeping the plain return object as `chat`, its nested refs require `chat.messages.value`; these are different access patterns, not contradictory SDK rules. State is not writable: call actions instead of assigning/pushing into returned refs. In 0.27.0 the implementation derives state from readonly computed snapshots; rely on the public ref contract, not a mutable shallow-ref implementation detail.
+Use `.value` **in script**. Destructured top-level refs auto-unwrap **in Vue templates**: `v-for="message in messages"`, `:disabled="isLoading"`. If keeping the plain return object as `chat`, its nested refs require `chat.messages.value`. State is not writable: call actions instead of assigning/pushing into returned refs. The adapter derives state from readonly computed snapshots; rely on the public ref contract, not a mutable shallow-ref implementation detail.
 
 `append(message)` normally adds a model/UI message **and requests a response**; system messages are ignored, and frontend-only activity messages are appended without a run. Use `setMessages` for a client-only transcript replacement, not `append` as a passive history importer. Multimodal sends use `sendMessage({ content: [...] })`; enforce upload MIME/size/count limits on the server, not only in a file picker. Per-send `{ body }` merges forwarded JSON for that request; prefer the hook's `forwardedProps` for ongoing application parameters.
 
@@ -56,11 +62,17 @@ Callbacks also include `onResponse`, `onCustomEvent`, and `onInterruptStateChang
 
 The hook's `queue` option accepts a `WhenBusy` shorthand, `QueueConfig`, or `QueueStrategy`. Config uses `whenBusy` (default `queue`), `drain: 'fifo' | 'batch'` (default FIFO), optional `maxSize` (unbounded if omitted), and `onOverflow: 'reject' | 'drop-oldest'`. Overflow `reject` silently drops the new send; it does not throw. Choose an explicit bound and show pending/evicted/not-delivered state. Batch drain merges queued items into one send after a successful run; do not imply each item remains a separate invocation. A strategy receives `{ pending, busyReason, queued }` and returns `{ action }`; strategy drain stays FIFO and per-send `whenBusy` wins. Concurrent streams are not supported.
 
+Since [client 1.1.0](https://github.com/TanStack/ai/releases/tag/@tanstack/ai-client@1.1.0), a paused interrupt holds queued messages until a successful resolving run. The same release propagates both SDK and caller signals to the fetch/XHR connections and ends `stream()`/`rpcStream()` consumption on abort even when the source ignores it. Ending consumption is not proof that upstream production stopped. Keep owner identity checks for delayed local callbacks and pass cancellation all the way to the producer.
+
 ## Complete browser pane with an explicit transport contract
 
-The following two SFCs form a Vue-side integration example, **not a standalone server demo**. The host must supply an already-authorized `ConnectionAdapter` implementing the TanStack event protocol over its existing local/self-hosted service. No backend, fake stream, or endpoint implementation is supplied here. Create that adapter in the application's authenticated transport layer; standard SSE construction is `fetchServerSentEvents(actualAuthorizedUrl, () => actualFetchOptions)` with its verified `credentials`/`headers`/`fetchClient` options. The URL/options must come from real application configuration. Custom adapters must forward the abort signal and run-context headers. Never retarget an adapter across accounts.
+The following two SFCs form a Vue-side integration example, **not a standalone server demo**. The host supplies an already-authorized `ConnectionAdapter` over its existing local/self-hosted service. Use `fetchServerSentEvents(actualAuthorizedUrl, () => actualFetchOptions)` with application-owned `credentials`/`headers`/`fetchClient` if the server speaks SSE; omit `cancelUrl` for this local-only Stop button. No backend, fake stream, or endpoint implementation is supplied here. Bind URL/options to this identity; never retarget an adapter across accounts.
 
-For the text-only SSE contract, send JSON `data:` frames in order: `RUN_STARTED` (`threadId`, `runId`), `TEXT_MESSAGE_START` (`messageId`, `role: 'assistant'`), incremental `TEXT_MESSAGE_CONTENT` (`messageId`, `delta`), `TEXT_MESSAGE_END` (`messageId`), then `RUN_FINISHED` (`threadId`, `runId`, `finishReason: 'stop'`). Failure terminates with `RUN_ERROR` and a `message` instead. Close the response after the terminal event; do not use raw token strings or a `[DONE]` sentinel as this contract. Local stop can close the HTTP connection while server work still attempts later writes; those writes must not update a stopped or remounted pane. [Adapter event ordering](https://github.com/TanStack/ai/blob/main/packages/ai/docs/chat-architecture.md).
+For the text-only SSE contract, return `Content-Type: text/event-stream` and send JSON `data:` frames separated by blank lines: `RUN_STARTED` (`threadId`, `runId`), `TEXT_MESSAGE_START` (`messageId`, `role: 'assistant'`), incremental `TEXT_MESSAGE_CONTENT` (`messageId`, `delta`), `TEXT_MESSAGE_END` (`messageId`), then `RUN_FINISHED` (`threadId`, `runId`, `outcome: { type: 'success' }`). Failure terminates with `RUN_ERROR` and a top-level `message` (and optional `code`), not a nested error object. Echo the submitted thread/run IDs, reuse the message ID for its deltas, and close after the terminal event. No raw tokens or `[DONE]`; HTTP closure alone is not success. [1.x wire migration](https://tanstack.com/ai/latest/docs/migration/v1#custom-servers-that-stream-to-a-tanstack-ai-client), [current event declarations](https://unpkg.com/@tanstack/ai@1.8.0/dist/esm/types.d.ts).
+
+The standard HTTP adapter POSTs the AG-UI `RunAgentInput`, not a guessed `{ prompt }` shape. Read `threadId`, `runId`, `messages`, optional `resume`, and application fields under `forwardedProps` with `chatParamsFromRequest()`/`chatParamsFromRequestBody()` on the server; the old top-level `data` alias is gone. Custom `connect(messages, data, signal, runContext)` and `send(...)` take the required fourth run context; `stream()`/`rpcStream()` factories receive the full `RunAgentInput` in that position instead. Forward the signal and needed context headers, and authorize every run/cursor server-side. [Exact adapter declarations](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/connection-adapters.d.ts).
+
+For an incumbent **AI SDK v7** route, [Vue 1.1.1](https://github.com/TanStack/ai/releases/tag/%40tanstack%2Fai-vue%401.1.1) and [client 1.2.1](https://github.com/TanStack/ai/releases/tag/%40tanstack%2Fai-client%401.2.1) pass chat configuration to the separate [`@tanstack/ai-vercel-compat@0.1.0` bridge](https://github.com/TanStack/ai/releases/tag/@tanstack/ai-vercel-compat@0.1.0). `fromChatTransport` reads `threadId`, tools and schema from `useChat`; custom adapters can read `runContext.config`, and `joinRun` can receive `ChatRunConfig` as a third argument. The [bridge's published peers](https://registry.npmjs.org/@tanstack/ai-vercel-compat/0.1.0) are `ai ^7.0.0`, `@tanstack/ai ^1.7.0`, and `@tanstack/ai-client ^1.2.1`. Its format, `Output.object` mapping, and reconnect behavior are a migration path, not a dependency of this pane or permission to configure a hosted provider.
 
 `ChatHost.vue` defines the application-owned integration interface through props. Replace the whole context atomically on account, tenant, thread, or transport configuration change; `identityKey` must be unique to that complete identity, including a new login session. Set it to `null` immediately on logout. Do not wrap this pane in `KeepAlive` or share its instance across SSR requests.
 
@@ -89,7 +101,7 @@ defineProps<{
 </template>
 ```
 
-`ChatPane.vue` is intentionally a **text-only, ephemeral** pane: no client tools registered, no tool approval UI, no automatic business actions, no storage option. Its server policy must disable tools for this surface. A received unsupported part is visibly unsupported rather than silently treated as text or executed.
+`ChatPane.vue` is **text-only, ephemeral, and mounted by a browser app**: no tools, approvals, automatic business actions, or client persistence. The host supplies an adapter without remote cancellation for this local-only UI, and server policy must disable tools for this surface. A received unsupported part is visibly unsupported rather than silently treated as text or executed.
 
 ```vue
 <script setup lang="ts">
@@ -107,14 +119,21 @@ const actionFailed = shallowRef(false)
 const incomplete = shallowRef<ReadonlySet<string>>(new Set())
 let mounted = true
 let actionGeneration = 0
+let completed = false
 
 const {
-  messages, status, error, isLoading, isHydrating, resuming, interrupts,
-  sendMessage, reload, stop, clear,
+  messages, status, error, isLoading, isHydrating, resuming, interrupts, runId,
+  sendMessage, reload, stop,
 } = useChat({
   connection: props.connection,
   threadId: props.threadId,
   persistence: false,
+  onChunk(chunk) {
+    if (acting.value && chunk.type === 'RUN_FINISHED' && chunk.runId === runId.value
+      && (!chunk.outcome || chunk.outcome.type === 'success')) {
+      completed = true
+    }
+  },
 })
 const busy = computed(() => acting.value || isLoading.value || resuming.value)
 const paused = computed(() => interrupts.value.length > 0)
@@ -135,10 +154,11 @@ function markIncomplete() {
 }
 
 async function run(kind: 'send' | 'regenerate') {
-  if (blocked.value || (kind === 'regenerate' && !canRegenerate.value)) return
+  if (!mounted || blocked.value || (kind === 'regenerate' && !canRegenerate.value)) return
   const text = draft.value.trim()
   if (kind === 'send' && !text) return
   const generation = ++actionGeneration
+  completed = false
   acting.value = true
   actionFailed.value = false
   notice.value = 'Assistant response started.'
@@ -147,11 +167,12 @@ async function run(kind: 'send' | 'regenerate') {
     if (kind === 'send') await sendMessage(text)
     else await reload()
     if (!mounted || generation !== actionGeneration) return
-    if (error.value) {
-      markIncomplete()
-      notice.value = 'Response failed. Partial output may be incomplete.'
-    } else if (interrupts.value.length) {
+    if (interrupts.value.length && !error.value) {
       notice.value = 'Response paused. This text-only pane cannot resolve tools.'
+    } else if (error.value || !completed) {
+      actionFailed.value = true
+      markIncomplete()
+      notice.value = 'Response did not complete. Partial output may be incomplete.'
     } else {
       notice.value = 'Response finished. Review the assistant text.'
     }
@@ -176,10 +197,10 @@ function cancel() {
 onBeforeUnmount(() => {
   mounted = false
   ++actionGeneration
-  stop()
-  clear()
   draft.value = ''
 })
+// useChat's scope cleanup detaches and disposes the client. Do not invoke
+// the user Stop action here: an adapter may opt into server cancellation.
 </script>
 
 <template>
@@ -228,13 +249,15 @@ onBeforeUnmount(() => {
 </style>
 ```
 
+The action's busy flag prevents duplicate sends before the SDK snapshot updates. A resolved action is not the success signal: the example requires a success terminal event for the active run, checks the error/interrupt state, and invalidates old local continuations before Stop or unmount.
+
 Keep keyboard focus predictable: do not focus each streamed message or scroll users away from text they are reviewing. If an active cancel control becomes disabled, restore focus to the composer after the action if needed in the application's focus model. Add a user-controlled “Jump to latest” for long transcripts; do not make the transcript an assertive live region. The example uses a real form, persistent labels, polite start/end/cancel announcements, a separate generic error alert, preserved submitted text in the transcript, and explicit retry through regeneration rather than automatic duplicate sends. Its fixed DOM IDs assume one pane per page; assign instance-specific IDs for multiple panes.
 
 ## Headless UI registry, composition, and incumbent migration
 
-Use the `/ui` factory when message/tool/interrupt widgets are shared, not merely to replace a small local pane. [Pinned registry implementation and prop types](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/create-ui.ts), [bound factory](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/create-chat-hook.ts).
+Consider the `/ui` factory when message/tool/interrupt widgets are shared, not merely to replace a small local pane. These are source contracts, not a replacement for the full strict-template/runtime check. [Pinned registry/prop types](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/chat-ui/create-ui.ts), [bound factory](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/chat-ui/create-chat-hook.ts).
 
-1. Bind the real chat options and widget registry with `/ui` `createChatHook`. Call its `useAppChat({ threadId, ... })` once in the identity-owned setup, then render `UIChat` with that **same** `ui` and `chat`. Factory configuration may live at module scope only when it does not capture per-request credentials or user state.
+1. Bind real chat options and the widget registry with `/ui` `createChatHook`. Call its `useAppChat({ threadId, ... })` once in identity-owned setup; `threadId` is required at this call, not in the factory. Render `UIChat` with the **same** `ui` and `chat`. Factory configuration may live at module scope only when it does not capture per-request credentials or user state.
 2. Provide `components.layout` and `components.message`; `input` and `queue` are optional. Layout renders its named `messages`, `interrupts`, `queue`, and `input` slots. The message widget renders its **`parts`** slot; dropping it silently drops automatic part rendering.
 3. Map `partsComponents` by the UI-selected part key, not arbitrary message properties; provide a visible unsupported fallback. Named tools require a `toolsComponents` entry per tool. Named generic interrupts require `interruptsComponents.generic` entries per interrupt ID; `generic.fallback` covers unknowns, and `interruptsComponents.tools` can override tool-approval widgets by tool name. Missing registry entries can render nothing and produce development warnings: this is not an intentional denial UI.
 4. Keep composer state and accessible form/stop/error behavior in the input widget. It calls the factory's `useChatContext()` in a **descendant** of the provider to use the existing chat; calling `useAppChat()` there would create a second chat. Apply the pane's hydration, busy, interrupt, and identity guards. Enabling queued sends also requires a queue widget that exposes cancellation.
@@ -251,46 +274,48 @@ Use the `/ui` factory when message/tool/interrupt widgets are shared, not merely
 
 Widgets receive typed **props**, not legacy content-shaped context: `MessageProps<TOptions>` has `message`; `PartProps<TOptions, TKey>` has `part`; `ToolProps<TOptions, TName>` has `part`, optional `result`, optional approval `interrupt`; `InterruptProps<TOptions, TName>` has `interrupt`; `QueueProps<TOptions>` has `item`. Derive `TOptions` from the shared options object so tool names and schemas remain linked. Read the part/tool/interrupt props directly; `useChatContext()` is for chat state/actions. `createChatUI(options, config)` creates just the descriptor for an independently constructed chat. `createChatHookContexts()` creates fresh injection keys; pass its keys through factory `context` when cross-file widgets cannot import the factory result or nested chat trees need isolation. A missing/mismatched provider throws; do not catch it by inventing a fallback chat.
 
-**Registered interrupt boundary in 0.27.0.** `UIInterrupt` is a concrete component, not an options-generic component; its `interrupt` prop is `ChatUIInterrupt`. `UIInterrupts`' custom slot likewise receives the broad selected list, not a schema-specialized slot. The client defines the generic member's resolver as `(payload: unknown) => void`, whereas `InterruptProps<TOptions, 'confirmReview'>` keeps this registered interrupt's response schema (a boolean in the audit consumer). There is no supported component-generic argument or typed slot that makes a boolean-only function accept arbitrary unknown input. Do not cast the typed interrupt to the broad prop or use the broad slot to disguise loss of schema coupling. [Exact client interrupt signatures](https://unpkg.com/@tanstack/ai-client@0.40.0/src/types.ts), [UI interrupt selection and prop types](https://unpkg.com/@tanstack/ai-client@0.40.0/src/ui/types.ts).
+**Registered interrupt boundary in current source.** `UIInterrupt` is concrete, not options-generic: its prop is `ChatUIInterrupt`. `UIInterrupts` selects broad interrupts, not a schema-specialized slot list. The client defines the generic member's resolver as `(payload: unknown) => void`, whereas `InterruptProps<TOptions, 'confirmReview'>` keeps that registered response schema (boolean in the historical consumer). A boolean-only function cannot accept arbitrary unknown data. Do not cast it to the broad prop. [Current client interrupt types](https://unpkg.com/@tanstack/ai-client@1.2.1/src/types.ts), [UI interrupt selection types](https://unpkg.com/@tanstack/ai-client@1.2.1/src/ui/types.ts).
 
 When explicitly passing that typed interrupt to `UIInterrupt`, introduce a real validating adapter at the renderer boundary. For this consumer's **single registered generic definition**, copy the interrupt descriptor and replace only its resolver with `(response: unknown) => void`: run the same `decisionSchema['~standard'].validate(response)` used by `defineInterrupt`, throw on validation issues, and forward only `result.value` to the original boolean-coupled `interrupt.resolveInterrupt`. Pass through nonregistered generic and unbound interrupts unchanged. **Do not pass tool approvals through this adapter:** their schema-dependent approve/reject option tuples can also conflict with the broad `ChatUIInterrupt` approval member. The consumer narrows `kind === 'tool-approval'` and renders its existing `ApprovalWidget` directly with `InterruptProps<Options, 'reviewText'>`; only the other variants reach `UIInterrupt`, and the adapter's input type explicitly excludes tool approvals. This preserves the real approval/denial actions and lifecycle guards without claiming generalized renderer compatibility. The generic adapter preserves IDs, bindings, lifecycle fields and actions; widget props and host retain their original schema types, and invalid unknown input never becomes an approval or a default decision. Derive the broad return type from `InstanceType<typeof UIInterrupt>['$props']['interrupt']` rather than inventing a substitute interface. Applications with multiple registered definitions must select the matching response schema and typed resolver for each definition; this boolean adapter is not a universal interrupt implementation. It supplies a real runtime boundary, not proof that the release supports every renderer/options pairing.
 
-Incumbent deprecated components remain usable before 1.0.0: old `Chat` owns a connection/options context; `ChatInput` uses controlled `v-model`/submit behavior, `ChatMessages` renders messages, `ChatMessage` renders one message, and `ToolApproval` takes proposal/approval props. Do not place them under a new provider and assume contexts are interchangeable. Migrate one identity-owned tree at a time: move the old connection/options to factory options, replace old `CHAT_KEY`/`useChatContext` consumers, port message content to the `parts` slot and part widgets, port approval to typed interrupt/tool props, then remove old imports (including the obsolete `@tanstack/ai-vue-ui` package name). Preserve keyboard, cancellation, and denial behavior during the cutover.
+Migrating from 0.x: move old connection/options to the factory, replace old `CHAT_KEY` and standalone `useChatContext` with the factory's context, port content to message `parts` slots and part widgets, and port approval to typed interrupt/tool props. Remove the old prebuilt imports and the obsolete `@tanstack/ai-vue-ui` package; they are not 1.x fallbacks. Preserve keyboard, cancellation and denial behavior. Keep the application-owned root pane as the bounded choice until your own full-template and runtime checks pass.
 
-`TextPartProps` / `ThinkingPartProps` describe incumbent prebuilt renderers, **not** `PartProps`: text takes `content`, optional `role`, classes, markdown `extensions`, and `highlighter`; thinking takes `content` and optional `isComplete`. Highlighter output is trusted HTML, so only use an escaping highlighter and a constrained markdown/resource policy. A custom part widget receives `part.content` and can render escaped interpolation instead. Do not expose hidden reasoning merely because a thinking renderer exists. [Pinned incumbent props and deprecations](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/types.ts).
+`TextPartProps` / `ThinkingPartProps` describe the remaining prebuilt part renderers, **not** `PartProps`: text takes `content`, optional `role`, classes, markdown `extensions`, and `highlighter`; thinking takes `content` and optional `isComplete`. Highlighter output is trusted HTML, so use an escaping highlighter and a constrained markdown/resource policy. A custom part widget can render `part.content` as escaped interpolation. Do not expose hidden reasoning merely because a thinking renderer exists. [Current part props](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/chat-ui/types.ts).
 
 ## Tools, approvals, and structured output
 
-A tool-enabled surface must replace the text-only policy above with an intentional tool registry and UI. [Vue tool API](https://tanstack.com/ai/latest/docs/api/ai-vue), [tool declarations](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/types.d.ts).
+A tool-enabled surface must replace the text-only policy above with an intentional tool registry and UI. [Vue tool API](https://tanstack.com/ai/latest/docs/api/ai-vue), [pinned tool declarations](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/types.d.ts).
 
 - Define tool name/input/output schemas once; share browser-safe definitions, not privileged server implementations. `clientTools(toolDefinitionResult.client(implementation), ...)` preserves tool-name typing; `createChatClientOptions` plus `InferChatMessages` can preserve that type across components. Registered client tools execute automatically; there is **no `onToolCall` option** to copy from another SDK. Keep privileged effects on the server.
 - Tool-call states are `awaiting-input`, `input-streaming`, `input-complete`, `approval-requested`, `approval-responded`, `complete`, `error`. Never execute streamed/partial JSON arguments. Render each call by call ID, proposed action, validated arguments, approval state, and result/error. Tool-result states are `streaming`, `complete`, `error`; a denial/cancellation outcome can accompany error state.
-- For legacy message-part approval, narrow `part.type === 'tool-call'`, `part.state === 'approval-requested'`, and `part.approval`; call `addToolApprovalResponse({ id: part.approval.id, approved })`. This is the **approval ID**, not `part.id`/the tool-call ID. Disable decisions during submission, catch rejection, and expose denial as a first-class action. Do not use a blanket “approve everything” control for sensitive tools.
-- Prefer typed `interrupts` and their bound `resolveInterrupt` methods for current interrupt workflows. Inspect `kind`, `canResolve`, `status`, `errors`, and `resuming`; a `tool-approval` interrupt accepts an approval boolean and schema-dependent options, while generic interrupts accept their registered response payload. Unbound interrupts cannot be resolved by this client. `interruptErrors` and `retryInterrupts()` support recovery; do not manually forge resume items with `resumeInterruptsUnsafe` to bypass a failed approval. `pendingInterrupts` and `resumeInterrupts` are deprecated aliases.
+- Use typed `interrupts` and their bound `resolveInterrupt` methods. Inspect `kind`, `canResolve`, `status`, `errors`, and `resuming`; the `tool-approval` interrupt accepts an approval boolean and schema-dependent options, while generic interrupts accept their registered response payload. Unbound interrupts cannot be resolved here. `addToolApprovalResponse`, `pendingInterrupts`, and `resumeInterrupts` are removed in 1.x; unbound 0.x descriptors are not resumable. Keep approve and deny explicit and guarded; use `interruptErrors` and `retryInterrupts()` for recovery rather than forging an unsafe resume.
 - `resolveInterrupts(false)` supplies bulk approval denial; prefer per-item decisions for mixed or sensitive batches. Its resolver callback must invoke each selected interrupt's typed `resolveInterrupt(...)` and return `undefined`; it is not a generic `return true` mapper. Per-item `cancel()` / `clearResolution()` and batch `cancelInterrupts()` manage staged resolution, while `retryInterrupts()` retries failed submission. Use item status/errors plus batch errors and `resuming` to drive the UI; `canResolve` describes binding/schema capability and does not itself reflect expiry or in-flight submission. `initialResumeSnapshot` can seed descriptors for restored continuation, but must belong to the same authorized identity/thread; never trust browser resume state as server permission.
 - Manual execution surfaces use `addToolResult({ toolCallId, tool, output, state?: 'output-available' | 'output-error', errorText? })`. Those submission-state names differ from rendered tool-call states. Do not add a second result for an automatically executed tool or rerun a side effect after a network error without server-side idempotency.
-- Bind approval and tool execution to the current principal, tenant, thread, run, and proposal. Stop/unmount invalidates browser continuation, but cannot roll back completed tool effects. Async tool implementations need their own abort/identity discipline; no stale completion may mutate the next user's state.
+- Bind approval and tool execution to the current principal, tenant, thread, run, and proposal. On a TanStack backend, `onGuardToolCall` inspects the final validated arguments before dispatch to server or client; keep real authorization there or in the equivalent application service. Stop/unmount cannot roll back completed effects. Since client 1.1.0, `.client()` implementations can honor their execute context's `abortSignal` on explicit stop, but still need identity guards before publishing. [Server guard type](https://unpkg.com/@tanstack/ai@1.8.0/dist/esm/activities/chat/middleware/types.d.ts), [client changes](https://github.com/TanStack/ai/releases/tag/@tanstack/ai-client@1.1.0).
+- Client and server tools must share input **and output** schemas to resume automatically. Client 1.1.0 can produce a bound approval for unanswered `needsApproval` client calls from custom AG-UI backends; that browser decision is not a server-side access check. [1.0 migration](https://tanstack.com/ai/latest/docs/migration/v1#client-tools).
+- [Core 1.7.0](https://github.com/TanStack/ai/releases/tag/@tanstack/ai@1.7.0) / [client 1.2.0](https://github.com/TanStack/ai/releases/tag/@tanstack/ai-client@1.2.0) add server-owned `resultMetadataSchema` and `part.resultMetadata` for app/UI metadata not passed to the model. Do not trust replayed browser metadata or use this feature to send secrets to the client. Client and WebMCP tools cannot set this server metadata.
+- A terminal event in a tool-enabled flow is not necessarily normal model completion: [core 1.3.0](https://github.com/TanStack/ai/releases/tag/@tanstack/ai@1.3.0) adds `metadata.tanstack.loopStopped` when a loop cap or middleware stops with tool work pending. Distinguish normal, policy-limited, canceled, and interrupted outcomes rather than reusing the text-only pane's terminal rule for agents.
 - `outputSchema` supplies client **type inference**, not client runtime schema validation. With it, `partial` is `DeepPartial<T>` and `final` is `T | null`; final becomes available when the latest assistant structured-output part is complete. Server `chat({ outputSchema })` must validate independently. Treat partial fields, generated URLs, markdown, and even final model claims as untrusted data: no `v-html`, automatic navigation, SQL, executable code, or privileged tool authorization. Escaped text is the safe default; any richer renderer must sanitize HTML and constrain URL schemes/resources.
 
 ## Persistence, reconnection, and cancellation are separate
 
-The composable creates one client per setup and attaches on mount. Scope disposal detaches, unsubscribes/stops, and disposes it. In 0.27.0, `forwardedProps`, deprecated `body`, `context`, `queue`, reactive tool refs/getters, and `live` changes have specific watchers; transport and `threadId` are not general reactive reconfiguration. Remount to change identity. `context` is client-local tool context, not serialized; `forwardedProps` is user-controlled wire JSON. [Implementation](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/use-chat.ts).
+The Vue hook creates one client per setup and attaches on mount. Scope disposal detaches the reader, unsubscribes or stops local work, then disposes the client. Do not call the user's Stop action from unmount to implement this teardown. `forwardedProps`, `context`, `queue`, reactive tool refs/getters, and `live` have specific watchers; transport, `threadId`, and `outputSchema` are not general reactive reconfiguration. Remount to change identity. `context` is client-local; `forwardedProps` is wire JSON. The removed chat-level `body` option is not the still-valid adapter, generation, or per-send `body`. [Vue implementation](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/use-chat.ts).
 
 - Default/`persistence: false`: browser memory only. A stable thread ID alone does not persist messages. A backend may independently retain requests: “ephemeral client” is not a data-retention guarantee.
 - `persistence: true` plus a required stable `threadId`: server-authoritative hydration; needs an implemented authorized `hydrate` handler, and join/replay support for in-flight recovery. `history: { pageSize }` requests a newest-message window **only** in this server-persistence mode; otherwise hydration loads the full thread. Use `isHydrating`, `hasOlderMessages`, and guarded/awaited `loadOlderMessages()` for restoration/paging, preserving scroll position when older messages prepend. No automatic business mutation belongs in hydration.
-- A client persistence adapter (`localStoragePersistence`, `sessionStoragePersistence`, `indexedDBPersistence`) plus `threadId` stores transcript/resume state in the browser. Classify the data first; namespace by identity and remove it on logout according to retention policy. It is not confidential server storage, a shared-device access control, or a server cancellation service.
+- A client persistence adapter (`localStoragePersistence`, `sessionStoragePersistence`, `indexedDBPersistence`) stores transcript/resume state keyed by thread. Keep an identity-scoped namespace and remove data on logout according to policy. For 0.x upgrades, migrate old bare `UIMessage[]` records to the current `{ messages, ... }` storage contract before deploying, or discard only data whose retention policy permits it. Browser storage is not confidential server storage or a shared-device access control.
 - SSE reconnection/delivery durability requires server event IDs, replay logs, terminal events, and compatible join semantics. The fetch adapter handles its own resumable protocol; do not assert that native browser `EventSource`/`Last-Event-ID` magically supplies durable chat. Truncation, incomplete durable runs, and exhausted reconnect bounds must be visible failures, not “complete” responses.
-- `clear()` and unmount do not delete backend history. `stop()` does not guarantee a durable server job stopped. Durable cancellation requires an application-owned authenticated, authorized service keyed by the captured run ID and a backend that supports it; confirm its outcome independently.
+- `clear()` and unmount do not delete backend history. For explicit Stop only, `fetchServerSentEvents`/`fetchHttpStream` accept `cancelUrl`, or a custom connection can implement `cancelRun({ runId, threadId })`. The built-ins make a best-effort POST with those IDs and adapter-supplied headers/credentials; Stop does not await or report its outcome. Reload and ordinary Vue unmount are not server cancellation. Implement and authorize the route, and surface a separately confirmed outcome if required. [Exact cancellation implementation](https://unpkg.com/@tanstack/ai-client@1.2.1/src/connection-adapters.ts).
 
-For fetch/XHR adapters, `reconnect: { maxAttempts, delayMs }` bounds **consecutive reconnects without new events**, not total reconnects or elapsed run time. In client 0.40.0 the defaults are **5** and **250ms**; forward progress resets the attempt counter. A stream that keeps making progress can therefore reconnect indefinitely within that policy. Enforce the server's independent run/deadline/resource limits; do not describe the adapter ceiling as a total lifetime bound. [Exact reconnection contract](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/connection-adapters.d.ts).
+For resumable fetch/XHR, `reconnect` defaults to five consecutive **no-progress** retries, with jittered exponential backoff from `initialDelayMs: 250` to `maxDelayMs: 5000`; `delayMs` remains an alias. `budgetMs` bounds a no-progress window and replaces the default attempt cap unless `maxAttempts` is explicit. Progress resets both; neither is a global deadline. On resumable reconnects, transient 408/429/502/503/504 can retry and `Retry-After` is honored up to the delay cap. No resume cursor means a disconnected plain stream cannot be transparently replayed. Set independent server run/resource limits. [Client 1.0.0 reconnect change](https://github.com/TanStack/ai/releases/tag/@tanstack/ai-client@1.0.0), [exact tracker](https://unpkg.com/@tanstack/ai-client@1.2.1/src/connection-adapters.ts).
 
 ## Generation: typed jobs, transforms, restoration, and media
 
-Root exports `useGeneration`, `useGenerateImage`, `useGenerateAudio`, `useGenerateSpeech`, `useTranscription`, `useSummarize`, and `useGenerateVideo`. Use generic generation for an application-specific input/result contract; use specialized hooks when the server emits the corresponding activity result. [Generation declaration](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-generation.d.ts), [input/event/fetcher contracts](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/generation-types.d.ts).
+Root exports `useGeneration`, `useGenerateImage`, `useGenerateAudio`, `useGenerateSpeech`, `useTranscription`, `useSummarize`, and `useGenerateVideo`. Use generic generation for an application-specific input/result contract; use a specialized hook only when the server emits the corresponding result. [Generation declaration](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/use-generation.d.ts), [input/event/fetcher contracts](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/generation-types.d.ts).
 
-- Supply exactly one real transport: a `ConnectConnectionAdapter`, or `GenerationFetcher<TInput, TResult>`. The latter receives `(input, options?)`, where options contain `signal` and optional headers, and returns `Promise<TResult | Response>`; a `Response` is parsed as SSE. Forward cancellation and application request headers only to the trusted backend. Connection-mode generation consumes TanStack generation events (`generation:result`, `generation:artifacts`, `generation:progress`, video job/status events), not arbitrary chat text.
+- Pass required `threadId` for **every** generation, even nonpersistent ones. Supply one real transport: a `ConnectConnectionAdapter` or `GenerationFetcher<TInput, TResult>`. The fetcher receives `(input, { signal, threadId, runId, headers? })` and returns `Promise<TResult | Response>`; a `Response` is parsed as SSE. Forward cancellation and authorized run context to the trusted backend. A built-in connection serializes generation inputs under AG-UI `forwardedProps`, with thread/run IDs in the envelope. A TanStack route can read these with `generationParamsFromRequest()` or `generationParamsFromBody()`. Connection mode consumes generation events (`generation:result`, `generation:artifacts`, `generation:progress`, video job/status events), not chat text deltas.
 - Call `generate(input)` explicitly; mount never starts a new generation. Read readonly `result`, `isLoading`, `error`, `status` (`idle/generating/success/error`), `runId`. Only one generation runs per client; calling `generate` while busy is a no-op, **not** a queue or proof a second job was sent. Guard the UI and report the actual result/error.
-- `onResult` returning a concrete value transforms/infer-types stored output; returning `null` preserves previous output; returning `void` stores raw output. A callback that sometimes returns transformed data and sometimes `void` can therefore store mixed shapes: keep the return contract consistent. `onProgress(progress, message?)` reports 0–100. `onChunk` runs for connection streams **and fetchers returning an SSE `Response`**, not plain-object fetcher results; both streaming paths call the same processor. `onError` is an alternative error notification channel. Do not announce/log every progress chunk or duplicate errors through every channel. [Pinned processing branches](https://unpkg.com/@tanstack/ai-client@0.40.0/src/generation-client.ts).
+- A concrete `onResult` return transforms and infers stored output; `null` preserves previous output; `void` stores raw output. Keep the return shape consistent. `onProgress(progress, message?)` reports 0–100. `onChunk` runs for connection streams **and fetchers returning an SSE `Response`**, not plain-object results; both streaming paths use the same processor. Keep notification callbacks non-throwing and do not log or announce each token/progress update. [Published processing branches](https://unpkg.com/@tanstack/ai-client@1.2.1/src/generation-client.ts).
 - `stop()` aborts locally; capture `runId` for an authorized server cancellation service first. `reset()` clears local state/resume data, not backend history: a reload with server persistence can restore the last generation again.
 - `persistence: true` requires a stable domain `threadId` naming the **generation slot**, not necessarily a chat. Supply authorized `hydrateGeneration` and `joinRun` handlers if the connection does not carry them; connection handlers take precedence. A restored running job without join support becomes interrupted/error. Specialized hooks reconstruct typed results from persisted activity/artifact fields; missing serve URLs can make a completed snapshot unrestorable. Fix persistence/asset-serving fields rather than hiding the error. Generic custom results need an application-specific reconstruction contract, not an assumption arbitrary JSON will repaint.
 
@@ -303,41 +328,55 @@ Root exports `useGeneration`, `useGenerateImage`, `useGenerateAudio`, `useGenera
 | `useSummarize` / `SummarizeGenerateInput` | `SummarizationResult`; `text`, optional `maxLength`, `style` (`bullet-points/paragraph/concise`), `focus`, `modelOptions`. Display/validate the result as untrusted text. |
 | `useGenerateVideo` / `VideoGenerateInput` | `VideoGenerateResult` with completed `jobId`, `status`, `url`, optional expiry/artifacts. Text/image-conditioned `prompt`, backend-supported `size`, optional `duration`/`modelOptions`. Extra refs `jobId`, `videoStatus`; callbacks `onJobCreated(jobId)`, `onStatusUpdate(status)`. Connection mode delegates polling to the server; distinguish backend job ID from TanStack `runId`. |
 
-Validate media URL scheme/origin, expiry and MIME before rendering/downloading; bound base64 payload size; provide alt descriptions, captions/transcripts, and explicit audio playback. Type acceptance does not mean the application's model/runtime supports every option; negotiate real backend capabilities rather than adding a hosted dependency. [Pinned video API](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-generate-video.d.ts).
+Validate media URL scheme/origin, expiry and MIME before rendering/downloading; bound base64 size and provide alt descriptions, captions/transcripts, and explicit audio playback. [Pinned video API](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/use-generate-video.d.ts). [Vue 1.1.0](https://github.com/TanStack/ai/releases/tag/@tanstack/ai-vue@1.1.0) adds `useGenerate3DModel`, but the underlying 3D activity and core 1.7.0 motion generation are experimental; [core 1.8.0](https://github.com/TanStack/ai/releases/tag/%40tanstack%2Fai%401.8.0) only adds `'3mf'` to the 3D formats. These additions are not a viewer, provider capability, or reason to add a hosted adapter.
 
 ### Complete custom-generation pane
 
-This SFC's host supplies a real, authorized, runtime-validating `fetcher` for the declared application-owned `{ text } → { summary }` contract. It is a Vue integration example, not an endpoint implementation. Remount it when authenticated identity or fetcher configuration changes. The transform has a single concrete return shape and infers `result` as `string | null`.
+This SFC's host supplies a stable generation-slot `threadId` and a real, authorized, runtime-validating fetcher for the application-owned `{ text } → { summary }` contract. The parent keys the pane by authenticated identity, slot and fetcher configuration, so a change remounts it. It is a browser-side integration example, not an endpoint implementation. Its transform infers `result` as `string | null`.
 
 ```vue
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue'
+import { computed, onScopeDispose, shallowRef } from 'vue'
 import { useGeneration } from '@tanstack/ai-vue'
 import type { GenerationFetcher } from '@tanstack/ai-client'
 
 type Input = { text: string }
 type Result = { summary: string }
-const props = defineProps<{ fetcher: GenerationFetcher<Input, Result> }>()
+const props = defineProps<{
+  threadId: string
+  fetcher: GenerationFetcher<Input, Result>
+}>()
 const text = shallowRef('')
 const actionFailed = shallowRef(false)
+let attempt = 0
+onScopeDispose(() => { ++attempt })
 const { generate, result, isLoading, error, status, stop, reset } = useGeneration({
+  threadId: props.threadId,
   fetcher: props.fetcher,
   onResult: value => value.summary.trim(),
 })
 const failed = computed(() => actionFailed.value || Boolean(error.value))
 
 async function submit() {
-  if (isLoading.value || !text.value.trim()) return
+  const input = text.value.trim()
+  if (isLoading.value || !input) return
+  const current = ++attempt
   actionFailed.value = false
   try {
-    await generate({ text: text.value.trim() })
+    await generate({ text: input })
   } catch {
-    actionFailed.value = true
+    if (current === attempt) actionFailed.value = true
   }
+}
+
+function cancel() {
+  ++attempt
+  stop()
 }
 
 function clearResult() {
   if (isLoading.value) return
+  ++attempt
   reset()
   actionFailed.value = false
 }
@@ -351,31 +390,32 @@ function clearResult() {
         <textarea v-model="text" :readonly="isLoading" />
       </label>
       <button type="submit" :disabled="isLoading || !text.trim()">Summarize</button>
-      <button type="button" :disabled="!isLoading" @click="stop">Stop locally</button>
+      <button type="button" :disabled="!isLoading" @click="cancel">Stop locally</button>
       <button type="button" :disabled="isLoading" @click="clearResult">Clear result</button>
     </form>
     <p role="status" aria-live="polite">Generation: {{ status }}</p>
     <p v-if="failed" role="alert">Generation failed. Review the input and try again.</p>
+    <p v-if="result !== null && status !== 'success'">This output does not confirm completion.</p>
     <p v-if="result !== null">{{ result }}</p>
   </section>
 </template>
 ```
 
-The fetcher forwards `options.signal` to the actual HTTP request. For JSON, check HTTP status, parse and runtime-validate `{ summary: string }`, then return that object; do not cast an unchecked `response.json()` to `Result`. For an SSE `Response`, emit `RUN_STARTED`, optional `CUSTOM` `generation:progress` events, `CUSTOM` with `name: 'generation:result'` and `value: { summary: string }`, then `RUN_FINISHED`, or terminate with `RUN_ERROR`. This is generation protocol, not chat text deltas; the result payload must satisfy the same application contract.
+The fetcher forwards `signal`, `threadId`, `runId`, and applicable headers to its authorized endpoint. For JSON, check HTTP status, parse and runtime-validate `{ summary: string }`, then return that object. For SSE, check HTTP status and forward a valid `Response` with `RUN_STARTED`, optional `CUSTOM` `generation:progress`, `CUSTOM` `{ name: 'generation:result', value: { summary: string } }`, then successful `RUN_FINISHED` (or terminate with `RUN_ERROR`). Use the same run IDs and validate results at the actual service boundary. The current generation client sets `success` on `RUN_FINISHED`; for this contract, send that event only after a valid result. This is generation protocol, not chat text deltas.
 
-In client 0.40.0, ordinary generation failures settle `generate()` with `error`/`status: 'error'`; a resolved promise is not proof of success. A failed or locally stopped run retains the last successful result. `stop()` returns an active run to `idle`, not `success`; “Clear result” calls `reset()` to remove that retained output and error. Scope disposal aborts the transport and rejects stale result ownership, so an old completion cannot repaint the remounted identity. None of these actions proves server cancellation or deletes server history.
+Ordinary generation failures settle `generate()` with `error`/`status: 'error'`; a resolved promise is not proof of success. Premature EOF without a terminal event is a failure, not an idle job. A failed or stopped run does not automatically clear existing output; an SSE result can arrive before the terminal event. Read `status` independently and clear explicitly with `reset()`. User Stop aborts locally and returns an active run to `idle`; scope disposal ends local delivery and suppresses stale result ownership without issuing a server cancel or deleting history. The attempt counter guards this example's catch after stop, restart or unmount.
 
 ## Audio recording and multimodal submission
 
 `useAudioRecorder` returns `start`, `stop`, `cancel`, readonly `isRecording`/`recording` refs, and **boolean** `isSupported`. Disable recording on unsupported browsers; start only from a deliberate user action after explaining microphone use. A raw `await stop()` returns `AudioRecording`: its `.part` goes into `sendMessage({ content: [recording.part] })`, `.base64` is available for generation input. Recording is not consent to upload; let the user review/discard or explicitly send, and apply upload limits. `cancel()` discards capture/releases the mic; scope disposal also cleans up.
 
-The `onComplete(recording)` overload can asynchronously transform the result: its awaited non-void output becomes both `recording.value` and `await stop()`. Other recorder options without `onComplete` keep the raw recording type. Returning `void` keeps the raw value. `start`/`stop` reject **and** `onError` can notify; choose one UI error channel. `stop()` can reject with cancellation if `cancel()`/disposal wins the race, so do not submit a stale recording after logout/unmount. [Exact recorder overloads](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-audio-recorder.d.ts).
+The `onComplete(recording)` overload can asynchronously transform the result: its awaited non-void output becomes both `recording.value` and `await stop()`. Other recorder options without `onComplete` keep the raw recording type. Returning `void` keeps the raw value. `start`/`stop` reject **and** `onError` can notify; choose one UI error channel. `stop()` can reject with cancellation if `cancel()`/disposal wins the race, so do not submit a stale recording after logout/unmount. [Exact recorder overloads](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/use-audio-recorder.d.ts).
 
 ## WebMCP registration and discovery
 
-Use `useRegisterWebMCPTools(tools, options?)` for scoped registration; `useWebMCPTools` remains a deprecated alias until 1.0.0. Supply executable `.client()` tools, required runtime `context` when inferred by their definitions, optional `toolOptions` keyed by tool name (`title`, `annotations.readOnlyHint/untrustedContentHint`), and `onError` for asynchronous registration failures. The hook owns the abort signal; scope disposal unregisters its tools. Unsupported browsers and SSR perform no registration. Hints/descriptions are not permissions or proof a tool is harmless.
+Use `useRegisterWebMCPTools(tools, options?)` for scoped registration; the deprecated `useWebMCPTools` alias is removed in 1.x. Supply executable `.client()` tools, runtime `context` when required by their definitions, `toolOptions` keyed by name when needed, and an `onError` handler. The hook owns the abort signal; scope disposal unregisters its tools. This experimental browser capability registers nothing in unsupported browsers or SSR; that is not full-app SSR evidence. Hints/descriptions are not permissions.
 
-`usePageWebMCPTools({ filter, onError })` returns a readonly reactive tool-list ref, initially empty; registration/removal updates it, scope disposal stops updates, and unsupported browsers/SSR keep it empty. Filter by explicit trusted origin **and tool name** before passing that ref to `useChat({ tools: pageTools })`; never dereference it once at setup and expect discovery changes to propagate. A failed discovery read keeps the last list, so surface the error and make an application policy decision before further execution. Page-tool descriptions/results are untrusted model input; registration/discovery does not authorize privileged browser operations. Preserve a non-WebMCP interaction path rather than assuming browser support. [Vue declarations](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-web-mcp-tools.d.ts), [runtime registration/discovery contracts](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/web-mcp-tools.d.ts).
+`usePageWebMCPTools({ filter, onError })` returns a readonly reactive tool-list ref, initially empty; registration/removal updates it and scope disposal stops updates. Unsupported browsers and SSR keep it empty. Filter by trusted origin **and tool name** before passing the ref to `useChat({ tools: pageTools })`; setup-time dereferencing would freeze the snapshot. A failed discovery keeps the last list; surface the error and require an application policy decision before executing anything. Descriptions/results are untrusted model input. Keep a non-WebMCP path. [Vue declarations](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/use-web-mcp-tools.d.ts), [runtime contract](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/web-mcp-tools.d.ts).
 
 ## Targeted debugging workflow
 
@@ -386,12 +426,12 @@ Use `useRegisterWebMCPTools(tools, options?)` for scoped registration; `useWebMC
 | Chat unexpectedly sends again / appears twice | `append` invokes the model; `reload` regenerates; a second `useChat` in a widget creates a separate client. Import history with `setMessages` or the actual persistence workflow. |
 | Missing parts, approvals, queue, or provider-context error | Confirm descriptor/provider identity, required `parts`/layout slots, typed registry keys, and queue widget; do not resolve an injection failure by constructing another client. |
 | Reload shows empty or stuck generation | Check stable thread/slot identity, authorized hydrate response, join handler, terminal events, and persisted artifact serve URLs. A native SSE reconnect is not durable replay. |
-| Tool approval rejected | Approval uses `approval.id`; verify proposal identity, current authorization and the actual resume response. Inspect safe status, never raw request credentials. |
+| Tool approval rejected | Verify the bound interrupt and its thread/run/proposal identity, tool schema match, current authorization, and the actual resume response. Inspect safe status, never request credentials. |
 
 
 ## Verification boundary
 
-Pinned exports/declarations, adapter implementation and primary docs ground these integration examples. The exact ChatHost/ChatPane and custom-generation SFCs were exercised in a production-built Chromium consumer against deterministic local HTTP/SSE endpoints: chat partial/complete/error/stop/regenerate, identity/thread remount and late-output isolation; generation JSON/SSE transformation/error/stop/reset/remount. See [verification evidence](../assets/verification.json) for the pinned profile and scoped results. This proves those browser transport/lifecycle paths, not inference, authentication, server authorization/cancellation, persistence/hydration/reconnection, tools/approvals/queue, UI registries, specialized media, recording, WebMCP, SSR, or assistive-technology behavior. No hosted-service account is required or configured.
+The historical Vue 3.5.44 / adapter 0.27.0 / client 0.40.0 / AI 0.70.0 SFCs were exercised in production-built Chromium against deterministic local HTTP/SSE: chat partial/complete/error/stop/regenerate and identity remount isolation; generation JSON/SSE transformation/error/stop/reset/remount. See [verification evidence](../assets/verification.json) for those exact scopes. The 1.x changes above are manifest, release and source checks only, not a replay of those browser paths. Neither profile establishes inference, authentication, server authorization/cancellation, durable replay, tools/approvals/queue, specialized media, recording, WebMCP, SSR, or assistive-technology behavior. No hosted account is required or configured.
 
 For the headless `/ui` entry, source-supported factories/registry/renderer contracts above are not a full strict-template or runtime pass. The full-profile failures and narrower SCRIPT/API-only profile are recorded separately in the entry-point boundary. The narrowed profile cannot certify renderer bindings or restore a full-template claim, even if all its negative assertions pass.
 
@@ -399,9 +439,8 @@ Application acceptance checks: initial/slow/empty stream; send guard; safe gener
 
 ## Sources
 
-- [Vue package 0.27.0 metadata](https://unpkg.com/@tanstack/ai-vue@0.27.0/package.json), [root exports](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/index.d.ts), [chat types](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/types.d.ts), [chat implementation](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/use-chat.ts).
-- [Client 0.40.0 states/tools/persistence](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/types.d.ts), [transport declarations](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/connection-adapters.d.ts), [chat cancellation/regeneration implementation](https://unpkg.com/@tanstack/ai-client@0.40.0/src/chat-client.ts).
+- [Vue 1.1.1 root exports](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/index.d.ts), [chat declarations](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/types.d.ts), and [implementation](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/use-chat.ts).
+- [Client 1.2.1 types](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/types.d.ts), [adapter declarations](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/connection-adapters.d.ts), and [chat client](https://unpkg.com/@tanstack/ai-client@1.2.1/src/chat-client.ts).
 - [Official Vue API](https://tanstack.com/ai/latest/docs/api/ai-vue), [Vue chat UI](https://tanstack.com/ai/latest/docs/ui/vue).
-- [Pinned UI registry/props](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/create-ui.ts), [factory](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/create-chat-hook.ts), [incumbent renderer props](https://unpkg.com/@tanstack/ai-vue@0.27.0/src/chat-ui/types.ts).
-- [Generation hook](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-generation.d.ts), [generation types/events](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/generation-types.d.ts), [client restoration/reset contract](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/generation-client.d.ts), [video](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-generate-video.d.ts), [recorder overloads](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-audio-recorder.d.ts).
-- [Vue WebMCP hooks](https://unpkg.com/@tanstack/ai-vue@0.27.0/dist/use-web-mcp-tools.d.ts), [WebMCP runtime](https://unpkg.com/@tanstack/ai-client@0.40.0/dist/esm/web-mcp-tools.d.ts).
+- [Vue 1.1.1 published UI source](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/ui.ts), [registry](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/chat-ui/create-ui.ts), and [bound factory](https://unpkg.com/@tanstack/ai-vue@1.1.1/src/chat-ui/create-chat-hook.ts).
+- [Generation hook](https://unpkg.com/@tanstack/ai-vue@1.1.1/dist/use-generation.d.ts), [generation types/events](https://unpkg.com/@tanstack/ai-client@1.2.1/dist/esm/generation-types.d.ts), and [generation client](https://unpkg.com/@tanstack/ai-client@1.2.1/src/generation-client.ts).

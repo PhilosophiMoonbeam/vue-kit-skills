@@ -9,10 +9,14 @@ A unified Agent Skill for Vue 3.5 applications: TypeScript, Composition API, Vue
 Run from the project where your coding agent should receive the skill, using **Bun 1.4.5**:
 
 ```sh
-bunx --bun skills@1.7.4 add PhilosophiMoonbeam/vue-kit-skills
+bunx --bun skills@1.9.0 add PhilosophiMoonbeam/vue-kit-skills
 ```
 
-Select `vue-kit` and your target agents when prompted. Skills CLI **1.7.4** installs project-scoped by default; use `--global` only for a user-wide installation. The pinned launcher passed `--help` and `--version` with Bun and no Node.js executable. The [upstream Node.js engine declaration](https://registry.npmjs.org/skills/1.7.4) describes the vendor's Node runtime contract, not a prerequisite for this Bun invocation. See the [pinned installer reference](https://github.com/vercel-labs/skills/blob/v1.7.4/docs/commands.md#skills-add) for noninteractive, agent-selection and copy options. The command selects the revision available remotely; the launcher checks do not establish publication or installation of this checkout.
+Select `vue-kit` and your target agents when prompted. [Skills CLI 1.9.0](https://github.com/vercel-labs/skills/releases/tag/v1.9.0) installs to the current project by default; use `--global` only for a user-wide installation. To select explicitly, add `--skill vue-kit --agent codex --yes` (replace `codex` with your agent); add `--copy` to copy rather than symlink to agent directories. For an unpublished checkout, run the same command from the destination project with an explicit local checkout path in place of `PhilosophiMoonbeam/vue-kit-skills`.
+
+The CLI pin selects the installer version, not this skill's revision. A remote installation requires the intended source revision to be published and reachable; to select it explicitly, use `PhilosophiMoonbeam/vue-kit-skills@<tag-or-full-commit>` with a real published tag or commit. In 1.9.0, Git entries in the [project skill lock](https://github.com/vercel-labs/skills/blob/v1.9.0/README.md#lock-file-content-hash) record the installed commit for restore. See the [tagged CLI reference](https://github.com/vercel-labs/skills/blob/v1.9.0/docs/commands.md#skills-add) for source formats and flags.
+
+`--bun` explicitly runs the launcher on Bun. The [upstream Node.js ≥22.20.0 engine declaration](https://registry.npmjs.org/skills/1.9.0) describes the vendor's Node launch path. On Bun **1.4.5** with no Node.js executable on `PATH`, Skills CLI **1.9.0** ran `--version` and `add --help`. These launcher checks do not establish publication or remote installation; earlier **1.7.4** checks remain separate historical receipts.
 
 ## Navigate the skill
 
@@ -21,7 +25,7 @@ Install the skill for metadata-based discovery; do not preload its body or all r
 - **50 capability references:** Vue/reactivity, first-class Nuxt, components/composables, state, application-owned session boundaries, routing, server-state caches, forms, UI frameworks, accessibility, tables, virtualization, visualization, 3D, motion, localization, SSR, testing, self-hostable AI streaming and tooling, including eight focused OpenVue owners.
 - **Architectural synthesis:** [application boundaries](skills/vue-kit/references/architecture.md), [data ownership and lifetimes](skills/vue-kit/references/architecture-data.md), and [UI composition](skills/vue-kit/references/architecture-ui.md).
 - **Nuxt:** [framework ownership and complete application](skills/vue-kit/references/nuxt.md), then [selected Vuetify/Pinia/Colada/Tres integrations](skills/vue-kit/references/nuxt-integrations.md) only when needed. Nuxt owns bootstrap, routing and SSR; standalone Vue examples are not module recipes.
-- **Preferred baseline:** Vue **3.5.44** and pinned authoring Vuetify **4.3.0**, with **4.3.x** preferred for new general-purpose UI. Alternative libraries and incumbent major versions retain their own compatibility boundaries; preference is not permission for an unrequested migration.
+- **Preferred baseline:** Vue **3.5.46** and pinned authoring Vuetify **4.3.4**, with **4.3.x** preferred for new general-purpose UI. Alternative libraries and incumbent major versions retain their own compatibility boundaries; preference is not permission for an unrequested migration.
 - **Optional deep OpenVue coverage:** start with [selection and architecture](skills/vue-kit/references/openvue.md), then read only the needed owner: [Vite/Nuxt setup](skills/vue-kit/references/openvue-setup.md), [theming and pass-through](skills/vue-kit/references/openvue-theming.md), [forms](skills/vue-kit/references/openvue-forms.md), [data](skills/vue-kit/references/openvue-data.md), [overlays](skills/vue-kit/references/openvue-overlays.md), [navigation](skills/vue-kit/references/openvue-navigation.md), or [layout/media/utilities](skills/vue-kit/references/openvue-components.md). OpenVue is the designated rich-widget alternative, authored against **1.0.0**, with MIT-licensed core/themes and no account or license key. Verify future majors independently; Vuetify remains the default. [Quasar](skills/vue-kit/references/alternative-ui.md) has a separate incumbent route.
 - **TresJS:** start with the [released package map](skills/vue-kit/references/tresjs.md#released-package-map) for selection, Rapier, Leches and tooling, then [WebGPU scenes](skills/vue-kit/references/tresjs-webgpu.md) for Core/Cientos **5.12.0**. The workbench and lab pin Core **5.12.0**, Three **0.187.0** and `@types/three` **0.187.0**. The optional [effects](skills/vue-kit/references/tresjs-post-processing.md) (**3.13.0**) and [Nuxt module](skills/vue-kit/references/nuxt-integrations.md#optional-tresjs-module) (**5.10.0**) profiles retain their separate Three **0.186.1** / types **0.186.0** pins. Add only the packages the scene needs.
 - **No implied outside services:** no hosted identity SDK, provider-key management, cloud account provisioning or required commercial service. Session helpers define application-owned contracts; streaming can target an application-owned or self-hosted backend; documentation search stays local.
@@ -32,6 +36,8 @@ The installed skill is self-contained. Historical source paths in audit assets i
 ## Run the example workbench
 
 The bundled Vue/Vuetify/Pinia/Router application implements real in-memory tasks, validation, keyboard interaction, confirmation dialogs, navigation and theme changes. It has no backend, account, credentials or persistence; reload restores its example state.
+
+The standalone [exact stack](skills/vue-kit/references/setup-tooling.md#exact-example-baseline-and-api-status) pairs Vue **3.5.46** and Vuetify **4.3.4** with Pinia **4.1.0**, `@vue/devtools-api` **8.2.1**, Router **5.5.1**, Vite **8.3.8**, `@vitejs/plugin-vue` **6.0.11**, TypeScript **6.0.3**, `vue-tsc` **3.3.14**, and `@types/bun` **1.4.5**. These pins do not supersede separately scoped incumbent recipes or historical receipts.
 
 Open **Graphics** (`/graphics`) and choose **Start scene** for the default experimental, unlit WebGPURenderer via [`@tresjs/core/webgpu`](skills/vue-kit/references/tresjs-webgpu.md). Choose the lit WebGLRenderer via root `@tresjs/core` explicitly for compatibility. Each mount uses one renderer; the workbench does not automatically swap renderer families. The initialized backend distinguishes WebGPU from WebGPURenderer's own WebGL2 fallback. Claim that fallback only when the whole scene works on both backends; choose WebGLRenderer explicitly for incompatible dependencies, unported GLSL ShaderMaterial/onBeforeCompile or legacy EffectComposer. The route is lazy: Tasks and About do not load renderer packages, and Graphics waits for Start. Controls, status, errors and a text alternative remain ordinary DOM.
 
@@ -48,7 +54,7 @@ bun run build
 bun run dev
 ```
 
-The committed `bun.lock` is authoritative. Keep type checking separate from Vite bundling; a build alone does not prove types or behavior. See [setup and tooling](skills/vue-kit/references/setup-tooling.md) for prerequisites, lockfile migration and dependency lifecycle-script boundaries.
+The committed `bun.lock` is authoritative. Keep the full `vue-tsc --noEmit` check separate from Vite bundling; neither a build nor Bun's native TypeScript checker replaces Vue template typechecking. See [setup and tooling](skills/vue-kit/references/setup-tooling.md) for compatibility observations, explicit TypeScript ambient types, lockfile migration and dependency lifecycle-script boundaries.
 
 ## Target-browser WebGPU/WebGL verification
 

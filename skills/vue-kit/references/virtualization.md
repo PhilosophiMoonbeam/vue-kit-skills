@@ -4,9 +4,15 @@ Read when profiling identifies excessive list/table DOM, not merely because the 
 
 ## Version and adapter boundary
 
-Verified stable releases: **`@tanstack/vue-virtual@3.13.47`**, depending exactly on **`@tanstack/virtual-core@3.19.6`**; Vue peer `^2.7.0 || ^3.0.0`. Examples target Vue **3.5.44**. Import `useVirtualizer`/`useWindowVirtualizer` from **`@tanstack/vue-virtual`**, never a React adapter. The Vue adapter returns a **`Ref<Virtualizer>`**: use `.value` in script; templates unwrap it. [Registry](https://registry.npmjs.org/@tanstack/vue-virtual/3.13.47), [pinned adapter declarations](https://unpkg.com/@tanstack/vue-virtual@3.13.47/dist/esm/index.d.ts).
+Current stable pair (source-reviewed): **`@tanstack/vue-virtual@3.13.54`**, depending exactly on **`@tanstack/virtual-core@3.19.13`**; Vue peer `^2.7.0 || ^3.0.0`. Examples target Vue **3.5.46**. Import `useVirtualizer`/`useWindowVirtualizer` from **`@tanstack/vue-virtual`**, not a React adapter. Both hooks return a `Ref<Virtualizer>`: use `.value` in script; templates unwrap it. [Registry](https://registry.npmjs.org/@tanstack/vue-virtual/3.13.54), [published adapter](https://unpkg.com/@tanstack/vue-virtual@3.13.54/src/index.ts).
 
 `useVirtual`/`size`/`parentRef` belong to the old v2 interface, not v3. Core capabilities can advance independently of the Vue adapter minor version; inspect the installed core version before adopting newer options.
+
+```sh
+bun add --exact vue@3.5.46 @tanstack/vue-virtual@3.13.54
+```
+
+In the reviewed patch interval, the Vue adapter now detaches its observers when the scroll element becomes `null`; the core improves Android touch-fling interruption, clamping after list shrink, RTL programmatic writes and ResizeObserver batching. Use the built-in observer/scroll bindings before adding application workarounds, and verify these scenarios on the intended browsers. [Vue observer fix](https://github.com/TanStack/virtual/releases/tag/%40tanstack/vue-virtual%403.13.51), [core RTL/current-measurement fix](https://github.com/TanStack/virtual/releases/tag/%40tanstack/virtual-core%403.19.11), [core snapshot/batching fix](https://github.com/TanStack/virtual/releases/tag/%40tanstack/virtual-core%403.19.13).
 
 ## Geometry contract
 
@@ -16,7 +22,7 @@ Verified stable releases: **`@tanstack/vue-virtual@3.13.47`**, depending exactly
 | `count` | Length of the **displayed ordering** after processing; include a loader row only if you render that row. |
 | `estimateSize(index)` | Return pixels along the scroll axis. Use realistic, preferably conservative estimates for variable heights. |
 | `getItemKey(index)` | Stable record ID when rows reorder/filter/prepend; index is only suitable for immutable positional data. |
-| `overscan` | Extra items outside the visible range; start small and profile blanking versus DOM cost. It is an item count for one lane; core 3.19.6 counts rows of `lanes` items for multi-lane ranges, not pixels. |
+| `overscan` | Extra work outside the visible range, not pixels. With the default range extractor it counts items for one lane. Since core **3.19.0**, it counts whole rows of `lanes` items for multiple lanes (e.g. 4 lanes × 2 overscan adds up to 8 items on each side). Delegate to `defaultRangeExtractor` for that behavior when extending the range. [Core 3.19.0 release](https://github.com/TanStack/virtual/releases/tag/%40tanstack/virtual-core%403.19.0). |
 | `getTotalSize()` | Size the inner scroll spacer; otherwise the browser has no full scroll range. |
 | `getVirtualItems()` | Each item supplies `key`, `index`, `start`, `end`, and `size`; render its corresponding record only. |
 | `measureElement(element)` | Register actual DOM nodes for dynamic sizes; include `data-index` (or configured `indexAttribute`). |
@@ -32,7 +38,7 @@ The virtualizer's `Key` type includes `bigint`, which Vue 3.5 does not accept as
 
 ## Complete example: dynamic read-only rows
 
-Install `@tanstack/vue-virtual@3.13.47`. This SFC generates local illustrative records, preserves stable keys under filtering, measures wrapping text, and offers an external jump control whose focus is never recycled. The viewport itself is focusable for native keyboard scrolling. It is deliberately a read-only list, not an incompletely implemented ARIA listbox/grid.
+This standalone SFC generates local illustrative records, preserves stable keys under filtering, measures wrapping text, and offers an external jump control whose focus is never recycled. The viewport itself is focusable for native keyboard scrolling. It is deliberately a read-only list, not an incompletely implemented ARIA listbox/grid.
 
 ```vue
 <script setup lang="ts">
@@ -133,7 +139,7 @@ onMounted(() => { mounted.value = true })
 
 ## Window scrolling, grids, and tables
 
-- `useWindowVirtualizer` supplies window scroll observation and an SSR-safe scroll-element getter. Do not override them as though it were an element virtualizer.
+- `useWindowVirtualizer` supplies window scroll observation and an SSR-safe scroll-element getter. The default initial offset reads `scrollX` for horizontal lists (fixed in **3.13.53**), `scrollY` for vertical lists, and zero on the server. Do not override the window bindings with element observers. [Vue 3.13.53 release](https://github.com/TanStack/virtual/releases/tag/%40tanstack/vue-virtual%403.13.53).
 - Content above a window-scrolled list needs a measured **`scrollMargin`**. For absolute positioning relative to the list, subtract `options.scrollMargin` from each item's `start`; recalculate the margin when preceding layout changes, not just on the first mount. Do not confuse it with `paddingStart`, which adds virtual content space.
 - Horizontal lists set `horizontal: true`, size the spacer width, and translate X. Two-dimensional grids require row and column virtualizers plus explicit cell geometry. Variable-height rows and columns are not interchangeable with fixed-size grid formulas.
 - With TanStack Table, derive `rows` from `table.getRowModel().rows`; set virtual count to that length and keys to `rows[index].id`. Sorting/filtering must change the virtualizer's ordering and key mapping together.
@@ -154,11 +160,11 @@ These are application design requirements, not automatic TanStack guarantees:
 
 DOM dimensions do not exist on the server. The example keeps `enabled: false` until mount so server and first client output agree; the initial noninteractive boundary is intentional. If records are essential server-rendered content, render a useful paginated/nonvirtual view instead of an empty spacer. Alternatively, use deterministic `initialRect` and `initialOffset` only when the server/client can share those assumptions. Never read `window` during universal setup. Nuxt's `<ClientOnly>` is a Nuxt boundary, not a Vue SPA primitive.
 
-Hidden/zero-sized containers must be reobserved/recomputed when shown. `enabled: false` pauses work; it is not proof of preserved measurements across every lifecycle. Core **3.19.6** includes newer capabilities such as end anchoring and `takeSnapshot`; do not copy these into older installed core releases. For restoration, preserve both measurement data and offset under stable IDs and the same layout assumptions. For chat, follow appends only if the reader is already at the end; do not pull a reader away from history. [Core changelog](https://github.com/TanStack/virtual/blob/main/packages/virtual-core/CHANGELOG.md), [chat guide](https://tanstack.com/virtual/latest/docs/chat).
+Hidden/zero-sized containers must be reobserved/recomputed when shown. `enabled: false` pauses work; it is not proof of preserved measurements across every lifecycle. Core **3.19.13** includes newer capabilities such as end anchoring and `takeSnapshot`; do not copy these into older installed core releases. For restoration, preserve both measurement data and offset under stable IDs and the same layout assumptions. For chat, follow appends only if the reader is already at the end; do not pull a reader away from history. [Core changelog](https://github.com/TanStack/virtual/blob/main/packages/virtual-core/CHANGELOG.md), [chat guide](https://tanstack.com/virtual/latest/docs/chat).
 
 ### End-anchored chat and streaming
 
-Core **3.19.6** supports this directly. Reuse the complete dynamic-row example's scroll container, measuring refs, spacer, and block layout; replace its data with the application-owned message sequence. Spread this complete option fragment into the existing computed options (`...chatOptions`); it is not a transport implementation:
+Core **3.19.13** supports this directly. Reuse the complete dynamic-row example's scroll container, measuring refs, spacer, and block layout; replace its data with the application-owned message sequence. Spread this complete option fragment into the existing computed options (`...chatOptions`); it is not a transport implementation:
 
 ```ts
 const chatOptions = {
@@ -174,13 +180,13 @@ const chatOptions = {
 4. Compute jump-button visibility from `!virtualizer.value.isAtEnd()` in a Vue tracking scope; call `scrollToEnd()` on activation. `getDistanceFromEnd()` gives the distance in pixels. `cancelScroll()` cancels an outstanding programmatic command when navigation/user intent supersedes it.
 5. Own loading/error/cursor state outside the virtualizer. Fetch older history once per cursor while no request is pending; deduplicate IDs and preserve order before prepending. An appended loader row counts only while it exists; changing its identity to a message must not conflate their measurements.
 
-The default core scroll compensation includes iOS WebKit touch/momentum/overscroll deferral. Do not layer a second compensation loop on top. Platform behavior remains a proposed browser check, not an exercised result. [Official chat workflow](https://tanstack.com/virtual/latest/docs/chat), [pinned core API](https://unpkg.com/@tanstack/virtual-core@3.19.6/dist/esm/index.d.ts).
+The default core scroll compensation includes iOS WebKit touch/momentum/overscroll deferral. Do not layer a second compensation loop on top. Platform behavior remains a proposed browser check, not an exercised result. [Official chat workflow](https://tanstack.com/virtual/latest/docs/chat), [pinned core API](https://unpkg.com/@tanstack/virtual-core@3.19.13/dist/esm/index.d.ts).
 
 ### Restoration, hidden panels, and geometry controls
 
 | Need | Concrete contract |
 | --- | --- |
-| Route restoration | Capture `{ measurements: instance.takeSnapshot(), offset: instance.scrollOffset ?? 0 }` **before** destroying the owner. Restore through `initialMeasurementsCache` and `initialOffset` when creating the new instance, not by reconstructing every row DOM node. Only actually measured items appear in the snapshot; others use estimates. |
+| Route restoration | Capture `{ measurements: instance.takeSnapshot(), offset: instance.scrollOffset ?? 0 }` **before** destroying the owner. Restore via `initialMeasurementsCache` and `initialOffset`. Only measured items appear in the snapshot; others use estimates. Core **3.19.13** seeds the measurements once through an empty/refill cycle rather than reapplying stale sizes; disabling the virtualizer resets the seed flag along with its measurements. |
 | Safe saved state | Keep an application schema/version, record ordering/query key, and layout fingerprint (width, font, density, lane count) with the snapshot. Reject stale/mismatched geometry; untrusted persisted JSON needs shape checking. Read browser storage after a client boundary, never in universal setup. Keep SSR and first-client assumptions identical. |
 | Inactive tabs | Set `useCachedMeasurements: !visible` reactively to avoid default DOM measurement overwriting sizes with zero while hidden. This option affects the default measurement implementation, not every custom `measureElement`. Restore normal measurement when visible. |
 | Pause observers | `enabled: false` disables observers and resets virtualizer state while retaining the instance. It is **not** a cache-preservation guarantee; use the cache option/snapshot for that separate requirement. |
@@ -197,7 +203,7 @@ For infinite append, derive the last rendered index from `getVirtualItems()` and
 
 Sticky group headers require both a retained index and actual sticky positioning. Extend `defaultRangeExtractor(range)` with the current preceding group-header index, deduplicate, sort, and keep indexes within `0 <= index < count`; retaining index zero indiscriminately is not a group-header algorithm. Add retained keyboard-focus indexes through the same extractor. For horizontal RTL use `horizontal: true`, `isRtl: true`, X-axis sizes/transforms, and coherent DOM direction; translating X alone does not establish RTL scrolling semantics.
 
-The Vue hooks prefill scroll/rect/offset observer functions. Override them only for an intentional custom scroll platform with its cleanup contract; ordinary element/window lists should not replace them. [Advanced options and methods](https://tanstack.com/virtual/latest/docs/api/virtualizer), [exact 3.19.6 declarations](https://unpkg.com/@tanstack/virtual-core@3.19.6/dist/esm/index.d.ts).
+The Vue hooks prefill scroll/rect/offset observer functions. Override them only for an intentional custom scroll platform with its cleanup contract; ordinary element/window lists should not replace them. [Advanced options and methods](https://tanstack.com/virtual/latest/docs/api/virtualizer), [exact 3.19.13 declarations](https://unpkg.com/@tanstack/virtual-core@3.19.13/dist/esm/index.d.ts).
 
 ## Evidence and proposed verification
 
@@ -205,8 +211,8 @@ Pinned registry/declaration research establishes the documented adapter and core
 
 ## Sources
 
-- [Vue adapter 3.13.47 metadata](https://registry.npmjs.org/@tanstack/vue-virtual/3.13.47), [core 3.19.6 metadata](https://registry.npmjs.org/@tanstack/virtual-core/3.19.6).
-- [Pinned Vue declarations](https://unpkg.com/@tanstack/vue-virtual@3.13.47/dist/esm/index.d.ts), [Vue API guide](https://tanstack.com/virtual/latest/docs/framework/vue/vue-virtual).
+- [Vue adapter 3.13.54 metadata](https://registry.npmjs.org/@tanstack/vue-virtual/3.13.54), [core 3.19.13 metadata](https://registry.npmjs.org/@tanstack/virtual-core/3.19.13).
+- [Pinned Vue declarations](https://unpkg.com/@tanstack/vue-virtual@3.13.54/dist/esm/index.d.ts), [Vue API guide](https://tanstack.com/virtual/latest/docs/framework/vue/vue-virtual).
 - [Virtualizer API: options, measurements, range extraction, scrolling](https://tanstack.com/virtual/latest/docs/api/virtualizer).
 - [Official dynamic Vue example](https://github.com/TanStack/virtual/blob/main/examples/vue/dynamic/src/components/RowVirtualizerDynamic.vue), [official window example](https://github.com/TanStack/virtual/blob/main/examples/vue/dynamic/src/components/RowVirtualizerDynamicWindow.vue).
-- [Vue 3.5.44 native attribute declarations](https://unpkg.com/@vue/runtime-dom@3.5.44/dist/runtime-dom.d.ts), [Vue object attribute binding](https://vuejs.org/guide/essentials/template-syntax#dynamically-binding-multiple-attributes).
+- [Vue 3.5.46 native attribute declarations](https://unpkg.com/@vue/runtime-dom@3.5.46/dist/runtime-dom.d.ts), [Vue object attribute binding](https://vuejs.org/guide/essentials/template-syntax#dynamically-binding-multiple-attributes).

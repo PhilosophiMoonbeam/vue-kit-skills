@@ -7,9 +7,11 @@ Read when building a VitePress documentation site. VitePress owns its Vue applic
 | Tool | Pinned release | Boundary |
 | --- | --- | --- |
 | `vitepress` | **1.6.4** | Stable documentation generator; the build pre-renders Markdown as Vue pages, then the browser handles hydration and navigation |
-| Vue | **3.5.44** baseline | VitePress 1.6.4 depends on Vue `^3.5.13` |
+| Vue | **3.5.46** example pin | VitePress 1.6.4 depends on Vue `^3.5.13` |
 
-VitePress 1.6.4 depends on Vite `^5.4.14`. Do not force the application's Vite 8 plugins into VitePress 1.x. A v2 prerelease is not the stable 1.6.4 API. Choose one package manager and preserve VitePress's dependency graph; a separate workspace package is often the clearest ownership boundary. The [package metadata](https://unpkg.com/vitepress@1.6.4/package.json) points to a [CLI with a Node shebang](https://unpkg.com/vitepress@1.6.4/bin/vitepress.js), and the [tagged upstream guide](https://github.com/vuejs/vitepress/blob/v1.6.4/docs/en/guide/getting-started.md) specifies Node 18+ for its Node workflow. That is upstream compatibility guidance, not a Node requirement for this Bun 1.4.5 example. The scripts below explicitly override the shebang.
+The [npm tags](https://registry.npmjs.org/-/package/vitepress/dist-tags) distinguish stable `latest` (1.6.4) from `next` (2.0.0-alpha.21), even though GitHub labels the alpha “Latest”. [1.6.4](https://github.com/vuejs/vitepress/compare/v1.6.3...v1.6.4) adds a `rolldown-vite` incompatibility diagnostic and keeps Vite `^5.4.14` and `@vitejs/plugin-vue` `^5.2.1`. The [v2 alpha package](https://registry.npmjs.org/vitepress/2.0.0-alpha.21) instead uses Vite `^8.3.4`, `@vitejs/plugin-vue` `^6.0.9`, and Vue `^3.5.43`. Its [tagged changelog](https://github.com/vuejs/vitepress/blob/v2.0.0-alpha.21/CHANGELOG.md) also changes behavior this guide covers: content-loader URLs respect rewrites in alpha.19, relative `base` and `assetsBase` arrive in alpha.20, and client-component slot forwarding changes in alpha.21. Do not use the alpha to align bundlers by default or force the application's Vite 8 plugins into VitePress 1.x. Keep VitePress's dependency graph in its own workspace package.
+
+The [stable CLI has a Node shebang](https://unpkg.com/vitepress@1.6.4/bin/vitepress.js), and the [tagged guide](https://github.com/vuejs/vitepress/blob/v1.6.4/docs/en/guide/getting-started.md) specifies Node 18+ for its Node workflow. The scripts below explicitly select Bun 1.4.5 instead; Bun runs the VitePress CLI, while VitePress still owns Markdown/SFC compilation and static rendering. These scripts do not type-check your Vue theme; use the project's Vue-aware typecheck separately.
 
 ## VitePress: complete minimal site
 
@@ -29,7 +31,7 @@ Create these files in a dedicated docs package. The root `package.json` is ESM; 
   },
   "devDependencies": {
     "vitepress": "1.6.4",
-    "vue": "3.5.44"
+    "vue": "3.5.46"
   }
 }
 ```
@@ -326,7 +328,7 @@ MPA mode (`mpa: true`) changes client behavior: ordinary Vue page scripts are se
 
 ## Verification boundary
 
-The complete minimal site built with VitePress 1.6.4 on Bun 1.4.5 with no system `node` available. That probe establishes build execution, not preview, deployment or browser behavior. The [verification record](../assets/verification.json) separates recorded checks from consuming-project obligations:
+The previous minimal site (Vue 3.5.44) built with VitePress 1.6.4 on Bun 1.4.5 with no system `node` available. That probe establishes build execution, not preview, deployment or browser behavior. The Vue 3.5.46 pin above fits the published dependency range but was not exercised by that probe. The [verification record](../assets/verification.json) separates recorded checks from consuming-project obligations:
 
 1. Build and preview at the real base; check direct URL reloads, absence of browser-global errors during pre-rendering and hydration warnings in the browser, and that links, image paths, search, keyboard navigation and mobile sidebar work.
 2. Verify the pre-rendered HTML includes meaningful headings/content without JavaScript. Check dynamic loaders contain no secrets and their links resolve under base/rewrites.

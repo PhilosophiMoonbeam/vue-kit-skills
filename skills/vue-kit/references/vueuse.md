@@ -4,7 +4,7 @@ Read when a feature needs browser events, storage, sensors, async task state, re
 
 ## Version and import boundary
 
-Verified baseline: **15.0.0** for all four packages, **Vue 3.5.44**. Each package declares Vue `^3.5.0`, Node `>=22`, and ESM. The peer range alone is not a compatibility test; the exercised scopes are recorded below. Keep VueUse package versions aligned. Core depends on and re-exports shared; components depends on core/shared; math depends on shared, not core. Install only the packages used:
+Current source-backed profile: **15.0.0** for all four VueUse packages with **Vue 3.5.46**. Each package declares Vue `^3.5.0`, Node `>=22`, and ESM. This is the upstream Node engine floor, not an instruction to replace Bun. The peer range is not a compatibility test; see the separate historical evidence below. Keep VueUse package versions aligned. Core depends on and re-exports shared; components depends on core/shared; math depends on shared, not core. Install only the packages used:
 
 ```sh
 bun add --exact @vueuse/core@15.0.0
@@ -15,13 +15,15 @@ Import composables from `@vueuse/core`; use `@vueuse/shared` directly in a share
 
 ### Authoring globals and reproducible typing scope
 
-For a new Bun authoring profile, use **TypeScript 5.9.3**, **vue-tsc 3.3.14**, **`@types/web-bluetooth 0.0.21`**, and **`temporal-spec 1.0.1`**. Core's published declarations reference Bluetooth and global `Temporal` types, even when the selected consumer does not invoke those APIs. Use the real packages, not handwritten ambient replacements:
+For the bounded Bun authoring profile, use **TypeScript 5.9.3**, **vue-tsc 3.3.14**, **`@types/web-bluetooth 0.0.22`** as an explicit app dev dependency, and **`temporal-spec 1.0.1`**. Core's published declarations reference Bluetooth and global `Temporal` types even when the selected consumer does not invoke those APIs. Use the real packages, not handwritten ambient replacements:
 
 ```sh
-bun add --dev --exact typescript@5.9.3 vue-tsc@3.3.14 @types/web-bluetooth@0.0.21 temporal-spec@1.0.1
+bun add --dev --exact typescript@5.9.3 vue-tsc@3.3.14 @types/web-bluetooth@0.0.22 temporal-spec@1.0.1
 ```
 
-With `moduleResolution: "Bundler"`, include `"@types/web-bluetooth"` and `"temporal-spec/global"` in `compilerOptions.types`, preserving other entries the app actually needs. An explicit `types: []` excludes automatic package globals; installing the packages alone does not override that restriction. This does not disable normal typing of imported modules. Alternatively, load `temporal-spec/global` from an included declaration-only `.d.ts` file, not a runtime entry. [TypeScript global selection](https://www.typescriptlang.org/tsconfig/types.html), [Bluetooth declarations](https://unpkg.com/@types/web-bluetooth@0.0.21/index.d.ts), [Temporal globals](https://unpkg.com/temporal-spec@1.0.1/global.d.ts).
+With `moduleResolution: "Bundler"`, include `"@types/web-bluetooth"` and `"temporal-spec/global"` in `compilerOptions.types`, preserving other entries the app actually needs. An explicit `types: []` excludes automatic package globals; installing the packages alone does not override that restriction. This does not disable normal typing of imported modules. Alternatively, load `temporal-spec/global` from an included declaration-only `.d.ts` file, not a runtime entry. [TypeScript global selection](https://www.typescriptlang.org/tsconfig/types.html), [Temporal globals](https://unpkg.com/temporal-spec@1.0.1/global.d.ts).
+
+The [0.0.22 Bluetooth manifest](https://registry.npmjs.org/@types/web-bluetooth/0.0.22) maps TypeScript `<=7.0` to [a compatibility declaration](https://unpkg.com/@types/web-bluetooth@0.0.22/ts7.0/index.d.ts) for `BluetoothServiceUUID`; the root entry leaves that alias to the TypeScript 7.1 DOM library ([DefinitelyTyped change](https://github.com/DefinitelyTyped/DefinitelyTyped/pull/75814)). Do not import the root file directly or infer general compiler compatibility. Core 15.0.0 still requires `@types/web-bluetooth: ^0.0.21` (`>=0.0.21 <0.0.22`); the app-level dev pin is not a valid override of that transitive range. The old 0.0.21 full-declaration check below did not exercise the new resolution.
 
 Keep `strict: true` and `vueCompilerOptions.strictTemplates: true`. Record `vue-tsc --noEmit -p tsconfig.declarations.json` with `skipLibCheck: false` separately from `vue-tsc --noEmit -p tsconfig.consumer.json` with `skipLibCheck: true`; the latter checks bounded source/template consumers, not declaration internals. Render components such as `UseMouse` additionally require **`@vueuse/components@15.0.0`**; installing core does not provide that import. Neither ambient package grants Bluetooth support/permission nor installs a Temporal runtime polyfill. A feature that actually uses either capability still needs its real runtime prerequisites. [Core manifest](https://unpkg.com/@vueuse/core@15.0.0/package.json), [components manifest](https://registry.npmjs.org/@vueuse/components/15.0.0), [declaration-checking boundary](https://www.typescriptlang.org/tsconfig/skipLibCheck.html).
 
@@ -416,7 +418,7 @@ Most directives bind a handler or `[handler, options]` at mount; replacing that 
 
 ### Excluded v15 adapters: migrate, do not work around them
 
-These exclusions are **15.0.0 source findings**, not a blanket rejection of VueUse or proof about a later release. Do not install a dependency patch, substitute a global, or keep the broken adapter behind a client-only boundary.
+These exclusions still apply to the latest published **15.0.0**. They are exact source findings, not a blanket rejection of VueUse or proof about unreleased fixes. Do not install a dependency patch, substitute a global, or keep a broken adapter behind a client-only boundary.
 
 | Excluded offering | Exact failure and supported replacement |
 | --- | --- |

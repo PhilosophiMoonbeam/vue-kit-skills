@@ -4,7 +4,7 @@
 
 Read before a cross-feature change, a new application, or a deployment-mode decision. For a narrow fix, inspect the incumbent implementation and preserve its stack unless the fix requires a change. This reference is **authored synthesis**, not a framework architecture guarantee. It assigns ownership and reading routes; specialist references own API implementation.
 
-Baseline: **Vue 3.5.44**, Composition API, `<script setup lang="ts">`, and **Vuetify 4.3.0**. Vuetify's declared Vue peer range includes `^3.5.0`; that is compatibility metadata, not proof that every integration works. For a standalone SPA, use the Router 4 track in [routing](routing.md) and the pinned build stack in [setup and tooling](setup-tooling.md). For new or existing Nuxt applications, [Nuxt 4.6.2](nuxt.md) owns bootstrap, routing, data and rendering; [Nuxt integrations](nuxt-integrations.md) owns selected library/module setup. Do not compose the SPA installation helpers into that host. Neither package peers nor this design guide certify an arbitrary Vue/Vuetify/Nuxt module matrix. [Package evidence](https://registry.npmjs.org/vuetify/4.3.0).
+Baseline: **Vue 3.5.46**, Composition API, `<script setup lang="ts">`, and **Vuetify 4.3.4**. Vuetify's declared Vue peer range includes `^3.5.0`; that is compatibility metadata, not proof that every integration works or a reason to select Vue 3.6 prereleases. For a standalone SPA, use the Router 5 track in [routing](routing.md) and the pinned build stack in [setup and tooling](setup-tooling.md). For new or existing Nuxt applications, [Nuxt 4.6.4](nuxt.md) owns bootstrap, routing, data and rendering; [Nuxt integrations](nuxt-integrations.md) owns selected library/module setup. Do not compose the SPA installation helpers into that host. Neither package peers nor this design guide certify an arbitrary Vue/Vuetify/Nuxt module matrix. [Package evidence](https://registry.npmjs.org/vuetify/4.3.4).
 
 ## Produce a compact design deliverable
 
@@ -150,9 +150,9 @@ This is a proposed design and contract, not an exercised inbox implementation. B
 
 ## Sources
 
-- [Vue 3.5.44 package metadata](https://registry.npmjs.org/vue/3.5.44) and [Vuetify 4.3.0 metadata/peers](https://registry.npmjs.org/vuetify/4.3.0).
+- [Vue 3.5.46 package metadata](https://registry.npmjs.org/vue/3.5.46) and [Vuetify 4.3.4 metadata/peers](https://registry.npmjs.org/vuetify/4.3.4).
 - [Vue SSR overview, isolation, hydration, lifecycle](https://vuejs.org/guide/scaling-up/ssr.html).
 - [Vue component events](https://vuejs.org/guide/components/events.html) and [provide/inject ownership](https://vuejs.org/guide/components/provide-inject.html).
-- [Nuxt 4.6.2 metadata](https://registry.npmjs.org/nuxt/4.6.2) and [Nuxt 4 rendering modes](https://nuxt.com/docs/4.x/guide/concepts/rendering).
+- [Nuxt 4.6.4 metadata](https://registry.npmjs.org/nuxt/4.6.4) and [Nuxt 4 rendering modes](https://nuxt.com/docs/4.x/guide/concepts/rendering).
 - [OWASP authorization: every request, server-side enforcement](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html).
 - [RFC 9110 conditional writes and `If-Match`](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.1).

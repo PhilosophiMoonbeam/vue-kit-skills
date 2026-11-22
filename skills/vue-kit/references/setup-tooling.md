@@ -15,40 +15,53 @@ For an explicitly selected OpenVue alternative, use its [dedicated Vite shell](o
 The bundled [dependency manifest](../assets/example-app/package.json) pins stable
 packages; these are a reproducible direct-dependency snapshot, not a claim that
 every package is the latest release or that all combinations have been exercised.
-The Router/Pinia pins bound this example only; the owning [routing](routing.md)
-and [state](state.md) references may cover newer majors and incumbent compatibility.
-Do not downgrade an existing app to reproduce the fixture.
+These are the standalone defaults, not version ceilings for existing apps.
+The [routing](routing.md) and [state](state.md) references distinguish current
+authoring from incumbent and separately executed profiles. Changing these
+pins does not renew historical receipts.
 
 | Package | Exact example version | Responsibility |
 | --- | --- | --- |
-| `vue` | `3.5.44` | Runtime and matching SFC compiler via `vue/compiler-sfc` |
-| `vuetify` | `4.3.0` | UI components/styles |
-| `pinia` | `3.0.4` | Local in-memory task state |
-| `vue-router` | `4.6.4` | SPA navigation |
+| `vue` | `3.5.46` | Runtime and matching SFC compiler via `vue/compiler-sfc` |
+| `vuetify` | `4.3.4` | UI components/styles |
+| `pinia` | `4.1.0` | Local in-memory task state |
+| `@vue/devtools-api` | `8.2.1` | Explicit peer dependency of Pinia 4.1.0 |
+| `vue-router` | `5.5.1` | SPA navigation |
 | `@tresjs/core` | `5.12.0` | Graphics scene runtime; renderer selected by entry |
 | `three` | `0.187.0` | Three.js r187 rendering and scene primitives |
 | `@types/three` | `0.187.0` | Matching r187 development declarations |
-| `vite` | `8.3.4` | Dev server and production bundling |
-| `@vitejs/plugin-vue` | `6.0.10` | Vue SFC transform and HMR |
-| `typescript` | `5.9.3` | TypeScript language/compiler |
+| `vite` | `8.3.8` | Dev server and production bundling |
+| `@vitejs/plugin-vue` | `6.0.11` | Vue SFC transform and HMR |
+| `typescript` | `6.0.3` | TypeScript language/compiler compatible with the pinned Vue checker |
 | `vue-tsc` | `3.3.14` | Type checking `.ts` and `.vue` files |
-| `@types/node` | `24.19.2` | Compatibility declarations for `node:*` imports and tooling types |
+| `@types/bun` | `1.4.5` | Bun globals and runtime declarations |
 
-[Vite 8.3.4](https://registry.npmjs.org/vite/8.3.4) and
-[plugin-vue 6.0.10](https://registry.npmjs.org/@vitejs/plugin-vue/6.0.10)
+[Vite 8.3.8](https://registry.npmjs.org/vite/8.3.8) and
+[plugin-vue 6.0.11](https://registry.npmjs.org/@vitejs/plugin-vue/6.0.11)
 publish a Node engine range of `^20.19.0 || >=22.12.0` for their Node runtime
 profile. The plugin explicitly accepts Vite 8 and Vue 3.5 through its published
 peer ranges. The workbench instead pins Bun **1.4.5** in `packageManager` and
 `engines.bun`; its Vite and `vue-tsc` scripts explicitly run on Bun. No separate
-Node executable is required for these scripts. Bun implements compatibility
-APIs such as `node:url`, and type packages such as `@types/node` provide
-declarations, not a runtime. Preserve an incumbent tool's runtime policy and
-verify Bun compatibility before overriding a shebang for any other tool.
-[`vue-tsc` 3.3.14](https://registry.npmjs.org/vue-tsc/3.3.14) declares TypeScript
-`>=5.0.0`; that open-ended range alone does not prove every future TypeScript
-major works. Keep the explicit TypeScript 5.9.3 snapshot until an upgrade is checked.
+Node executable is required for these scripts. Follow [Bun's TypeScript guide](https://bun.com/docs/runtime/typescript)
+and declare `@types/bun` directly; it provides Bun's type entry and pulls in
+`bun-types`, which in turn depends on `@types/node`. Vite also declares an
+optional `@types/node` peer. Those compatibility declarations may remain in
+the dependency tree for tooling and Bun-supported imports such as `node:url`;
+neither the declarations nor those imports require a system Node runtime.
+Preserve an incumbent tool's runtime policy and verify Bun compatibility
+before overriding a shebang for any other tool.
 
-On Bun 1.4.5, `vue-tsc` 3.3.13 (Volar `@volar/typescript` 2.4.28)
+[`vue-tsc` 3.3.14](https://registry.npmjs.org/vue-tsc/3.3.14) declares TypeScript
+`>=5.0.0`, but that range is not an SFC compatibility guarantee. In isolated
+probes on Bun **1.4.5**, TypeScript **7.0.2** with `vue-tsc` **3.3.14** failed
+because `typescript/lib/tsc` could not be resolved. Bun's native `bun check`
+also failed on a real `.vue` import; it does not replace the Vue SFC checker
+for this profile. TypeScript **6.0.3** with `vue-tsc` **3.3.14** passed a valid
+SFC and caught a deliberate template error (**TS2339**). This is bounded checker
+evidence, not an application build or dependency-tree result. Keep the full
+`vue-tsc --noEmit` scope, including real `.vue` files.
+
+In the earlier Bun 1.4.5 probe, `vue-tsc` 3.3.13 (Volar `@volar/typescript` 2.4.28)
 ran unpatched TypeScript because Bun's native module loader bypassed Volar's
 `fs.readFileSync` hook. SFC imports could fail with TS2307; a wildcard `*.vue`
 declaration could hide that error and let the command pass without checking SFCs.
@@ -95,7 +108,7 @@ If the project declares another manager or runtime, respect that choice.
 2. For a new Bun snapshot, `bun install` resolves dependencies and creates/updates
    `bun.lock`; commit the generated lockfile with the application. Exact direct
    pins alone do not lock the transitive tree. To intentionally add a package,
-   use `bun add`; `bun add --exact vue@3.5.44` adds an exact runtime pin, while
+   use `bun add`; `bun add --exact vue@3.5.46` adds an exact runtime pin, while
    `bun add --dev --exact vue-tsc@3.3.14` adds an exact development pin. These are
    examples for a project choosing these versions, not instructions to downgrade
    an incumbent app. Commit manifest and lock changes together.
@@ -204,8 +217,8 @@ generation. Inspect returned template/style diagnostics, supply the real binding
 compiler options, and distinguish client from SSR compilation. Even successful
 block compilation does not resolve the application's imports, CSS preprocessors,
 plugin transforms or bundle graph; use the real build for those and runtime tests
-for behavior. [Exact compiler workflow](https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-sfc/README.md),
-[3.5.44 compiler options/results](https://unpkg.com/@vue/compiler-sfc@3.5.44/dist/compiler-sfc.d.ts).
+for behavior. [Exact compiler workflow](https://github.com/vuejs/core/blob/v3.5.46/packages/compiler-sfc/README.md),
+[3.5.46 compiler options/results](https://unpkg.com/@vue/compiler-sfc@3.5.46/dist/compiler-sfc.d.ts).
 
 ## Biome linting
 
@@ -258,8 +271,8 @@ installed workbench does not require Biome.
 
 The following is a **complete alternative `vite.config.ts`** for a Vue SPA using
 an optional `@` alias. It is not an instruction to overwrite the fixture or an
-incumbent framework config. `@types/node` supplies types for the `node:url`
-compatibility import; it does not require a separate Node runtime.
+incumbent framework config. The Bun typing setup below includes compatibility
+declarations for the `node:url` import without requiring a Node executable.
 
 ```ts
 import { fileURLToPath, URL } from 'node:url'
@@ -285,7 +298,7 @@ Matching **complete minimal `tsconfig.json`** for this single-project SPA varian
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "bun"],
     "strict": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
@@ -308,9 +321,11 @@ choosing that is an alternative to duplicate alias ownership, not a required
 extra plugin. `target` in tsconfig does not configure Vite's browser support;
 choose Vite's production `build.target` from actual supported browsers.
 
-An explicit `compilerOptions.types` array restricts automatically included package
-globals: `types: []` excludes them, while the example above admits only
-`vite/client` and `node`. Imported modules still receive their normal types.
+[TypeScript 6 defaults `compilerOptions.types` to an empty array](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html#types-now-defaults-to-).
+List the ambient packages this project needs explicitly: the single-project
+example selects `vite/client` for Vite client types and `bun` (from `@types/bun`)
+for runtime tooling types. In split configs, keep these entries in the projects
+that need them. Imported modules still receive their normal types.
 Add genuine ambient prerequisites deliberately (for example the
 [VueUse Bluetooth/Temporal types](vueuse.md#authoring-globals-and-reproducible-typing-scope));
 do not replace missing declarations with invented globals or runtime polyfills.
@@ -339,7 +354,7 @@ See [TypeScript `types`](https://www.typescriptlang.org/tsconfig/types.html).
 
 ### Strict templates and native data attributes
 
-For the retained **vue-tsc / `@vue/language-core` 3.3.13** profile, the published
+For the pinned **vue-tsc / `@vue/language-core` 3.3.14** profile, the published
 defaults are **`dataAttributes: []`** and **`htmlAttributes: ["aria-*"]`**.
 When legitimate native `data-*` attributes are part of the application contract,
 this supported configuration can be merged into the existing tsconfig:
@@ -361,8 +376,8 @@ permit unrelated undeclared props such as `unknownProp`; retain strict template
 checking and fix actual consumer defects. Prefer a narrower pattern when only a
 specific data-attribute namespace is intended. Do not broaden `htmlAttributes`
 to `["*"]` or disable strictness as a substitute.
-[Exact 3.3.13 option table](https://unpkg.com/@vue/language-core@3.3.13/README.md),
-[exact defaults/resolver](https://unpkg.com/@vue/language-core@3.3.13/lib/compilerOptions.js),
+[Exact 3.3.14 option table](https://unpkg.com/@vue/language-core@3.3.14/README.md),
+[exact defaults/resolver](https://unpkg.com/@vue/language-core@3.3.14/lib/compilerOptions.js),
 [official option semantics](https://github.com/vuejs/language-tools/wiki/Vue-Compiler-Options#dataattributes).
 
 ### CSS, assets, and production boundaries
@@ -384,7 +399,7 @@ Do not expose the dev server on all interfaces unless needed and permitted.
 
 ## Advanced tooling: diagnose and change one contract
 
-These contracts use **Vite 8.3.4** (Rolldown dependency `~1.2.12`); they are not a
+These contracts use **Vite 8.3.8** (Rolldown dependency `~1.2.18`); they are not a
 request to add every optional integration. Preserve the installed framework's
 configuration owner and use its matching plugin declarations.
 
@@ -518,16 +533,16 @@ and direct route entry, validation, keyboard submission, dialog cancel/confirm
 focus, light/dark UI and narrow layout
 in the browser when they are affected. For deployment, check base paths, SPA
 fallback or SSR route handling, public assets and credential exposure. Report only
-commands and outcomes actually observed. This reference records registry/docs
-research; it does not record executed installs, tests, builds or browser checks.
+commands and outcomes actually observed. The checker probes above do not
+establish an application install, production build or browser result.
 
 ## Sources
 
-- [Vue quick-start](https://vuejs.org/guide/quick-start.html), [TypeScript overview](https://vuejs.org/guide/typescript/overview.html), and [Vue 3.5.44 compiler-SFC README](https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-sfc/README.md): scaffolding, SFC typechecking and matched compiler entry.
-- [Vite 8.3.4 registry metadata](https://registry.npmjs.org/vite/8.3.4), [plugin-vue 6.0.10 metadata](https://registry.npmjs.org/@vitejs/plugin-vue/6.0.10), [TypeScript 5.9.3 metadata](https://registry.npmjs.org/typescript/5.9.3), and [vue-tsc 3.3.13 metadata](https://registry.npmjs.org/vue-tsc/3.3.13): exact versions, engines and peers. The example manifest records the remaining direct pins.
+- [Vue quick-start](https://vuejs.org/guide/quick-start.html), [TypeScript overview](https://vuejs.org/guide/typescript/overview.html), and [Vue 3.5.46 compiler-SFC README](https://github.com/vuejs/core/blob/v3.5.46/packages/compiler-sfc/README.md): scaffolding, SFC typechecking and matched compiler entry.
+- [Vite 8.3.8 registry metadata](https://registry.npmjs.org/vite/8.3.8), [plugin-vue 6.0.11 metadata](https://registry.npmjs.org/@vitejs/plugin-vue/6.0.11), [TypeScript 6.0.3 metadata](https://registry.npmjs.org/typescript/6.0.3), and [vue-tsc 3.3.14 metadata](https://registry.npmjs.org/vue-tsc/3.3.14): exact versions, engines and peers. The example manifest records the remaining direct pins.
 - [Vite features](https://vite.dev/guide/features), [plugin ordering](https://vite.dev/guide/using-plugins#enforcing-plugin-ordering), [shared config](https://vite.dev/config/shared-options), [env/modes](https://vite.dev/guide/env-and-mode), and [SSR boundary](https://vite.dev/guide/ssr): Vite 8 behavior. Prefer these current transform details over older references to esbuild in general Vue tooling prose.
 - [Bun install](https://bun.com/docs/pm/cli/install), [lockfile/migration](https://bun.com/docs/pm/lockfile), [dependency lifecycle trust](https://bun.com/docs/pm/lifecycle), [script launching](https://bun.com/docs/runtime), and [bunx](https://bun.com/docs/pm/bunx): installation, migration and runtime boundaries. See the [Bun 1.4.5 frozen-lock implementation](https://github.com/oven-sh/bun/blob/bun-v1.4.5/src/install/PackageManager/install_with_manager.rs#L2196-L2205); [npm ci](https://docs.npmjs.com/cli/v12/commands/npm-ci) applies only to an incumbent npm workflow.
 - [Biome 2.6.8 schema](https://biomejs.dev/schemas/2.6.8/schema.json), [lint domains](https://biomejs.dev/linter/domains/), and [CLI](https://biomejs.dev/reference/cli/): Vue SFC opt-in, type-aware rules and read-only lint.
-- [Vite 8.3.4 declarations](https://unpkg.com/vite@8.3.4/dist/node/index.d.ts), [server/proxy/security](https://vite.dev/config/server-options), [build/source maps](https://vite.dev/config/build-options), [Rolldown code splitting](https://rolldown.rs/reference/OutputOptions.codeSplitting).
+- [Vite 8.3.8 declarations](https://unpkg.com/vite@8.3.8/dist/node/index.d.ts), [server/proxy/security](https://vite.dev/config/server-options), [build/source maps](https://vite.dev/config/build-options), [Rolldown code splitting](https://rolldown.rs/reference/OutputOptions.codeSplitting).
 - [web-vitals 6.2.3 exports](https://unpkg.com/web-vitals@6.2.3/dist/modules/index.d.ts), [web-vitals project](https://github.com/GoogleChrome/web-vitals).
 - [HTTP encoding negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Accept-Encoding), [image loading/size contracts](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img).

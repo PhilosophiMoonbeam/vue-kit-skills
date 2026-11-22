@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### 2026-11-22 — Bun runtime and Biome linting
+
+- Pinned the Skills install launcher to **1.7.4** under Bun, and made **Bun 1.4.5** the install and execution baseline for the workbench and WebGPU lab. The change does not override an incumbent project's runtime or package-manager policy.
+- Added **Biome 2.6.8** as the repository's read-only lint gate with experimental full Vue SFC support and warnings treated as failures. Safe lint fixes and explicit formatting are separate commands. Historical npm, Node and ESLint observations and native device receipts retain their original scopes.
+- Pinned **vue-tsc 3.3.14** (Volar 2.4.30) with **TypeScript 5.9.3** in the new Bun profiles so the checker loads the Vue-aware compiler under Bun. A passing check with the older loader and a wildcard `*.vue` shim did not establish SFC coverage.
+
 ### 2026-11-18 — Workbench and device-lab migration to Three r187
 
 - Moved both active apps to Core **5.12.0**, Three **0.187.0** and `@types/three` **0.187.0**, each with one Bun lockfile. Optional Nuxt and effects examples keep their separately scoped r186 pins.

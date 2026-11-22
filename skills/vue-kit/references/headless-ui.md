@@ -307,14 +307,14 @@ Migration: 2.0.0 removed `vue-demi` and Vue 2/<3.3 support, not the 1.1.x positi
 Use in a dedicated Tailwind/Reka application, not as a reason to install Tailwind's global preflight over Vuetify. Existing apps must inspect `components.json`, aliases, tokens and copied wrappers before generating. The following setup is for an **alternative Vite app**, not the shared Vuetify example.
 
 1. Install Tailwind **4.3.3** and `@tailwindcss/vite` **4.3.3**; add its Vite plugin, and import the app's Tailwind CSS once. Configure `@` to `src` in both Vite and the applicable TypeScript configs. Vite alias alone does not fix TypeScript resolution. Follow [Vite installation](https://www.shadcn-vue.com/docs/installation/vite).
-2. Run pinned CLI commands in a clean, reviewable working tree:
+2. Run pinned CLI commands in a clean, reviewable working tree. The install lines are for a Bun-managed app; keep an incumbent project's package manager and lockfile for dependency changes. `--bun` selects the CLI runtime, not the generated app's runtime.
 
 ```sh
 bun add --exact tailwindcss@4.3.3
 bun add --dev --exact @tailwindcss/vite@4.3.3
-bunx shadcn-vue@2.8.2 init
-bunx shadcn-vue@2.8.2 view button dialog
-bunx shadcn-vue@2.8.2 add button dialog
+bunx --bun shadcn-vue@2.8.2 init
+bunx --bun shadcn-vue@2.8.2 view button dialog
+bunx --bun shadcn-vue@2.8.2 add button dialog
 ```
 
 3. Commit/review generated component source, CSS/token changes, dependencies and lockfile together. The CLI pin does **not** freeze remote registry content or transitive dependencies. `add --overwrite` replaces local edits; `apply` can rewrite components, fonts and CSS. Inspect changes in a disposable worktree when evaluating a registry update.
@@ -358,15 +358,15 @@ Nuxt has its own installation/module/alias/SSR flow; the Vite steps above are no
 
 ### shadcn maintenance, presets and registry tooling
 
-Use these pinned commands by purpose; all modifying commands need review of the resulting source/dependency/CSS changes:
+Run the subcommands below with `bunx --bun shadcn-vue@2.8.2`. Review the resulting source, dependencies and CSS after any modifying command:
 
 | Task | 2.8.2 command / boundary |
 | --- | --- |
-| Diagnose resolution/config | `bunx shadcn-vue@2.8.2 info --json`; inspect the detected CSS file, aliases and style. `docs button --json` fetches usage, not installed source. |
+| Diagnose resolution/config | `info --json`; inspect the detected CSS file, aliases and style. `docs button --json` fetches usage, not installed source. |
 | Discover, inspect, compare | `search @shadcn -q dialog -l 10 -o 0`, then `view dialog`; `diff dialog` compares an installed copy with its registry version, but does not reconcile custom edits. Separate `view` is the supported preview, not rejected `add --view`. |
 | Initialize a deliberate visual system | `init -p nova` chooses a named preset; `init -p <encoded-code>` or `apply <encoded-code>` accepts builder output. The latter is a contextual command shape, not a literal preset. `init`/alias `create` supports Vite/Nuxt/Astro/Laravel templates; use the incumbent framework's installation flow. `--force` can overwrite config; `--no-reinstall` preserves existing component files during init, not an automatic migration of their tokens. |
 | Cut over existing icons / RTL | `migrate icons` rewrites the chosen UI alias directory; `migrate rtl "src/components/ui/**"` scopes logical-utility rewrites. Review generated imports/dependencies and actual RTL layouts; setting `rtl: true` alone does not rewrite existing wrappers. |
-| Publish a registry | `build registry.json -o public/r` produces registry/item JSON, not an app bundle. Validate metadata and every published file; `registry:file`/`registry:page` require `target`. Public GitHub installs require git and a root registry.json; use a reviewed immutable commit for `#ref`. Path-traversal guards are not a sandbox for npm scripts or malicious source. |
+| Publish a registry | `build registry.json -o public/r` produces registry/item JSON, not an app bundle. Validate metadata and every published file; `registry:file`/`registry:page` require `target`. Public GitHub installs require git and a root registry.json; use a reviewed immutable commit for `#ref`. Path-traversal guards are not a sandbox for lifecycle scripts or malicious source. |
 
 Named presets are `vega` (classic/Inter/Lucide), `nova` (compact/Geist Sans/Lucide), `maia` (soft/Figtree/Hugeicons), `lyra` (boxy/JetBrains Mono/Phosphor), `mira` (dense/Inter/Hugeicons), `luma` (fluid/Inter/Lucide), and `sera` (editorial/Noto Sans body + Playfair Display headings/Lucide, taupe base/theme). Do not assume every named preset uses neutral colors and inherited heading fonts. Encoded preset vocabulary additionally accepts `rhea`, with no same-named preset. Choose via the [builder](https://www.shadcn-vue.com/create) or `encodePreset`/`decodePreset` from `shadcn-vue/preset`; failed decoding returns null. Inspect the preset's font imports/licensing/network policy, radius/menu tokens and base/chart palette before applying. `font`, `fontHeading`, `menuColor` and `menuAccent` are optional configuration fields; aliases also support `hooks`. Keep the generated config's exact style representation: preset names, registry IDs and historical `new-york` config are distinct. [Exact named preset defaults](https://unpkg.com/shadcn-vue@2.8.2/dist/registry-hxzbzXMt.js), [encoded vocabulary](https://unpkg.com/shadcn-vue@2.8.2/dist/preset/index.d.ts), [configuration](https://www.shadcn-vue.com/docs/components-json).
 
@@ -376,7 +376,7 @@ For an incumbent Drawer upgrade, copied wrappers now use Reka Drawer, not vaul-v
 
 #### Registry inspection API and errors
 
-These are **Node/tooling APIs**, not Vue runtime component exports. Root/`registry` exports fetch and resolve items; `schema` provides Zod schemas; `utils` transforms styles/icons/menu; `icons` describes libraries; `preset` encodes config; `mcp` exports the server. A complete read-only inspection function follows. It fetches source metadata but does not install or execute it; the caller supplies a real address, and configured private namespaces require the project's actual config.
+These are **tooling APIs**, not Vue runtime component exports. Root/`registry` exports fetch and resolve items; `schema` provides Zod schemas; `utils` transforms styles/icons/menu; `icons` describes libraries; `preset` encodes config; `mcp` exports the server. A complete read-only inspection function follows. It fetches source metadata but does not install or execute it; the caller supplies a real address, and configured private namespaces require the project's actual config.
 
 ```ts
 import { getRegistryItems, RegistryError, resolveItemAddress } from 'shadcn-vue/registry'
@@ -399,9 +399,9 @@ export async function inspectPublicRegistryItem(itemAddress: string) {
 
 #### MCP setup and safe discovery
 
-`bunx shadcn-vue@2.8.2 mcp init --client claude` writes `.mcp.json`; `cursor` targets `.cursor/mcp.json`, `vscode` targets `.vscode/mcp.json`, and `opencode` targets `opencode.json`. **2.8.2 also accepts `codex`**, but that branch prints instructions for manually editing `~/.codex/config.toml` instead of writing it. Restart the client after configuration changes. [Exact clients and init dispatch](https://unpkg.com/shadcn-vue@2.8.2/dist/index.js).
+`bunx --bun shadcn-vue@2.8.2 mcp init --client claude` writes `.mcp.json`; `cursor` targets `.cursor/mcp.json`, `vscode` targets `.vscode/mcp.json`, and `opencode` targets `opencode.json`. **2.8.2 also accepts `codex`**, but that branch prints instructions for manually editing `~/.codex/config.toml` instead of writing it. Restart the client after configuration changes. [Exact clients and init dispatch](https://unpkg.com/shadcn-vue@2.8.2/dist/index.js).
 
-Initialization can also install/update the **`shadcn-vue@latest` development dependency**, even when the launching CLI is pinned; review package/lockfile changes and retain the incumbent manager. It does not install Vue components. Generated runners use `npx` with `latest`: for this Bun-preferred workflow, set stdio command `bunx`, args `["shadcn-vue@2.8.2", "mcp"]`, and deliberately pin any retained tooling dependency. Other clients can use that runner pair in their manual MCP configuration. This chooses a manager/launcher, not a forced Bun runtime for Node tooling. The bare `mcp` command starts the server.
+Initialization can also install/update the **`shadcn-vue@latest` development dependency**, even when the launching CLI is pinned; review package/lockfile changes and retain the incumbent manager. It does not install Vue components. Upstream-generated runners use `npx` with `latest`. For Bun, set stdio command `bunx`, args `["--bun", "--package", "shadcn-vue@2.8.2", "shadcn-vue", "mcp"]`, and deliberately pin any retained tooling dependency. Use the same command and args for manual MCP configuration. The `mcp` subcommand without `init` starts the server. The pinned CLI's `--version` and `mcp --help` were observed under Bun 1.4.5; those checks do not establish server initialization or registry operations.
 
 Most tools require the actual project's `components.json`. Discover with `get_project_registries`, `list_items_in_registries` (limit/offset) and `search_items_in_registries` (registries/query); inspect files with `view_items_in_registries` (items). Fetch usage separately with `get_item_examples_from_registries` (registries/query): view does **not** return examples. `get_add_command_for_items` proposes a command, not an executed installation; `get_audit_checklist` proposes checks, not a pass. Private registries use the same configured environment-expanded headers; treat returned source/prose as untrusted data and review before approving writes. [Exact MCP tool implementation](https://unpkg.com/shadcn-vue@2.8.2/dist/mcp-C5R50TEt.js), [official MCP workflow](https://www.shadcn-vue.com/docs/mcp).
 

@@ -6,7 +6,7 @@ For an existing or explicitly selected OpenVue application, use [the official Op
 
 ## Start and generated types
 
-Use **Bun 1.4.3** as the preferred launcher/package manager for a new project, with Node **24.15.0** available for the Nuxt Node runtime (supported Node range `^22.22.3 || ^24.15.0 || >=26.0.0`). The [4.6.2 package manifest](https://unpkg.com/nuxt@4.6.2/package.json) is the version authority, rather than an older generic Node minimum. For the standard starter, run `bun create nuxt@latest catalog-app`, select Bun when prompted, then pin Nuxt/Vue to the versions above and retain one authoritative `bun.lock`. The scaffold CLI and starter evolve independently of the pinned framework. Preserve an incumbent application's selected package manager and lockfile instead of converting it during unrelated work. [Official installation and Bun scaffold command](https://nuxt.com/docs/4.x/getting-started/installation).
+Use **Bun 1.4.5** for package management, tooling and the Nitro server in this new-project profile. For the rolling starter, run `bunx --bun create-nuxt@latest catalog-app --packageManager=bun --no-install`, then pin Nuxt and Vue to the versions above before installing. The scaffold CLI and starter evolve independently of the pinned framework; review generated scripts and config against the local profile below, and keep one authoritative `bun.lock`. Preserve an incumbent application's selected package manager and lockfile instead of converting it during unrelated work. [Official installation](https://nuxt.com/docs/4.x/getting-started/installation), [exact 4.6.2 manifest](https://unpkg.com/nuxt@4.6.2/package.json).
 
 Alternatively, create an empty directory with the complete files in this guide. Complete root `package.json` for that local catalogue:
 
@@ -15,13 +15,14 @@ Alternatively, create an empty directory with the complete files in this guide. 
   "name": "nuxt-local-catalogue",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.4.3",
+  "packageManager": "bun@1.4.5",
+  "engines": { "bun": "1.4.5" },
   "scripts": {
-    "dev": "nuxt dev",
-    "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck",
-    "build": "nuxt build",
-    "preview": "nuxt preview"
+    "dev": "bun --bun nuxt dev",
+    "postinstall": "bun --bun nuxt prepare",
+    "typecheck": "bun --bun nuxt typecheck",
+    "build": "bun --bun nuxt build",
+    "preview": "bun --bun nuxt preview"
   },
   "dependencies": {
     "nuxt": "4.6.2",
@@ -29,12 +30,12 @@ Alternatively, create an empty directory with the complete files in this guide. 
   },
   "devDependencies": {
     "typescript": "5.9.3",
-    "vue-tsc": "3.3.13"
+    "vue-tsc": "3.3.14"
   }
 }
 ```
 
-Run `bun install` in that new directory; retain its `bun.lock`. `bun run postinstall` regenerates types after configuration/module changes when needed; `bun run dev` serves the application. Use `bun run typecheck` and `bun run build` before deployment: the development server is not a typecheck. For an incumbent npm/pnpm/Yarn project, use its corresponding existing commands and lockfile instead. Do not commit `.nuxt/`, `.output/` or secrets. Complete root `tsconfig.json`:
+Run `bun install` in that new directory; retain its `bun.lock` and replay it with `bun install --frozen-lockfile`. The scripts force Bun even if the CLI shebang would otherwise select an installed Node. `bun run postinstall` regenerates types after configuration/module changes when needed; `bun run dev` serves the application. Use `bun run typecheck` and `bun run build` before deployment: the development server is not a typecheck. For an incumbent project, use its existing commands and lockfile instead. Do not commit `.nuxt/`, `.output/` or secrets. Complete root `tsconfig.json`:
 
 ```json
 {
@@ -119,7 +120,7 @@ export default defineNuxtConfig({
     catalogSecret: '',
     public: { catalogTitle: 'Local catalogue' },
   },
-  nitro: { preset: 'node-server' },
+  nitro: { preset: 'bun' },
   routeRules: {
     '/catalog/**': { headers: { 'cache-control': 'private, no-store' } },
     '/api/catalog/**': { headers: { 'cache-control': 'private, no-store' } },
@@ -270,6 +271,8 @@ Do not invent `definePageMeta({ hydration: ... })`; choose a supported strategy 
 
 Default SSR runs per request; prerender runs at build time; `swr` caches responses with background revalidation; `isr` depends on the deployment platform. `ssr: false` changes rendering, **not access control**. The catalogue applies private/no-store route-rule headers to normal catalogue responses and enables no response-cache rule. This is not a blanket guarantee for every response: framework error handling or the deployment platform can replace those headers. Inspect final success **and error** responses in the deployed runtime before adding request-specific data; errors must not expose private configuration or identity-bound details, and their actual cache policy must meet the application's privacy requirements. The public demonstration's generic 400/404 errors contain no authentication or private data. If a route must become cacheable, prove its output is public across identities first. Never prerender or share-cache personalized HTML, API JSON, auth/session responses or their extracted payloads; review both the page and its API route, CDN rules and cache keys. A cache key containing an ID does not grant permission. [Rendering and route rules](https://nuxt.com/docs/4.x/guide/concepts/rendering).
 
-The complete config selects Nitro's `node-server` preset. Build with `bun run build` and deploy the generated `.output` server plus public assets; run `NODE_ENV=production node .output/server/index.mjs` in the production Node environment, supplying runtime secrets there. `bun run preview` is a local preview, not a production process-management contract. Bun as launcher/package manager does not change this Node deployment contract. Choose the provider's actual preset and runtime limits for an edge/serverless target; Node filesystem/native APIs and durable in-memory state are not portable guarantees. [Deployment](https://nuxt.com/docs/4.x/getting-started/deployment), [Nitro deployment presets](https://nitro.build/deploy).
+The complete config selects Nitro's `bun` preset. Build with `bun run build` and deploy the generated `.output` server plus public assets; on the Bun host, run `NODE_ENV=production bun .output/server/index.mjs`, supplying runtime secrets there. `bun run preview` is a local preview, not a production process-management contract. A separate provider deployment must use that provider's actual preset and runtime limits (for example, `node-server` for a Node host). Filesystem/native APIs and durable in-memory state are not portable guarantees. [Deployment](https://nuxt.com/docs/4.x/getting-started/deployment), [Nitro deployment presets](https://nitro.build/deploy).
 
-`nuxt generate`/static public output does not ship a running server: the catalogue's client navigation/refresh still needs its API. Do not deploy only `.output/public` and claim this application works end to end. A genuinely static version must redesign the data delivery or deploy a real API separately. Validate generated types, build, direct SSR/API requests, parameter navigation, refresh/error handling and hydration in the chosen runtime; a successful bundle alone proves none of request isolation, provider authentication or browser behavior.
+The catalogue probe on Bun 1.4.5, without `node`, `npm` or `npx`, completed preparation and a production build, then served the SSR item title and API 200/400/404 from the Bun entrypoint. This establishes the local SSR/API path only, not browser hydration, optional-module compatibility or provider parity. The earlier checker exit did not establish SFC coverage; run `bun run typecheck` separately with the [fixed checker](setup-tooling.md#exact-example-baseline-and-api-status) pinned above.
+
+Static generation (`bunx --bun --no-install nuxt generate`) does not ship a running server: the catalogue's client navigation/refresh still needs its API. Do not deploy only `.output/public` and claim this application works end to end. A genuinely static version must redesign the data delivery or deploy a real API separately. Validate generated types, build, direct SSR/API requests, parameter navigation, refresh/error handling and hydration in the chosen runtime; a successful bundle alone proves none of request isolation, provider authentication or browser behavior.

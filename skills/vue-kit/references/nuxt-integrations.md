@@ -6,7 +6,7 @@ OpenVue's separate official-module configuration, generated styles and SSR bound
 
 ## Selected versions and ownership
 
-Use **Bun 1.4.3** for a new application's package management and Node **24.15.0** for its Nuxt server/tooling, with Nuxt **4.6.2**, Vue **3.5.44**, generated TypeScript contexts and the lockfile from [the core catalogue](nuxt.md#local-catalogue-example). Preserve an existing application's package manager and authoritative lockfile instead of creating a second one. Preserve the bundled SPA's separate versions; this is a Nuxt application profile.
+Use **Bun 1.4.5** for package management, tooling and the Nitro server, with Nuxt **4.6.2**, Vue **3.5.44** and the generated TypeScript contexts from [the core catalogue](nuxt.md#local-catalogue-example). Preserve an existing application's package manager and authoritative lockfile instead of creating a second one. Preserve the bundled SPA's separate versions; this is a Nuxt application profile.
 
 | Concern | Selected packages | Boundary |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ export default defineNuxtConfig({
     catalogSecret: '',
     public: { catalogTitle: 'Local catalogue' },
   },
-  nitro: { preset: 'node-server' },
+  nitro: { preset: 'bun' },
   routeRules: {
     '/catalog/**': { headers: { 'cache-control': 'private, no-store' } },
     '/api/catalog/**': { headers: { 'cache-control': 'private, no-store' } },
@@ -457,17 +457,17 @@ Mount one boundary around **all** private consumers; public entries remain untou
 
 ## Verification boundaries
 
-For the public app, regenerate Nuxt contexts, typecheck/build, request SSR and both API records, navigate between IDs, refresh/error states, mutate Pinia then navigate back, and check clean browser hydration plus the single app/main landmark and emitted Vuetify theme styles. Request isolation and accessible controls are runtime obligations, not consequences of compatible peers.
+The core catalogue's Bun result does not cover these integrations. Test each selected integration in its own configuration. For the public app, run `bun run postinstall`, `bun run typecheck` and `bun run build` using the catalogue's Bun-forced scripts, then launch `NODE_ENV=production bun .output/server/index.mjs`. Request SSR and both API records, navigate between IDs, exercise refresh/error states, mutate Pinia then navigate back, and check clean browser hydration plus the single app/main landmark and emitted Vuetify theme styles. Request isolation and accessible controls are runtime obligations, not consequences of compatible peers.
 
 For the contextual private boundary, use the real application's session mechanism and reader to verify unsigned server rejection, signed-in SSR/client navigation, sign-out, account/session/organization A → B → A transitions with pending reads, late mutation suppression, public-cache retention and private-cache teardown. Verify that an intentionally retained private consumer prevents acceptance of the next identity. Compiler success cannot prove server session verification or tenant authorization. These contracts require no hosted-service account or vendor SDK; no live authentication result is claimed.
 
 **Observed local contract exercise, 2026-10-21:** the unchanged three private components and shared interfaces also passed generated strict Nuxt 4.6.2/Vue 3.5.44 contexts and production SSR/browser execution with the official Pinia/Colada modules. A deliberately local allowlisted-cookie reader—not a production authentication service—returned caller-specific A/B identities; 24 concurrent A/B/invalid-cookie documents remained isolated with `private, no-store`, and an unsigned reader request returned a detail-free 401 with the same policy. Hydration reused the private query payload without an initial browser API read. Browser checks exercised sign-out, user/session/organization replacement, pending-read A → B → A cancellation, private eviction with public retention, reader-identity mismatch rejection, retained-consumer fail-closed behavior, client navigation and SSR refresh. These observations establish the displayed/cache contracts only: the host still owns real session verification, authorization, mutation guards and production response policy; no provider authentication or live tenant-authorization result is claimed.
 
-This dated paragraph preserves the original local observation, not a fresh execution or proof that every later consumer is unchanged. Its retained [verification record](../assets/verification.json) identifies the private-cache fixture and its limits; production session verification and final response policy still require the host's own evidence.
+This dated paragraph preserves the original local observation, not a Bun rerun or proof that every later consumer is unchanged. Its retained [verification record](../assets/verification.json) identifies the private-cache fixture and its limits; production session verification and final response policy still require the host's own evidence.
 
 ## Optional TresJS module
 
-Use this **separate optional application profile** with Nuxt 4.6.2, Vue 3.5.44 and Node 24.15.0. Nuxt module **5.10.0** depends on Core **5.12.0** exactly, declares `nuxt >=3.16.0` in module metadata and peers on `three >=0.133`. Optional Cientos **5.12.0** peers on Core `^5.9.1`, Vue `>=3.5.17` and Three `>=0.133`. These declarations are not proof of rendering compatibility or a minimum for current WebGPU APIs. The examples select Three r186: `three@0.186.1` with `@types/three@0.186.0`. [Module manifest](https://registry.npmjs.org/@tresjs/nuxt/5.10.0), [Cientos manifest](https://registry.npmjs.org/@tresjs/cientos/5.12.0), [Core manifest](https://registry.npmjs.org/@tresjs/core/5.12.0).
+Use this **separate optional application profile** with Nuxt 4.6.2, Vue 3.5.44 and Bun 1.4.5. Nuxt module **5.10.0** depends on Core **5.12.0** exactly, declares `nuxt >=3.16.0` in module metadata and peers on `three >=0.133`. Optional Cientos **5.12.0** peers on Core `^5.9.1`, Vue `>=3.5.17` and Three `>=0.133`. These declarations are not proof of rendering compatibility or a minimum for current WebGPU APIs. The examples select Three r186: `three@0.186.1` with `@types/three@0.186.0`. [Module manifest](https://registry.npmjs.org/@tresjs/nuxt/5.10.0), [Cientos manifest](https://registry.npmjs.org/@tresjs/cientos/5.12.0), [Core manifest](https://registry.npmjs.org/@tresjs/core/5.12.0).
 
 For the cube example, install in the **Nuxt application**, preserving its package manager and lockfile:
 
@@ -478,7 +478,7 @@ bun add -D --exact @types/three@0.186.0
 
 Cientos is optional for apps without its helpers; if omitted, remove the `tres.modules` line and do not copy the cube's `OrbitControls`. For effects only, install `bun add --exact @tresjs/post-processing@3.13.0`. No config change is needed when that package is a direct app dependency.
 
-Use this `nuxt.config.ts` in a fresh Nuxt app with page routing. In an existing app, merge these fields into its config; retain its other modules, CSS, runtime config, route policy and Nitro ownership. If an existing `app/app.vue` is present, it must render `<NuxtPage />` (directly or inside `<NuxtLayout>`).
+Use this `nuxt.config.ts` in a fresh Bun-hosted Nuxt app with page routing. In an existing app, merge the Tres settings into its config; retain its other modules, CSS, runtime config, route policy and Nitro ownership. If an existing `app/app.vue` is present, it must render `<NuxtPage />` (directly or inside `<NuxtLayout>`).
 
 ```ts
 // nuxt.config.ts
@@ -486,6 +486,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   modules: ['@tresjs/nuxt'], // append alongside existing modules
+  nitro: { preset: 'bun' },
   tres: {
     renderer: 'webgpu',
     modules: ['@tresjs/cientos'],
@@ -583,8 +584,8 @@ The October release inventory covered **23 Nuxt entries through 5.8.0**; many we
 - **5.8.0** added renderer-aware `/webgpu` entry selection, updated Core to 5.10.0 and fixed packaged devtools favicon/path handling; 5.4.0's earlier icon/dark-mode fix was not a renderer change. [5.8.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/nuxt%405.8.0), [5.1.5 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/nuxt%405.1.5).
 - **5.8.1**, **5.9.0** and **5.10.0** were dependency-only transitions to Core 5.10.1, 5.11.0 and 5.12.0 respectively. See the [5.10.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/nuxt%405.10.0) and [tagged changelog](https://github.com/Tresjs/tres/blob/%40tresjs/nuxt%405.10.0/packages/nuxt/CHANGELOG.md), which also retains pre-monorepo history.
 
-**Acceptance recipe for this exact Nuxt profile.** The [audit](../assets/current-audit.json) records generated imports, strict app type checking, production build and no-JavaScript SSR for the r186 pairing. Neither the current r187 workbench nor archived device reports verify Nuxt hydration or rendering.
+**Acceptance recipe for this exact Nuxt profile.** The [audit](../assets/current-audit.json) records earlier generated imports, strict app type checking, production build and no-JavaScript SSR for the r186 pairing, not a rerun on Bun. Neither the current workbench nor archived device reports verify Nuxt hydration or rendering.
 
-1. In the separate Nuxt app, run `bunx nuxt prepare`. In `.nuxt/imports.d.ts`, component declarations and generated type references, check Core `/webgpu` (including the TSL composables, `extendTres` and `TresObject`) and Cientos `/webgpu` (`OrbitControls` and `useGLTF`). With optional post-processing installed, check its `/webgpu` component `EffectComposer`, import `defineEffect` and root-only component stubs. Without it, the cube has no effects dependency or post-processing registrations.
-2. Run `bunx nuxt typecheck` and `bunx nuxt build`, then serve the normal Nitro output (`node .output/server/index.mjs`). Request `/scene` before JavaScript: heading, description and `<ClientOnly>` fallback must exist, without browser globals or a serialized Three graph. Hydrate and navigate away/back: no mismatch, one canvas, usable orbit interaction and cleanup on unmount. Induce an initialization failure and check that the DOM description and unavailable status remain.
+1. In the separate Nuxt app, run `bunx --bun --no-install nuxt prepare`. In `.nuxt/imports.d.ts`, component declarations and generated type references, check Core `/webgpu` (including the TSL composables, `extendTres` and `TresObject`) and Cientos `/webgpu` (`OrbitControls` and `useGLTF`). With optional post-processing installed, check its `/webgpu` component `EffectComposer`, import `defineEffect` and root-only component stubs. Without it, the cube has no effects dependency or post-processing registrations.
+2. Run `bunx --bun --no-install nuxt typecheck` and `bunx --bun --no-install nuxt build`, then serve the Nitro Bun output with `NODE_ENV=production bun .output/server/index.mjs`. Request `/scene` before JavaScript: heading, description and `<ClientOnly>` fallback must exist, without browser globals or a serialized Three graph. Hydrate and navigate away/back: no mismatch, one canvas, usable orbit interaction and cleanup on unmount. Induce an initialization failure and check that the DOM description and unavailable status remain.
 3. Exercise the **same scene** in native WebGPU and WebGPURenderer's forced WebGL2 backend. For the latter, supply a client-only `renderer` factory importing `WebGPURenderer` from `three/webgpu` and returning `new WebGPURenderer({ canvas: toValue(ctx.canvas), forceWebGL: true })` (type `TresRendererSetupContext` from `@tresjs/core/webgpu`, `toValue` from `vue`). This is a test variation, not a production fallback switch. In a separate negative fixture mount a stub such as `ContactShadows` and require its named “not available for WebGPU yet” error. If adding the optional composer, exercise the complete effects scene in both backends and verify that disabling/unmounting the composer restores direct rendering; follow the [effects acceptance recipe](tresjs-post-processing.md). Review asset requests and private-route policy separately. Generated declarations do not prove runtime behavior.

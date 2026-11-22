@@ -49,7 +49,7 @@ const coreImport = exactlyOne(
 )
 const webgpuImport = coreImport[0].replace('@tresjs/core', '@tresjs/core/webgpu')
 const retirement = exactlyOne(
-  [...canvas.matchAll(/^  onBeforeUnmount\(\(\) => \{\r?\n    \/\/ Tres disposes normally\. If init is still pending, release its late result too\.\r?\n[\s\S]*?^  \}\)\r?\n/gm)],
+  [...canvas.matchAll(/^ {2}onBeforeUnmount\(\(\) => \{\r?\n {4}\/\/ Tres disposes normally\. If init is still pending, release its late result too\.\r?\n[\s\S]*?^ {2}\}\)\r?\n/gm)],
   'archived renderer factory retirement hook',
 )
 // Three r187 dispose() waits for init, and Core 5.12 already calls it on unmount.
@@ -102,7 +102,7 @@ for (const { name, body: content } of generatedSources) {
 }
 const metadataUrl = new URL('../.generated/recipe-provenance.json', import.meta.url)
 await mkdir(new URL('.', metadataUrl), { recursive: true })
-await writeFile(metadataUrl, JSON.stringify({
+await writeFile(metadataUrl, `${JSON.stringify({
   schemaVersion: 2,
   reference: 'skills/vue-kit/references/tresjs.md',
   referenceSha256: sha256(source),
@@ -113,4 +113,4 @@ await writeFile(metadataUrl, JSON.stringify({
     sourceFenceSha256: sha256(sourceFence),
     sha256: sha256(body),
   })),
-}, null, 2) + '\n')
+}, null, 2)}\n`)

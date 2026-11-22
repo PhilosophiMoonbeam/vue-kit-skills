@@ -83,11 +83,11 @@ onErrorCaptured(cause => {
     <h2>Select a cube</h2>
     <p>Click to select, double-click to activate, or click empty canvas to clear. Use the buttons with Tab and Enter or Space.</p>
     <label><input v-model="stopAncestors" type="checkbox"> Stop events at the hit cube</label>
-    <div class="actions" aria-label="Keyboard selection controls">
+    <fieldset class="actions" aria-label="Keyboard selection controls">
       <button v-for="choice in choices" :key="choice.id" type="button" :aria-pressed="selected === choice.id" @click="select(choice.id, 'keyboard-or-dom')">Select {{ choice.label }}</button>
       <button type="button" :disabled="!selected" @click="selected && activate(selected, 'keyboard-or-dom')">Activate selected</button>
       <button type="button" @click="clear('keyboard-or-dom')">Clear selection</button>
-    </div>
+    </fieldset>
     <p role="status">Selected: {{ selected ?? 'none' }}. Hovered: {{ hovered ?? 'none' }}. Activated: {{ activated ?? 'none' }}.</p>
     <details><summary>Event details</summary><p>{{ lastDispatch }}</p><p>Child and ancestor events, stable cube IDs and hit metadata are recorded in the event log.</p></details>
     <p v-if="failure" role="alert">{{ failure }}</p>
@@ -110,5 +110,5 @@ onErrorCaptured(cause => {
 
 <style scoped>
 .scene { width: 100%; height: 24rem; min-width: 0; }
-.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block: 1rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; min-inline-size: 0; margin: 1rem 0; padding: 0; border: 0; }
 </style>

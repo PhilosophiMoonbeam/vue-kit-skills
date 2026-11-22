@@ -1,7 +1,8 @@
 # Setup and tooling
 
 Read for a new Vue/Vite application, dependency/toolchain changes, TypeScript or
-SFC type errors, aliases, environment variables, CSS integration, and build scripts.
+SFC type errors, Biome linting, aliases, environment variables, CSS integration,
+and build scripts.
 For a local application change, inspect the existing setup rather than replacing
 it with this example. Read [Vuetify setup](vuetify-setup.md) only when Vuetify is
 selected; [Nuxt](nuxt.md) owns Nuxt host lifecycle and module boundaries.
@@ -30,30 +31,37 @@ Do not downgrade an existing app to reproduce the fixture.
 | `vite` | `8.3.4` | Dev server and production bundling |
 | `@vitejs/plugin-vue` | `6.0.10` | Vue SFC transform and HMR |
 | `typescript` | `5.9.3` | TypeScript language/compiler |
-| `vue-tsc` | `3.3.13` | Type checking `.ts` and `.vue` files |
-| `@types/node` | `24.19.2` | Types for Node-side configuration |
+| `vue-tsc` | `3.3.14` | Type checking `.ts` and `.vue` files |
+| `@types/node` | `24.19.2` | Compatibility declarations for `node:*` imports and tooling types |
 
 [Vite 8.3.4](https://registry.npmjs.org/vite/8.3.4) and
 [plugin-vue 6.0.10](https://registry.npmjs.org/@vitejs/plugin-vue/6.0.10)
-require Node `^20.19.0 || >=22.12.0`. The plugin explicitly accepts Vite 8 and
-Vue 3.5 through its published peer ranges. The selected workbench toolchain is
-Node `24.15.0` and Bun `1.4.3`, pinned as `packageManager: "bun@1.4.3"`; this
-statement does not record an executed build. Bun installs dependencies and launches
-scripts; Node remains required for Node-shebang CLIs such as Vite and `vue-tsc`.
-Do not add `--bun` to force those CLIs onto Bun's runtime or infer compatibility
-for every framework, native dependency, or generator from this package-manager choice.
-The current rolling [create-vue quick-start](https://vuejs.org/guide/quick-start.html)
-has a stricter Node prerequisite, `^22.18.0 || >=24.12.0`. Do not equate a
-scaffolder's prerequisites with the engine range of an existing locked app.
-[`vue-tsc` 3.3.13](https://registry.npmjs.org/vue-tsc/3.3.13) declares TypeScript
+publish a Node engine range of `^20.19.0 || >=22.12.0` for their Node runtime
+profile. The plugin explicitly accepts Vite 8 and Vue 3.5 through its published
+peer ranges. The workbench instead pins Bun **1.4.5** in `packageManager` and
+`engines.bun`; its Vite and `vue-tsc` scripts explicitly run on Bun. No separate
+Node executable is required for these scripts. Bun implements compatibility
+APIs such as `node:url`, and type packages such as `@types/node` provide
+declarations, not a runtime. Preserve an incumbent tool's runtime policy and
+verify Bun compatibility before overriding a shebang for any other tool.
+[`vue-tsc` 3.3.14](https://registry.npmjs.org/vue-tsc/3.3.14) declares TypeScript
 `>=5.0.0`; that open-ended range alone does not prove every future TypeScript
 major works. Keep the explicit TypeScript 5.9.3 snapshot until an upgrade is checked.
+
+On Bun 1.4.5, `vue-tsc` 3.3.13 (Volar `@volar/typescript` 2.4.28)
+ran unpatched TypeScript because Bun's native module loader bypassed Volar's
+`fs.readFileSync` hook. SFC imports could fail with TS2307; a wildcard `*.vue`
+declaration could hide that error and let the command pass without checking SFCs.
+Use `vue-tsc` 3.3.14 with Volar 2.4.30 instead: the
+[upstream fix](https://github.com/volarjs/volar.js/pull/310) loads the patched
+compiler via `Module#_compile`, and the upgraded Bun probe caught a deliberate
+type error inside a `.vue` component. Do not use a wildcard shim as a workaround.
 
 ## Existing application or greenfield?
 
 | Situation | Action |
 | --- | --- |
-| Existing app, monorepo, or framework-owned config | Read workspace package manifests, lockfile, `packageManager`, Node policy, Vite/framework config, `tsconfig` references, aliases, scripts, CSS entry and plugin registration. Preserve its package manager and conventions. |
+| Existing app, monorepo, or framework-owned config | Read workspace package manifests, lockfile, `packageManager`, runtime policy, Vite/framework config, `tsconfig` references, aliases, scripts, CSS entry and plugin registration. Preserve its package manager and conventions. |
 | New ordinary Vue SPA | Use official `create-vue`, choose TypeScript, and add Router/Pinia/testing only for actual requirements; or copy the complete bundled workbench when its scope matches. |
 | New minimal Vite experiment | `create-vite` supports `vue-ts`; it is a smaller starting point, not a replacement for a selected framework's generator. |
 | Nuxt/SSR/SSG application | Use that framework's own modules, generated types and server/client configuration. Do not paste SPA `main.ts`, history, or environment assumptions into it. |
@@ -62,18 +70,21 @@ major works. Keep the explicit TypeScript 5.9.3 snapshot until an upgrade is che
 For a **new directory**, the official rolling generator is:
 
 ```sh
-bun create vue@latest
+bunx --bun create-vue@latest
 ```
 
-Select the project name in its prompt, then use `bun install` and `bun run dev`
-inside that directory unless the generated project explicitly declares another
-manager. `bun create vue@latest` runs the `create-vue` npm package through `bunx`;
-it fetches the generator's current release and its current template versions.
-It does **not** recreate this skill's pinned snapshot. For a minimal experiment,
-`bun create vite@latest my-vue-app --template vue-ts` selects Vite's Vue/TypeScript
-template with the same rolling-version caveat. Do not run a generator over a
-populated application. Keep generated TypeScript project references when they
-separate app, configuration, and test globals.
+Choose TypeScript and add Router, Pinia or tests only as needed. Skip ESLint if
+offered; see [Biome linting](#biome-linting). For a minimal Vue/TypeScript
+experiment, use `bunx --bun create-vite@latest my-vue-app --template vue-ts`.
+Both rolling entrypoints were checked with `--help` under Bun, not as full
+template or dependency verification. They fetch current releases, not this
+skill's pinned snapshot. In the new directory, inspect the generated tool
+versions and runtime policy. For a Bun app, run `bun install`, verify those
+tools under Bun and make the CLI launches explicit before `bun run dev`.
+The workbench scripts below show the launch syntax for the pinned Vite and
+`vue-tsc` versions. Do not run a generator over a populated app. Keep generated
+TypeScript project references that separate app, configuration and test globals.
+If the project declares another manager or runtime, respect that choice.
 
 ### Package-manager and lockfile care
 
@@ -85,21 +96,16 @@ separate app, configuration, and test globals.
    `bun.lock`; commit the generated lockfile with the application. Exact direct
    pins alone do not lock the transitive tree. To intentionally add a package,
    use `bun add`; `bun add --exact vue@3.5.44` adds an exact runtime pin, while
-   `bun add --dev --exact vue-tsc@3.3.13` adds an exact development pin. These are
+   `bun add --dev --exact vue-tsc@3.3.14` adds an exact development pin. These are
    examples for a project choosing these versions, not instructions to downgrade
    an incumbent app. Commit manifest and lock changes together.
 3. For locked reproduction, first require a nonempty committed `bun.lock`, then
-   use `bun install --frozen-lockfile` with the pinned Bun version. For this
-   committed text-lock workflow it refuses a manifest/lock resolution mismatch.
-   **A missing lockfile alone does not make the frozen flag fail**: without a
-   lock Bun can resolve dependencies without saving one. In **Bun 1.4.3**, an
-   imported npm/Yarn/pnpm or binary Bun lock can even cause a migrated `bun.lock`
-   to be written under this flag; it is not a migration guard. Do not call either
-   case locked reproduction. [Exact 1.4.3 checks and migration exception](https://github.com/oven-sh/bun/blob/bun-v1.4.3/src/install/PackageManager/install_with_manager.rs#L2164-L2195)
-   take precedence over later rolling documentation. Unlike `npm ci`, this
-   command does not promise to remove `node_modules`; use a fresh checkout/copy
-   when a clean dependency tree is required. In an incumbent npm project, keep
-   its matching `package-lock.json` and `npm ci` workflow.
+   use `bun install --frozen-lockfile` with **Bun 1.4.5**. The frozen flag rejects
+   resolution changes against the committed text lock. It does not guarantee
+   the lockfile exists or create a clean dependency tree; require the file
+   explicitly (see the POSIX check below), and use a fresh checkout or copy
+   when a clean tree is needed. Keep the matching lock and `npm ci` only when
+   maintaining an incumbent npm workflow.
 4. An explicitly requested migration may use Bun's automatic existing-lock import.
    Preserve the old lock until resolved package versions/integrities and direct
    pins have been compared, then retain one authoritative lock. Earlier migration
@@ -108,6 +114,11 @@ separate app, configuration, and test globals.
    `package-lock.json`. That is historical evidence, not a fresh comparison:
    the deleted npm lock is not available to this source review. Do not hand-edit
    resolutions or certify another migration from those counts.
+   The archived **Bun 1.4.3** checks reported that a missing lock could resolve
+   without saving and an imported npm/Yarn/pnpm or binary Bun lock could write
+   a migrated `bun.lock` even with the frozen flag.
+   [Exact 1.4.3 checks and migration exception](https://github.com/oven-sh/bun/blob/bun-v1.4.3/src/install/PackageManager/install_with_manager.rs#L2164-L2195)
+   apply to that release; neither case was locked reproduction.
 5. Inspect engine/peer conflicts rather than hiding them with force flags. Bun
    dependency lifecycle scripts follow a trust policy, not npm's default behavior:
    inspect install output and `bun pm untrusted`. Review any required script before
@@ -127,8 +138,8 @@ separate app, configuration, and test globals.
 ## Run the bundled workbench
 
 Use a fresh copy if changes should not modify the installed skill. Keep its
-committed `bun.lock`, install Bun `1.4.3` and a supported Node version, and confirm
-`bun --version` matches `packageManager`. From the skill root, in a POSIX shell:
+committed `bun.lock`, install Bun **1.4.5**, and confirm `bun --version` matches
+`packageManager`. From the skill root, in a POSIX shell:
 
 ```sh
 cd assets/example-app
@@ -142,10 +153,12 @@ bun run dev
 These commands are runnable instructions, not recorded typecheck/build results.
 Do not substitute plain `bun install` for locked reproduction: that is the
 resolution/update workflow above. Bun resolves script binaries from local
-`node_modules/.bin`; pass application arguments after the script name directly,
-for example `bun run dev --host 127.0.0.1` (no npm-style `--` separator). `bunx`
-also honors Node shebangs by default; neither launcher removes Node prerequisites.
-The example needs no `.env`, API keys, backend, external font or icon service.
+`node_modules/.bin`. For the pinned tools, `bun --bun <bin>` or
+`bunx --bun --no-install <bin>` runs a locally installed CLI under Bun even if
+its shebang says `node` and Node is on `PATH`. Pass application arguments after
+the script name directly, for example `bun run dev --host 127.0.0.1`. The
+example needs no root lint configuration, `.env`, API keys, backend, external
+font or icon service.
 It provides Tasks (`/`), About (`/about`) and a lazy Graphics (`/graphics`) route,
 light/dark UI, validated task creation, completed-state toggling and reset
 confirmation; all task state is memory-only and resets on reload. Graphics waits
@@ -174,9 +187,9 @@ incompatible pipelines. It is not an interchangeable automatic fallback.
 
 | Script | Actual command | What success establishes |
 | --- | --- | --- |
-| `bun run dev` | `vite` | Development server starts; inspect its actual printed URL/port |
-| `bun run typecheck` | `vue-tsc --noEmit` | Selected TypeScript/SFC inputs satisfy the configured types |
-| `bun run build` | `vite build` | Production assets can be bundled; not a type or behavior check |
+| `bun run dev` | `bun --bun vite` | Development server starts; inspect its actual printed URL/port |
+| `bun run typecheck` | `bun --bun vue-tsc --noEmit` | Selected TypeScript/SFC inputs satisfy the configured types |
+| `bun run build` | `bun --bun vite build` | Production assets can be bundled; not a type or behavior check |
 
 Vite does not typecheck during transpilation. Keep `typecheck` and `build` as
 separate scripts or explicitly run both in the application's CI. Do not infer one
@@ -194,11 +207,59 @@ plugin transforms or bundle graph; use the real build for those and runtime test
 for behavior. [Exact compiler workflow](https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-sfc/README.md),
 [3.5.44 compiler options/results](https://unpkg.com/@vue/compiler-sfc@3.5.44/dist/compiler-sfc.d.ts).
 
+## Biome linting
+
+For a new standalone Vue app on Bun, pin **Biome 2.6.8** as a development
+dependency and commit the updated lockfile:
+
+```sh
+bun add --dev --exact @biomejs/biome@2.6.8
+```
+
+Put this `biome.json` in the app root. It opts into Biome's experimental
+[full Vue SFC support](https://biomejs.dev/introduction/language-support/#html-super-languages-support)
+for templates, scripts and styles rather than checking only script blocks.
+Start with the recommended preset, Vue's recommended domain and selected
+rules such as stable `v-for` key checks and type-aware floating-promise checks.
+Adjust the allowlist to the project's authored files. Keep build output,
+generated files, vendor code and archived example sources or Markdown fences
+outside the gate.
+
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
+  "files": {
+    "includes": ["src/**", "tests/**", "vite.config.ts", "index.html", "!**/generated", "!!**/dist"]
+  },
+  "html": { "experimentalFullSupportEnabled": true, "formatter": { "enabled": true } },
+  "linter": {
+    "enabled": true,
+    "domains": { "vue": "recommended", "types": "recommended" },
+    "rules": {
+      "preset": "recommended",
+      "correctness": { "useVueValidVFor": "error" },
+      "nursery": { "noFloatingPromises": "error" }
+    }
+  }
+}
+```
+
+Run `bunx --bun --no-install biome lint . --error-on-warnings` from the app root.
+This gate reads but does not write files and fails on warnings as well as errors.
+For safe fixes, add `--write` to the lint command; do not enable automatic unsafe
+fixes. To format, use `bunx --bun --no-install biome format --write` with a
+specific file path. Keep `bun run typecheck` (`vue-tsc`) and `bun run build`
+separate: lint neither checks all Vue types nor proves the app bundles or works.
+Preserve an incumbent project's lint policy unless migration is requested. This
+recipe does not depend on Vue Kit's repository-root Biome configuration; the
+installed workbench does not require Biome.
+
 ## Minimal configuration and plugin ownership
 
 The following is a **complete alternative `vite.config.ts`** for a Vue SPA using
 an optional `@` alias. It is not an instruction to overwrite the fixture or an
-incumbent framework config. `@types/node` supplies the Node import types.
+incumbent framework config. `@types/node` supplies types for the `node:url`
+compatibility import; it does not require a separate Node runtime.
 
 ```ts
 import { fileURLToPath, URL } from 'node:url'
@@ -239,9 +300,9 @@ Matching **complete minimal `tsconfig.json`** for this single-project SPA varian
 }
 ```
 
-For a larger project, separate browser and Node/test configurations so Node/test
-globals do not leak into browser code. Preserve generated `@vue/tsconfig` and
-project references when present. `paths` informs TypeScript; the explicit Vite
+For a larger project, separate browser and tooling/test configurations so
+runtime or test globals do not leak into browser code. Preserve generated
+`@vue/tsconfig` and project references when present. `paths` informs TypeScript; the explicit Vite
 alias resolves runtime imports. Vite 8 also offers `resolve.tsconfigPaths`, but
 choosing that is an alternative to duplicate alias ownership, not a required
 extra plugin. `target` in tsconfig does not configure Vite's browser support;
@@ -426,7 +487,7 @@ files override generic files, while existing process env has highest priority.
 Restart Vite after env changes. **Bun also preloads `.env` into `process.env`**,
 so those already-present values can prevent Vite's mode-specific files from
 overriding generic values. When Vite should own env-file selection, launch with
-`bun run --no-env-file dev --mode staging` (or the corresponding build script);
+`bun --bun --no-env-file vite --mode staging` (or add `build` before `--mode`);
 explicitly supplied process variables still win. See [Vite's Bun caveat](https://vite.dev/guide/env-and-mode#env-files)
 and [Bun's env-file switch](https://bun.com/docs/runtime/environment-variables#disabling-automatic-env-loading).
 Ignore local env files in version control; `*.local` alone does not prevent
@@ -451,9 +512,10 @@ a complete server app. Continue with [debugging and SSR](debugging-ssr.md).
 
 ## Proposed checks, not observed verification
 
-When authorized, run the locked install and the application's own typecheck and
-production build separately. Exercise navigation/direct route entry, validation,
-keyboard submission, dialog cancel/confirm focus, light/dark UI and narrow layout
+When authorized, run the locked install and, separately, the application's
+lint gate when configured, typecheck and production build. Exercise navigation
+and direct route entry, validation, keyboard submission, dialog cancel/confirm
+focus, light/dark UI and narrow layout
 in the browser when they are affected. For deployment, check base paths, SPA
 fallback or SSR route handling, public assets and credential exposure. Report only
 commands and outcomes actually observed. This reference records registry/docs
@@ -464,7 +526,8 @@ research; it does not record executed installs, tests, builds or browser checks.
 - [Vue quick-start](https://vuejs.org/guide/quick-start.html), [TypeScript overview](https://vuejs.org/guide/typescript/overview.html), and [Vue 3.5.44 compiler-SFC README](https://github.com/vuejs/core/blob/v3.5.44/packages/compiler-sfc/README.md): scaffolding, SFC typechecking and matched compiler entry.
 - [Vite 8.3.4 registry metadata](https://registry.npmjs.org/vite/8.3.4), [plugin-vue 6.0.10 metadata](https://registry.npmjs.org/@vitejs/plugin-vue/6.0.10), [TypeScript 5.9.3 metadata](https://registry.npmjs.org/typescript/5.9.3), and [vue-tsc 3.3.13 metadata](https://registry.npmjs.org/vue-tsc/3.3.13): exact versions, engines and peers. The example manifest records the remaining direct pins.
 - [Vite features](https://vite.dev/guide/features), [plugin ordering](https://vite.dev/guide/using-plugins#enforcing-plugin-ordering), [shared config](https://vite.dev/config/shared-options), [env/modes](https://vite.dev/guide/env-and-mode), and [SSR boundary](https://vite.dev/guide/ssr): Vite 8 behavior. Prefer these current transform details over older references to esbuild in general Vue tooling prose.
-- [Bun install](https://bun.com/docs/pm/cli/install), [lockfile/migration](https://bun.com/docs/pm/lockfile), [dependency lifecycle trust](https://bun.com/docs/pm/lifecycle), [script launching](https://bun.com/docs/runtime), and [bunx](https://bun.com/docs/pm/bunx): installation, frozen-lock caveat, migration and runtime boundaries. Installed Bun 1.4.3 CLI help supplies the command flags; [npm ci](https://docs.npmjs.com/cli/v12/commands/npm-ci) applies only to an incumbent npm workflow.
+- [Bun install](https://bun.com/docs/pm/cli/install), [lockfile/migration](https://bun.com/docs/pm/lockfile), [dependency lifecycle trust](https://bun.com/docs/pm/lifecycle), [script launching](https://bun.com/docs/runtime), and [bunx](https://bun.com/docs/pm/bunx): installation, migration and runtime boundaries. See the [Bun 1.4.5 frozen-lock implementation](https://github.com/oven-sh/bun/blob/bun-v1.4.5/src/install/PackageManager/install_with_manager.rs#L2196-L2205); [npm ci](https://docs.npmjs.com/cli/v12/commands/npm-ci) applies only to an incumbent npm workflow.
+- [Biome 2.6.8 schema](https://biomejs.dev/schemas/2.6.8/schema.json), [lint domains](https://biomejs.dev/linter/domains/), and [CLI](https://biomejs.dev/reference/cli/): Vue SFC opt-in, type-aware rules and read-only lint.
 - [Vite 8.3.4 declarations](https://unpkg.com/vite@8.3.4/dist/node/index.d.ts), [server/proxy/security](https://vite.dev/config/server-options), [build/source maps](https://vite.dev/config/build-options), [Rolldown code splitting](https://rolldown.rs/reference/OutputOptions.codeSplitting).
 - [web-vitals 6.2.3 exports](https://unpkg.com/web-vitals@6.2.3/dist/modules/index.d.ts), [web-vitals project](https://github.com/GoogleChrome/web-vitals).
 - [HTTP encoding negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Accept-Encoding), [image loading/size contracts](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img).

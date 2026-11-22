@@ -17,7 +17,7 @@ Stable profile as of **2026-11-18**, with each package version selected independ
 | `@tresjs/rapier` | [**1.4.0**](https://registry.npmjs.org/@tresjs/rapier/1.4.0) | [Add Rapier physics](#rapier-asynchronous-wasm-world-explicit-collider-contracts): WASM world, bodies, colliders, sensors, and step hooks |
 | `@tresjs/leches` | [**1.3.3**](https://registry.npmjs.org/@tresjs/leches/1.3.3) | [Add Leches DOM controls](#leches-reactive-dom-controls-not-a-tres-scene-component): optional reactive development panel |
 | `@tresjs/cli` | [**0.1.1**](https://registry.npmjs.org/@tresjs/cli/0.1.1) | [Generate Vue SFCs from glTF](#cli-setup-and-its-actual-command-surface): local generation and optional model transformation |
-| `@tresjs/eslint-config` | [**1.7.0**](https://registry.npmjs.org/@tresjs/eslint-config/1.7.0) | [Compose ESLint policy](#eslint-exports-engine-limits-and-incumbent-config-integration): opt in without replacing the host's accepted flat config |
+| `@tresjs/eslint-config` | [**1.7.0**](https://registry.npmjs.org/@tresjs/eslint-config/1.7.0) | [Optional release history](#tres-eslint-config-release-history-not-recommended), not the kit's lint setup |
 
 Install only what the scene needs. The runnable [workbench](#bundled-workbench-composition) and [repository lab](#evidence-and-proposed-verification) pin **Vue 3.5.44, Core 5.12.0, `three@0.187.0` and `@types/three@0.187.0`**. The standalone [TSL/Cientos](tresjs-webgpu.md), [Nuxt](nuxt-integrations.md#optional-tresjs-module), and [effects](tresjs-post-processing.md) examples keep their separate **Core 5.12.0 / `three@0.186.1` / `@types/three@0.186.0`** example pins. These are selected profiles, not minimums or evidence that the same features work on every backend.
 
@@ -465,7 +465,7 @@ The default factory forwards `antialias`, `alpha`, `depth`, `stencil`, `logarith
 
 ### Exact Vue/Vite assumptions for the 5.10 examples
 
-Use an existing **Vue SFC + Vite ESM** host, with `vite`, `@vitejs/plugin-vue`, `typescript`, and `vue-tsc` installed for the host's supported Node version. Tres's own 5.10 manifest develops against Vite `^8.2.2` and plugin-vue `^6.0.8`; those are upstream development dependencies, not Tres peer requirements. This standalone configuration is for an otherwise empty Vite Vue host. In a real host, merge the predicate into its **one** existing Vue plugin and preserve other template/compiler/plugin options. No global Tres plugin, Nuxt module, auto-import plugin, GLSL plugin, or `@tresjs/cientos/styles.css` is needed for this controls/node-material example.
+Use an existing **Vue SFC + Vite ESM** host, with `vite`, `@vitejs/plugin-vue`, `typescript`, and `vue-tsc` installed and invoked with the [Bun toolchain](setup-tooling.md). Tres's own 5.10 manifest develops against Vite `^8.2.2` and plugin-vue `^6.0.8`; those are upstream development dependencies, not Tres peer requirements. This standalone configuration is for an otherwise empty Vite Vue host. In a real host, merge the predicate into its **one** existing Vue plugin and preserve other template/compiler/plugin options. No global Tres plugin, Nuxt module, auto-import plugin, GLSL plugin, or `@tresjs/cientos/styles.css` is needed for this controls/node-material example.
 
 ```ts
 // vite.config.ts — 5.10 compiler-only default export, not a named export
@@ -774,10 +774,10 @@ Primary history: [all releases](https://github.com/Tresjs/tres/releases), [core 
 | `@tresjs/rapier@1.2.0` | `@tresjs/core ^5.3.2`, `three >=0.169`, `vue >=3.4.0` | `@dimforge/rapier3d-compat ^0.20.0`, `@vueuse/core ^15.0.0` | CPU/WASM physics is renderer-independent. Every visual, material, helper, and effect in the scene must still support the chosen renderer. |
 | `@tresjs/leches@1.3.2` | `vue >=3.3.4` | `@unocss/core ^66.9.2`, `@vueuse/motion ^3.0.3`, `@vueuse/components ^15.0.0`, `unocss-preset-scrollbar ^4.0.0` | Vue **DOM** UI; no Three/Core peer and no renderer requirement. Place outside the Tres scene graph. Published JS also imports `@vueuse/core`, which the manifest does not declare as a runtime dependency. |
 
-To reproduce the **archived isolated fixture**, not as a new-project install:
+To reproduce the **archived isolated fixture**, install these exact direct dependencies in a throwaway Bun 1.4.5 project, not in a new production project or the bundled app. These are Bun reproduction instructions only: the original observations and their package-manager provenance are unchanged.
 
 ```sh
-pnpm add --save-exact vue@3.5.44 three@0.186.1 @tresjs/core@5.10.0 \
+bun add --exact vue@3.5.44 three@0.186.1 @tresjs/core@5.10.0 \
   @tresjs/post-processing@3.11.0 @tresjs/rapier@1.2.0 @tresjs/leches@1.3.2
 ```
 
@@ -1173,7 +1173,7 @@ Sources: [official getting started (compare CSS guidance to tarball)](https://tr
 
 ### Source-backed smoke acceptance (recipes, not execution receipts)
 
-To reproduce the **archived ecosystem profile above**, use a disposable Vue/Vite host with `@vitejs/plugin-vue` and Tres's `templateCompilerOptions` in `vue({ template: templateCompilerOptions })`; resolve it from `@tresjs/core`. Serve the selected fixture with the host's local command, e.g. `pnpm exec vite --host 127.0.0.1 --port 4191`. Do not run these installs/checks against the bundled pinned app. These examples are not claimed successful browser runs or results for the November packages.
+To reproduce the **archived ecosystem profile above**, use a disposable Vue/Vite host with `@vitejs/plugin-vue` and Tres's `templateCompilerOptions` in `vue({ template: templateCompilerOptions })`; resolve it from `@tresjs/core`. Serve the selected fixture with `bun --bun vite --host 127.0.0.1 --port 4191`. Do not run these installs/checks against the bundled pinned app. This Bun procedure does not restate historical execution or establish results for the November packages.
 
 1. **Legacy composer:** run the exact WebGL SFC. Wait for lazy N8AO `pass` readiness. Assert exactly one N8AO scene-rendering pass, no extra `RenderPass` with `without-render-pass`, visible contact AO/bloom, nonzero resize behavior and no duplicate-render warning. Test the pmndrs subtree separately with its own imports/injection family. Change AO intensity and confirm its pass configuration changes; confirm `BloomPmndrs.radius` with mipmap blur. Negative cases: deliberate WebGPURenderer use must be classified incompatible; `enabled=false` is not accepted as bypass-to-normal-render behavior.
 2. **Node pipeline:** wrap the provided RenderPipeline core in a child using `useTresContext` and `renderer.replaceRenderFunction(notify => { pipeline.render(); notify() })`, with scene/camera ready and the callback installed once per session. Use the same scene and compatible materials for WebGPU and forced-WebGL2 WebGPURenderer runs; record actual backend separately from the `isWebGPU` renderer-class flag. Confirm both produce a scene plus bloom, resize and session cleanup. Do not include any legacy composer components in this fixture.
@@ -1182,17 +1182,17 @@ To reproduce the **archived ecosystem profile above**, use a disposable Vue/Vite
 
 ## Released tooling: CLI 0.1.1 and ESLint config 1.7.0
 
-These are **optional local development tools**, not runtime plugins, renderer ports, hosted services, or a reason to change a host's runtime dependencies. Pin the tool version and keep the host lockfile/package-manager convention. Their latest release notes are easy to overread: CLI **0.1.1** only updates its development ESLint-config dependency; the substantive generator features shipped in **0.1.0**. ESLint-config **1.7.0**, **1.6.0**, **1.5.1** and **1.5.0** explicitly report version alignment with no code changes. A larger version number is not a new renderer-safety rule. [CLI 0.1.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.0), [CLI 0.1.1 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.1), [ESLint 1.7.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/eslint-config%401.7.0).
+The generator is an **optional local development tool**, not a runtime plugin, renderer port, hosted service, or a reason to change a host's runtime dependencies. CLI **0.1.1** only updates its development ESLint-config dependency; the substantive generator features shipped in **0.1.0**. [CLI 0.1.0 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.0), [CLI 0.1.1 release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/cli%400.1.1).
 
 ### CLI setup and its actual command surface
 
-`@tresjs/cli@0.1.1` exports the **`tres`** executable and is ESM. Its own manifest says Node `>=20`, but its Commander 15 dependency requires **Node >=22.12.0**; use this kit's Node **24.15.0** tooling profile rather than assuming Node 20 works. Native `sharp` binaries/libvips matter when transforming textures. The published CLI has only `gltf <input>` and the registry smoke command `banana` (`-c, --count <n>`, default 1), plus Commander help/version. It is **not** the separate project scaffolder: do not invent `tres init`, `create`, `add`, `--renderer`, `--webgpu`, `--typescript`, `--draco` or `--telemetry` flags. [Manifest](https://registry.npmjs.org/@tresjs/cli/0.1.1), [Commander requirement](https://registry.npmjs.org/commander/15.0.0), [published command registration](https://unpkg.com/@tresjs/cli@0.1.1/dist/index.mjs).
+`@tresjs/cli@0.1.1` exports the **`tres`** executable and is ESM. Use Bun 1.4.5 with the exact locally installed CLI: `--bun` overrides the executable's Node shebang and `--no-install` prevents fetching a different tool. Upstream Node requirements still matter for Node users: the CLI manifest says Node `>=20`, but Commander 15 requires **Node >=22.12.0**. Native `sharp` binaries/libvips matter when transforming textures; a successful parse does not verify native transform support. The published CLI has only `gltf <input>` and the registry smoke command `banana` (`-c, --count <n>`, default 1), plus Commander help/version. It is **not** the separate project scaffolder: do not invent `tres init`, `create`, `add`, `--renderer`, `--webgpu`, `--typescript`, `--draco` or `--telemetry` flags. [Manifest](https://registry.npmjs.org/@tresjs/cli/0.1.1), [Commander requirement](https://registry.npmjs.org/commander/15.0.0), [published command registration](https://unpkg.com/@tresjs/cli@0.1.1/dist/index.mjs).
 
 ```sh
 bun add -D --exact @tresjs/cli@0.1.1
-bunx tres gltf public/models/robot.glb --dry-run
-bunx tres gltf public/models/robot.glb --json
-bunx tres gltf public/models/robot.glb -o src/models/Robot.gen.vue --url /models/robot.glb --slots all
+bunx --bun --no-install tres gltf public/models/robot.glb --dry-run
+bunx --bun --no-install tres gltf public/models/robot.glb --json
+bunx --bun --no-install tres gltf public/models/robot.glb -o src/models/Robot.gen.vue --url /models/robot.glb --slots all
 ```
 
 The input is a **filesystem** `.glb`/`.gltf` path, not its browser URL. A `.gltf` may read local `.bin`/texture sidecars relative to the file. The implementation configures Three's GLTFLoader and locally resolved Draco decoder, with a minimal Node DOM/worker shim; this is not a browser render or full extension-compatibility validator. In particular it does not configure a KTX2Loader or MeshoptDecoder for the parse stage. Keep original model/sidecar provenance and inspect warnings about sanitized/colliding names. The Node loader turns sidecar file reads into data URIs; remote URL sidecars are not a supported remote-fetch contract. [Published GLTF pipeline](https://unpkg.com/@tresjs/cli@0.1.1/dist/gltf-CJjeqsAN.mjs).
@@ -1253,53 +1253,19 @@ Install `@tresjs/rapier@1.4.0` explicitly for a new physics consumer. The [tagge
 
 **Current source review:** Cientos **5.12.0** still declares only `batch`, `name`, and `color` on `InstanceProps`, not transforms. Its `/webgpu` entry exports the same implementation; Core's native-element types do not add props to this Vue component. The CLI's tagged assertions expect translated `Instance` output, but its compile tests check Vue parsing and script/template compilation, not strict consumer template types. The `TS2353` above is the archived **5.10.0** result, not a rerun on 5.12.0. For a new strict host, use plain output or [manual batching with positioned groups](#batching-and-picking-performance-with-explicit-owners); check generated files separately from parent placement. [5.12.0 declarations](https://unpkg.com/@tresjs/cientos@5.12.0/dist/index-LpMDuY3m.d.ts), [tagged `/webgpu` entry](https://github.com/Tresjs/tres/blob/%40tresjs/cientos%405.12.0/packages/cientos/src/webgpu.ts), [CLI batch assertions](https://github.com/Tresjs/tres/blob/%40tresjs/cli%400.1.1/packages/cli/src/emit/instances.test.ts), [CLI compile checks](https://github.com/Tresjs/tres/blob/%40tresjs/cli%400.1.1/packages/cli/src/emit/compiles.test.ts).
 
-### ESLint exports, engine limits and incumbent-config integration
+### Lint authored Vue and Tres code with Biome
 
-`@tresjs/eslint-config@1.7.0` is an **opinionated Antfu-based style configuration**, not an ESLint plugin with a `tres/*` rule namespace. Its exact named exports are **`tresLintConfig`** and **`nuxt`**; there is **no default export**, `configs.recommended`, `createConfig` or string-based legacy `extends` API. `tresLintConfig(options?, ...configs)` returns a **Promise of flat config items**; `nuxt` is an array of extra rule items, not a Nuxt module or a standalone parser/plugin preset. Use ESM `eslint.config.mjs` with named imports/top-level await. A CJS export exists, but wraps an ESM Antfu dependency via `require`; older Node/CommonJS interop is not the safe profile. [Manifest](https://registry.npmjs.org/@tresjs/eslint-config/1.7.0), [published types](https://unpkg.com/@tresjs/eslint-config@1.7.0/dist/index.d.mts), [implementation](https://unpkg.com/@tresjs/eslint-config@1.7.0/dist/index.mjs).
-
-The top-level peer says ESLint `>=8.40.0`, but it depends on Antfu **~9.5.1**, whose peer is `^9.10.0 || ^10.0.0`; its Unicorn 74 dependency requires ESLint **>=10.4** and Node **>=22**. Use **Node 24.15.0 / ESLint 10.13.0** for a new isolated tooling exercise, not a deprecated ESLint 9.39.4 recommendation or a blanket ESLint 8 claim. Preserve an incumbent lockfile and assess a deliberate tooling upgrade separately. ESLint 10.13 itself requires `^20.19.0 || ^22.13.0 || >=24`; the full dependency graph is decisive. [Antfu metadata](https://registry.npmjs.org/@antfu/eslint-config/9.5.1), [Unicorn metadata](https://registry.npmjs.org/eslint-plugin-unicorn/74.0.0), [ESLint metadata](https://registry.npmjs.org/eslint/10.13.0).
+Follow [Biome linting](setup-tooling.md#biome-linting) for the kit's pinned lint configuration and repository-wide `bun run lint` gate. With the root dependencies installed, run this strict, read-only check from the repository root to scope feedback to authored Tres scene code:
 
 ```sh
-bun add -D --exact @tresjs/eslint-config@1.7.0 eslint@10.13.0
+bunx --bun --no-install biome lint --error-on-warnings skills/vue-kit/assets/example-app/src/graphics
 ```
 
-The bundled demonstration app currently has **no incumbent ESLint dependency/config**; do not claim to have migrated one. For a **new opt-in Antfu/Tres-owned lint profile**, the actual full composer is:
+Keep Vue type checking and renderer/browser checks separate. Lint does not validate catalogue registration, asset loading, disposal, physics, shader compatibility, backend parity, or accessibility at runtime.
 
-```js
-// eslint.config.mjs — only when choosing this complete style profile
-import { tresLintConfig } from '@tresjs/eslint-config'
+### Tres ESLint config release history (not recommended)
 
-export default tresLintConfig({ vue: true })
-```
-
-For Nuxt the complete composer can instead use `import { nuxt, tresLintConfig } from '@tresjs/eslint-config'` and `export default tresLintConfig({ vue: true }, ...nuxt)`. It turns `no-undef` off for JS/TS/JSX/TSX/Vue, warns on multi-word component names under `components`, and enforces a single template root for pages/layouts. It does **not** generate Nuxt import types, check hydration or replace Nuxt's generated ESLint integration. Do not append its wide `no-undef: off` setting to plain-Vue/Node files just to hide missing imports.
-
-An existing app often already has its **Vue parser/plugin, TypeScript rules, globals, generated Nuxt integration and local policy**. Do not replace that whole config with the complete preset or blindly stack another Vue/Antfu plugin installation. For an incumbent Vue flat-config array, a narrowly scoped adoption can reuse the package's actual Vue rule block without introducing a second parser/plugin owner:
-
-```js
-// Add to the existing eslint.config.mjs; keep its imports/config declarations.
-import { tresLintConfig } from '@tresjs/eslint-config'
-
-const tresPreset = await tresLintConfig({ vue: true })
-const tresVue = tresPreset.find(item => item.name === 'tres:vue')
-if (!tresVue) {
-  throw new Error('The pinned Tres Vue rule block is missing')
-}
-
-// `incumbent` is the app's existing flat-config array, unchanged.
-export default [
-  ...incumbent,
-  {
-    ...tresVue,
-    name: 'app:tres-scene-style',
-    files: ['src/scenes/**/*.vue', 'app/components/scene/**/*.vue'],
-  },
-]
-```
-
-Here `incumbent` denotes the **already existing** local array, not an export/file supplied by Tres or a new import path to create. Insert the scoped item in that app's existing export (or its Nuxt composer's supported append API), retaining its Vue plugin registration and parser. The extracted block has only `vue/*` rules; [`tres:general`](https://github.com/Tresjs/tres/blob/%40tresjs/eslint-config%401.7.0/packages/eslint-config/src/rules/base.ts) also needs the `antfu`, `style`, `node`, `perfectionist`, and `jsdoc` namespaces. Do not copy it into an unrelated config without those owners. If a host already uses a compatible Antfu instance, the full `tresLintConfig(options, ...existingItems)` composition API is available, but explicitly resolve duplicate plugin objects and rule precedence first. `...options` overrides the preset's top-level defaults shallowly, so replacing `ignores`/`formatters` means choosing a complete replacement for those option values, not a deep append.
-
-Defaults enable stylistic rules, CSS/HTML formatters and ignores for dist, sponsorkit, node_modules, coverage and **public**. Vue overrides include max attributes (10 on one line, 1 per multiline line), no forced single-line content newline, HTML self-closing policy, no attribute hyphenation rule and an object-property-newline rule. They do **not** certify host DOM accessibility, Three catalogue registration, disposal, physics correctness, TSL shader compatibility, WebGPU/WebGL2 parity or model privacy. Run the real host compiler/browser/backend matrix in addition to lint. No rule sends models/source to a Tres service; package installation can still access registries, and the inherited formatter/toolchain has normal local code-execution trust boundaries.
+Optional upstream `@tresjs/eslint-config@1.7.0` aligns versions without code changes. It was published as an Antfu-based flat style config, not a plugin exposing `tres/*` rules. Its exact named exports are **`tresLintConfig`** (an async flat-config composer) and **`nuxt`** (additional rule items, not a module or standalone parser/plugin preset). It has no default export, `configs.recommended`, `createConfig`, or legacy string `extends`; the CJS entry wraps ESM Antfu via `require`, so older Node interop is not assured. The package's ESLint `>=8.40.0` peer understates the effective constraints: Antfu `~9.5.1` expects `^9.10.0 || ^10.0.0`, and Unicorn 74 requires ESLint `>=10.4` and Node `>=22`. The Nuxt rules disable `no-undef` broadly and do not generate import types or validate hydration. These are release facts, not kit setup instructions; unrelated external ESLint policies remain host-owned. [Release](https://github.com/Tresjs/tres/releases/tag/%40tresjs/eslint-config%401.7.0), [manifest](https://registry.npmjs.org/@tresjs/eslint-config/1.7.0), [published types](https://unpkg.com/@tresjs/eslint-config@1.7.0/dist/index.d.mts), [Antfu metadata](https://registry.npmjs.org/@antfu/eslint-config/9.5.1), [Unicorn metadata](https://registry.npmjs.org/eslint-plugin-unicorn/74.0.0).
 
 ### Source-backed tooling smoke fixtures (not execution receipts)
 
@@ -1336,20 +1302,20 @@ await writeFile('public/models/panel.gltf', JSON.stringify(gltf))
 Commands for the integration owner to execute, after installing the declared tools/runtime dependencies in that throwaway app:
 
 ```sh
-node make-model.mjs
-bunx tres gltf public/models/panel.gltf --dry-run
-bunx tres gltf public/models/panel.gltf --json
-bunx tres gltf public/models/panel.gltf -o app/models/Panel.gen.vue --slots all
-bunx tres gltf public/models/panel.gltf -o app/models/PanelBatch.gen.vue --instance --slots all
-bunx tres gltf public/models/panel.gltf -o app/models/PanelPhysics.gen.vue --physics rapier --slots all
-bunx tres gltf public/models/panel.gltf -o app/models/PanelOptimized.gen.vue --transform --simplify --ratio 0.8 --error 0.001
+bun make-model.mjs
+bunx --bun --no-install tres gltf public/models/panel.gltf --dry-run
+bunx --bun --no-install tres gltf public/models/panel.gltf --json
+bunx --bun --no-install tres gltf public/models/panel.gltf -o app/models/Panel.gen.vue --slots all
+bunx --bun --no-install tres gltf public/models/panel.gltf -o app/models/PanelBatch.gen.vue --instance --slots all
+bunx --bun --no-install tres gltf public/models/panel.gltf -o app/models/PanelPhysics.gen.vue --physics rapier --slots all
+bunx --bun --no-install tres gltf public/models/panel.gltf -o app/models/PanelOptimized.gen.vue --transform --simplify --ratio 0.8 --error 0.001
 ```
 
 Require: JSON is parseable without decorative stdout; dry-run/JSON do not emit transformed assets; ordinary URL is `/models/panel.gltf`; instance generation creates a sibling provider and transformed GLB; physics output has a fixed trimesh `RigidBody` for the suffixed mesh and a note requiring `<Physics>`; `ready`/`isReady` and `Lift` action types exist. Also supply a separate clip file with one matching target and one unmatched target to exercise repeatable `--animations` warnings/binding; two files with the same clip name must follow the documented last-source order. The fixture's animated **fixed** body is an emission check, not a sensible moving-physics design. To exercise actual simulation use an intentionally authored dynamic collider and verify world ownership/collision behavior.
 
 In an actual client host, strict-check plain, generated batch, and physics variants separately, including parent root placement. Record new diagnostics separately from the archived `TS2353`; CLI exit zero does not pass the host compiler. After explicitly resolving import and typing boundaries, exercise any accepted WebGPURenderer consumer on both backends. Check the provider-missing negative case, a failed asset URL, navigation cleanup, and readiness timing. A generator receipt is not a browser receipt.
 
-For a complete isolated lint profile use the exact `eslint.config.mjs` composer above and a small `SceneFixture.vue` containing a valid `<script setup lang="ts">` and a Tres mesh template, then execute `bunx eslint --print-config SceneFixture.vue` followed by `bunx eslint SceneFixture.vue` without `--fix`. The config must load with named exports on Node 24/ESLint 10, include the expected `tres:vue` overrides, and preserve the incumbent app's unrelated policy when using the scoped adoption. Exercise `nuxt` extras only in a distinct Nuxt fixture; confirm generated autoimports still typecheck independently. No lint/runtime/build result is claimed by this source review.
+The Bun 1.4.5 compatibility check without Node covered `@tresjs/cli@0.1.1` parsing the two-mesh fixture with `--json`. It did not cover the remaining generation commands, native transforms, or browser rendering.
 
 ## Bundled workbench composition
 

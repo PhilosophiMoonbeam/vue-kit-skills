@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import test from 'node:test'
+import { test } from 'bun:test'
 import { classifyCanvasCapture } from '../src/capture-result.ts'
 
 test('zero-size empty readback is a completed response with exact value and provenance', () => {

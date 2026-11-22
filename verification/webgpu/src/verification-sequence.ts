@@ -46,6 +46,7 @@ export interface VerificationReport {
 
 type RecordValue = Record<string, unknown>
 type CaseWork = (entry: VerificationCase) => Promise<void>
+const ownershipSnapshotMessage = 'Comparable active-scene ownership snapshot.'
 const record = (value: unknown): RecordValue => value !== null && typeof value === 'object' && !Array.isArray(value) ? value as RecordValue : {}
 const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
 const metrics = (run: RunEvidence) => record(run.state?.metrics)
@@ -53,11 +54,15 @@ const number = (value: unknown): number | undefined => typeof value === 'number'
 const consumer = (event: RunEvidence['events'][number]) => record(record(event.detail).consumerObservation)
 const findEvent = (run: RunEvidence, message: string, predicate: (detail: RecordValue) => boolean = () => true) =>
   run.events.find(event => event.message === message && predicate(consumer(event)))
-function latestEvent(run: RunEvidence, message: string) {
-  for (let index = run.events.length - 1; index >= 0; index -= 1) {
-    const event = run.events[index]!
-    if (event.message === message) return event
+function latestEvent(run: RunEvidence, message: string, predicate?: (detail: RecordValue) => boolean, firstIndex = 0) {
+  for (let index = run.events.length - 1; index >= firstIndex; index -= 1) {
+    const event = run.events[index]
+    if (event?.message === message && (!predicate || predicate(consumer(event)))) return event
   }
+}
+function expectEvidence<T>(value: T | undefined, label: string): T {
+  if (value === undefined) throw new Error(`${label}: required evidence was not retained.`)
+  return value
 }
 const rawError = (event: RunEvidence['events'][number]) => ['component-error', 'unhandled-rejection', 'window-error', 'gpu-validation'].includes(event.category)
 const clone = <T>(value: T): T => value === undefined ? value : JSON.parse(JSON.stringify(value)) as T
@@ -105,7 +110,7 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
       .map(check => ({ checkId: check.id, runIds: [], applicability: check.id === 'gpu-15' || check.id === 'gpu-16' ? 'not-used' : 'review-required', remainingReview: [...remainingReview[check.id]] })),
   }
   const runs = new Map<string, RunEvidence>()
-  const works: CaseWork[] = []
+  const works: { entry: VerificationCase; work: CaseWork }[] = []
   function publish(): VerificationReport {
     const snapshot: VerificationReport = {
       ...report,
@@ -117,8 +122,9 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
   }
   function add(id: string, label: string, checkIds: CheckId[], work: CaseWork): void {
     if (profile === 'visibility' && id !== 'webgl-layout' && id !== 'webgpu-layout') return
-    report.cases.push({ id, label, checkIds, runIds: [], status: 'pending', observations: [], issues: [], errors: [] })
-    works.push(work)
+    const entry: VerificationCase = { id, label, checkIds, runIds: [], status: 'pending', observations: [], issues: [], errors: [] }
+    report.cases.push(entry)
+    works.push({ entry, work })
   }
   function link(entry: VerificationCase, run: RunEvidence): RunEvidence {
     runs.set(run.id, run)
@@ -171,15 +177,18 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
     observe(entry, `${label}: final observed state at timeout`, last)
     throw new Error(`${label}: required observation did not arrive within ${timeout} ms.`)
   }
-  async function windowOf(entry: VerificationCase, label: string, duration = 650): Promise<RunEvidence[]> {
-    const samples: RunEvidence[] = []
+  async function windowOf(entry: VerificationCase, label: string, duration = 650) {
     const until = Date.now() + duration
-    do {
-      samples.push(await inspect(entry))
-      if (Date.now() < until) await delay(Math.min(120, until - Date.now()), signal)
-    } while (Date.now() < until)
+    let last = await inspect(entry)
+    const samples: [RunEvidence, ...RunEvidence[]] = [last]
+    while (Date.now() < until) {
+      await delay(Math.min(120, until - Date.now()), signal)
+      if (Date.now() >= until) break
+      last = await inspect(entry)
+      samples.push(last)
+    }
     observe(entry, label, samples.map(run => ({ id: run.id, state: run.state })))
-    return samples
+    return { samples, last }
   }
   async function step(entry: VerificationCase, label: string, work: () => Promise<void>): Promise<void> {
     checkAbort(signal)
@@ -214,7 +223,25 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
     const run = await waitFor(entry, 'Actual application unmount', current => metrics(current).applicationUnmounted === true && current.state?.canvasMounted === false, 5_000)
     observe(entry, 'Explicit unmount requested; actual application/canvas state', { unmountRequested: run.unmountRequested, state: run.state })
   }
-  function rotation(run: RunEvidence): unknown { return record(list(record(metrics(run).scene).meshSamples)[0]).rotation }
+  function rotation(run: RunEvidence): string | undefined {
+    const value = record(list(record(metrics(run).scene).meshSamples)[0]).rotation
+    return value === null || value === undefined ? undefined : JSON.stringify(value)
+  }
+  function motionAfter(before: RunEvidence): (run: RunEvidence) => boolean {
+    const beforeRotation = expectEvidence(rotation(before), 'Mesh rotation before motion')
+    const beforeRenders = expectEvidence(number(metrics(before).renderEvents), 'Render notification count before motion')
+    return run => {
+      const afterRotation = rotation(run)
+      const afterRenders = number(metrics(run).renderEvents)
+      return afterRotation !== undefined && afterRotation !== beforeRotation && afterRenders !== undefined && afterRenders > beforeRenders
+    }
+  }
+  function checkStationary(entry: VerificationCase, samples: readonly [RunEvidence, ...RunEvidence[]], label: string): void {
+    const firstRotation = rotation(samples[0])
+    const firstRenders = number(metrics(samples[0]).renderEvents)
+    requireObservation(entry, firstRotation !== undefined && samples.every(run => rotation(run) === firstRotation), `Rotation changed or was not observed in the ${label} observation window.`)
+    requireObservation(entry, firstRenders !== undefined && samples.every(run => number(metrics(run).renderEvents) === firstRenders), `Render notifications continued or their count was not observed in the ${label} observation window.`)
+  }
   function unexpected(entry: VerificationCase, run: RunEvidence): void {
     const errors = run.events.filter(rawError)
     if (errors.length) issue(entry, `${errors.length} raw error/validation event(s) observed in a non-denial scenario; inspect the retained raw errors.`)
@@ -222,10 +249,7 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
   function disposalRecords(detail: RecordValue): RecordValue[] { return list(detail.resources).map(record) }
   function onceOnly(records: RecordValue[]): boolean { return records.length > 0 && records.every(resource => resource.events === 1) }
   function ownSnapshot(run: RunEvidence, predicate: (detail: RecordValue) => boolean) {
-    for (let index = run.events.length - 1; index >= 0; index -= 1) {
-      const event = run.events[index]!
-      if (event.message === 'Comparable active-scene ownership snapshot.' && predicate(consumer(event))) return event
-    }
+    return latestEvent(run, ownershipSnapshotMessage, predicate)
   }
 
   for (const scene of ['webgl', 'webgpu'] as const) {
@@ -236,34 +260,33 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
       requireObservation(entry, initial.state?.backend === 'webgl2' || initial.state?.backend === 'webgpu', 'No actual initialized backend was identified.')
       if (scene === 'webgl') observe(entry, 'Actual current OS reduced-motion preference; no preference mutation', { reducedMotion: bridge.reducedMotion() })
       await checkpoint(entry, 'initial stopped output')
-      const stopped = await windowOf(entry, 'Bounded default stopped render/rotation observations')
-      requireObservation(entry, stopped.every(run => JSON.stringify(rotation(run)) === JSON.stringify(rotation(stopped[0]!))), 'Rotation changed in the default stopped observation window.')
-      requireObservation(entry, stopped.every(run => metrics(run).renderEvents === metrics(stopped[0]!).renderEvents), 'Render notifications continued in the default stopped window; review on-demand behavior.')
+      const { samples: stopped } = await windowOf(entry, 'Bounded default stopped render/rotation observations')
+      checkStationary(entry, stopped, 'default stopped')
       await step(entry, 'imperative rotation plus explicit invalidation', async () => {
         const before = await inspect(entry)
+        const motion = motionAfter(before)
         command('invalidate')
-        const after = await waitFor(entry, 'Changed rotation and a later real render notification', run => (number(metrics(run).renderEvents) ?? 0) > (number(metrics(before).renderEvents) ?? 0) && JSON.stringify(rotation(run)) !== JSON.stringify(rotation(before)))
+        const after = await waitFor(entry, 'Changed rotation and a later real render notification', motion)
         observe(entry, 'Explicit invalidation before/after', { before: before.state, after: after.state })
         await checkpoint(entry, 'imperatively rotated output')
       })
       if (scene === 'webgl') {
         if (bridge.reducedMotion()) observe(entry, 'Play skipped: the actual current reduced-motion preference disables the retained control; initial/live alternate OS profiles remain review work.')
         else await step(entry, 'untrusted DOM play and pause', async () => {
-          const before = await inspect(entry)
+          const motion = motionAfter(await inspect(entry))
           await action('play')
-          const playing = await waitFor(entry, 'Real play motion and render notifications', run => JSON.stringify(rotation(run)) !== JSON.stringify(rotation(before)) && (number(metrics(run).renderEvents) ?? 0) > (number(metrics(before).renderEvents) ?? 0))
+          const playing = await waitFor(entry, 'Real play motion and render notifications', motion)
           observe(entry, 'Playing rotation/render observation; button.click is not trusted user input', playing.state)
           await checkpoint(entry, 'playing output')
           await action('pause')
           await windowOf(entry, 'Pause transition settling observations', 250)
-          const paused = await windowOf(entry, 'Bounded paused render/rotation observations')
-          requireObservation(entry, paused.every(run => JSON.stringify(rotation(run)) === JSON.stringify(rotation(paused[0]!))), 'Rotation continued during the paused observation window.')
-          requireObservation(entry, paused.every(run => metrics(run).renderEvents === metrics(paused[0]!).renderEvents), 'Render notifications continued during the paused observation window.')
+          const { samples: paused } = await windowOf(entry, 'Bounded paused render/rotation observations')
+          checkStationary(entry, paused, 'paused')
           await checkpoint(entry, 'paused output')
         })
       }
       await unmount(entry)
-      const final = (await windowOf(entry, 'Post-unmount raw error observation window')).at(-1)!
+      const { last: final } = await windowOf(entry, 'Post-unmount raw error observation window')
       unexpected(entry, final)
     })
     add(`${scene}-layout`, `${scene === 'webgl' ? 'WebGL' : 'WebGPU'}: narrow, wide, hidden and shown`, ['gpu-08', 'gpu-17'], async entry => {
@@ -344,14 +367,15 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
       requireObservation(entry, injected.some(event => event.message.startsWith(mode === 'device-rejected' ? 'Intervention: GPUAdapter.requestDevice returns a rejected' : 'Intervention: GPU.requestAdapter resolves null')), 'The intended adapter/device intervention was not observed; unavailable native adapters cannot prove device rejection.')
       await checkpoint(entry, 'actual fallback output')
       await unmount(entry)
-      unexpected(entry, (await windowOf(entry, 'Fallback post-unmount raw error window')).at(-1)!)
+      const { last } = await windowOf(entry, 'Fallback post-unmount raw error window')
+      unexpected(entry, last)
     })
   }
   add('ordinary-webgl-denial', 'Ordinary WebGL2 unavailable host alternative', ['gpu-04'], async entry => {
     await start(entry, 'webgl', 'webgl-unavailable')
     const run = await waitFor(entry, 'Actual ordinary unavailable DOM alert', current => current.events.some(event => event.message === 'Inspection of the actual canvas, initialized renderer and current scene state.' && typeof record(event.detail).alert === 'string' && String(record(event.detail).alert).trim().length > 0))
     observe(entry, 'Actual unavailable state and DOM alert', { state: run.state, inspection: latestEvent(run, 'Inspection of the actual canvas, initialized renderer and current scene state.') })
-    requireObservation(entry, !run.state?.ready && !run.state?.canvasMounted, 'Ordinary unavailable profile unexpectedly retained a ready or mounted canvas.')
+    requireObservation(entry, run.state?.ready === false && run.state.canvasMounted === false, 'Ordinary unavailable profile did not establish an unready and unmounted canvas state.')
     await checkpoint(entry, 'ordinary unavailable DOM alternative')
     await unmount(entry)
     await windowOf(entry, 'Ordinary denial post-unmount raw error window')
@@ -370,8 +394,7 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
       await checkpoint(entry, 'double-denial DOM and initialization evidence')
       await step(entry, 'explicit unmount and raw late error retention', async () => {
         await unmount(entry)
-        const samples = await windowOf(entry, 'Bounded post-unmount raw teardown error timeline', 2_000)
-        const run = samples.at(-1)!
+        const { last: run } = await windowOf(entry, 'Bounded post-unmount raw teardown error timeline', 2_000)
         observe(entry, 'Raw teardown errors retained without suppression', run.events.filter(rawError))
         if (!run.events.some(event => event.category === 'unhandled-rejection' && event.message === 'Unhandled promise rejection after application unmount.')) observe(entry, 'No late unhandled rejection was observed in this bounded window; absence is not a clean-recovery certification.')
       })
@@ -386,15 +409,19 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
         : !!findEvent(current, 'Reactive loader state.', detail => typeof detail.error === 'string' && detail.error.length > 0))
       observe(entry, 'Actual fixture request and loader result; no CORS/offline claim', run.events.filter(event => event.category === 'asset'))
       if (mode === 'normal') {
-        const success = consumer(findEvent(run, 'Real GLTF loader success.', detail => detail.alive === true)!)
+        const success = consumer(expectEvidence(findEvent(run, 'Real GLTF loader success.', detail => detail.alive === true), 'Live GLTF loader success'))
         requireObservation(entry, typeof success.sceneUuid === 'string' && list(success.bounds).length === 3 && list(success.bounds).every(value => (number(value) ?? 0) > 0), 'Real Box success did not report an actual scene identity and nonzero three-dimensional bounds.')
         await ready(entry)
         const loaded = await waitFor(entry, 'Real loaded scene mesh attached', current => (number(record(metrics(current).scene).meshCount) ?? 0) > 0)
+        const previousRenders = expectEvidence(number(metrics(loaded).renderEvents), 'Render notification count with the loaded mesh attached')
         command('invalidate')
-        const rendered = await waitFor(entry, 'Real render notification with loaded scene attached', current => (number(record(metrics(current).scene).meshCount) ?? 0) > 0 && (number(metrics(current).renderEvents) ?? 0) > (number(metrics(loaded).renderEvents) ?? 0))
+        const rendered = await waitFor(entry, 'Real render notification with loaded scene attached', current => {
+          const renders = number(metrics(current).renderEvents)
+          return renders !== undefined && renders > previousRenders && (number(record(metrics(current).scene).meshCount) ?? 0) > 0
+        })
         observe(entry, 'Loaded scene mesh and subsequent actual render notification', rendered.state)
       } else {
-        const status = consumer(findEvent(run, 'Reactive loader state.', detail => typeof detail.error === 'string' && detail.error.length > 0)!)
+        const status = consumer(expectEvidence(findEvent(run, 'Reactive loader state.', detail => typeof detail.error === 'string' && detail.error.length > 0), 'Reactive loader error status'))
         requireObservation(entry, String(status.message).startsWith('Model load failed:'), 'Missing asset did not expose the consumer failure status.')
         requireObservation(entry, /\b404\b/.test(String(status.error)), 'An actual loader error was observed, but its retained error did not establish HTTP 404.')
       }
@@ -421,9 +448,9 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
     requireObservation(entry, requestedAfterMs < 3_000, 'Unmount request was not delivered within three seconds of run start.')
     await waitFor(entry, 'Actual unmounted loader before its late success', current => metrics(current).applicationUnmounted === true && !!findEvent(current, 'Box loader unmounted.', detail => detail.loadingAtUnmount === true && detail.resolvedAtUnmount === false), 4_000)
     const run = await waitFor(entry, 'Actual late loader success and cleanup', current => !!findEvent(current, 'Real GLTF loader success.', detail => detail.alive === false) && !!findEvent(current, 'Late-result cleanup completed.'), 10_000)
-    const success = findEvent(run, 'Real GLTF loader success.', detail => detail.alive === false)!
-    const cleanup = findEvent(run, 'Late-result cleanup completed.')!
-    const unmounted = findEvent(run, 'Box loader unmounted.', detail => detail.loadingAtUnmount === true)!
+    const success = expectEvidence(findEvent(run, 'Real GLTF loader success.', detail => detail.alive === false), 'Late GLTF loader success')
+    const cleanup = expectEvidence(findEvent(run, 'Late-result cleanup completed.'), 'Late-result cleanup')
+    const unmounted = expectEvidence(findEvent(run, 'Box loader unmounted.', detail => detail.loadingAtUnmount === true && detail.resolvedAtUnmount === false), 'Unmount with the loader still pending')
     requireObservation(entry, run.events.indexOf(unmounted) < run.events.indexOf(success) && run.events.indexOf(success) < run.events.indexOf(cleanup), 'The retained consumer event order did not establish unmount then late success then cleanup.')
     const resources = disposalRecords(consumer(cleanup))
     const native = run.events.filter(event => event.message === 'Native Three resource dispose event.' && record(consumer(event).owner).scene === 'asset')
@@ -438,34 +465,43 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
   add('ownership-lifetimes', 'Shared resources: retire consumers and restart', ['gpu-13', 'gpu-10', 'gpu-17'], async entry => {
     await start(entry, 'ownership')
     await ready(entry)
-    const both = await waitFor(entry, 'Both actual consumers sharing owned resources', current => !!ownSnapshot(current, detail => detail.cycle === 1 && detail.bothShareGeometry === true && detail.bothShareMaterial === true && record(detail.first).attached === true && record(detail.second).attached === true))
-    const bothDetail = consumer(ownSnapshot(both, detail => detail.cycle === 1 && detail.bothShareGeometry === true)!)
+    const bothAttached = (detail: RecordValue) => detail.cycle === 1 && detail.bothShareGeometry === true && detail.bothShareMaterial === true && record(detail.first).attached === true && record(detail.second).attached === true
+    const both = await waitFor(entry, 'Both actual consumers sharing owned resources', current => !!ownSnapshot(current, bothAttached))
+    const bothDetail = consumer(expectEvidence(ownSnapshot(both, bothAttached), 'Two-consumer ownership snapshot'))
+    const bothSecond = record(bothDetail.second)
     observe(entry, 'Initial real shared identities and native disposal ledger', bothDetail)
-    requireObservation(entry, disposalRecords(bothDetail).every(resource => resource.events === 0), 'A shared resource was disposed before either consumer retired.')
+    const sharedResources = disposalRecords(bothDetail)
+    requireObservation(entry, sharedResources.length === 6 && sharedResources.every(resource => resource.events === 0), 'The initial shared resource ledger was incomplete or showed disposal before either consumer retired.')
     await checkpoint(entry, 'both shared consumers')
     await action('retire-first')
-    const one = await waitFor(entry, 'Second consumer still live after first retirement', current => !!ownSnapshot(current, detail => detail.cycle === 1 && detail.first === null && record(detail.second).attached === true && detail.liveMeshes === 1))
-    const oneDetail = consumer(ownSnapshot(one, detail => detail.cycle === 1 && detail.first === null && record(detail.second).attached === true)!)
-    requireObservation(entry, record(oneDetail.second).geometryUuid === record(bothDetail.second).geometryUuid && record(oneDetail.second).materialUuid === record(bothDetail.second).materialUuid && record(oneDetail.second).meshUuid === record(bothDetail.second).meshUuid, 'The surviving consumer did not retain its actual mesh/geometry/material identities.')
-    requireObservation(entry, disposalRecords(oneDetail).every(resource => resource.events === 0), 'Shared native disposal was observed while the second consumer remained live.')
+    const secondAttached = (detail: RecordValue) => detail.cycle === 1 && detail.first === null && record(detail.second).attached === true && detail.liveMeshes === 1
+    const one = await waitFor(entry, 'Second consumer still live after first retirement', current => !!ownSnapshot(current, secondAttached))
+    const oneDetail = consumer(expectEvidence(ownSnapshot(one, secondAttached), 'Surviving consumer ownership snapshot'))
+    const oneSecond = record(oneDetail.second)
+    requireObservation(entry, ['geometryUuid', 'materialUuid', 'meshUuid'].every(key => typeof oneSecond[key] === 'string' && oneSecond[key] === bothSecond[key]), 'The surviving consumer did not retain its actual mesh/geometry/material identities.')
+    const survivingResources = disposalRecords(oneDetail)
+    requireObservation(entry, survivingResources.length === 6 && survivingResources.every(resource => resource.events === 0), 'The surviving consumer resource ledger was incomplete or showed disposal while the consumer remained live.')
     observe(entry, 'First retired; actual second consumer and unchanged shared identities', oneDetail)
     await checkpoint(entry, 'second consumer remains intact')
     await action('retire-final')
     const retired = await waitFor(entry, 'Actual final owner six-kind release', current => !!findEvent(current, 'Final explicit owner released all six owned resource kinds.', detail => detail.cycle === 1) && !!ownSnapshot(current, detail => detail.cycle === 1 && detail.liveMeshes === 0))
-    const release = consumer(findEvent(retired, 'Final explicit owner released all six owned resource kinds.', detail => detail.cycle === 1)!)
+    const release = consumer(expectEvidence(findEvent(retired, 'Final explicit owner released all six owned resource kinds.', detail => detail.cycle === 1), 'Final six-kind owner release'))
     const kinds = ['geometry', 'material', 'map', 'normalMap', 'environment', 'render-target']
     const resources = disposalRecords(release)
     requireObservation(entry, resources.length === 6 && onceOnly(resources) && kinds.every(kind => resources.filter(resource => resource.kind === kind).length === 1), 'Final owner ledger did not show exactly one native disposal for all six owned resource kinds.')
     observe(entry, 'Actual final owner release and ledger', release)
     await checkpoint(entry, 'all consumers retired')
     await action('restart-cycle')
-    const restarted = await waitFor(entry, 'Fresh two-consumer ownership cycle', current => !!ownSnapshot(current, detail => detail.cycle === 2 && detail.bothShareGeometry === true && detail.liveMeshes === 2))
-    const restartedDetail = consumer(ownSnapshot(restarted, detail => detail.cycle === 2 && detail.bothShareGeometry === true)!)
-    requireObservation(entry, record(restartedDetail.second).geometryUuid !== record(bothDetail.second).geometryUuid, 'Fresh ownership cycle did not establish a new geometry owner identity.')
+    const bothRestarted = (detail: RecordValue) => detail.cycle === 2 && detail.bothShareGeometry === true && detail.liveMeshes === 2
+    const restarted = await waitFor(entry, 'Fresh two-consumer ownership cycle', current => !!ownSnapshot(current, bothRestarted))
+    const restartedDetail = consumer(expectEvidence(ownSnapshot(restarted, bothRestarted), 'Fresh ownership cycle snapshot'))
+    const restartedGeometry = record(restartedDetail.second).geometryUuid
+    requireObservation(entry, typeof restartedGeometry === 'string' && typeof bothSecond.geometryUuid === 'string' && restartedGeometry !== bothSecond.geometryUuid, 'Fresh ownership cycle did not establish a new geometry owner identity.')
     observe(entry, 'Explicit fresh cycle actual identities and equivalent workload', restartedDetail)
     await checkpoint(entry, 'fresh shared-owner cycle')
     await unmount(entry)
-    unexpected(entry, (await windowOf(entry, 'Ownership post-unmount raw errors')).at(-1)!)
+    const { last } = await windowOf(entry, 'Ownership post-unmount raw errors')
+    unexpected(entry, last)
   })
 
   for (const scene of ['webgl', 'ownership'] as const) {
@@ -478,20 +514,25 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
           // Keep identical width, scene contents, mode and invalidation workload in every fresh owner.
           await bounded('Comparable wide layout', child => bridge.layout('wide', false, child), 5_000)
           const before = await inspect(entry)
+          const previousRenders = expectEvidence(number(metrics(before).renderEvents), 'Render notification count before the equal-workload warmup')
           command('invalidate')
-          await waitFor(entry, 'Equal-workload warm render', current => (number(metrics(current).renderEvents) ?? 0) > (number(metrics(before).renderEvents) ?? 0))
-          if (scene === 'ownership') {
-            const previousCount = bridge.current()?.events.filter(event => event.message === 'Comparable active-scene ownership snapshot.').length ?? 0
+          const warm = await waitFor(entry, 'Equal-workload warm render', current => {
+            const renders = number(metrics(current).renderEvents)
+            return renders !== undefined && renders > previousRenders
+          })
+          const snapshotStart = scene === 'ownership' ? warm.events.length : undefined
+          if (snapshotStart !== undefined) {
             await action('ownership-snapshot')
-            await waitFor(entry, 'Fresh actual ownership resource snapshot', current => current.events.filter(event => event.message === 'Comparable active-scene ownership snapshot.').length > previousCount)
+            await waitFor(entry, 'Fresh actual ownership resource snapshot', current => !!latestEvent(current, ownershipSnapshotMessage, undefined, snapshotStart))
           }
           const run = await inspect(entry)
-          const sample = { cycle, runId: run.id, scene, mode: run.mode, metrics: metrics(run), ownership: scene === 'ownership' ? consumer(latestEvent(run, 'Comparable active-scene ownership snapshot.')!) : null }
+          const ownership = snapshotStart === undefined ? null : consumer(expectEvidence(latestEvent(run, ownershipSnapshotMessage, undefined, snapshotStart), `Cycle ${cycle} active ownership snapshot`))
+          const sample = { cycle, runId: run.id, scene, mode: run.mode, metrics: metrics(run), ownership }
           snapshots.push(sample)
           observe(entry, 'Equal-workload warmed active-scene snapshot; counts need not become zero', sample)
           await checkpoint(entry, `equal-workload cycle ${cycle}`)
           await unmount(entry)
-          const after = (await windowOf(entry, `Cycle ${cycle} retirement observations`)).at(-1)!
+          const { last: after } = await windowOf(entry, `Cycle ${cycle} retirement observations`)
           unexpected(entry, after)
           if (scene === 'ownership') {
             const released = findEvent(after, 'Final explicit owner released all six owned resource kinds.')
@@ -548,19 +589,19 @@ export async function runVerification(bridge: VerificationBridge, signal: AbortS
       await checkpoint(entry, `${actionName} DOM and canvas state`)
     }
     await unmount(entry)
-    unexpected(entry, (await windowOf(entry, 'Picking post-unmount raw error observations')).at(-1)!)
+    const { last } = await windowOf(entry, 'Picking post-unmount raw error observations')
+    unexpected(entry, last)
   })
 
   report.total = report.cases.length
   publish()
-  for (let index = 0; index < works.length; index += 1) {
-    const entry = report.cases[index]!
+  for (const { entry, work } of works) {
     if (signal.aborted) break
     entry.status = 'running'
     report.currentLabel = entry.label
     publish()
     try {
-      await works[index]!(entry)
+      await work(entry)
     } catch (error) {
       entry.errors.push({ label: report.currentLabel, error: errorDetail(error) })
       if (signal.aborted) entry.status = 'cancelled'

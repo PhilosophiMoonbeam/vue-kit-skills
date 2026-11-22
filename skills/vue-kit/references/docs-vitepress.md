@@ -6,10 +6,10 @@ Read when building a VitePress documentation site. VitePress owns its Vue applic
 
 | Tool | Pinned release | Boundary |
 | --- | --- | --- |
-| `vitepress` | **1.6.4** | Stable documentation generator; Node build pre-renders Markdown as Vue pages, then hydrates/navigation runs in browser |
+| `vitepress` | **1.6.4** | Stable documentation generator; the build pre-renders Markdown as Vue pages, then the browser handles hydration and navigation |
 | Vue | **3.5.44** baseline | VitePress 1.6.4 depends on Vue `^3.5.13` |
 
-VitePress 1.6.4 depends on Vite `^5.4.14`. Do not force the application's Vite 8 plugins into VitePress 1.x. A v2 prerelease is not the stable 1.6.4 API. Choose one package manager and preserve VitePress's dependency graph; a separate workspace package is often the clearest ownership boundary. The repository's Node 24 baseline is suitable for VitePress's Node 18+ requirement; dependency installation/build behavior still needs verification in the actual lockfile. [VitePress metadata](https://unpkg.com/vitepress@1.6.4/package.json).
+VitePress 1.6.4 depends on Vite `^5.4.14`. Do not force the application's Vite 8 plugins into VitePress 1.x. A v2 prerelease is not the stable 1.6.4 API. Choose one package manager and preserve VitePress's dependency graph; a separate workspace package is often the clearest ownership boundary. The [package metadata](https://unpkg.com/vitepress@1.6.4/package.json) points to a [CLI with a Node shebang](https://unpkg.com/vitepress@1.6.4/bin/vitepress.js), and the [tagged upstream guide](https://github.com/vuejs/vitepress/blob/v1.6.4/docs/en/guide/getting-started.md) specifies Node 18+ for its Node workflow. That is upstream compatibility guidance, not a Node requirement for this Bun 1.4.5 example. The scripts below explicitly override the shebang.
 
 ## VitePress: complete minimal site
 
@@ -20,10 +20,12 @@ Create these files in a dedicated docs package. The root `package.json` is ESM; 
   "name": "vue-kit-docs-example",
   "private": true,
   "type": "module",
+  "packageManager": "bun@1.4.5",
+  "engines": { "bun": "1.4.5" },
   "scripts": {
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:dev": "bun --bun vitepress dev docs",
+    "docs:build": "bun --bun vitepress build docs",
+    "docs:preview": "bun --bun vitepress preview docs"
   },
   "devDependencies": {
     "vitepress": "1.6.4",
@@ -130,6 +132,8 @@ bun run docs:build
 bun run docs:preview
 ```
 
+Use `bun install` for the initial docs package setup. Commit the resulting `bun.lock` and use `bun install --frozen-lockfile` in CI and on repeat installs.
+
 Build output is `docs/.vitepress/dist`; publish that directory under `/handbook/`, not `docs/` itself. Change `base` to `/` for origin-root hosting. Preview is a local output check, not a production server. VitePress defaults to `.html` links; setting `cleanUrls: true` requires the host to map extensionless paths to generated HTML. Configure real 404 handling and test direct page reloads on the deployment host. [Getting started](https://vitepress.dev/guide/getting-started), [routing](https://vitepress.dev/guide/routing).
 
 ### Config, content and theme responsibilities
@@ -172,7 +176,7 @@ To select it, import `Layout` in the theme entry and add `Layout` to its exporte
 - In component-generated URLs, use `withBase('/image.svg')` for public assets; hard-coded `'/image.svg'` ignores a subdirectory deployment. Static Markdown asset references get VitePress's processing, but arbitrary dynamic strings do not.
 - Navigation links use site paths such as `/guide`, not a manually duplicated `/handbook/guide` in every item. `base` owns the deployment prefix.
 - Rewrites change public route structure; relative links must target the rewritten URLs. Dynamic `[parameter].md` routes require a corresponding paths loader. Keep large content in `content` instead of bloating route params.
-- `.data.ts` loaders run in Node at build/dev time and expose serialized data to browser imports. Never put secrets in their returned object. Do not import private database credentials through a client-facing module.
+- `.data.ts` loaders run in the VitePress tooling process at build/dev time and expose serialized data to browser imports. Never put secrets in their returned object. Do not import private database credentials through a client-facing module.
 
 A complete optional index loader for this example:
 
@@ -204,7 +208,7 @@ Import `data` from `./pages.data` in a root Markdown page's script; render its r
 | Separate input/output/cache | `srcDir` changes content root; `srcExclude` excludes input Markdown; `outDir`/`assetsDir`/`cacheDir` change generated locations. Never publish the source/cache tree. `lastUpdated: true` needs Git history; shallow CI history affects dates. |
 | Production metadata | Page frontmatter owns page title/description/head; `transformPageData` changes page data during Markdown conversion. `transformHead` appends `HeadConfig[]` before writing HTML; `transformHtml` changes final HTML; `postRender` sees SSR context; awaited `buildEnd` is for final generated files. Do not leak build-only secrets into returned page data/head. |
 | Routing/performance | `router.prefetchLinks` controls link prefetch. `shouldPreload` controls asset preload, not navigation authorization. `rewrites`, `sitemap`, `metaChunk`, `mpa`, and `buildConcurrency` are experimental in 1.6.4; sitemap needs the deployed hostname and matching clean-URL/locale policy. Lower build concurrency for memory pressure rather than suppressing content errors. |
-| Programmatic automation | Node-only `build`, `createServer`, `serve`, `init`, `scaffold`, `resolveConfig` and `resolveSiteData` exist for tooling. Prefer existing CLI scripts for ordinary sites. `createMarkdownRenderer(srcDir, options)` is experimental and shares a cached renderer; `disposeMdItInstance()` releases it. Do not import Node APIs into a client theme. |
+| Programmatic automation | `build`, `createServer`, `serve`, `init`, `scaffold`, `resolveConfig` and `resolveSiteData` are tooling APIs, not browser APIs. Prefer existing CLI scripts for ordinary sites. `createMarkdownRenderer(srcDir, options)` is experimental and shares a cached renderer; `disposeMdItInstance()` releases it. Do not import tooling APIs or `node:*` modules into a client theme. |
 
 Complete optional theme component (register like `Counter` or import locally):
 
@@ -221,7 +225,7 @@ const { page, lang, isDark } = useData()
 </template>
 ```
 
-The link matches this example's `cleanUrls: false`; adjust for the host's actual route policy. In 1.6.4, a loader's `ContentData.url` excludes `base` and is derived from the **source path**, not `rewrites`. Map rewritten routes explicitly before applying `withBase` to generated links. `defineLoader({ watch, load })` handles non-Markdown data; `createContentLoader` handles Markdown globs relative to `srcDir`, with `includeSrc`, `render`, `excerpt`, and `transform` selecting shipped data. Avoid returning full source/HTML when only title/URL is needed; if customizing glob ignores, preserve exclusions for generated output and dependencies. [Exact client API](https://unpkg.com/vitepress@1.6.4/dist/client/index.d.ts), [exact Node API](https://unpkg.com/vitepress@1.6.4/dist/node/index.d.ts), [1.6.4 loader URL construction](https://github.com/vuejs/vitepress/blob/v1.6.4/src/node/contentLoader.ts).
+The link matches this example's `cleanUrls: false`; adjust for the host's actual route policy. In 1.6.4, a loader's `ContentData.url` excludes `base` and is derived from the **source path**, not `rewrites`. Map rewritten routes explicitly before applying `withBase` to generated links. `defineLoader({ watch, load })` handles non-Markdown data; `createContentLoader` handles Markdown globs relative to `srcDir`, with `includeSrc`, `render`, `excerpt`, and `transform` selecting shipped data. Avoid returning full source/HTML when only title/URL is needed; if customizing glob ignores, preserve exclusions for generated output and dependencies. [Exact client API](https://unpkg.com/vitepress@1.6.4/dist/client/index.d.ts), [exact tooling API](https://unpkg.com/vitepress@1.6.4/dist/node/index.d.ts), [1.6.4 loader URL construction](https://github.com/vuejs/vitepress/blob/v1.6.4/src/node/contentLoader.ts).
 
 ### Default-theme navigation, search and localization
 
@@ -263,17 +267,17 @@ Use the **VitePress** syntax below. These are contextual Markdown fragments, not
 | Line numbers | `markdown.lineNumbers: true` globally or fence language `ts:line-numbers` / `ts:no-line-numbers` locally. |
 | Snippet | `<<< @/snippets/example.ts#demo{1,3 ts:line-numbers}` reads an existing source-root file/region; `@` follows `srcDir`, not always cwd. |
 | File inclusion | `<!--@include: ./parts/install.md-->` inserts Markdown; ranges/regions are supported. Missing includes need manual content inspection because absence may not fail the build. |
-| Code tabs | `::: code-group`, ordinary fences labeled `[npm]` / `[pnpm]` or `<<<` snippets, then `:::`. Not obsolete `@[code]`, `<code-group>` or invented `group` fences. |
+| Code tabs | `::: code-group`, ordinary fences labeled (e.g. `[Bun]`) or `<<<` snippets, then `:::`. Not obsolete `@[code]`, `<code-group>` or invented `group` fences. |
 | Literal Vue syntax / style isolation | Use inline/fenced code or `v-pre` for mustaches; `::: raw` / `.vp-raw` isolates documented component styles only when paired with configured `postcssIsolateStyles`. It is not an HTML sanitizer. |
 | Syntax/parser extension | `markdown.preConfig(md)` runs before built-ins, `markdown.config(md)` after. Use `shikiSetup` (not `shikijiSetup`), `theme: { light, dark }`, `languages`, `languageAlias`, `codeTransformers`; install only actual plugins with their supported graph. Math is opt-in `markdown.math` plus `markdown-it-mathjax3`, not built-in KaTeX. |
 
 On 0.x migration, rename sidebar `children` to `items` and `collapsible` to `collapsed`; migrate old group shapes rather than rejecting valid v1 `SidebarItem.link`. Replace `pathname://` links with explicit `target` policy, `Router.onAfterRouteChanged` with `onAfterRouteChange`, theme `outlineTitle` with `outline.label`, `lastUpdatedText` with `lastUpdated.text`, and local-search `disableDetailedView` with `detailedView: false`. `Theme.setup` becomes layout setup; `Theme.NotFound` becomes a `page.isNotFound` branch in Layout (or a supported default-layout slot). `appearance: 'force-auto'` follows system appearance without a normal user toggle. VitePress 1.6.4 reports `rolldown-vite` as incompatible after starting its dev server; a listening port is therefore not compatibility evidence. Changing that graph requires a separately planned VitePress 2 migration, not an override under 1.x. [Exact CLI diagnostic](https://github.com/vuejs/vitepress/blob/v1.6.4/src/node/cli.ts#L50-L59), [tagged Markdown guide](https://github.com/vuejs/vitepress/blob/v1.6.4/docs/en/guide/markdown.md), [0.x migration](https://vitepress.dev/guide/migration-from-vitepress-0).
 
-CLI diagnosis: `bun run docs:dev --port 5174 --strictPort --open` forwards real dev flags directly, without npm's extra `--` separator; `--force` invalidates optimized dependencies. Build accepts `--outDir`, `--base`, `--target`, `--minify`, `--assetsInlineLimit`; do not confuse output root with source root. Preview (`serve` alias) serves the build with matching `--base`/`--port`. For tooling failures use `DEBUG=vitepress:*` or Node's inspector in the existing dev script; TTY shortcuts `r/u/o/c/q/h` restart, show URL, open, clear, quit, help. These are diagnosis instructions, not checks exercised here. [CLI](https://vitepress.dev/reference/cli).
+CLI diagnosis: `bun run docs:dev --port 5174 --strictPort --open` forwards dev flags directly; `--force` invalidates optimized dependencies. Build accepts `--outDir`, `--base`, `--target`, `--minify`, `--assetsInlineLimit`; do not confuse output root with source root. Preview (`serve` alias) serves the build with matching `--base`/`--port`. For tooling failures run `DEBUG=vitepress:* bun run docs:dev` for logs, or use Bun's inspector with `bun --inspect --bun vitepress dev docs`. TTY shortcuts `r/u/o/c/q/h` restart, show URL, open, clear, quit, help. These are diagnosis instructions, not checks exercised here. [CLI](https://vitepress.dev/reference/cli), [Bun debugger](https://bun.com/docs/runtime/debugger).
 
 ### SSG, hydration and browser-only code
 
-Production build renders pages in Node first. A component that happens to work in the dev browser can still crash the build or mismatch hydration.
+The production build pre-renders pages outside the browser. A component that happens to work in the dev browser can still crash that build or mismatch hydration.
 
 1. Keep initial server/client output deterministic: no random values, local-storage-dependent markup, current time, locale/time-zone differences or invalid HTML nesting during initial render.
 2. Access `window`, `document`, observers and storage only after mount; dispose listeners on unmount. Preserve a stable initial shell to avoid layout shift.
@@ -322,9 +326,9 @@ MPA mode (`mpa: true`) changes client behavior: ordinary Vue page scripts are se
 
 ## Verification boundary
 
-The [verification record](../assets/verification.json) separates recorded checks from consuming-project obligations. The VitePress workflows below are verification requirements, not claims of newly exercised browser behavior.
+The complete minimal site built with VitePress 1.6.4 on Bun 1.4.5 with no system `node` available. That probe establishes build execution, not preview, deployment or browser behavior. The [verification record](../assets/verification.json) separates recorded checks from consuming-project obligations:
 
-1. VitePress: production build and preview at the real base; direct URL reload; no Node browser-global crash; no hydration warning; links, image paths, search, keyboard navigation and mobile sidebar work.
+1. Build and preview at the real base; check direct URL reloads, absence of browser-global errors during pre-rendering and hydration warnings in the browser, and that links, image paths, search, keyboard navigation and mobile sidebar work.
 2. Verify the pre-rendered HTML includes meaningful headings/content without JavaScript. Check dynamic loaders contain no secrets and their links resolve under base/rewrites.
 3. Pin reproducibility through the real package lock and CI runtime setup. A dependency range or upstream example is not observed execution evidence. See [testing](testing.md).
 

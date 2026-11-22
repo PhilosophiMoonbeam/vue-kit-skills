@@ -76,9 +76,9 @@ watch(() => route.path, async () => {
   color: rgb(var(--v-theme-on-background));
 }
 
-/* No task-essential transitions: keep theme foreground/background pairs atomic. */
 .workbench,
 .workbench :deep(*) {
+  /* biome-ignore lint/complexity/noImportantStyles: Override Vuetify transitions so theme foreground and background change together. */
   transition: none !important;
 }
 
@@ -243,9 +243,13 @@ watch(() => route.path, async () => {
   .workbench :deep(*),
   .workbench :deep(*::before),
   .workbench :deep(*::after) {
+    /* biome-ignore lint/complexity/noImportantStyles: Override component animation durations for reduced motion. */
     animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Prevent component animations from repeating in reduced-motion mode. */
     animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Override component animation delays so the near-instant animation starts immediately. */
     animation-delay: 0s !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Override component smooth scrolling for reduced motion. */
     scroll-behavior: auto !important;
   }
 }

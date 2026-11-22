@@ -1,4 +1,4 @@
-import { manualChecks } from './lab-contract'
+import type { manualChecks } from './lab-contract'
 
 type CheckId = typeof manualChecks[number]['id']
 

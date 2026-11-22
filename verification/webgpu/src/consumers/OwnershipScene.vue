@@ -54,7 +54,7 @@ function identity(mesh: Mesh | null): Json {
     normalMapUuid: actualMaterial?.normalMap?.uuid ?? null, normalMapIsOwned: actualMaterial?.normalMap === normalMap,
   }
 }
-function snapshot(reason: string) {
+function recordSnapshot(reason: string) {
   let liveMeshes = 0
   scene.value.traverse(object => { if (object instanceof Mesh) liveMeshes += 1 })
   const disposals = resources.snapshot()
@@ -96,7 +96,7 @@ const afterLoop = useLoop().onRender(() => {
   if (!pendingSnapshot || !mounted || retiring) return
   const reason = pendingSnapshot
   pendingSnapshot = null
-  snapshot(reason)
+  recordSnapshot(reason)
 })
 onMounted(() => {
   mounted = true
@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
 })
 onUnmounted(() => {
   release('component unmounted')
-  snapshot('owner unmounted; informational counts, not a zero-memory assertion')
+  recordSnapshot('owner unmounted; informational counts, not a zero-memory assertion')
 })
 </script>
 

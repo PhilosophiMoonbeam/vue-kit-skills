@@ -1,6 +1,6 @@
 # OpenVue setup: Vite and Nuxt own different lifecycles
 
-Read after [OpenVue selection](openvue.md) when installing or changing its host integration. Examples select OpenVue **1.0.0**, Vue **3.5.44**, Bun **1.4.3** for package management and Node **24.15.0** for Vite/Nuxt tooling. Preserve an incumbent manager, authoritative lockfile and compatible host; these separate application profiles are not an instruction to mix runtimes or replace an existing shell.
+Read after [OpenVue selection](openvue.md) when installing or changing its host integration. Examples select OpenVue **1.0.0**, Vue **3.5.44** and Bun **1.4.5** for package management, tooling and the Nuxt server. Preserve an incumbent manager, authoritative lockfile and compatible host; these separate application profiles are not an instruction to mix runtimes or replace an existing shell.
 
 ## Setup in a dedicated Vite app
 
@@ -11,11 +11,12 @@ Create the following files in an empty dedicated directory; do not overwrite an 
   "name": "openvue-office-preview",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.4.3",
+  "packageManager": "bun@1.4.5",
+  "engines": { "bun": "1.4.5" },
   "scripts": {
-    "dev": "vite",
-    "typecheck": "vue-tsc --noEmit",
-    "build": "vite build"
+    "dev": "bun --bun vite",
+    "typecheck": "bun --bun vue-tsc --noEmit",
+    "build": "bun --bun vite build"
   },
   "dependencies": {
     "vue": "3.5.44",
@@ -28,7 +29,7 @@ Create the following files in an empty dedicated directory; do not overwrite an 
     "chart.js": "4.6.1",
     "typescript": "5.9.3",
     "vite": "8.3.4",
-    "vue-tsc": "3.3.13"
+    "vue-tsc": "3.3.14"
   }
 }
 ```
@@ -54,7 +55,9 @@ Complete `tsconfig.json`:
 }
 ```
 
-After all files exist, run `bun install`, `bun run typecheck`, `bun run build` and `bun run dev -- --host 127.0.0.1`. Preserve the resulting authoritative `bun.lock`; use `bun install --frozen-lockfile` for a replay. A Vite bundle does not replace typechecking.
+After all files exist, run `bun install`, `bun run typecheck`, `bun run build` and `bun run dev --host 127.0.0.1`. Preserve the resulting authoritative `bun.lock`; use `bun install --frozen-lockfile` for a replay. A Vite bundle does not replace typechecking.
+
+The scripts force Bun for Vite and Vue TSC even if their shebangs would otherwise select Node. `@types/node` and the `node` type entry describe APIs used by Vite's tooling, not a separate Node runtime prerequisite.
 
 `@openvue/core` and component SVG icons are transitive dependencies; this shell needs no icon font, utility CSS or remote assets. The plugin configures defaults; components still need imports/registration. `openvue/config` re-exports the plugin from `@openvue/core/config`. [Vite setup](https://openvue.dev/vite), [published entry](https://unpkg.com/openvue@1.0.0/config/index.mjs).
 
@@ -187,11 +190,23 @@ With `strictTemplates`, forward native root attributes through the declared `pt.
 
 ## Official Nuxt module: complete separate application
 
-Use the **official `@openvue/nuxt-module@1.0.0`**, not the Vite bootstrap or a second manual plugin. The exact module declares Nuxt `>=3.0.0`; that range alone is not runtime evidence. This profile selects **Nuxt 4.6.2**, **Vue 3.5.44**, Node **24.15.0** and Bun **1.4.3**. Start in a dedicated empty directory, preserving an incumbent application's manager/lockfile:
+Use the **official `@openvue/nuxt-module@1.0.0`**, not the Vite bootstrap or a second manual plugin. The exact module declares Nuxt `>=3.0.0`; that range alone is not runtime evidence. This profile selects **Nuxt 4.6.2**, **Vue 3.5.44** and **Bun 1.4.5**. Start in a dedicated empty directory, preserving an incumbent application's manager/lockfile and file ownership. Create this initial `package.json`:
+
+```json
+{
+  "name": "openvue-nuxt-office-preview",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.4.5",
+  "engines": { "bun": "1.4.5" }
+}
+```
+
+Add the pinned dependencies below; the commands update the manifest. Keep the resulting `bun.lock` and use `bun install --frozen-lockfile` for replays:
 
 ```sh
 bun add --exact nuxt@4.6.2 vue@3.5.44 openvue@1.0.0 @openvue/themes@1.0.0
-bun add --dev --exact @openvue/nuxt-module@1.0.0 typescript@5.9.3 vue-tsc@3.3.2 @types/node@24.13.2
+bun add --dev --exact @openvue/nuxt-module@1.0.0 typescript@5.9.3 vue-tsc@3.3.14 @types/node@24.13.2
 ```
 
 Complete `nuxt.config.ts`:
@@ -218,7 +233,7 @@ export default defineNuxtConfig({
       },
     },
   }]],
-  nitro: { preset: 'node-server' },
+  nitro: { preset: 'bun' },
 })
 ```
 
@@ -302,15 +317,17 @@ Both cookie readers deliberately use the same allowlisted decoder: only the cano
 After all files exist:
 
 ```sh
-bunx --no-install nuxt prepare
-bunx --no-install nuxt typecheck
-bunx --no-install nuxt build
-HOST=127.0.0.1 PORT=3000 node .output/server/index.mjs
+bunx --bun --no-install nuxt prepare
+bunx --bun --no-install nuxt typecheck
+bunx --bun --no-install nuxt build
+NODE_ENV=production HOST=127.0.0.1 PORT=3000 bun .output/server/index.mjs
 ```
+
+Run these checks for this module separately; the core catalogue's Bun result does not cover OpenVue.
 
 Open `/`, navigate to `/other` and back, then refresh both routes. Inspect the server HTML for component and theme styles before JavaScript executes; inspect clean hydration, light/dark computed colors and body-portal scope, then run the Select/Dialog keyboard/focus checks above. A successful build alone does not certify this integration. [Official setup](https://openvue.dev/nuxt), [exact package metadata](https://registry.npmjs.org/@openvue%2fnuxt-module/1.0.0).
 
-**Observed 2026-10-21:** this exact module/options tuple passed generated strict Nuxt contexts (`strictTemplates: true`) and a production `node-server` build on the selected Nuxt/Vue versions. HTTP responses contained structural and Aura light/dark theme styles before hydration. Chromium at 320px and 1280px exercised named Select keyboard selection and Escape, named modal Dialog body portals, initial close-action focus, Tab/Shift+Tab containment and trigger restoration; both themes changed portal computed colors without clipping. Client navigation and document refresh worked with the theme cookie. This is a bounded local UI integration result, not blanket module/component/accessibility certification.
+**Historical Node result, 2026-10-21:** this exact module/options tuple passed generated strict Nuxt contexts (`strictTemplates: true`) and a production `node-server` build on the selected Nuxt/Vue versions. HTTP responses contained structural and Aura light/dark theme styles before hydration. Chromium at 320px and 1280px exercised named Select keyboard selection and Escape, named modal Dialog body portals, initial close-action focus, Tab/Shift+Tab containment and trigger restoration; both themes changed portal computed colors without clipping. Client navigation and document refresh worked with the theme cookie. This is a bounded local UI integration result, not a Bun rerun or blanket module/component/accessibility certification.
 
 
 ## Registration, alternatives and release-specific limits

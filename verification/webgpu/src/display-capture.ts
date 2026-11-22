@@ -148,7 +148,7 @@ export function createDisplayCapture(onChange: () => void) {
 
   function observeSettings(live: LiveSession): MediaTrackSettings {
     const track = live.stream?.getVideoTracks()[0]
-    if (!track || track.readyState !== 'live') throw new DOMException('The display video track is no longer live.', 'InvalidStateError')
+    if (track?.readyState !== 'live') throw new DOMException('The display video track is no longer live.', 'InvalidStateError')
     const settings = { ...track.getSettings() }
     const surface = (settings as MediaTrackSettings & { displaySurface?: string }).displaySurface
     const changed = JSON.stringify(settings) !== JSON.stringify(live.evidence.settings)

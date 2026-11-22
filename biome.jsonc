@@ -1,0 +1,82 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "package.json",
+      "biome.jsonc",
+      ".github/workflows/**/*.yml",
+      ".github/workflows/**/*.yaml",
+      "skills/vue-kit/assets/example-app/*.html",
+      "skills/vue-kit/assets/example-app/*.json",
+      "skills/vue-kit/assets/example-app/*.ts",
+      "skills/vue-kit/assets/example-app/src/**",
+      "verification/webgpu/*.html",
+      "verification/webgpu/*.json",
+      "verification/webgpu/*.mjs",
+      "verification/webgpu/*.ts",
+      "verification/webgpu/scripts/**",
+      "verification/webgpu/src/**",
+      "verification/webgpu/tests/**",
+      "!!.agents",
+      "!!.beads",
+      "!!.hermes",
+      "!!.trail",
+      "!!.reference",
+      "!!skills/vue-kit/assets/*audit.json",
+      "!!skills/vue-kit/assets/verification.json",
+      "!!verification/webgpu/fixtures",
+      "!!verification/webgpu/src/SceneHost.vue",
+      "!!verification/webgpu/src/SceneCanvas.vue",
+      "!!verification/webgpu/src/recipes",
+      "!!verification/webgpu/.generated",
+      "!!verification/webgpu/dist",
+      "!!skills/vue-kit/assets/example-app/dist"
+    ]
+  },
+  "html": {
+    "experimentalFullSupportEnabled": true,
+    "formatter": { "enabled": true }
+  },
+  "yaml": {
+    "linter": { "enabled": true },
+    "formatter": { "enabled": true }
+  },
+  "linter": {
+    "rules": {
+      "preset": "recommended",
+      "nursery": {
+        "noVueAsyncComputed": "error",
+        "noVueDefineModelDefault": "error",
+        "noVueDeprecatedFilter": "error",
+        "noVueDeprecatedVIs": "error",
+        "noVueExportInScriptSetup": "error",
+        "noLateCurrentTargetAccess": "error",
+        "noBufferConstructor": "error",
+        "noMisusedSpread": "error",
+        "noFloatingPromises": "error"
+      }
+    }
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "asNeeded"
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

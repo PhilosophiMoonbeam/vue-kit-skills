@@ -15,10 +15,10 @@ Import composables from `@vueuse/core`; use `@vueuse/shared` directly in a share
 
 ### Authoring globals and reproducible typing scope
 
-The exercised authoring profile uses **TypeScript 5.9.3**, **vue-tsc 3.3.13**, **`@types/web-bluetooth 0.0.21`**, and **`temporal-spec 1.0.1`**. Core's published declarations reference Bluetooth and global `Temporal` types, even when the selected consumer does not invoke those APIs. Use the real packages, not handwritten ambient replacements:
+For a new Bun authoring profile, use **TypeScript 5.9.3**, **vue-tsc 3.3.14**, **`@types/web-bluetooth 0.0.21`**, and **`temporal-spec 1.0.1`**. Core's published declarations reference Bluetooth and global `Temporal` types, even when the selected consumer does not invoke those APIs. Use the real packages, not handwritten ambient replacements:
 
 ```sh
-bun add --dev --exact typescript@5.9.3 vue-tsc@3.3.13 @types/web-bluetooth@0.0.21 temporal-spec@1.0.1
+bun add --dev --exact typescript@5.9.3 vue-tsc@3.3.14 @types/web-bluetooth@0.0.21 temporal-spec@1.0.1
 ```
 
 With `moduleResolution: "Bundler"`, include `"@types/web-bluetooth"` and `"temporal-spec/global"` in `compilerOptions.types`, preserving other entries the app actually needs. An explicit `types: []` excludes automatic package globals; installing the packages alone does not override that restriction. This does not disable normal typing of imported modules. Alternatively, load `temporal-spec/global` from an included declaration-only `.d.ts` file, not a runtime entry. [TypeScript global selection](https://www.typescriptlang.org/tsconfig/types.html), [Bluetooth declarations](https://unpkg.com/@types/web-bluetooth@0.0.21/index.d.ts), [Temporal globals](https://unpkg.com/temporal-spec@1.0.1/global.d.ts).
@@ -581,7 +581,7 @@ When an upgrade changes behavior, compare these documented fixes before adding a
 
 ## Verification boundary
 
-The current isolated core consumer matrix passed **full reachable declarations** (`skipLibCheck: false`), the separate **bounded strict source/template profile** (`skipLibCheck: true`), and the **CPU/custom-renderer/Node SSR lifecycle smoke** with the exact Vue/VueUse/compiler/ambient package set above. This is scoped evidence for the retained extracted consumers and lifecycle assertions, not all VueUse APIs, a different dependency tree, browser geometry, permissions, hydration, or GPU behavior. The original missing-components/missing-globals profile remains a failed historical profile; these prerequisites explain the corrected result rather than concealing it.
+The historical isolated core consumer matrix passed **full reachable declarations** (`skipLibCheck: false`), the separate **bounded strict source/template profile** (`skipLibCheck: true`), and the **CPU/custom-renderer/Node SSR lifecycle smoke** with Vue 3.5.44, VueUse 15.0.0, TypeScript 5.9.3, vue-tsc 3.3.13, `@types/web-bluetooth` 0.0.21, and `temporal-spec` 1.0.1. This is scoped evidence for the retained extracted consumers and lifecycle assertions, not a replay of the new Bun checker profile or coverage for all VueUse APIs, a different dependency tree, browser geometry, permissions, hydration, or GPU behavior. The original missing-components/missing-globals profile remains a failed historical profile; these prerequisites explain the corrected result rather than concealing it.
 
 Registry metadata and v15 source define the broader API boundaries. Historical scoped records report extraction of the owned panel and reactive-pagination SFCs: strict application-source checks, production Chromium pointer/geometry/mutation/bordered-overflow, independent lock/unmount/remount, reactive totals/page size and empty bounds. They also report Node SSR default-markup checks and the excluded overflow core/component exception, plus isolated browser negatives for the named adapters; see [verification](../assets/verification.json) for those records' original source scopes. These observations were not re-executed in this source audit and do not certify today's edited bytes, all utilities, full declarations, or hydration. Verify target replacement, debounce teardown, request races, storage denial/malformed content, SSR agreement and empty math inputs in the consuming app; use [testing](testing.md).
 

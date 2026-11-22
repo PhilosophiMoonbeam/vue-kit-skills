@@ -15,3 +15,6 @@
 
 # Python verification bytecode
 __pycache__/
+
+# Root tooling dependencies
+/node_modules/

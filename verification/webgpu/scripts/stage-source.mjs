@@ -73,7 +73,7 @@ for (const name of await filesBelow(resolve(root, 'fixtures'))) {
   }))
 }
 await writeFile(resolve(output, 'tresjs.md'), referenceBytes)
-await writeFile(resolve(output, 'recipe-provenance.json'), JSON.stringify(extraction, null, 2) + '\n')
+await writeFile(resolve(output, 'recipe-provenance.json'), `${JSON.stringify(extraction, null, 2)}\n`)
 
 // Stage the vetted primary bytes offline; the receipt preserves their immutable upstream identity.
 const assetRevision = '4995a638c96dbc94376d3d6164e70fee3ac7f7a2'
@@ -115,7 +115,7 @@ const asset = fixtures.find(fixture => fixture.name === 'Box.glb')
 const assetMetadata = JSON.parse(await readFile(resolve(fixtureDirectory, 'Box-metadata.json'), 'utf8'))
 const attribution = {
   title: 'Box', creator: assetMetadata.legal,
-  source: 'https://github.com/KhronosGroup/glTF-Sample-Assets/tree/' + assetRevision + '/Models/Box',
+  source: `https://github.com/KhronosGroup/glTF-Sample-Assets/tree/${assetRevision}/Models/Box`,
   changes: 'No changes to the primary GLB, license, metadata or model README bytes. Only local route filenames differ.',
   routes: [
     { url: '/fixtures/Box.glb', status: 200, sha256: asset.sha256 },
@@ -123,7 +123,7 @@ const attribution = {
     { url: '/fixtures/missing.glb', status: 404, note: 'Intentionally absent; no fake loader error and no network-abort claim.' },
   ],
 }
-const attributionBytes = Buffer.from(JSON.stringify(attribution, null, 2) + '\n')
+const attributionBytes = Buffer.from(`${JSON.stringify(attribution, null, 2)}\n`)
 await writeFile(resolve(fixtureDirectory, 'attribution.json'), attributionBytes)
 fixtures.push({ name: 'attribution.json', kind: 'authored-primary-source-attribution', sha256: sha256(attributionBytes), bytes: attributionBytes.length, url: '/fixtures/attribution.json' })
 
@@ -134,7 +134,7 @@ for (const name of await filesBelow(resolve(root, 'dist'))) {
   const content = await readFile(resolve(root, 'dist', name))
   servedBuild.push({ name, sha256: sha256(content), bytes: content.length, url: `/${name}` })
 }
-await writeFile(resolve(output, 'provenance.json'), JSON.stringify({
+await writeFile(resolve(output, 'provenance.json'), `${JSON.stringify({
   schemaVersion: 2,
   reference: extraction.reference,
   referenceSha256: extraction.referenceSha256,
@@ -145,4 +145,4 @@ await writeFile(resolve(output, 'provenance.json'), JSON.stringify({
   lockfile,
   sources, fixtures, attribution, servedBuild,
   acceptance: 'These hashes establish byte identity, not GPU capability or correct visible output. Consult the scoped device-review receipts; a new collection does not assign manual verdicts or inherit hardware acceptance.',
-}, null, 2) + '\n')
+}, null, 2)}\n`)

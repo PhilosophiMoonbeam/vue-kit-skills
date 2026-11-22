@@ -1,0 +1,49 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.5"
+
+      - name: Require committed lockfiles
+        run: |
+          test -s bun.lock
+          test -s skills/vue-kit/assets/example-app/bun.lock
+          test -s verification/webgpu/bun.lock
+
+      - name: Install root tooling
+        run: bun install --frozen-lockfile
+      - name: Install example dependencies
+        working-directory: skills/vue-kit/assets/example-app
+        run: bun install --frozen-lockfile
+      - name: Install WebGPU lab dependencies
+        working-directory: verification/webgpu
+        run: bun install --frozen-lockfile
+
+      - name: Lint authored files
+        run: bun run lint
+      - name: Verify packaged skill
+        run: |
+          python3 skills/vue-kit/scripts/validate.py skills/vue-kit --json
+          python3 -m unittest discover -s verification -p 'test_*.py'
+      - name: Typecheck and build example
+        working-directory: skills/vue-kit/assets/example-app
+        run: |
+          bun run typecheck
+          bun run build
+      - name: Build and test WebGPU lab
+        working-directory: verification/webgpu
+        run: |
+          bun run build
+          bun run test

@@ -65,12 +65,6 @@ const provenance = {
 }
 
 const guidance = Object.fromEntries(Object.entries(checkGuide).map(([id, guide]) => [id, guide.steps])) as Record<CheckId, string[]>
-const checkGroups: { label: string; ids: CheckId[] }[] = [
-  { label: 'Rendering', ids: ['gpu-01', 'gpu-02', 'gpu-03', 'gpu-04', 'gpu-05'] },
-  { label: 'Motion and input', ids: ['gpu-06', 'gpu-07', 'gpu-08', 'gpu-09'] },
-  { label: 'Resources', ids: ['gpu-10', 'gpu-11', 'gpu-12', 'gpu-13', 'gpu-14'] },
-  { label: 'Effects and capture', ids: ['gpu-15', 'gpu-16', 'gpu-17'] },
-]
 
 const selectedScene = shallowRef<SceneId>('webgl')
 
@@ -90,6 +84,21 @@ const selectedCheckId = shallowRef<CheckId>('gpu-01')
 const manualEntries = ref<ManualEntry[]>(manualChecks.map((check) => ({
   id: check.id, status: 'pending', evidenceNotes: '', profileNotes: '', runIds: [], updatedAt: null,
 })))
+const manualEntriesById = new Map(manualEntries.value.map((entry) => [entry.id, entry]))
+const checkGroupIds: { label: string; ids: CheckId[] }[] = [
+  { label: 'Rendering', ids: ['gpu-01', 'gpu-02', 'gpu-03', 'gpu-04', 'gpu-05'] },
+  { label: 'Motion and input', ids: ['gpu-06', 'gpu-07', 'gpu-08', 'gpu-09'] },
+  { label: 'Resources', ids: ['gpu-10', 'gpu-11', 'gpu-12', 'gpu-13', 'gpu-14'] },
+  { label: 'Effects and capture', ids: ['gpu-15', 'gpu-16', 'gpu-17'] },
+]
+const checkGroups = checkGroupIds.map(({ label, ids }) => ({ label, entries: ids.map(manualEntry) }))
+
+function manualEntry(id: CheckId) {
+  const entry = manualEntriesById.get(id)
+  if (!entry) throw new Error(`Missing manual verification entry: ${id}.`)
+  return entry
+}
+
 const observer = ref({ name: '', browserOs: '', device: '', profile: '' })
 const provenanceFetch = ref<{ status: 'loading' | 'loaded' | 'failed'; fetchedAt: string | null; metadata: unknown; error: string | null }>({
   status: 'loading', fetchedAt: null, metadata: null, error: null,
@@ -144,8 +153,12 @@ const frameStyle = computed(() => {
 })
 const compatibleModes = computed(() => modes.filter((item) => item.scenes.includes(selectedScene.value)))
 const pendingSelection = computed(() => currentRun.value?.scene !== selectedScene.value || currentRun.value?.mode !== selectedMode.value)
-const selectedCheck = computed(() => manualChecks.find((check) => check.id === selectedCheckId.value)!)
-const selectedEntry = computed(() => manualEntries.value.find((entry) => entry.id === selectedCheckId.value)!)
+const selectedCheck = computed(() => {
+  const check = manualChecks.find((item) => item.id === selectedCheckId.value)
+  if (!check) throw new Error(`Unknown manual verification check: ${selectedCheckId.value}.`)
+  return check
+})
+const selectedEntry = computed(() => manualEntry(selectedCheckId.value))
 const checkIndex = computed(() => manualChecks.findIndex((check) => check.id === selectedCheckId.value))
 const suggestedCases = computed(() => {
   const sceneIds: readonly SceneId[] = selectedCheck.value.scenes
@@ -182,6 +195,7 @@ const modeNames: Record<Mode, string> = {
   'webgl-unavailable': 'No WebGL2', 'asset-unavailable': 'Missing model', 'asset-delayed': 'Delayed model',
 }
 const statusNames: Record<ManualStatus, string> = { pending: 'Pending', pass: 'Pass', fail: 'Fail', 'not-applicable': 'Not applicable' }
+const statusMarks: Record<ManualStatus, string> = { pending: '○', pass: '✓', fail: '!', 'not-applicable': '—' }
 const backendLabel = computed(() => {
   const backend = observed.value?.backend
   return backend === 'webgpu' ? 'WebGPU' : backend === 'webgl2' ? 'WebGL2' : backend === 'unavailable' ? 'Unavailable' : backend === 'unknown' ? 'Unknown' : 'Starting'
@@ -204,7 +218,7 @@ const guidedCase = computed({
 const showRemove = computed(() => ['gpu-03', 'gpu-05', 'gpu-07', 'gpu-10', 'gpu-12'].includes(selectedCheckId.value))
 
 function focusCheck() {
-  void nextTick(() => {
+  void nextTick().then(() => {
     taskTitle.value?.focus()
     if (frameLoaded.value) sendCommand('inspect')
   })
@@ -218,7 +232,7 @@ function chooseCheck(id: CheckId) {
 
 function openReview() {
   reviewOpen.value = true
-  void nextTick(() => reviewTitle.value?.focus())
+  void nextTick().then(() => reviewTitle.value?.focus())
 }
 
 function openDiagnostics() {
@@ -285,6 +299,12 @@ function runEvidence(run: Run): RunEvidence {
   return { id: run.id, scene: run.scene, mode: run.mode, state: run.state, events: run.events, unmountRequested: run.unmountRequested }
 }
 
+function requireCurrentRun() {
+  const run = currentRun.value
+  if (!run) throw new Error('No current verification scene.')
+  return run
+}
+
 const verificationBridge: VerificationBridge = {
   async start(scene, mode, checkIds, signal) {
     selectedScene.value = scene
@@ -293,10 +313,10 @@ const verificationBridge: VerificationBridge = {
     await nextTick()
     signal.throwIfAborted()
     startRun()
-    const run = currentRun.value!
+    const run = requireCurrentRun()
     for (const id of checkIds) {
-      const entry = manualEntries.value.find((item) => item.id === id)
-      if (entry && !entry.runIds.includes(run.id)) entry.runIds.push(run.id)
+      const entry = manualEntry(id)
+      if (!entry.runIds.includes(run.id)) entry.runIds.push(run.id)
     }
     return waitForEvidence(() => {
       if (currentRun.value?.id !== run.id) throw new Error('The verification scene was replaced externally.')
@@ -305,8 +325,7 @@ const verificationBridge: VerificationBridge = {
   },
   async inspect(signal) {
     signal.throwIfAborted()
-    const run = currentRun.value
-    if (!run) throw new Error('No current verification scene.')
+    const run = requireCurrentRun()
     const previous = run.state
     if (!sendCommand('inspect')) throw new Error('The verification frame is not available.')
     return waitForEvidence(() => {
@@ -333,7 +352,7 @@ const verificationBridge: VerificationBridge = {
     const button = Array.from(frame.value?.contentDocument?.querySelectorAll('button') ?? [])
       .find((item) => item.textContent?.trim() === labels[action])
     if (!button || button.disabled) throw new Error(`Scene control is unavailable: ${labels[action]}.`)
-    appendEvent(currentRun.value!, 'automation', 'Script invoked a DOM control; this is not trusted keyboard or pointer input.', { action, isTrusted: false })
+    appendEvent(requireCurrentRun(), 'automation', 'Script invoked a DOM control; this is not trusted keyboard or pointer input.', { action, isTrusted: false })
     button.click()
     await waitForPaint(signal)
   },
@@ -447,7 +466,7 @@ function showAutomatedRun() {
   if (automationBusy.value) return
   manualView.value = false
   reviewOpen.value = false
-  void nextTick(() => document.getElementById('automation-title')?.focus())
+  void nextTick().then(() => document.getElementById('automation-title')?.focus())
 }
 
 function releaseVerification() {
@@ -475,7 +494,7 @@ function report(includePng = true) {
     automatedVerification: verificationHistory.value,
     displayEvidence: displayCapture.snapshot(includePng),
     checkpoints: checkpoints.value,
-    manualChecks: manualChecks.map((check) => ({ ...check, guidance: guidance[check.id], observation: manualEntries.value.find((entry) => entry.id === check.id) })),
+    manualChecks: manualChecks.map((check) => ({ ...check, guidance: guidance[check.id], observation: manualEntry(check.id) })),
     runs: includePng ? runs.value : runs.value.map((run) => ({
       ...run,
       captures: run.captures.map((item) => ({ ...item, dataUrl: undefined, pngAvailable: Boolean(item.dataUrl) })),
@@ -530,9 +549,8 @@ watch(selectedCheckId, () => {
   if (first) { selectedScene.value = first.scene; selectedMode.value = first.mode }
 })
 
-function checkLabel(id: CheckId) {
-  const entry = manualEntries.value.find((item) => item.id === id)!
-  return `${Number(id.slice(4))}. ${checkGuide[id].title} — ${statusNames[entry.status]}`
+function checkLabel(entry: ManualEntry) {
+  return `${Number(entry.id.slice(4))}. ${checkGuide[entry.id].title} — ${statusNames[entry.status]}`
 }
 
 function changeCheck(offset: number) {
@@ -734,7 +752,7 @@ function clearEventDisplay() {
 }
 
 function detailText(value: unknown) {
-  return typeof value === 'string' ? value : JSON.stringify(value, null, 2)
+  return typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? ''
 }
 
 function formatEventTime(event: LabEvent) {
@@ -766,7 +784,7 @@ onBeforeUnmount(() => {
   <div class="lab-shell">
     <a class="skip-link" :href="!manualView ? '#automation-title' : reviewOpen ? '#review-title' : '#check-title'">Skip to main content</a>
     <header class="topbar">
-      <a class="brand" href="#" :aria-disabled="automationBusy" @click.prevent="showAutomatedRun"><span class="brand-mark" aria-hidden="true"></span>Vue Kit<span class="brand-divider">/</span><span class="brand-label">GPU verification</span></a>
+      <button class="brand" type="button" :disabled="automationBusy" @click="showAutomatedRun"><span class="brand-mark" aria-hidden="true"></span>Vue Kit<span class="brand-divider">/</span><span class="brand-label">GPU verification</span></button>
       <div class="header-actions">
         <span class="save-note">Download before closing.</span>
         <button class="button button-quiet" type="button" :disabled="automationBusy" @click="manualView ? showAutomatedRun() : showManualChecks()">{{ manualView ? 'Automated run' : 'Manual checks' }}</button>
@@ -782,10 +800,11 @@ onBeforeUnmount(() => {
         <nav aria-label="Verification checks">
           <section v-for="group in checkGroups" :key="group.label" class="check-group">
             <h2>{{ group.label }}</h2>
-            <button v-for="id in group.ids" :key="id" type="button" class="check-link" :class="{ 'is-current': id === selectedCheckId && !reviewOpen }" :aria-current="id === selectedCheckId && !reviewOpen ? 'step' : undefined" @click="chooseCheck(id)">
-              <span class="check-number">{{ Number(id.slice(4)).toString().padStart(2, '0') }}</span>
-              <span class="check-name">{{ checkGuide[id].title }}</span>
-              <span class="status-mark" :class="`status-${manualEntries.find((entry) => entry.id === id)!.status}`" :aria-label="statusNames[manualEntries.find((entry) => entry.id === id)!.status]">{{ manualEntries.find((entry) => entry.id === id)!.status === 'pending' ? '○' : manualEntries.find((entry) => entry.id === id)!.status === 'pass' ? '✓' : manualEntries.find((entry) => entry.id === id)!.status === 'fail' ? '!' : '—' }}</span>
+            <button v-for="entry in group.entries" :key="entry.id" type="button" class="check-link" :class="{ 'is-current': entry.id === selectedCheckId && !reviewOpen }" :aria-current="entry.id === selectedCheckId && !reviewOpen ? 'step' : undefined" @click="chooseCheck(entry.id)">
+              <span class="check-number">{{ Number(entry.id.slice(4)).toString().padStart(2, '0') }}</span>
+              <span class="check-name">{{ checkGuide[entry.id].title }}</span>
+              <span class="status-mark" :class="`status-${entry.status}`" aria-hidden="true">{{ statusMarks[entry.status] }}</span>
+              <span class="sr-only">{{ statusNames[entry.status] }}</span>
             </button>
           </section>
         </nav>
@@ -836,7 +855,7 @@ onBeforeUnmount(() => {
 
         <div v-if="manualView" class="mobile-navigation">
           <label for="manual-check">Choose check</label>
-          <select id="manual-check" v-model="selectedCheckId" @change="focusCheck"><optgroup v-for="group in checkGroups" :key="group.label" :label="group.label"><option v-for="id in group.ids" :key="id" :value="id">{{ checkLabel(id) }}</option></optgroup></select>
+          <select id="manual-check" v-model="selectedCheckId" @change="focusCheck"><optgroup v-for="group in checkGroups" :key="group.label" :label="group.label"><option v-for="entry in group.entries" :key="entry.id" :value="entry.id">{{ checkLabel(entry) }}</option></optgroup></select>
         </div>
 
         <section v-if="manualView && reviewOpen" class="review-view" aria-labelledby="review-title">
@@ -846,11 +865,11 @@ onBeforeUnmount(() => {
           <div class="review-actions"><button class="button" type="button" @click="openDeviceDetails">Device details</button><button class="button button-primary" type="button" :disabled="!runs.length || provenanceFetch.status === 'loading'" @click="downloadJson">Download report</button></div>
           <p class="notice">Results reflect your observations. Unrecorded checks remain pending.</p>
           <ol class="review-list">
-            <li v-for="(check, index) in manualChecks" :key="check.id">
+            <li v-for="(entry, index) in manualEntries" :key="entry.id">
               <span class="check-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
-              <button class="review-check" type="button" @click="chooseCheck(check.id)">{{ checkGuide[check.id].title }}</button>
-              <span class="result-tag" :class="`result-${manualEntries[index]!.status}`">{{ statusNames[manualEntries[index]!.status] }}</span>
-              <button class="button button-quiet" type="button" :aria-label="`Edit ${checkGuide[check.id].title}`" @click="chooseCheck(check.id)">Edit</button>
+              <button class="review-check" type="button" @click="chooseCheck(entry.id)">{{ checkGuide[entry.id].title }}</button>
+              <span class="result-tag" :class="`result-${entry.status}`">{{ statusNames[entry.status] }}</span>
+              <button class="button button-quiet" type="button" :aria-label="`Edit ${checkGuide[entry.id].title}`" @click="chooseCheck(entry.id)">Edit</button>
             </li>
           </ol>
         </section>
@@ -952,17 +971,51 @@ onBeforeUnmount(() => {
               <div><dt>WebGPU device</dt><dd>{{ observed?.deviceCreated ? 'Observed' : 'Not observed' }}</dd></div>
               <div><dt>Unhandled rejections</dt><dd>{{ observed?.unhandledCount ?? 'Waiting' }}</dd></div>
             </dl>
-            <details v-if="observed?.metrics !== undefined"><summary>Scene metrics</summary><pre tabindex="0" aria-label="Reported scene metrics">{{ detailText(observed.metrics) }}</pre></details>
-            <details v-if="observed"><summary>Adapter and runtime</summary><pre tabindex="0">{{ detailText({ adapter: observed.adapter, versions: observed.versions, browser: observed.userAgent, run: currentRunId }) }}</pre></details>
+            <details v-if="observed?.metrics !== undefined">
+              <summary>Scene metrics</summary>
+              <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need focus to scroll the scene metrics. -->
+              <section class="json-preview" aria-label="Reported scene metrics" tabindex="0">
+                <pre v-text="detailText(observed.metrics)"></pre>
+              </section>
+            </details>
+            <details v-if="observed">
+              <summary id="adapter-runtime-summary">Adapter and runtime</summary>
+              <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need focus to scroll the runtime details. -->
+              <section class="json-preview" aria-labelledby="adapter-runtime-summary" tabindex="0">
+                <pre v-text="detailText({ adapter: observed.adapter, versions: observed.versions, browser: observed.userAgent, run: currentRunId })"></pre>
+              </section>
+            </details>
             <details class="custom-case">
               <summary>Custom case controls</summary>
               <form class="custom-case-form" @submit.prevent="startRun"><div class="case-field"><label for="case-scene">Scene</label><select id="case-scene" v-model="selectedScene"><option v-for="item in scenes" :key="item.value" :value="item.value">{{ sceneNames[item.value] }}</option></select></div><div class="case-field"><label for="case-mode">Profile</label><select id="case-mode" v-model="selectedMode"><option v-for="item in compatibleModes" :key="item.value" :value="item.value">{{ modeNames[item.value] }}</option></select></div><button class="button" type="submit">Run custom case</button></form>
               <div class="diagnostic-actions"><button class="button" type="button" :disabled="!canCommand || currentRun?.unmountRequested" @click="unmountScene">Remove scene</button><button class="button" type="button" :disabled="!canCommand || currentRun?.unmountRequested" @click="invalidateScene">Rotate once</button><button class="button" type="button" @click="setParentWidth('narrow')">Narrow</button><button class="button" type="button" @click="setParentWidth('wide')">Wide</button><button class="button" type="button" @click="toggleParentVisibility">{{ parentHidden ? 'Show' : 'Hide' }}</button></div>
             </details>
             <details v-if="runs.some((run) => run.captures.length)" class="capture-history"><summary>Capture history</summary><template v-for="run in runs" :key="run.id"><ul v-if="run.captures.length" class="capture-list"><li v-for="item in run.captures" :key="item.id"><code>{{ item.id }}</code><p>{{ item.message }}<span v-if="typeof item.provenance?.width === 'number' && typeof item.provenance?.height === 'number'"> · {{ item.provenance.width }} × {{ item.provenance.height }}</span></p><a v-if="item.dataUrl" class="button" :href="item.dataUrl" :download="`${item.id}.png`">Save PNG</a></li></ul></template></details>
-            <ol v-if="visibleEvents.length" class="event-list" tabindex="0" aria-label="Event log"><li v-for="event in visibleEvents" :key="event.id" :class="{ 'event-error': isErrorEvent(event.category) }"><div class="event-meta"><span>{{ event.category }}</span><time :datetime="event.receivedAt">{{ formatEventTime(event) }}</time><code>{{ event.runId }}</code></div><p>{{ event.message }}</p><details v-if="event.detail !== undefined"><summary>Details</summary><pre tabindex="0">{{ detailText(event.detail) }}</pre></details></li></ol>
+            <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need focus to scroll the event log. -->
+            <section v-if="visibleEvents.length" class="event-list" aria-label="Event log" tabindex="0">
+              <ol class="event-items">
+                <li v-for="event in visibleEvents" :key="event.id" :class="{ 'event-error': isErrorEvent(event.category) }">
+                  <div class="event-meta"><span>{{ event.category }}</span><time :datetime="event.receivedAt">{{ formatEventTime(event) }}</time><code>{{ event.runId }}</code></div>
+                  <p>{{ event.message }}</p>
+                  <details v-if="event.detail !== undefined">
+                    <summary>Details</summary>
+                    <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need focus to scroll the individual event details. -->
+                    <section class="json-preview" :aria-label="`Details for event ${event.id}`" tabindex="0">
+                      <pre v-text="detailText(event.detail)"></pre>
+                    </section>
+                  </details>
+                </li>
+              </ol>
+            </section>
             <p v-else class="empty-events">No events shown. The report retains earlier events.</p>
-            <details class="raw-details"><summary>Raw report</summary><p>The download includes all captures. PNG bytes are omitted from this preview.</p><pre tabindex="0" aria-label="Scrollable raw diagnostic JSON">{{ rawReport }}</pre></details>
+            <details class="raw-details">
+              <summary>Raw report</summary>
+              <p>The download includes all captures. PNG bytes are omitted from this preview.</p>
+              <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need focus to scroll the JSON preview. -->
+              <section class="json-preview" aria-label="Scrollable raw diagnostic JSON" tabindex="0">
+                <pre v-text="rawReport"></pre>
+              </section>
+            </details>
             </template>
           </details>
 
@@ -974,7 +1027,13 @@ onBeforeUnmount(() => {
             <p v-else-if="provenanceFetch.status === 'failed'" class="field-error" role="alert">Source details could not load: {{ provenanceFetch.error }}. The report includes this error.</p>
             <button class="button" type="button" :disabled="provenanceFetch.status === 'loading'" @click="fetchProvenance">Reload source details</button>
             <nav class="source-links" aria-label="Source files"><a :href="provenance.servedSources.reference" target="_blank" rel="noopener noreferrer">Retained reference archive</a><a :href="provenance.servedSources.hashes" target="_blank" rel="noopener noreferrer">Source hashes</a><a v-for="source in servedSourceLinks" :key="source.url" :href="source.url" target="_blank" rel="noopener noreferrer">{{ source.name }}</a></nav>
-            <details v-if="provenanceFetch.metadata"><summary>Source metadata</summary><pre tabindex="0">{{ detailText(provenanceFetch.metadata) }}</pre></details>
+            <details v-if="provenanceFetch.metadata">
+              <summary id="source-metadata-summary">Source metadata</summary>
+              <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need focus to scroll the source metadata. -->
+              <section class="json-preview" aria-labelledby="source-metadata-summary" tabindex="0">
+                <pre v-text="detailText(provenanceFetch.metadata)"></pre>
+              </section>
+            </details>
           </details>
           <p class="privacy-note">Results stay in this page. Download the report before closing or reloading.</p>
           <p v-if="provenanceFetch.status === 'failed'" class="field-error" role="alert">Source details are unavailable. The report includes the fetch error.</p>
@@ -985,6 +1044,7 @@ onBeforeUnmount(() => {
   </div>
 </template>
 
+<!-- biome-ignore lint/suspicious/useScopedStyles: The root lab owns document and form-control resets. -->
 <style>
 :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1c3039; background: #f5f6f3; font-synthesis: none; }
 * { box-sizing: border-box; }
@@ -999,7 +1059,8 @@ button, a, select, input, textarea, summary { -webkit-tap-highlight-color: trans
 .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 12px 20px; color: #fff; background: #174b5c; }
 .skip-link:focus { top: 12px; }
 .topbar { min-height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid #d5dedb; }
-.brand { display: flex; align-items: center; gap: 10px; color: #1c3039; font-size: 17px; font-weight: 720; text-decoration: none; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 0; border: 0; color: #1c3039; background: transparent; font-size: 17px; font-weight: 720; white-space: nowrap; cursor: pointer; }
+.brand:disabled { cursor: not-allowed; }
 .brand-mark { width: 7px; height: 7px; border-radius: 50%; background: #c35124; }
 .brand-divider { color: #a1afad; margin: 0 2px; font-weight: 400; }
 .brand-label { font-size: 14px; font-weight: 500; color: #53666e; }
@@ -1007,6 +1068,10 @@ button, a, select, input, textarea, summary { -webkit-tap-highlight-color: trans
 .save-note { font-size: 12px; color: #53666e; margin-right: 8px; }
 .app-layout { display: grid; grid-template-columns: 216px minmax(0, 1fr); gap: 32px; padding-top: 32px; }
 .app-layout.automation-layout { grid-template-columns: minmax(0, 1100px); justify-content: center; }
+h1 { margin: 0; font-size: clamp(24px, 2.3vw, 34px); line-height: 1.2; font-weight: 650; letter-spacing: -.035em; }
+h1:focus { outline: none; }
+h2 { margin: 0; font-size: 16px; line-height: 1.4; font-weight: 650; }
+h3 { margin: 20px 0 8px; font-size: 13px; }
 .automation-panel { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #d3ded8; }
 .automation-panel.is-running { position: sticky; top: 0; z-index: 2; padding-top: 16px; padding-bottom: 12px; background: #f5f6f3; }
 .automation-panel.is-running h1 { font-size: 20px; letter-spacing: -.02em; }
@@ -1016,6 +1081,9 @@ button, a, select, input, textarea, summary { -webkit-tap-highlight-color: trans
 .automation-actions > .sequence-field { flex: 0 0 100%; }
 .automation-intro, .automation-current { max-width: 65ch; margin: 12px 0 0; font-size: 14px; line-height: 1.65; }
 .automation-current { font-weight: 600; }
+progress { display: block; width: 100%; height: 4px; margin: 10px 0 24px; border: 0; border-radius: 4px; overflow: hidden; background: #dce4df; accent-color: #286f61; }
+progress::-webkit-progress-bar { background: #dce4df; }
+progress::-webkit-progress-value { background: #286f61; }
 .automation-progress { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-size: 12px; font-variant-numeric: tabular-nums; }
 .automation-progress progress { flex: 1; width: auto; margin: 0; }
 .capture-status { margin: 12px 0 0; color: #53666e; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
@@ -1031,9 +1099,6 @@ main { min-width: 0; }
 .sidebar { position: sticky; top: 24px; align-self: start; max-height: calc(100dvh - 48px); overflow-y: auto; padding-right: 12px; scrollbar-width: thin; }
 .progress-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; }
 .progress-heading span { font-size: 11px; color: #53666e; font-variant-numeric: tabular-nums; }
-progress { display: block; width: 100%; height: 4px; margin: 10px 0 24px; border: 0; border-radius: 4px; overflow: hidden; background: #dce4df; accent-color: #286f61; }
-progress::-webkit-progress-bar { background: #dce4df; }
-progress::-webkit-progress-value { background: #286f61; }
 .check-group { margin-bottom: 20px; }
 .check-group h2 { margin: 0 0 7px 9px; font-size: 11px; line-height: 1.5; font-weight: 650; color: #53666e; }
 .check-link { display: grid; width: 100%; grid-template-columns: 20px minmax(0, 1fr) 15px; align-items: center; gap: 8px; padding: 9px 8px; min-height: 42px; border: 1px solid transparent; border-radius: 5px; text-align: left; color: #3e515a; background: transparent; cursor: pointer; }
@@ -1049,24 +1114,18 @@ progress::-webkit-progress-value { background: #286f61; }
 .mobile-navigation { display: none; }
 .task-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
 .step-label { margin: 0 0 8px; color: #53666e; font-size: 12px; line-height: 1.4; font-variant-numeric: tabular-nums; }
-h1 { margin: 0; font-size: clamp(24px, 2.3vw, 34px); line-height: 1.2; font-weight: 650; letter-spacing: -.035em; }
-h1:focus { outline: none; }
-h2 { margin: 0; font-size: 16px; line-height: 1.4; font-weight: 650; }
-h3 { margin: 20px 0 8px; font-size: 13px; }
 .task-grid { display: grid; grid-template-columns: minmax(0, 1fr) 252px; gap: 28px; align-items: start; }
 .experiment { min-width: 0; }
 .task-steps { margin: 0 0 16px; padding-left: 22px; font-size: 14px; line-height: 1.65; }
 .task-steps li { padding-left: 3px; }
-.task-steps li + li { margin-top: 8px; }
 .expected { margin: 0 0 16px; padding: 12px 14px; border-left: 3px solid #78a499; color: #36574f; background: #edf3ef; font-size: 13px; line-height: 1.6; }
 .expected strong { display: block; margin-bottom: 2px; font-size: 11px; font-weight: 650; }
 .caution { margin: 0 0 16px; color: #765225; font-size: 12px; line-height: 1.6; }
 .run-toolbar { display: flex; gap: 12px; align-items: flex-end; margin: 20px 0; }
-.run-toolbar > .case-field { max-width: 340px; }
-.run-toolbar .button-primary { min-width: 132px; gap: 18px; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 9px 13px; border: 1px solid #9aacae; border-radius: 5px; color: #284b58; background: #fff; font-size: 12px; font-weight: 600; line-height: 1.4; text-decoration: none; cursor: pointer; }
 .button:hover:not(:disabled) { border-color: #426975; background: #edf3ef; }
 .button-primary { color: #fff; background: #174b5c; border-color: #174b5c; }
+.run-toolbar .button-primary { min-width: 132px; gap: 18px; }
 .button-primary:hover:not(:disabled) { color: #fff; background: #103c4b; }
 .button-quiet { background: transparent; border-color: transparent; }
 .button-quiet:hover:not(:disabled) { border-color: #b3c1bd; }
@@ -1093,8 +1152,8 @@ h3 { margin: 20px 0 8px; font-size: 13px; }
 .capture-preview img { display: block; width: 100%; height: auto; margin-top: 12px; }
 .result-panel { min-width: 0; padding: 20px; border: 1px solid #d3ded8; border-radius: 7px; background: #fff; }
 .result-panel h2 { margin-bottom: 20px; }
-.result-panel .case-field + .case-field { margin-top: 16px; }
 .case-field { flex: 1; min-width: 0; }
+.run-toolbar > .case-field { max-width: 340px; }
 .case-field label, .mobile-navigation > label { display: block; margin-bottom: 6px; color: #3d535b; font-size: 12px; font-weight: 600; line-height: 1.5; }
 .case-field :is(select, input, textarea), .mobile-navigation select { display: block; width: 100%; min-width: 0; min-height: 42px; padding: 9px 10px; color: #1c3039; background: #fff; border: 1px solid #91a5a6; border-radius: 4px; font-size: 13px; line-height: 1.6; }
 .case-field select, .mobile-navigation select { padding-right: 28px; }
@@ -1112,7 +1171,6 @@ h3 { margin: 20px 0 8px; font-size: 13px; }
 summary { padding: 12px 0; color: #385461; font-size: 12px; font-weight: 600; line-height: 1.6; cursor: pointer; }
 summary:hover { color: #174b5c; }
 .supporting-details > details { border-bottom: 1px solid #dce4df; }
-.supporting-details > details > p, .raw-details > p, .source-details p { margin: 4px 0 16px; font-size: 12px; line-height: 1.65; color: #53666e; }
 .device-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 4px 0 20px; }
 .detail-count { margin-left: 10px; color: #667a80; font-size: 10px; font-weight: 400; }
 .diagnostic-actions { margin: 8px 0 16px; }
@@ -1122,16 +1180,20 @@ summary:hover { color: #174b5c; }
 .observations dd { margin: 4px 0 0; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
 .custom-case-form { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
 .custom-case-form > .case-field { flex-basis: 180px; }
+.result-panel .case-field + .case-field { margin-top: 16px; }
 .capture-list { padding: 0; list-style: none; }
 .capture-list li { margin: 12px 0; padding: 12px; border: 1px solid #d3ded8; }
 .capture-list code { font-size: 11px; overflow-wrap: anywhere; }
 .capture-list p { font-size: 12px; line-height: 1.6; }
-.event-list { max-height: 420px; overflow: auto; margin: 16px 0; padding: 0; list-style: none; }
-.event-list > li { padding: 12px; border-top: 1px solid #dce4df; border-left: 3px solid #bdd0c8; }
-.event-list > li.event-error { background: #fff4ef; border-left-color: #b44937; }
+.event-list { max-height: 420px; overflow: auto; margin: 16px 0; }
+.event-items { margin: 0; padding: 0; list-style: none; }
+.event-items > li { padding: 12px; border-top: 1px solid #dce4df; border-left: 3px solid #bdd0c8; }
+.event-items > li.event-error { background: #fff4ef; border-left-color: #b44937; }
 .event-meta { display: flex; flex-wrap: wrap; gap: 8px; color: #64787e; font-size: 10px; font-variant-numeric: tabular-nums; }
 .event-list p { margin: 8px 0 0; font-size: 12px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
-pre { max-height: 360px; overflow: auto; margin: 4px 0 16px; padding: 14px; border: 1px solid #d6e0da; border-radius: 4px; background: #edf2ef; color: #294650; font: 11px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.raw-details > p, .source-details p, .supporting-details > details > p { margin: 4px 0 16px; font-size: 12px; line-height: 1.65; color: #53666e; }
+.json-preview { max-height: 360px; overflow: auto; margin: 4px 0 16px; padding: 14px; border: 1px solid #d6e0da; border-radius: 4px; background: #edf2ef; color: #294650; }
+.json-preview > pre { margin: 0; font: 11px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 .empty-events { font-size: 12px; color: #53666e; }
 .source-links { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 16px 0; }
 .source-links a { display: inline-flex; align-items: center; min-height: 32px; color: #174b5c; font-size: 12px; overflow-wrap: anywhere; text-underline-offset: 3px; }
@@ -1140,11 +1202,12 @@ pre { max-height: 360px; overflow: auto; margin: 4px 0 16px; padding: 14px; bord
 .review-actions { margin: 20px 0; }
 .review-list { margin: 24px 0 0; padding: 0; list-style: none; border-top: 1px solid #d3ded8; }
 .review-list li { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid #dce4df; }
+.task-steps li + li { margin-top: 8px; }
 .review-check { padding: 8px 0; color: #284b58; background: none; border: 0; text-align: left; font-size: 13px; line-height: 1.5; cursor: pointer; }
 .result-tag { padding: 4px 8px; color: #53666e; border-radius: 4px; background: #eaf0ec; font-size: 10px; white-space: nowrap; }
 .result-pass { color: #176447; background: #e6f3e9; }
 .result-fail { color: #a8392c; background: #fff0ea; }
-:where(button, a, select, input, textarea, summary, .event-list, pre):focus-visible { outline: 3px solid #c35124; outline-offset: 3px; }
+:where(button, a, select, input, textarea, summary, .event-list, .json-preview):focus-visible { outline: 3px solid #c35124; outline-offset: 3px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (max-width: 1200px) {
   .lab-shell { padding-inline: 24px; }

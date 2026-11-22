@@ -4,15 +4,15 @@ Read when adding a regression test, choosing a runner, diagnosing a flaky assert
 
 ## Version and evidence boundary
 
-Reference baseline: **Vue 3.5.44**, **@vue/test-utils 2.5.1** (Vue 3 API), **Vitest 5.0.5**, **jsdom 30.1.3**, **@playwright/test 1.64.1**, **Vite 8.3.4**, **@vitejs/plugin-vue 6.0.10**. These releases were confirmed from npm metadata; VTU exports and cleanup signatures were checked in the versioned declarations. Use **Node 24.15.0 or newer supported Node 24** for this exact combination: jsdom 30.1.3 requires `^22.22.2 || ^24.15.0 || >=26.0.0`; Vitest 5.0.5 requires `^22.12.0 || ^24.0.0 || >=26.0.0`. Do not infer these engine floors from older Vitest tutorials. [Vitest setup](https://vitest.dev/guide/), [VTU API](https://test-utils.vuejs.org/api/), [versioned declarations](https://unpkg.com/@vue/test-utils@2.5.1/dist/src/index.d.ts).
+Reference baseline: **Bun 1.4.5**, **Vue 3.5.44**, **@vue/test-utils 2.5.1** (Vue 3 API), **Vitest 5.0.5**, **jsdom 30.1.3**, **@playwright/test 1.64.1**, **Vite 8.3.4**, **@vitejs/plugin-vue 6.0.10**. These package releases were confirmed from registry metadata; VTU exports and cleanup signatures were checked in the versioned declarations. The published Node engine ranges for jsdom (`^22.22.2 || ^24.15.0 || >=26.0.0`) and Vitest (`^22.12.0 || ^24.0.0 || >=26.0.0`) describe upstream Node compatibility, not a requirement to install Node for the Bun workflow. [Vitest setup](https://vitest.dev/guide/), [VTU API](https://test-utils.vuejs.org/api/), [versioned declarations](https://unpkg.com/@vue/test-utils@2.5.1/dist/src/index.d.ts).
 
-The examples below are complete proposed regression fixtures, not reported passing runs. A package release or documentation lookup proves an API contract, not browser behavior, compatibility of every transitive dependency, or a green application build.
+With Bun 1.4.5 forced and no system `node` available, an extracted three-test workbench-style unit fixture passed with the pinned Vitest, jsdom and Vue plugin; a separate Playwright Test 1.64.1 worker performed a real click in Chromium. The examples below are proposed regression fixtures, not a report that every example ran. The probes do not establish compatibility with every transitive dependency, behavior in other browsers, or a green application build.
 
 ## Choose the cheapest boundary that can expose the failure
 
 | Question | Boundary | Assert | Does not establish |
 | --- | --- | --- | --- |
-| Does a pure transformation preserve a domain invariant? | Vitest, Node environment | Returned value and meaningful errors | Component wiring |
+| Does a pure transformation preserve a domain invariant? | Vitest, `node` environment (no simulated DOM) | Returned value and meaningful errors | Component wiring |
 | Does the user input produce the right content/event? | VTU `mount`, jsdom | Visible text, form values, public emitted payloads | Layout, native constraint validation, actual pointer/keyboard sequences |
 | Does a composable require lifecycle or injection? | Mounted minimal consumer host | Consumer output before/after actions and unmount | A real browser's platform behavior |
 | Does a form, store, route or query integration work together? | Mount with real relevant plugins and an isolated service boundary | Resulting UI/navigation, not implementation calls alone | Backend contract unless exercised separately |
@@ -23,7 +23,7 @@ This division is an authoring recommendation, not a framework guarantee. Use a s
 
 ## Minimal deterministic unit setup
 
-For a new or deliberately aligned Vue/Vite project, install these exact releases. For an incumbent app, inspect its Vite/Vue/Node compatibility first; do not overwrite its versions just to add a test.
+For a new or deliberately aligned Vue/Vite project, install these exact releases. For an incumbent app, inspect its Vite/Vue versions, runtime and lockfile first; do not overwrite them just to add a test.
 
 ```sh
 bun add --exact vue@3.5.44
@@ -67,13 +67,13 @@ VTU 2.5.1 auto-unmount calls every tracked root's `unmount()` even if a test alr
 Consumer commands, not a record of executed verification:
 
 ```sh
-bunx --no-install vitest run
-bunx --no-install vitest src/SaveTitle.spec.ts
+bunx --bun --no-install vitest run
+bunx --bun --no-install vitest src/SaveTitle.spec.ts
 ```
 
-Here Bun is the package manager/launcher, **not the test runner**: the installed `vitest` executable retains its Node shebang and the Node engine requirements above. `bun test` selects Bun's different runner; `bunx --bun vitest` forces a different runtime. Neither is an equivalent execution of these fixtures. Preserve an incumbent runner and its locked launcher rather than changing runtimes to make a failure disappear. [Bun executable/shebang policy](https://bun.com/docs/pm/bunx).
+Bun runs the installed Vitest CLI; Vitest still owns discovery, setup and execution. `--bun` overrides the CLI's Node shebang even if Node is installed, and `--no-install` avoids fetching a different runner. `bun test` selects Bun's own runner and is not equivalent. Preserve an incumbent runner, lockfile and launcher rather than changing runtimes to make a failure disappear. [Bun executable/shebang policy](https://bun.com/docs/pm/bunx).
 
-Keep tests in explicit files and import `test`, `expect` and hooks rather than assuming globals. Set a Node environment per file/project for pure tests instead of imposing jsdom on every unit. Type checking is separate from successful test transpilation; use the application's `vue-tsc` check from [tooling](setup-tooling.md).
+Keep tests in explicit files and import `test`, `expect` and hooks rather than assuming globals. Set Vitest's `node` environment per file/project for pure tests instead of imposing jsdom on every unit. That environment name selects the test globals, not the system runtime. Type checking is separate from successful test transpilation; use the application's `vue-tsc` check from [tooling](setup-tooling.md).
 
 ## Wait for the cause, not elapsed wall time
 
@@ -389,7 +389,7 @@ The following complete config/test files belong in a copy of [the example app](.
 
 ```sh
 bun add --dev --exact @playwright/test@1.64.1
-bunx --no-install playwright install chromium
+bunx --bun --no-install playwright install chromium
 ```
 
 ```ts
@@ -437,7 +437,7 @@ test('Enter adds a task; cancel preserves it and reset restores focus', async ({
 ```
 
 ```sh
-bunx --no-install playwright test
+bunx --bun --no-install playwright test
 ```
 
 Playwright's locator assertions retry until their condition or timeout; awaiting them is meaningful synchronization, not arbitrary sleeping. This fixture uses real focus/Teleport behavior but only Chromium unless more projects are configured. Add browser regressions for invalid submission preserving input, pending-state duplicate prevention, keyboard-only modal operation, responsive layout and reduced-motion behavior when those are acceptance criteria. A passing focus-return test is not a complete focus-trap audit. [Playwright assertions](https://playwright.dev/docs/test-assertions).
@@ -446,7 +446,7 @@ Playwright's locator assertions retry until their condition or timeout; awaiting
 
 The config above deliberately exercises one engine. For Chromium/Firefox/WebKit coverage, remove its single `use.browserName` and add `projects: [{ name: 'chromium', use: { browserName: 'chromium' } }, { name: 'firefox', use: { browserName: 'firefox' } }, { name: 'webkit', use: { browserName: 'webkit' } }]`. Install those browsers using the project's locked Playwright version. This is an explicit config modification, not a claim that Chromium proves WebKit behavior or that WebKit emulation is an iOS-device test.
 
-For a Bun-managed CI job, require the committed `bun.lock` to exist before `bun install --frozen-lockfile` (the flag alone does not require a missing lockfile), install matching browser binaries/system dependencies with `bunx --no-install playwright install --with-deps`, start the actual required server via `webServer`, then run `bunx --no-install playwright test`. Preserve an incumbent project's pinned manager and corresponding frozen-install command instead of creating a competing lockfile. Set `workers` to match available resources (one is the documented conservative CI default); parallel workers/shards require isolated users/data/services, not shared mutable fixtures. In an incumbent suite, shard with `--shard=1/2` and `--shard=2/2` in separate jobs and retain/merge reports deliberately. Never increase retries to hide an unexplained failure.
+For a Bun-managed CI job, use Bun 1.4.5 and require the committed `bun.lock` to exist before `bun install --frozen-lockfile` (the flag alone does not require a missing lockfile). Install matching browser binaries/system dependencies with `bunx --bun --no-install playwright install --with-deps`, then run `bunx --bun --no-install playwright test` with `webServer` configured to start the required server. Preserve an incumbent project's pinned manager and corresponding frozen-install command instead of creating a competing lockfile. Set `workers` to match available resources (one is the documented conservative CI default); parallel workers/shards require isolated users/data/services, not shared mutable fixtures. In an incumbent suite, shard with `--shard=1/2` and `--shard=2/2` in separate jobs and retain/merge reports deliberately. Never increase retries to hide an unexplained failure.
 
 Merge `use.trace: 'retain-on-failure'`, `use.screenshot: 'only-on-failure'` and an HTML reporter into the config when collecting failure evidence. Inspect traces with the installed Playwright trace viewer; retain artifacts under the application's privacy policy because DOM/network/screenshots can contain secrets. Use `await expect(locator).toHaveScreenshot()` only for intentionally stable visual contracts with pinned browser/platform/fonts/data and reviewed baselines; pair it with behavior assertions. Small reviewed HTML/inline snapshots can protect stable markup/SVG output, but blindly updating them cannot establish correctness. A page object is useful only when it names user operations; do not hide waits or assertions behind a giant selector helper.
 

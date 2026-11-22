@@ -172,7 +172,7 @@ function observeDevice(device: ObservedDevice, observeQueue: boolean, source: st
   }
   const submit = device.queue.submit
   device.queue.submit = function (this: ObservedQueue, ...args: unknown[]): void {
-    const result = Reflect.apply(submit, this, args) as void
+    Reflect.apply(submit, this, args)
     submissions += 1
     if (unmounted) submissionsAfterUnmount += 1
     if (submissions === 1 || (unmounted && submissionsAfterUnmount === 1)) {
@@ -182,7 +182,6 @@ function observeDevice(device: ObservedDevice, observeQueue: boolean, source: st
       })
       sendState()
     }
-    return result
   }
   seenDeviceQueue = true
   sendState()
@@ -259,11 +258,10 @@ function instrumentCanvas(): void {
       const gpuContext = context as unknown as ObservedCanvasContext
       const configure = gpuContext.configure
       gpuContext.configure = function (this: ObservedCanvasContext, ...configuration: unknown[]): void {
-        const result = Reflect.apply(configure, this, configuration) as void
+        Reflect.apply(configure, this, configuration)
         state.backend = 'webgpu'
         event('capability', 'Native GPUCanvasContext.configure returned without a synchronous exception. This identifies the selected canvas backend, not a completed frame.')
         sendState()
-        return result
       }
     } else if (contextId === 'webgpu' && !context) {
       event('capability', 'Native canvas WebGPU context acquisition returned null.')
@@ -570,7 +568,7 @@ function capture(): void {
   const startedAt = performance.now()
   const canvas = mount?.querySelector('canvas')
   const gl = canvas ? existingGl(initializedContext) : null
-  const provenance: Json = {
+  const provenance = {
     startedAt, lastRenderNotificationAt: lastRenderTime,
     elapsedSinceRenderNotification: lastRenderTime === null ? null : startedAt - lastRenderTime,
     renderEvents, rendererFamily: state.rendererFamily, backend: state.backend,

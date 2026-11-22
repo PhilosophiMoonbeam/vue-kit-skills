@@ -19,13 +19,16 @@ metadata:
 Use this skill as a task router, not a reading checklist. It is self-contained;
 load only the relevant references and the companions needed by the actual change.
 
-Prefer **Bun 1.4.3** for new projects and equivalent package-management workflows:
-`bun install` for a manifest, `bun add` for dependencies, `bun run <script>` for
-scripts, and `bunx` for package executables. Respect an incumbent project's
-explicit package-manager pin and authoritative lockfile; do not migrate managers
-or create a second lockfile without a requested migration. Bun is the preferred
-manager/launcher, not permission to force Node-based tools onto Bun's runtime.
-Follow [setup tooling](references/setup-tooling.md) for lockfile and runtime policy.
+Prefer **Bun 1.4.5** for new projects and equivalent workflows: `bun install`,
+`bun add`, and `bun run <script>`. The bundled workbench uses Bun for both package
+management and execution. For a CLI known to work under Bun, `--bun` overrides
+a Node shebang even when Node is installed; use `bun --bun <bin>` for a local
+binary or `bunx --bun` for a package executable. Bun supports `node:*`
+compatibility imports, and `@types/node` supplies declarations without a
+separate Node runtime. Preserve an incumbent project's declared manager, runtime
+and authoritative lockfile unless migration is requested. Prefer
+[Biome 2.6.8](references/setup-tooling.md#biome-linting) for new Vue app linting;
+keep lint, Vue typechecking and bundling separate.
 
 ## Start with the application
 
@@ -88,7 +91,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | Greenfield app, feature boundaries, large refactor, SPA/SSR choice | [Architecture](references/architecture.md) | Architecture data or architecture UI for the affected decisions |
 | State ownership, service boundaries, cache versus store, feature workflows | [Architecture data](references/architecture-data.md) | State and the chosen query owner, not every cache library |
 | Design/component boundaries, page composition, UI stack selection | [Architecture UI](references/architecture-ui.md) | Design system and the selected UI owner |
-| Vite, TypeScript, aliases, env, Node/package manager, build versus typecheck | [Setup tooling](references/setup-tooling.md) | Vuetify setup if selected; debugging SSR for server rendering |
+| Vite, TypeScript, aliases, env, Bun/package manager, build versus typecheck | [Setup tooling](references/setup-tooling.md) | Vuetify setup if selected; debugging SSR for server rendering |
 
 ### Browser utilities, state, identity, routing, and server data
 
@@ -141,7 +144,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | Unovis TS/Vue or Vue Data UI charts, tooltips and reactive data | [Visualization](references/visualization.md) | Accessibility; virtualization only for separate list rendering |
 | WebGPU scene setup, Core/Cientos `/webgpu` entries, node materials, experimental TSL APIs, loop ordering or WebGPU FBOs | [TresJS WebGPU](references/tresjs-webgpu.md) | Require whole-scene support on both WebGPURenderer backends before claiming fallback; add Cientos only when using its helpers |
 | Three.js scene effects, `defineEffect`, HDR/LDR stages or legacy composers | [TresJS post-processing](references/tresjs-post-processing.md) | Choose one render owner for the renderer in use; do not add a composer for a scene without effects |
-| TresJS package selection, WebGLRenderer scenes, root Cientos helpers, Rapier physics, Leches controls, glTF CLI or Tres lint policy | [TresJS package map](references/tresjs.md#released-package-map) | Add only the companion package that implements the requested feature |
+| TresJS package selection, WebGLRenderer scenes, root Cientos helpers, Rapier physics, Leches controls or glTF CLI | [TresJS package map](references/tresjs.md#released-package-map) | Add only the companion package that implements the requested feature |
 | Run or change the bundled Graphics workbench | [Setup tooling](references/setup-tooling.md#run-the-bundled-workbench) | [Workbench composition](references/tresjs.md#bundled-workbench-composition) for scene ownership; use [Sources](references/sources.md#tresjs-release-evidence) to distinguish present pins from archived device evidence |
 | Vue transitions, Motion for Vue, VueUse Motion and animation lifecycle | [Motion](references/motion.md) | Accessibility for reduced motion and focus preservation |
 
@@ -151,6 +154,7 @@ to load every linked document. Combine owners only when the task crosses domains
 | --- | --- | --- |
 | Vue I18n and Unhead, locale/head state and SSR isolation | [I18n and head](references/i18n-head.md) | Debugging SSR for hydration; routing for route-driven locale |
 | VitePress documentation sites, static rendering, build and deployment | [VitePress](references/docs-vitepress.md) | Setup tooling for shared runtime constraints; preserve the documentation tool's app lifecycle |
+| Biome setup, Vue SFC lint or a read-only lint gate | [Biome linting](references/setup-tooling.md#biome-linting) | Testing for behavior; lint does not replace typechecking or a build |
 | Vitest, Vue Test Utils, browser/E2E behavior and test boundaries | [Testing](references/testing.md) | The affected feature owner; accessibility for keyboard/focus assertions |
 | Runtime warnings, async errors, SSR/Nuxt, hydration, request isolation | [Debugging and SSR](references/debugging-ssr.md) | Core Vue for semantics; relevant cache/router/head owner |
 | TanStack AI Vue chat/streaming against application-owned or self-hosted endpoints | [AI streaming](references/ai-streaming.md) | Auth and architecture data when identity or persistence is involved; no hosted-provider account or key setup |
@@ -190,8 +194,9 @@ to load every linked document. Combine owners only when the task crosses domains
 
 - [Example dependency manifest](assets/example-app/package.json): exact versions
   for the local, in-memory Vue/Vuetify/Pinia/Router workbench. Follow
-  [setup tooling](references/setup-tooling.md) for `bun install`,
-  `bun run typecheck`, `bun run build`, and `bun run dev`. It has no backend,
+  [setup tooling](references/setup-tooling.md#run-the-bundled-workbench) for the
+  **Bun 1.4.5** locked `bun install --frozen-lockfile`, `bun run typecheck`,
+  `bun run build`, and `bun run dev`. It has no backend,
   authentication, persistence, or production deployment claim. Its lazy `/graphics`
   route pins Core **5.12.0**, Three **0.187.0** and `@types/three` **0.187.0**. GPU
   packages wait for explicit Start. Each mount uses one renderer: experimental
@@ -223,8 +228,8 @@ to load every linked document. Combine owners only when the task crosses domains
   and component pages, retained native discovery maps, release conflicts and
   explicit final owners/exclusions. Documentation coverage is not runtime coverage.
 
-When verification is authorized, select the repository's own typecheck, tests,
-production build, and browser checks that exercise the change. For UI behavior,
+When verification is authorized, select the project's lint gate, typecheck,
+tests, production build and browser checks that exercise the change. For UI behavior,
 cover relevant loading/error/empty/success states, keyboard/focus and responsive
 layout; for server code, cover request isolation and hydration. Report the exact
 commands and outcomes actually observed. If checks were not run, say so; list

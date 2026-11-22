@@ -1549,15 +1549,23 @@ class Validator:
                     strings(receipt.get('observations'), f'manual_gpu_confirmation.{label}.observations')
 
     def validate_package(self):
-        self.checks.append('example package pinned dependencies, script declarations and Bun lockfile presence (not resolution)')
+        self.checks.append('example package Bun runtime, pinned dependencies, script declarations and Bun lockfile presence (not resolution)')
         path = self.root / 'assets/example-app/package.json'
         package = self.load_json('assets/example-app/package.json')
         if not isinstance(package, dict):
             if package is not None:
                 self.error(path, 'package must be an object')
             return
-        if package.get('packageManager') != 'bun@1.4.3':
-            self.error(path, 'packageManager must be bun@1.4.3')
+        if package.get('packageManager') != 'bun@1.4.5':
+            self.error(path, 'packageManager must be bun@1.4.5')
+        engines = package.get('engines')
+        if not isinstance(engines, dict):
+            self.error(path, 'engines must be an object')
+        else:
+            if engines.get('bun') != '1.4.5':
+                self.error(path, 'engines.bun must be 1.4.5')
+            if 'node' in engines:
+                self.error(path, 'engines.node must not require Node.js')
         lockfile = path.parent / 'bun.lock'
         try:
             if not lockfile.is_file() or not lockfile.read_text(encoding='utf-8').strip():
@@ -1587,7 +1595,7 @@ class Validator:
             },
             'devDependencies': {
                 '@vitejs/plugin-vue': '6.0.10', 'vite': '8.3.4',
-                'typescript': '5.9.3', 'vue-tsc': '3.3.13',
+                'typescript': '5.9.3', 'vue-tsc': '3.3.14',
                 '@types/node': '24.19.2', '@types/three': '0.187.0',
             },
         }
@@ -1601,7 +1609,11 @@ class Validator:
         if not isinstance(scripts, dict):
             self.error(path, 'scripts must be an object')
             return
-        expected = {'dev': 'vite', 'build': 'vite build', 'typecheck': 'vue-tsc --noEmit'}
+        expected = {
+            'dev': 'bun --bun vite',
+            'build': 'bun --bun vite build',
+            'typecheck': 'bun --bun vue-tsc --noEmit',
+        }
         for name, command in expected.items():
             if scripts.get(name) != command:
                 self.error(path, f'scripts.{name} must be {command!r}')

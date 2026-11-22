@@ -6,17 +6,13 @@ A unified Agent Skill for Vue 3.5 applications: TypeScript, Composition API, Vue
 
 ## Install
 
-Run from the project where your coding agent should receive the skill. **Bun is preferred**; the npm-compatible installer is also supported:
+Run from the project where your coding agent should receive the skill, using **Bun 1.4.5**:
 
 ```sh
-# Preferred
-bunx skills add PhilosophiMoonbeam/vue-kit-skills
-
-# npm-compatible installer
-npx skills add PhilosophiMoonbeam/vue-kit-skills
+bunx --bun skills@1.7.4 add PhilosophiMoonbeam/vue-kit-skills
 ```
 
-Select `vue-kit` and your target agents when prompted. Skills CLI **1.7.4** installs project-scoped by default; use `--global` only for a user-wide installation. Its installer requires **Node.js >=22.20**, distinct from the authoring environment below. See the [pinned installer reference](https://github.com/vercel-labs/skills/blob/v1.7.4/docs/commands.md#skills-add) for noninteractive, agent-selection and copy options. These commands select the repository revision available remotely; they do not establish that this working-tree audit revision has been published or installed.
+Select `vue-kit` and your target agents when prompted. Skills CLI **1.7.4** installs project-scoped by default; use `--global` only for a user-wide installation. The pinned launcher passed `--help` and `--version` with Bun and no Node.js executable. The [upstream Node.js engine declaration](https://registry.npmjs.org/skills/1.7.4) describes the vendor's Node runtime contract, not a prerequisite for this Bun invocation. See the [pinned installer reference](https://github.com/vercel-labs/skills/blob/v1.7.4/docs/commands.md#skills-add) for noninteractive, agent-selection and copy options. The command selects the revision available remotely; the launcher checks do not establish publication or installation of this checkout.
 
 ## Navigate the skill
 
@@ -29,7 +25,7 @@ Install the skill for metadata-based discovery; do not preload its body or all r
 - **Optional deep OpenVue coverage:** start with [selection and architecture](skills/vue-kit/references/openvue.md), then read only the needed owner: [Vite/Nuxt setup](skills/vue-kit/references/openvue-setup.md), [theming and pass-through](skills/vue-kit/references/openvue-theming.md), [forms](skills/vue-kit/references/openvue-forms.md), [data](skills/vue-kit/references/openvue-data.md), [overlays](skills/vue-kit/references/openvue-overlays.md), [navigation](skills/vue-kit/references/openvue-navigation.md), or [layout/media/utilities](skills/vue-kit/references/openvue-components.md). OpenVue is the designated rich-widget alternative, authored against **1.0.0**, with MIT-licensed core/themes and no account or license key. Verify future majors independently; Vuetify remains the default. [Quasar](skills/vue-kit/references/alternative-ui.md) has a separate incumbent route.
 - **TresJS:** start with the [released package map](skills/vue-kit/references/tresjs.md#released-package-map) for selection, Rapier, Leches and tooling, then [WebGPU scenes](skills/vue-kit/references/tresjs-webgpu.md) for Core/Cientos **5.12.0**. The workbench and lab pin Core **5.12.0**, Three **0.187.0** and `@types/three` **0.187.0**. The optional [effects](skills/vue-kit/references/tresjs-post-processing.md) (**3.13.0**) and [Nuxt module](skills/vue-kit/references/nuxt-integrations.md#optional-tresjs-module) (**5.10.0**) profiles retain their separate Three **0.186.1** / types **0.186.0** pins. Add only the packages the scene needs.
 - **No implied outside services:** no hosted identity SDK, provider-key management, cloud account provisioning or required commercial service. Session helpers define application-owned contracts; streaming can target an application-owned or self-hosted backend; documentation search stays local.
-- **Package manager:** prefer Bun **1.4.3** for equivalent install, add, script and executable workflows. Respect an existing project's explicitly selected manager and authoritative lockfile unless migration is requested. Bun package management does not automatically change Node-based tooling into Bun-runtime tooling.
+- **Package manager and runtime:** use Bun **1.4.5** for the bundled workbench and repository tools. `--bun` forces a verified JavaScript CLI to run under Bun even if its shebang names Node and Node is installed. `node:*` compatibility APIs and `@types/node` declarations do not require a separate Node executable. Preserve a third-party project's selected manager, authoritative lockfile and runtime policy unless migration is requested. For new Vue app linting, prefer [Biome 2.6.8](skills/vue-kit/references/setup-tooling.md#biome-linting).
 
 The installed skill is self-contained. Historical source paths in audit assets identify provenance; the deleted conception-input corpus and a private discovery service are not installation dependencies. A normal client's `.agents/skills/` installation destination is not that deleted input corpus.
 
@@ -41,10 +37,11 @@ Open **Graphics** (`/graphics`) and choose **Start scene** for the default exper
 
 Stop, renderer changes, native context/device loss and route exit retire the scene; returning requires Start again. Hide/show and width controls retain the mounted scene and gate draws until the visible surface and canvas buffer have matching positive dimensions. They do not fake dimensions or wrap native methods. Rotation is opt-in, pauses when hidden/zero-width and is disabled by reduced-motion preference. The workbench adds no lab runtime, diagnostics collector, service or persistence. See the [workbench composition](skills/vue-kit/references/tresjs.md#bundled-workbench-composition) and the separate [archived 5.9.3 renderer-factory recipe](skills/vue-kit/references/tresjs.md#experimental-webgpu-and-custom-rendering).
 
-Use Bun **1.4.3** and supported Node.js **24.15.0** for the recorded environment:
+Use Bun **1.4.5**; the workbench does not need a separate Node.js executable:
 
 ```sh
 cd skills/vue-kit/assets/example-app
+test -s bun.lock || { echo "Missing committed bun.lock" >&2; exit 1; }
 bun install --frozen-lockfile
 bun run typecheck
 bun run build
@@ -55,13 +52,13 @@ The committed `bun.lock` is authoritative. Keep type checking separate from Vite
 
 ## Target-browser WebGPU/WebGL verification
 
-The repository-only [browser verification lab](verification/webgpu/) uses **Tres Core 5.12.0** and **Three 0.187.0**, with **`@types/three` 0.187.0** for typechecking. It serves **five scenes and eight compatible diagnostic profiles**: [source-matched WebGLRenderer and WebGPURenderer scenes](skills/vue-kit/references/tresjs.md) plus bounded picking, real-asset loading and shared-resource ownership cases. The viewing device's browser and GPU render the scenes; Node serves the lab and fixtures. The lab is outside the installed skill.
+The repository-only [browser verification lab](verification/webgpu/) uses **Tres Core 5.12.0** and **Three 0.187.0**, with **`@types/three` 0.187.0** for typechecking. It serves **five scenes and eight compatible diagnostic profiles**: [source-matched WebGLRenderer and WebGPURenderer scenes](skills/vue-kit/references/tresjs.md) plus bounded picking, real-asset loading and shared-resource ownership cases. The viewing device's browser and GPU render the scenes; Bun **1.4.5** serves the lab and fixtures. The lab is outside the installed skill.
 
 **Normal · no injection** leaves native GPU/canvas methods unchanged. The default **Run focused recheck** collects two resize/hide/show scenarios, including repeated visibility changes and native canvas readback. Select **Full verification · 18 scenarios** for controls, fallback/denial, assets, ownership and deliberate renderer loss/recreation. Each sequence uses fresh same-origin iframes and retains raw errors; removing a scene keeps its error observers alive for late completion.
 
 **The October corrected report is historical.** On the reported Edge 156 / Windows / NVIDIA Ampere configuration, the Core **5.9.3** / Three **0.186.1** lab restored visible WebGL2 and nonfallback WebGPU output in both focused scenarios without raw GPU or application errors. All 45 served identities matched that archived build; ten tab images and eight native PNGs were retained. Both hidden 0×0 readbacks completed as empty responses in 2 ms, not timeouts. This resolves the two regressions on the observed configuration and version only.
 
-**To collect current device evidence**, build and serve this checkout using the commands below:
+**To collect current device evidence**, use Bun **1.4.5** to build and serve this checkout from the repository root using the commands below:
 
 1. Open the running lab on the device and browser you want to verify, then choose **Run focused recheck**. The full sequence remains optional.
 2. Select **this browser tab** in the capture prompt and keep it visible. Audio is not requested. If capture is declined or unavailable, explicitly choose **Continue without tab capture** for canvas images and diagnostics only, or retry capture.
@@ -76,10 +73,13 @@ The **17 original criteria** remain linked to evidence and explicit review limit
 The original submission/intake gates (`vue-kit-skills-liu.27`, `.28.1`), corrected focused device gate (`.33.3`) and bounded support decision (`.28.2`) are complete for the archived **5.9.3/r186** profile with explicit limits, not 17 blanket passes. Neither the migrated lab nor the bundled `/graphics` workbench inherits a native-hardware pass. A fresh lab report would not cover the workbench; testing that composition on native hardware is separate.
 
 ```sh
+test -s verification/webgpu/bun.lock || { echo "Missing committed lab bun.lock" >&2; exit 1; }
 bun install --frozen-lockfile --cwd verification/webgpu
 bun run --cwd verification/webgpu build
 bun run --cwd verification/webgpu start
 ```
+
+The lab's `build` script extracts the pinned sources, runs its typecheck, bundles with Vite, and stages provenance and fixtures. To check types separately, run `bun run --cwd verification/webgpu extract` first, then `bun run --cwd verification/webgpu typecheck`.
 
 Fixture staging is offline and integrity-checked; initial dependency installation still needs the configured package registry. The unchanged Khronos **Box** fixture is by **Cesium, 2017, CC BY 4.0**, not covered by the project's MIT license. Its [primary license](verification/webgpu/fixtures/Box-LICENSE.md), metadata, README and [pinned acquisition receipt](verification/webgpu/fixtures/source-provenance.json) are retained and served with the real GLB. The delayed case completes that actual request; late disposal is not described as a network abort.
 
@@ -93,6 +93,18 @@ Use the HTTPS URL printed by the command; it provides the secure context WebGPU 
 
 The lab records the archived SFC fence fingerprints and checks source identity before staging. The three WebGL SFCs remain verbatim. The WebGPU copy moves the canvas imports to `@tresjs/core/webgpu`, removes the old pending-init unmount hook so r187 handles pending initialization through Tres's disposal call, and replaces the host's WebGL probe with the archived guide's exact `onMounted(() => { ready.value = true })`. The diagnostic canvas retains its synchronous factory and public draw guard. Served provenance distinguishes the archive fingerprints, transformed sources, exact pins and current `bun.lock` from built and fixture bytes. Failed-initialization teardown is not guaranteed; the earlier recipe's observations are not results for this build. See the [current bounded audit](skills/vue-kit/assets/current-audit.json) for recorded executions and unresolved gates.
 
+## Contributor tooling
+
+From the repository root with Bun **1.4.5**:
+
+```sh
+test -s bun.lock || { echo "Missing committed root bun.lock" >&2; exit 1; }
+bun install --frozen-lockfile
+bun run lint
+```
+
+The root [Biome](skills/vue-kit/references/setup-tooling.md#biome-linting) gate runs `biome lint . --error-on-warnings` without writing files. It checks authored JavaScript, TypeScript and Vue sources, not archived SFC fences or generated lab copies. Use `bun run lint:fix` to apply safe fixes and `bun run format <path>` only for files you intend to format. Neither app needs the root tooling to install or run.
+
 ## Validate and inspect evidence
 
 From the repository root:
@@ -100,8 +112,10 @@ From the repository root:
 ```sh
 python3 skills/vue-kit/scripts/validate.py skills/vue-kit --json
 python3 -m unittest discover -s verification -p 'test_*.py'
-bun test verification/webgpu/tests/capture-result.test.mjs
+bun run --cwd verification/webgpu test
 ```
+
+Install the lab's locked dependencies as shown above before running its test script.
 
 The standard-library validator checks skill structure, reference navigation, retained source identity/native-hypothesis fingerprints, current ownership and content-addressed packaged files. It does not execute optional integrations or confer runtime certification.
 

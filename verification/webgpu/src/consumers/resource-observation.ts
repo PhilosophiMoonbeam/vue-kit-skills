@@ -1,4 +1,4 @@
-import { BufferGeometry, Material, Mesh, Object3D, Texture, WebGLRenderTarget } from 'three'
+import { type BufferGeometry, type Material, Mesh, type Object3D, Texture, WebGLRenderTarget } from 'three'
 import { reportObservation, type Json } from '../lab-contract'
 
 type Disposable = BufferGeometry | Material | Texture | WebGLRenderTarget
@@ -23,7 +23,9 @@ export function observeResourceDisposals(entries: ResourceEntry[], owner: Json) 
   })
   return {
     snapshot: () => records.map(({ record }) => ({ ...record })),
-    stop: () => records.forEach(({ resource, listener }) => resource.removeEventListener('dispose', listener)),
+    stop: () => records.forEach(({ resource, listener }) => {
+      resource.removeEventListener('dispose', listener)
+    }),
   }
 }
 

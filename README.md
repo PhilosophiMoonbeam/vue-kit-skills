@@ -9,7 +9,7 @@ A unified Agent Skill for Vue 3.5 applications: TypeScript, Composition API, Vue
 Run from the project where your coding agent should receive the skill, using **Bun 1.4.5**:
 
 ```sh
-bunx --bun skills@1.9.0 add PhilosophiMoonbeam/vue-kit-skills
+bunx --bun skills@latest add PhilosophiMoonbeam/vue-kit-skills
 ```
 
 Select `vue-kit` and your target agents when prompted. [Skills CLI 1.9.0](https://github.com/vercel-labs/skills/releases/tag/v1.9.0) installs to the current project by default; use `--global` only for a user-wide installation. To select explicitly, add `--skill vue-kit --agent codex --yes` (replace `codex` with your agent); add `--copy` to copy rather than symlink to agent directories. For an unpublished checkout, run the same command from the destination project with an explicit local checkout path in place of `PhilosophiMoonbeam/vue-kit-skills`.
